@@ -9,7 +9,7 @@
                         <h1 class="text-anime-style-2" data-cursor="-opaque">Contact <span>us</span></h1>
                         <nav class="wow fadeInUp">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="index.html">home</a></li>
+                                <li class="breadcrumb-item"><a href="/">home</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">contact us</li>
                             </ol>
                         </nav>
