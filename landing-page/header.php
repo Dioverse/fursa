@@ -59,16 +59,17 @@
 					<div class="collapse navbar-collapse main-menu">
                         <div class="nav-menu-wrapper">
                             <ul class="navbar-nav mr-auto" id="menu">
-                                <li class="nav-item submenu"><a class="nav-link" href="index.html">Home</a>
+                                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                                <!-- <li class="nav-item submenu"><a class="nav-link" href="index.html">Home</a>
                                     <ul>
                                         <li class="nav-item"><a class="nav-link" href="index-2.html">Home - Main</a></li>
                                         <li class="nav-item"><a class="nav-link" href="index-video.html">Home - Video</a></li>
                                         <li class="nav-item"><a class="nav-link" href="index-slider.html">Home - Slider</a></li>
                                     </ul>
-                                </li>                                
-                                <li class="nav-item"><a class="nav-link" href="about.php">About Us</a>
-                                    <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
-                                    <li class="nav-item submenu"><a class="nav-link" href="#">Pages</a>
+                                </li> -->
+                                <li class="nav-item"><a class="nav-link" href="about">About Us</a>
+								<!-- <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
+								<li class="nav-item submenu"><a class="nav-link" href="#">Pages</a>
                                     <ul>
                                         <li class="nav-item"><a class="nav-link" href="blog-single.html">Blog Details</a></li>
                                         <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>
@@ -76,8 +77,8 @@
                                         <li class="nav-item"><a class="nav-link" href="faqs.html">FAQs</a></li>
                                         <li class="nav-item"><a class="nav-link" href="404.html">404</a></li>
                                     </ul>
-                                </li>
-                                <li class="nav-item"><a class="nav-link" href="contact.php">Contact Us</a></li>             
+                                </li> -->
+                                <li class="nav-item"><a class="nav-link" href="contact">Contact Us</a></li>             
                             </ul>
                         </div>
                         
