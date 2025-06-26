@@ -38,16 +38,18 @@
 /************************************/
 
 :root{
-	--primary-color				: #0A2C0F;
-	--secondary-color			: #FAF6F1;
+	--primary-color				: #A78E4C;
+	--secondary-color			: #E6E7E8;
 	--text-color				: #606060;
-	--accent-color				: #D1A132;
-	--white-color				: #FFFFFF;
+	--accent-color				: #A78E4C;
+	--white-color				: #FEFEFE;
 	--divider-color				: #0A2C0F1A;
-	--dark-divider-color		: #FFFFFF1A;
+	--dark-divider-color		: #201E1E;
 	--error-color				: rgb(230, 87, 87);
-	--default-font				: "Plus Jakarta Sans", sans-serif;
-	--accent-font				: "Lora", serif;
+	/* --default-font				: "Plus Jakarta Sans", sans-serif;
+	--accent-font				: "Lora", serif; */
+	--default-font				: "Montserrat", sans-serif;
+	--accent-font				: "Open Sans", serif;
 }
 
 /************************************/
