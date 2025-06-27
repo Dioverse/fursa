@@ -2,6 +2,37 @@
     <footer class="main-footer">
         <div class="container">
             <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <!-- About Footer Start -->
+                    <div class="about-footer">
+                        <!-- Footer Logo Start -->
+                        <div class="footer-logo">
+                            <img src="images/fursa/fursa-white.png" alt="">
+                        </div>
+                        <!-- Footer Logo End -->
+
+                        <div class="about-footer-content d-flex flex-row justify-content-between align-items-center" >
+                            <i class="fa-solid fa-location-dot fa-lg text-white"></i>
+                            <div class="col-md-11 ">
+                                <p>4, Morija Close, Wuse 2, Abuja</p>
+                                <p>6, Olumo Street, Parkview Estate, Ikoyi, Lagos</p>
+                            </div>
+                        </div>
+                        
+                        <div class="about-footer-contact">
+                            <a href="tel:123468963">
+                            <i class="fa-solid fa-phone fa-lg"></i>
+                                +234-XXX-000-0000
+                            </a>
+                            <a href="mailto:info@domain.com">
+                                <i class="fas fa-envelope fa-lg "></i>
+                                info@fursaenergy.com
+                            </a>
+                        </div>
+                    </div>
+                    <!-- About Footer End -->               
+                </div>
+
                 <div class="col-lg-4">
                     <div class="footer-links-box">
                         <!-- Footer Links Start -->
@@ -21,34 +52,13 @@
                             <h3>Help</h3>
                             <ul>
                                 <li><a href="#">Help</a></li>
-                                <li><a href="#">Privacy Policy</a></li>
-                                <li><a href="#">Terms & Condition</a></li>
+                                <li><a href="policy">Privacy Policy</a></li>
+                                <li><a href="terms-and-condition">Terms & Condition</a></li>
                                 <li><a href="contact.html">Contact Us</a></li>
                             </ul>
                         </div>
                         <!-- Footer Links End -->
                     </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <!-- About Footer Start -->
-                    <div class="about-footer">
-                        <!-- Footer Logo Start -->
-                        <div class="footer-logo">
-                            <img src="images/fursa/fursa-white.png" alt="">
-                        </div>
-                        <!-- Footer Logo End -->
-
-                        <div class="about-footer-content">
-                            <p>123 High Street, London, W1A 1AA, United Kingdom</p>
-                        </div>
-                        
-                        <div class="about-footer-contact">
-                            <a href="tel:123468963">+91 - 123 468 963</a>
-                            <a href="mailto:info@domain.com">info@domain.com</a>
-                        </div>
-                    </div>
-                    <!-- About Footer End -->               
                 </div>
 
                 <div class="col-lg-4 col-md-6">
