@@ -59,7 +59,7 @@
 					<div class="collapse navbar-collapse main-menu">
                         <div class="nav-menu-wrapper">
                             <ul class="navbar-nav mr-auto" id="menu">
-                                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                                <li class="nav-item"><a class="nav-link" href="index">Home</a></li>
                                 <!-- <li class="nav-item submenu"><a class="nav-link" href="index.html">Home</a>
                                     <ul>
                                         <li class="nav-item"><a class="nav-link" href="index-2.html">Home - Main</a></li>
