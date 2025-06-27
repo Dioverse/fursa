@@ -39,7 +39,7 @@
                         <div class="footer-links">
                             <h3>Quick link</h3>
                             <ul>
-                                <li><a href="/">home</a></li>
+                                <li><a href="/">Home</a></li>
                                 <li><a href="about">About Us</a></li>
                                 <li><a href="Contact">Contact Us</a></li>
                             </ul>
@@ -51,9 +51,9 @@
                             <h3>Help</h3>
                             <ul>
                                 <li><a href="faq">FAQ</a></li>
+                                <li><a href="terms-and-condition">Terms & Condition</a></li>
                                 <li><a href="privacy-policy">Privacy Policy</a></li>
                                 <li><a href="refund-policy">Refund Policy</a></li>
-                                <li><a href="terms-and-condition">Terms & Condition</a></li>
                             </ul>
                         </div>
                         <!-- Footer Links End -->
