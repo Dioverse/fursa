@@ -39,10 +39,9 @@
                         <div class="footer-links">
                             <h3>Quick link</h3>
                             <ul>
-                                <li><a href="index-2.html">home</a></li>
-                                <li><a href="about.html">about us</a></li>
-                                <li><a href="features.html">features</a></li>
-                                <li><a href="blog.html">Latest blog</a></li>
+                                <li><a href="/">home</a></li>
+                                <li><a href="about">About Us</a></li>
+                                <li><a href="Contact">Contact Us</a></li>
                             </ul>
                         </div>
                         <!-- Footer Links End -->
@@ -51,10 +50,10 @@
                         <div class="footer-links">
                             <h3>Help</h3>
                             <ul>
-                                <li><a href="#">Help</a></li>
-                                <li><a href="policy">Privacy Policy</a></li>
+                                <li><a href="faq">FAQ</a></li>
+                                <li><a href="privacy-policy">Privacy Policy</a></li>
+                                <li><a href="refund-policy">Refund Policy</a></li>
                                 <li><a href="terms-and-condition">Terms & Condition</a></li>
-                                <li><a href="contact.html">Contact Us</a></li>
                             </ul>
                         </div>
                         <!-- Footer Links End -->
