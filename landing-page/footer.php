@@ -2,34 +2,6 @@
     <footer class="main-footer">
         <div class="container">
             <div class="row">
-                <div class="col-lg-4">
-                    <div class="footer-links-box">
-                        <!-- Footer Links Start -->
-                        <div class="footer-links">
-                            <h3>Quick link</h3>
-                            <ul>
-                                <li><a href="index-2.html">home</a></li>
-                                <li><a href="about.html">about us</a></li>
-                                <li><a href="features.html">features</a></li>
-                                <li><a href="blog.html">Latest blog</a></li>
-                            </ul>
-                        </div>
-                        <!-- Footer Links End -->
-
-                        <!-- Footer Links Start -->
-                        <div class="footer-links">
-                            <h3>Help</h3>
-                            <ul>
-                                <li><a href="#">Help</a></li>
-                                <li><a href="#">Privacy Policy</a></li>
-                                <li><a href="#">Terms & Condition</a></li>
-                                <li><a href="contact.html">Contact Us</a></li>
-                            </ul>
-                        </div>
-                        <!-- Footer Links End -->
-                    </div>
-                </div>
-
                 <div class="col-lg-4 col-md-6">
                     <!-- About Footer Start -->
                     <div class="about-footer">
@@ -39,16 +11,53 @@
                         </div>
                         <!-- Footer Logo End -->
 
-                        <div class="about-footer-content">
-                            <p>123 High Street, London, W1A 1AA, United Kingdom</p>
+                        <div class="about-footer-content d-flex flex-row justify-content-between align-items-center" >
+                            <i class="fa-solid fa-location-dot fa-lg text-white"></i>
+                            <div class="col-md-11 ">
+                                <p>4, Morija Close, Wuse 2, Abuja</p>
+                                <p>6, Olumo Street, Parkview Estate, Ikoyi, Lagos</p>
+                            </div>
                         </div>
                         
                         <div class="about-footer-contact">
-                            <a href="tel:123468963">+91 - 123 468 963</a>
-                            <a href="mailto:info@domain.com">info@domain.com</a>
+                            <a href="tel:123468963">
+                            <i class="fa-solid fa-phone fa-lg"></i>
+                                +234-XXX-000-0000
+                            </a>
+                            <a href="mailto:info@domain.com">
+                                <i class="fas fa-envelope fa-lg "></i>
+                                info@fursaenergy.com
+                            </a>
                         </div>
                     </div>
                     <!-- About Footer End -->               
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="footer-links-box">
+                        <!-- Footer Links Start -->
+                        <div class="footer-links">
+                            <h3>Quick link</h3>
+                            <ul>
+                                <li><a href="/">Home</a></li>
+                                <li><a href="about">About Us</a></li>
+                                <li><a href="Contact">Contact Us</a></li>
+                            </ul>
+                        </div>
+                        <!-- Footer Links End -->
+
+                        <!-- Footer Links Start -->
+                        <div class="footer-links">
+                            <h3>Help</h3>
+                            <ul>
+                                <li><a href="faq">FAQ</a></li>
+                                <li><a href="terms-and-condition">Terms & Condition</a></li>
+                                <li><a href="privacy-policy">Privacy Policy</a></li>
+                                <li><a href="refund-policy">Refund Policy</a></li>
+                            </ul>
+                        </div>
+                        <!-- Footer Links End -->
+                    </div>
                 </div>
 
                 <div class="col-lg-4 col-md-6">
