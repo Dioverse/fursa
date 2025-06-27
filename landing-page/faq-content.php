@@ -7,7 +7,7 @@
                     <div class="faqs-image">
                         <div class="faq-image">
                             <figure class="image-anime">
-                                <img src="images/faq-image.jpg" alt="">
+                                <img src="images/fursa/faq.jpg" alt="">
                             </figure>
                         </div>
 

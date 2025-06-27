@@ -29,7 +29,7 @@
                 <!-- About Images Start -->
                 <div class="about-images">
                     <figure>
-                        <img src="images/about-image.png" alt="">
+                        <img src="images/fursa/usps-img-01.png" alt="">
                     </figure>
                     <div class="premium-quality-circle">
                         <img src="images/premium-quality-circle-2.png" alt="">
