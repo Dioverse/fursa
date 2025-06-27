@@ -39,7 +39,7 @@
 	<div class="preloader">
 		<div class="loading-container">
 			<div class="loading"></div>
-			<div id="loading-icon"><img src="images/loader.svg" alt=""></div>
+			<div id="loading-icon"><img src="images/fursa/fursa-white.png" alt=""></div>
 		</div>
 	</div>
 	<!-- Preloader End -->
@@ -51,7 +51,7 @@
 				<div class="container">
 					<!-- Logo Start -->
 					<a class="navbar-brand" href="index.html">
-						<img src="images/fursa/logo-bg-0.png" alt="Logo">
+						<img src="images/fursa/fursa-white.png" alt="Logo">
 					</a>
 					<!-- Logo End -->
 
@@ -68,6 +68,7 @@
                                     </ul>
                                 </li> -->
                                 <li class="nav-item"><a class="nav-link" href="about">About Us</a>
+								<li class="nav-item"><a class="nav-link" href="faq">FAQs</a>
 								<!-- <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
 								<li class="nav-item submenu"><a class="nav-link" href="#">Pages</a>
                                     <ul>
@@ -96,7 +97,7 @@
 
                             <!-- Header Contact Btn Start -->
                             <div class="header-contact-btn">
-                                <a href="conatct.html" class="btn-default btn-highlighted">Shop Now</a>
+                                <a href="#" class="btn-default btn-highlighted">Shop Now</a>
                             </div>
                             <!-- Header Contact Btn End -->
                         </div>

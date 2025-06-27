@@ -35,7 +35,7 @@
                     <div class="about-footer">
                         <!-- Footer Logo Start -->
                         <div class="footer-logo">
-                            <img src="images/fursa/logo-bg-0.png" alt="">
+                            <img src="images/fursa/fursa-white.png" alt="">
                         </div>
                         <!-- Footer Logo End -->
 

@@ -1,4 +1,55 @@
 <?php include "./header.php" ?>
+<style>
+    .contact-info-box .icon-box {
+    width: 40px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    margin-top: 5px;
+}
+
+.contact-info-box .icon-box i {
+    font-size: 1.5rem;
+    color: #ffffff !important;
+    transition: color 0.3s ease;
+}
+
+.contact-info-box {
+    background: var(--accent-color);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    color: #ffffff;
+}
+
+.contact-info-box .section-title h2, .contact-info-box .section-title h3 {
+    color: #ffffff;
+}
+
+.contact-info-body h4 {
+    margin-bottom: 4px;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.contact-info-body p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #ffffff
+}
+
+.contact-info-body a {
+    color: black;
+    text-decoration: none;
+}
+.contact-info-item, .contact-us-form{
+    width: 100% !important;
+}
+
+
+</style>
     <!-- Page Header Start -->
     <div class="page-header">
         <div class="container">
@@ -25,145 +76,97 @@
     <div class="page-contact-us">
         <div class="container">
             <div class="row">
-                <div class="col-lg-12">
-                    <!-- Contact Info Box Start -->
-                    <div class="contact-info-box">
-                        <!-- Contact Info Item Start -->
-                        <div class="contact-info-item wow fadeInUp">
-                            <!-- Contact Info Image Start -->
-                            <div class="contact-info-image">
-                                <figure class="image-anime">
-                                    <img src="images/contact-info-img-1.jpg" alt="">
-                                </figure>
-                            </div>
-                            <!-- Contact Info Image End -->
-
-                            <!-- Contact Info Content Start -->
-                            <div class="contact-info-content">
-                                <div class="icon-box">
-                                    <img src="images/icon-phone.svg" alt="">
-                                </div>
-                                <div class="contact-info-body">
-                                    <h3>contact us</h3>
-                                    <p><a href="tel:091123456987">+91 123 456 987</a></p>
-                                </div>
-                            </div>
-                            <!-- Contact Info Content End -->
+                <!-- Contact Info Column -->
+                <div class="col-lg-5 contact-info-column">
+                    <div class="contact-info-box d-flex flex-column gap-4">
+                        <div class="section-title mb-4">
+                            <h3 class="wow fadeInUp">Contact Info</h3>
+                            <h2 class="text-anime-style-2" data-cursor="-opaque">Reach out <span>to us</span></h2>
                         </div>
-                        <!-- Contact Info Item End -->
 
-                        <!-- Contact Info Item Start -->
-                        <div class="contact-info-item wow fadeInUp" data-wow-delay="0.2s">
-                            <!-- Contact Info Image Start -->
-                            <div class="contact-info-image">
-                                <figure class="image-anime">
-                                    <img src="images/contact-info-img-2.jpg" alt="">
-                                </figure>
+                        <!-- Phone -->
+                        <div class="contact-info-item d-flex align-items-start gap-3">
+                            <div class="icon-box">
+                                <i class="fas fa-phone fa-lg text-primary"></i>
                             </div>
-                            <!-- Contact Info Image End -->
-
-                            <!-- Contact Info Content Start -->
-                            <div class="contact-info-content">
-                                <div class="icon-box">
-                                    <img src="images/icon-mail.svg" alt="">
-                                </div>
-                                <div class="contact-info-body">
-                                    <h3>e-mail us</h3>
-                                    <p><a href="mailto:info@domainname.com">info@domainname.com</a></p>
-                                </div>
+                            <div class="contact-info-body">
+                                <h4>Phone</h4>
+                                <p><a href="tel:+2348012345678">+234 801 234 5678</a></p>
                             </div>
-                            <!-- Contact Info Content End -->
                         </div>
-                        <!-- Contact Info Item End -->
 
-                        <!-- Contact Info Item Start -->
-                        <div class="contact-info-item wow fadeInUp" data-wow-delay="0.4s">
-                            <!-- Contact Info Image Start -->
-                            <div class="contact-info-image">
-                                <figure class="image-anime">
-                                    <img src="images/contact-info-img-3.jpg" alt="">
-                                </figure>
+                        <!-- Email -->
+                        <div class="contact-info-item d-flex align-items-start gap-3">
+                            <div class="icon-box">
+                                <i class="fas fa-envelope fa-lg text-primary"></i>
                             </div>
-                            <!-- Contact Info Image End -->
-
-                            <!-- Contact Info Content Start -->
-                            <div class="contact-info-content">
-                                <div class="icon-box">
-                                    <img src="images/icon-location.svg" alt="">
-                                </div>
-                                <div class="contact-info-body">
-                                    <h3>location</h3>
-                                    <p>1058 Meadowbrook , CA 95050.</p>
-                                </div>
+                            <div class="contact-info-body">
+                                <h4>Email</h4>
+                                <p><a href="mailto:info@fursaenergy.com">info@fursaenergy.com</a></p>
                             </div>
-                            <!-- Contact Info Content End -->
                         </div>
-                        <!-- Contact Info Item End -->
+
+                        <!-- Lagos Office -->
+                        <div class="contact-info-item d-flex align-items-start gap-3">
+                            <div class="icon-box">
+                                <i class="fas fa-map-marker-alt fa-lg text-primary"></i>
+                            </div>
+                            <div class="contact-info-body">
+                                <h4>Lagos Office</h4>
+                                <p>6 Olumo Street, Parkview Estate, Ikoyi, Lagos</p>
+                            </div>
+                        </div>
+
+                        <!-- Abuja Office -->
+                        <div class="contact-info-item d-flex align-items-start gap-3">
+                            <div class="icon-box">
+                                <i class="fas fa-map-marker-alt fa-lg text-primary"></i>
+                            </div>
+                            <div class="contact-info-body">
+                                <h4>Abuja Office</h4>
+                                <p>4 Morija Close, Wuse 2, Abuja</p>
+                            </div>
+                        </div>
                     </div>
-                    <!-- Contact Info Box End -->
                 </div>
 
-                <div class="col-lg-12">
-                    <!-- Contact Form Box Start -->
-                    <div class="contact-form-box">
-                        <!-- Contact Us Form Start -->
-                        <div class="contact-us-form">
-                            <!-- Section Title Start -->
-                            <div class="section-title">
-                                <h3 class="wow fadeInUp">contact us</h3>
-                                <h2 class="text-anime-style-2" data-cursor="-opaque">Get in touch <span>with us</span></h2>
-                            </div>
-                            <!-- Section Title End -->
-
-                            <!-- Contact Form Start -->
-                            <div class="contact-form">
-                                <form id="contactForm" action="#" method="POST" data-toggle="validator" class="wow fadeInUp" data-wow-delay="0.2s">
-                                    <div class="row">                                
-                                        <div class="form-group col-md-6 mb-4">
-                                            <input type="text" name="fname" class="form-control" id="fname" placeholder="First name" required>
-                                            <div class="help-block with-errors"></div>
-                                        </div>
-
-                                        <div class="form-group col-md-6 mb-4">
-                                            <input type="text" name="lname" class="form-control" id="lname" placeholder="Last name" required>
-                                            <div class="help-block with-errors"></div>
-                                        </div>
-
-                                        <div class="form-group col-md-12 mb-4">
-                                            <input type="email" name ="email" class="form-control" id="email" placeholder="E-mail" required>
-                                            <div class="help-block with-errors"></div>
-                                        </div>
-
-                                        <div class="form-group col-md-12 mb-4">
-                                            <input type="text" name="phone" class="form-control" id="phone" placeholder="Phone" required>
-                                            <div class="help-block with-errors"></div>
-                                        </div>
-
-                                        <div class="form-group col-md-12 mb-5">
-                                            <textarea name="message" class="form-control" id="message" rows="3" placeholder="Write message..."></textarea>
-                                            <div class="help-block with-errors"></div>
-                                        </div>
-
-                                        <div class="col-md-12">
-                                            <button type="submit" class="btn-default"><span>submit message</span></button>
-                                            <div id="msgSubmit" class="h3 hidden"></div>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            <!-- Contact Form End -->
+                <!-- Contact Form Column -->
+                <div class="col-lg-7">
+                    <div class="contact-us-form">
+                        <!-- Section Title -->
+                        <div class="section-title mb-4">
+                            <h3 class="wow fadeInUp">Get in Touch</h3>
+                            <h2 class="text-anime-style-2" data-cursor="-opaque">Send us a <span>message</span></h2>
                         </div>
-                        <!-- Contact Us Form End -->
 
-                        <!-- Google Map Start -->
-                        <div class="google-map-iframe">
-                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d96737.10562045308!2d-74.08535042841811!3d40.739265258395164!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sin!4v1703158537552!5m2!1sen!2sin" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                        </div>
-                        <!-- Google Map End -->
+                        <!-- Form Start -->
+                        <form id="contactForm" action="#" method="POST" data-toggle="validator" class="wow fadeInUp" data-wow-delay="0.2s">
+                            <div class="row">
+                                <div class="form-group col-md-6 mb-3">
+                                    <input type="text" name="fname" class="form-control" placeholder="First name" required>
+                                </div>
+                                <div class="form-group col-md-6 mb-3">
+                                    <input type="text" name="lname" class="form-control" placeholder="Last name" required>
+                                </div>
+                                <div class="form-group col-md-12 mb-3">
+                                    <input type="email" name="email" class="form-control" placeholder="E-mail" required>
+                                </div>
+                                <div class="form-group col-md-12 mb-3">
+                                    <input type="text" name="phone" class="form-control" placeholder="Phone" required>
+                                </div>
+                                <div class="form-group col-md-12 mb-4">
+                                    <textarea name="message" class="form-control" rows="4" placeholder="Your message..." required></textarea>
+                                </div>
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn-default"><span>Submit Message</span></button>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- Form End -->
                     </div>
-                    <!-- Contact Form Box End -->
                 </div>
             </div>
+
         </div>
     </div>
     <!-- Page Contact Us End -->
