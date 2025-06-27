@@ -70,7 +70,7 @@
                     <!-- About Images Start -->
                     <div class="about-images">
                         <figure>
-                            <img src="images/about-image.png" alt="">
+                            <img src="images/fursa/service-05.png" alt="">
                         </figure>
                         <!-- Premium Quality Circle Start -->
                         <div class="premium-quality-circle">
@@ -212,11 +212,11 @@
                         <div class="why-choose-images">
                             <div class="why-choose-img">
                                 <figure>
-                                    <img src="images/why-choose-image.jpg" alt="">
+                                    <img src="images/fursa/who-we-are-02.png" alt="">
                                 </figure>
                             </div>   
                             <div class="why-choose-product-image">
-                                <img src="images/why-choose-product-image.png" alt="">
+                                <img src="images/fursa/mrs-premier-7-2.png" alt="">
                             </div>                         
                         </div>
                         <!-- Why Choose Images End -->
@@ -240,7 +240,7 @@
                         <!-- What We Image Start -->
                         <div class="what-we-image-1">
                             <figure class="image-anime reveal">
-                                <img src="images/what-we-image-1.jpg" alt="Fursa Energy Distribution">
+                                <img src="images/fursa/product-01.png" alt="Fursa Energy Distribution">
                             </figure>
                         </div>
                         <!-- What We Image End -->
@@ -248,7 +248,7 @@
                         <!-- What We Image Start -->
                         <div class="what-we-image-2">
                             <figure class="image-anime reveal">
-                                <img src="images/what-we-image-2.jpg" alt="Fursa Energy Logistics">
+                                <img src="images/fursa/product-hero-img.jpg" alt="Fursa Energy Logistics">
                             </figure>
                         </div>
                         <!-- What We Image End -->
