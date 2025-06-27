@@ -307,7 +307,7 @@
     
   
 
-    <?php include 'faq.php';?>
+    <?php include 'faq-content.php';?>
 
     <!-- Our Testimonials Section Start -->
     <!-- <div class="our-testimonials dark-section">
