@@ -1,0 +1,33 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background gradient -->
+    <radialGradient id="radialBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#E3F2FD"/>
+      <stop offset="100%" stop-color="#2196F3"/>
+    </radialGradient>
+
+    <!-- Shadow filter -->
+    <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+
+  <!-- Background Circle -->
+  <circle cx="64" cy="64" r="60" fill="url(#radialBg)" filter="url(#softShadow)"/>
+
+  <!-- Map (stylized boxes to resemble country spread) -->
+  <rect x="28" y="44" width="16" height="12" rx="2" ry="2" fill="#BBDEFB"/>
+  <rect x="48" y="56" width="16" height="12" rx="2" ry="2" fill="#90CAF9"/>
+  <rect x="68" y="44" width="16" height="12" rx="2" ry="2" fill="#64B5F6"/>
+  <rect x="88" y="60" width="12" height="10" rx="2" ry="2" fill="#42A5F5"/>
+
+  <!-- Distribution arrows -->
+  <path d="M64 64 L28 44" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+  <path d="M64 64 L48 56" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+  <path d="M64 64 L68 44" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+  <path d="M64 64 L88 60" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+
+  <!-- Central Pin -->
+  <path d="M64 48C58 48 54 52 54 58C54 64 64 78 64 78C64 78 74 64 74 58C74 52 70 48 64 48Z" fill="#F44336" filter="url(#softShadow)"/>
+  <circle cx="64" cy="58" r="4" fill="white"/>
+</svg>
