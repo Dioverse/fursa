@@ -113,6 +113,8 @@
     <script src="js/jquery-3.7.1.min.js"></script>
     <!-- Bootstrap js file -->
     <script src="js/bootstrap.min.js"></script>
+    <!-- Multi select -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <!-- Validator js file -->
     <script src="js/validator.min.js"></script>
     <!-- SlickNav js file -->
@@ -142,5 +144,4 @@
     <script src="js/function.js"></script>
 </body>
 
-<!-- Mirrored from html.awaikenthemes.com/sellsmart/cbd-oil/ by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 24 Jun 2025 09:23:31 GMT -->
 </html>
