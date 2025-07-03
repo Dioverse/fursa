@@ -12,7 +12,8 @@
                             <h1 class="text-anime-style-2" data-cursor="-opaque">
                                 Built on Trust. Focused on Trade.  <span>Committed to Growth.</span></h1>
                             <p class="wow fadeInUp" data-wow-delay="0.2s">
-                                Fursa Energy supplies and distributes high-quality lubricants to industrial clients and consumers across Africa through B2B partnerships and emerging retail channels.
+                                Fursa Energy supplies and distributes high-quality lubricants to industrial clients and consumers 
+                                across Africa through B2B partnerships and emerging retail channels.
                             </p>
                         </div>
                         <!-- Section Title End -->
@@ -46,7 +47,7 @@
                     <!-- Hero Image Start -->
                     <div class="hero-image">
                         <figure>
-                            <img src="images/hero-image.png" alt="">
+                            <img style="object-fit:contain;" src="images/fursa/50042.jpg" alt="">
                         </figure>
 
                        <!-- Premium Quality Circle Start
@@ -63,82 +64,42 @@
     <!-- Hero Section End -->
 
     <!-- About Us Section Start -->
-    <div class="about-us" id="about-section">
+    <div class="about-us-section py-5" id="about-section" style="background: #1a1a1a;">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <!-- About Images Start -->
-                    <div class="about-images">
-                        <figure>
-                            <img src="images/fursa/service-05.png" alt="">
-                        </figure>
-                        <!-- Premium Quality Circle Start -->
-                        <div class="premium-quality-circle">
-                            <img src="images/premium-quality-circle-2.png" alt="">
-                        </div>
-                        <!-- Premium Quality Circle End -->
+            <div class="text-center mb-5">
+                <h3 class="text-white">Welcome to Fursa Energy</h3>
+                <p class="text-light">Delivering energy solutions and premium lubricants nationwide</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- About Us -->
+                <div class="col-lg-4">
+                    <div class="p-4 h-100 rounded-4" style="background-color: #000;">
+                        <h3 class="text-white mb-3">About us</h3>
+                        <p class="text-light">
+                            Fursa Energy is a Nigerian-owned energy company and official super distributor of MRS Lubricants. With access to one of Africa’s largest blending plants, we supply premium lubricants, greases, and specialty oils for both industrial and automotive applications. Our corporate offices are located in Abuja and Lagos.
+                        </p>
                     </div>
-                    <!-- About Images End -->
                 </div>
-                
-                <div class="col-lg-6">
-                    <!-- About us Content Start -->
-                    <div class="about-us-content">
-                        <!-- Section Title Start -->
-                        <div class="section-title">
-                            <h3 class="wow fadeInUp">About Us</h3>
-                            <h2 class="text-anime-style-2" data-cursor="-opaque">Fursa Energy Limited<br><span>Built on Trust. Focused on Trade. Committed to Growth.</span></h2>
-                            <p class="wow fadeInUp" data-wow-delay="0.2s">
-                                Fursa Energy is a Nigerian-owned energy solutions company and the official national super distributor of MRS Lubricants. With access to one of Africa's largest blending plants, Fursa offers a range of premium-grade lubricants, greases, and specialty oils tailored for industrial and automotive applications.
-                            </p>
-                        </div>
-                        <!-- Section Title End -->
 
-                        <!-- About Us List Start -->
-                        <div class="about-us-list wow fadeInUp" data-wow-delay="0.4s">
-                            <ul>
-                                <li class="faq-answer-list">Corporate Office: Abuja – 4 Morija Close, Wuse 2 | Lagos – 6 Olumo Street, Parkview Estate, Ikoyi</li>
-                                <li class="faq-answer-list">B2B: Industrial clients, transport companies, construction firms, and government agencies</li>
-                                <li class="faq-answer-list">B2C: Distributors, dealers, auto workshops, fleet operators, and e-commerce customers</li>
-                            </ul>
-                        </div>
-                        <!-- About Us List End -->
-
-                        <!-- About Us Body Start -->
-                        <div class="about-us-body">
-                            <!-- About Body Item Button Start -->
-                            <div class="about-body-item-btn">
-                                <!-- About Organic Item Start -->
-                                <div class="about-organic-item wow fadeInUp" data-wow-delay="0.6s">
-                                    <div class="icon-box">
-                                        <img src="images/icon-about-organic.svg" alt="">
-                                    </div>
-                                    <div class="about-organic-content">
-                                        <h3>Nationwide Support</h3>
-                                        <p>Dealer support, logistics, product training, and after-sales services across Nigeria.</p>
-                                    </div>
-                                </div>
-                                <!-- About Organic Item End -->
-
-                                <!-- About Us Button Start -->
-                                <div class="about-us-btn wow fadeInUp" data-wow-delay="0.8s">
-                                    <a href="about.html" class="btn-default">More About Fursa</a>
-                                </div>
-                                <!-- About Us Button End -->
-                            </div>
-                            <!-- About Body Item Button End --> 
-                            
-                            <!-- About Body Item Start -->
-                            <div class="about-body-item wow fadeInUp" data-wow-delay="0.6s">
-                                <img src="images/fursa/fursa-black.png" alt="">
-                                <h3>Trusted by Professionals</h3>
-                                <!-- <p>Serving fleet managers, industrial procurement teams, mechanics, transport companies, and online buyers.</p> -->
-                            </div>
-                            <!-- About Body Item End -->
-                        </div>
-                        <!-- About Us Body End -->
+                <!-- Energy Business -->
+                <div class="col-lg-4">
+                    <div class="p-4 h-100 rounded-4" style="background-color: #f7c600;">
+                        <h3 class="text-white mb-3">Energy Business</h3>
+                        <p class="text-white">
+                            We’re committed to delivering innovative energy solutions. Fursa operates a distribution model that supports solar and biofuel technologies, providing clean, affordable energy to Nigerian homes and businesses.
+                        </p>
                     </div>
-                    <!-- About us Content End -->
+                </div>
+
+                <!-- Other Business -->
+                <div class="col-lg-4">
+                    <div class="p-4 h-100 rounded-4" style="background-color: #4caf50;">
+                        <h3 class="text-white mb-3">Other Business</h3>
+                        <p class="text-white">
+                            Fursa also serves the aviation sector and partners with top logistics firms to support industrial clients and auto dealerships nationwide. Our lubricant products meet global standards for quality and performance.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -146,163 +107,120 @@
     <!-- About Us Section End -->
 
 
-    <!-- Why Choose us Section Start -->
-    <div class="why-choose-us">
-        <div class="container-fluid">
-            <div class="row no-gutters">
-                <div class="col-lg-12">
-                    <!-- Why Choose Box Start -->
-                    <div class="why-choose-box">
-                        <!-- Why Choose Content Start -->
-                        <div class="why-choose-content">
-                            <!-- Section Title Start -->
-                            <div class="section-title">
-                                <h3 class="wow fadeInUp">why choose us</h3>
-                                <h2 class="text-anime-style-2" data-cursor="-opaque">Trusted Lubricant Partner for <span>Industry, Transport & Retail</span></h2>
-                                <p class="wow fadeInUp" data-wow-delay="0.2s">
-                                    At Fursa Energy, we deliver premium-grade lubricants backed by reliable logistics, nationwide support, and a commitment to growth. We serve industries, fleets, workshops, and individual consumers with products they can trust.
-                                </p>
-                            </div>
-                            <!-- Section Title End -->
 
-                            <!-- Why Choose Item Box Start -->
-                            <div class="why-choose-item-box wow fadeInUp" data-wow-delay="0.4s">
-                                <!-- Why Choose Item Start -->
-                                <div class="why-choose-item">
-                                    <div class="icon-box">
-                                        <img src="images/icon-why-choose-1.svg" alt="">
-                                    </div>
-                                    <div class="why-choose-item-content">
-                                        <h3>Premium-Grade Lubricants</h3>
-                                        <p>Blended in one of Africa’s largest certified plants, ensuring performance and OEM compliance.</p>
-                                    </div>
-                                </div>
-                                <!-- Why Choose Item End -->
+    <!-- Why Choose Us Section Start -->
+    <div class="why-choose-us-section py-5" style="background: #f1f4f8;">
+        <div class="container">
+            <!-- Section Title -->
+            <div class="section-title text-center mb-5">
+                <h3 class="wow fadeInUp">Why Choose Us</h3>
+                <h2 class="text-anime-style-2" data-cursor="-opaque">
+                    Trusted Lubricant Partner for <span>Industry, Transport & Retail</span>
+                </h2>
+                <p class="wow fadeInUp" data-wow-delay="0.2s">
+                    At Fursa Energy, we deliver premium-grade lubricants backed by reliable logistics, nationwide support, and a commitment to growth.
+                </p>
+            </div>
 
-                                <!-- Why Choose Item Start -->
-                                <div class="why-choose-item">
-                                    <div class="icon-box">
-                                        <img src="images/icon-why-choose-2.svg" alt="">
-                                    </div>
-                                    <div class="why-choose-item-content">
-                                        <h3>Nationwide Distribution</h3>
-                                        <p>Efficient delivery to major cities and remote areas, with full logistical coordination.</p>
-                                    </div>
-                                </div>
-                                <!-- Why Choose Item End -->
+            <!-- Cards Row -->
+            <div class="row g-4">
+                <!-- Card 1 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 h-100 shadow-lg rounded-4 wow fadeInUp" data-wow-delay="0.1s" style="background: #ffffff;">
+                        <div class="card-body p-4">
+                            <div class="mb-3 d-flex align-items-center gap-3">
+                                <img src="images/icon-why-choose-1.svg" alt="" width="40">
+                                <h5 class="mb-0">Premium-Grade Lubricants</h5>
                             </div>
-                            <!-- Why Choose Item Box End -->
-
-                            <!-- Why Choose Body Start -->
-                            <div class="why-choose-body">
-                                <div class="icon-box">
-                                    <img src="images/premium-quality-circle-3.png" alt="">
-                                </div>
-                                <div class="why-choose-body-content wow fadeInUp" data-wow-delay="0.6s">
-                                    <p>
-                                        As the official national distributor of MRS Lubricants, we combine strong supply chain capabilities with local expertise. Whether you're an industrial buyer, mechanic, or fleet operator, Fursa Energy is your trusted partner in lubricant excellence.
-                                    </p>
-                                </div>
-                            </div>
-                            <!-- Why Choose Body End -->
+                            <p>
+                                Blended in one of Africa’s largest certified plants, ensuring performance and OEM compliance.
+                            </p>
                         </div>
-                        <!-- Why Choose Content End -->                     
-
-                        <!-- Why Choose Images Start -->
-                        <div class="why-choose-images">
-                            <div class="why-choose-img">
-                                <figure>
-                                    <img src="images/fursa/who-we-are-02.png" alt="">
-                                </figure>
-                            </div>   
-                            <div class="why-choose-product-image">
-                                <img src="images/fursa/mrs-premier-7-2.png" alt="">
-                            </div>                         
-                        </div>
-                        <!-- Why Choose Images End -->
                     </div>
-                    <!-- Why Choose Box End -->
+                </div>
+
+                <!-- Card 2 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 h-100 shadow-lg rounded-4 wow fadeInUp" data-wow-delay="0.2s" style="background: #ffffff;">
+                        <div class="card-body p-4">
+                            <div class="mb-3 d-flex align-items-center gap-3">
+                                <img src="images/icon-why-choose-2.svg" alt="" width="40">
+                                <h5 class="mb-0">Nationwide Distribution</h5>
+                            </div>
+                            <p>
+                                Efficient delivery to major cities and remote areas, with full logistical coordination.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 h-100 shadow-lg rounded-4 wow fadeInUp" data-wow-delay="0.3s" style="background: #ffffff;">
+                        <div class="card-body p-4">
+                            <div class="mb-3 d-flex align-items-center gap-3">
+                                <img src="images/premium-quality-circle-3.png" alt="" width="40">
+                                <h5 class="mb-0">Super Distributor Advantage</h5>
+                            </div>
+                            <p>
+                                As the official super distributor of MRS Lubricants, we combine strong supply chain capabilities with local expertise.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <!-- Why Choose Us Section End -->
 
-    <!-- Why Choose us Section End -->
+
 
     
     <!-- What We Do Section Start -->
-    <div class="what-we-do dark-section">
+    <div class="what-we-do-section py-5" style="background: #1a1a1a;">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <!-- What We Images Start -->
-                    <div class="what-we-images">
-                        <!-- What We Image Start -->
-                        <div class="what-we-image-1">
-                            <figure class="image-anime reveal">
-                                <img src="images/fursa/product-01.png" alt="Fursa Energy Distribution">
-                            </figure>
-                        </div>
-                        <!-- What We Image End -->
+            <!-- Section Header -->
+            <div class="text-center mb-5">
+                <h3 class="text-white">What We Do</h3>
+                <h2 class="text-anime-style-2" data-cursor="-opaque" style="color: #fff;">Powering Industry, Mobility, and <span style="color: #A78E4C;">Growth Across Nigeria</span></h2>
+            </div>
 
-                        <!-- What We Image Start -->
-                        <div class="what-we-image-2">
-                            <figure class="image-anime reveal">
-                                <img src="images/fursa/product-hero-img.jpg" alt="Fursa Energy Logistics">
-                            </figure>
-                        </div>
-                        <!-- What We Image End -->
-
-                        <!-- What We Circle Start -->
-                        <div class="what-we-circle">
-                            <img src="images/premium-quality-circle-2.png" alt="">
-                        </div>
-                        <!-- What We Circle End -->
+            <!-- Row Cards -->
+            <div class="row g-4">
+                <!-- Lubricant Distribution -->
+                <div class="col-lg-4">
+                    <div class="p-4 h-100 rounded-4" style="background-color: #000;">
+                        <h4 class="text-white mb-3">Lubricant Distribution</h4>
+                        <p class="text-light">
+                            We supply premium-grade lubricants, greases, and specialty oils for automotive, industrial, marine, and construction use, as the super distributor of MRS Lubricants.
+                        </p>
                     </div>
-                    <!-- What We Images End -->
                 </div>
 
-                <div class="col-lg-6">
-                    <!-- What We Content Start -->
-                    <div class="what-we-content">
-                        <!-- Section Title Start -->
-                        <div class="section-title">
-                            <h3 class="wow fadeInUp">What we do</h3>
-                            <h2 class="text-anime-style-2" data-cursor="-opaque">Powering Industry, Mobility, and <span>Growth Across Nigeria</span></h2>
-                        </div>
-                        <!-- Section Title End -->
-
-                        <!-- What We Item Box Start -->
-                        <div class="what-we-item-box">
-                            <!-- What We Item Start -->
-                            <div class="what-we-item wow fadeInUp" data-wow-delay="0.2s">
-                                <h3>Lubricant Distribution</h3>
-                                <p>We supply premium-grade lubricants, greases, and specialty oils for automotive, industrial, marine, and construction use, as the national super distributor of MRS Lubricants.</p>
-                            </div>
-                            <!-- What We Item End -->
-
-                            <!-- What We Item Start -->
-                            <div class="what-we-item wow fadeInUp" data-wow-delay="0.4s">
-                                <h3>B2B & B2C Delivery Channels</h3>
-                                <p>Our supply network serves both corporate clients—like transport companies and factories—and individual customers through a growing network of distributors and online platforms.</p>
-                            </div>
-                            <!-- What We Item End -->
-
-                            <!-- What We Item Start -->
-                            <div class="what-we-item wow fadeInUp" data-wow-delay="0.6s">
-                                <h3>Nationwide Logistics & Support</h3>
-                                <p>We coordinate efficient delivery across Nigeria and provide value-added services such as dealer onboarding, training, marketing support, and after-sales care.</p>
-                            </div>
-                            <!-- What We Item End -->
-                        </div>
-                        <!-- What We Item Box End -->
+                <!-- B2B & B2C Delivery Channels -->
+                <div class="col-lg-4">
+                    <div class="p-4 h-100 rounded-4" style="background-color: #A78E4C;">
+                        <h4 class="mb-3 text-white">B2B & B2C Delivery</h4>
+                        <p class="text-white">
+                            Our supply network serves both corporate clients—like transport companies and factories—and individual customers through a growing network of distributors and online platforms.
+                        </p>
                     </div>
-                    <!-- What We Content End -->
+                </div>
+
+                <!-- Nationwide Logistics & Support -->
+                <div class="col-lg-4">
+                    <div class="p-4 h-100 rounded-4" style="background-color: #4caf50;">
+                        <h4 class="text-white mb-3">Nationwide Logistics</h4>
+                        <p class="text-white">
+                            We coordinate efficient delivery across Nigeria and provide value-added services such as dealer onboarding, training, marketing support, and after-sales care.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- What We Do Section End -->
+
 
     
   
