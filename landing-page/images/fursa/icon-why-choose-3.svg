@@ -1,0 +1,38 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gold Gradient for crown -->
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD700"/>
+      <stop offset="100%" stop-color="#FFA000"/>
+    </linearGradient>
+
+    <!-- Blue Gradient for truck -->
+    <linearGradient id="truckGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#42A5F5"/>
+      <stop offset="100%" stop-color="#1E88E5"/>
+    </linearGradient>
+
+    <!-- Shadow -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+
+  <!-- Background Circle -->
+  <circle cx="64" cy="64" r="60" fill="#E3F2FD" filter="url(#shadow)"/>
+
+  <!-- Crown for 'super' status -->
+  <path d="M48 28L52 38L58 30L64 38L70 30L76 38L80 28L64 20L48 28Z" fill="url(#goldGradient)" stroke="#F57F17" stroke-width="1"/>
+
+  <!-- Truck (symbolizing distribution) -->
+  <rect x="36" y="66" width="42" height="22" rx="3" ry="3" fill="url(#truckGradient)" />
+  <rect x="78" y="72" width="14" height="16" rx="2" ry="2" fill="#90CAF9" />
+  
+  <!-- Wheels -->
+  <circle cx="44" cy="92" r="6" fill="#263238"/>
+  <circle cx="82" cy="92" r="6" fill="#263238"/>
+
+  <!-- Arrow indicating advantage/priority -->
+  <path d="M64 56L64 36M64 36L60 40M64 36L68 40" stroke="#2E7D32" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+</svg>

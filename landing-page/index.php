@@ -129,7 +129,7 @@
                     <div class="card border-0 h-100 shadow-lg rounded-4 wow fadeInUp" data-wow-delay="0.1s" style="background: #ffffff;">
                         <div class="card-body p-4">
                             <div class="mb-3 d-flex align-items-center gap-3">
-                                <img src="images/icon-why-choose-1.svg" alt="" width="40">
+                                <img src="images/fursa/icon-why-choose-1.svg" alt="" width="40">
                                 <h5 class="mb-0">Premium-Grade Lubricants</h5>
                             </div>
                             <p>
@@ -144,7 +144,7 @@
                     <div class="card border-0 h-100 shadow-lg rounded-4 wow fadeInUp" data-wow-delay="0.2s" style="background: #ffffff;">
                         <div class="card-body p-4">
                             <div class="mb-3 d-flex align-items-center gap-3">
-                                <img src="images/icon-why-choose-2.svg" alt="" width="40">
+                                <img src="images/fursa/icon-why-choose-2.svg" alt="" width="40">
                                 <h5 class="mb-0">Nationwide Distribution</h5>
                             </div>
                             <p>
@@ -159,7 +159,7 @@
                     <div class="card border-0 h-100 shadow-lg rounded-4 wow fadeInUp" data-wow-delay="0.3s" style="background: #ffffff;">
                         <div class="card-body p-4">
                             <div class="mb-3 d-flex align-items-center gap-3">
-                                <img src="images/premium-quality-circle-3.png" alt="" width="40">
+                                <img src="images/fursa/icon-why-choose-3.svg" alt="" width="40">
                                 <h5 class="mb-0">Super Distributor Advantage</h5>
                             </div>
                             <p>
