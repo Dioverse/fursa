@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('order_id');
             $table->enum('status', ['pending', 'successful', 'failed'])->default('pending');
             $table->string('payment_gateway')->nullable(); // e.g., Paystack, Flutterwave
             $table->string('transaction_reference')->nullable();

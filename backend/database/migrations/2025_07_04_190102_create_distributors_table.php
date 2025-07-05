@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('distributors', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('user_id');
 
             // Business Information
             $table->string('company_name');

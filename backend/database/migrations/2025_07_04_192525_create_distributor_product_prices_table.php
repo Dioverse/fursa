@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('distributor_product_prices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('user_id'); // distributor
+            $table->unsignedBigInteger('product_id');
             $table->decimal('price', 10, 2);
             $table->timestamps();
         });
