@@ -47,7 +47,7 @@
                     <!-- Hero Image Start -->
                     <div class="hero-image">
                         <figure>
-                            <img style="object-fit:contain;" src="images/fursa/50042.jpg" alt="">
+                            <img style="object-fit:contain;" src="images/fursa/fursa.png" alt="">
                         </figure>
 
                        <!-- Premium Quality Circle Start
@@ -221,6 +221,23 @@
     </div>
     <!-- What We Do Section End -->
 
+    <!-- Our Partners Section Start -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h5 class="text-primary text-uppercase">Our Partners</h5>
+                <h2 class="fw-bold">Trusted by Leading Brands</h2>
+            </div>
+            <div class="row justify-content-center align-items-center mb-4">
+                <div class="col-md-5 d-flex justify-content-center align-items-center">
+                    <img src="https://www.bestafltd.com/assets/images/logo.svg" class="img-fluid partner-logo" alt="Bestaf" style="max-height: 100px;">
+                    <div class="mx-4 border-start" style="height: 100px;"></div>
+                    <img src="https://www.mrsoilnigeria.com/images/logo-mobile.svg" class="img-fluid partner-logo" alt="MRS" style="max-height: 100px;">
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Our Partners Section End -->
 
     
   
