@@ -99,7 +99,7 @@
     </div>
 
       <div id="formSummaryContainer">
-        <form id="registrationForm">
+        <form id="registrationForm" enctype="multipart/form-data">
           <div class="step step-1">
             <h5 class="text-primary mb-3">Section 1: Business Information</h5>
             
@@ -536,6 +536,56 @@ document.getElementById("downloadPdfBtn").addEventListener("click", () => {
     });
   });
 </script>
+
+<script>
+  $(document).ready(function () {
+    $('#registrationForm').on('submit', function (e) {
+      e.preventDefault(); // prevent default form submission
+
+      const form = document.getElementById('registrationForm');
+      const formData = new FormData(form);
+
+      $.ajax({
+        url: 'process_registration.php', // PHP backend file
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        beforeSend: function () {
+          $('#nextStep').prop('disabled', true).text('Submitting...');
+        },
+        success: function (response) {
+          try {
+            const res = JSON.parse(response);
+            if (res.status === 'success') {
+              alert(res.message);
+              $('#registrationForm')[0].reset(); // clear form
+              // Optionally redirect or go to first step
+            } else {
+              alert('Error: ' + res.message);
+            }
+          } catch (err) {
+            alert('Unexpected response from server.');
+          }
+        },
+        error: function (xhr, status, error) {
+          alert('Something went wrong. Please try again.');
+        },
+        complete: function () {
+          $('#nextStep').prop('disabled', false).text('Next');
+        }
+      });
+    });
+
+    // Optional: handle wizard step if you're on the last step
+    // $('#nextStep').on('click', function () {
+    //   if ($(this).text() === 'Submit') {
+    //     $('#registrationForm').submit();
+    //   }
+    // });
+  });
+</script>
+
 
 
 
