@@ -75,7 +75,7 @@ return new class extends Migration
             $table->string('signature')->nullable();
 
             // Approval
-            $table->enum('status', ['pending', 'approved', 'rejected', 'banned'])->default('pending');
+            // $table->enum('status', ['pending', 'approved', 'rejected', 'banned'])->default('pending');
             $table->timestamp('approved_at')->nullable();
             
             $table->timestamps();

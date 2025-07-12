@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -12,7 +16,11 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $admins = User::whereNot('role', 'admin')->get();
+        return response()->json([
+            'message' => 'List of admin users retrieved successfully.',
+            'data' => $admins,
+        ]);
     }
 
     /**
