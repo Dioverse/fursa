@@ -52,9 +52,11 @@ class User extends Authenticatable
 
     public function isAdmin() { return $this->role === 'admin'; }
 
+    public function isCustomer() { return $this->role === 'customer'; }
+    
     public function isDistributor() { return $this->role === 'distributor'; }
     
-    public function isCustomer() { return $this->role === 'customer'; }
+    public function isApproved() { return $this->status === 'approved'; }
 
     public function distributor()
     {
