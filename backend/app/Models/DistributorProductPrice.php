@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class DistributorProductPrice extends Model
 {
+    /** @use HasFactory<\Database\Factories\DistributorProductPriceFactory> */
+    use HasFactory;
+    
     public function product() {
         return $this->belongsTo(Product::class);
     }

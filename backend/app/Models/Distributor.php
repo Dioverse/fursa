@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Distributor extends Model
 {
+    /** @use HasFactory<\Database\Factories\DistributorFactory> */
+    use HasFactory;
+    
     protected $table = "distributors";
 
     protected $fillable = [

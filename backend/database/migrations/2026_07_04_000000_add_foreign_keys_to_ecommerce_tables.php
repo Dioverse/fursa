@@ -53,9 +53,9 @@ return new class extends Migration {
                   ->onDelete('cascade');
         });
 
-        // discount_user.discount_id → discounts.id
-        // discount_user.user_id → users.id
-        Schema::table('discount_user', function (Blueprint $table) {
+        // discount_users.discount_id → discounts.id
+        // discount_users.user_id → users.id
+        Schema::table('discount_users', function (Blueprint $table) {
             $table->foreign('discount_id')
                   ->references('id')->on('discounts')
                   ->onDelete('cascade');
@@ -84,7 +84,7 @@ return new class extends Migration {
             $table->dropForeign(['product_id']);
         });
         Schema::table('payments', fn (Blueprint $table) => $table->dropForeign(['order_id']));
-        Schema::table('discount_user', function (Blueprint $table) {
+        Schema::table('discount_users', function (Blueprint $table) {
             $table->dropForeign(['discount_id']);
             $table->dropForeign(['user_id']);
         });
