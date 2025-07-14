@@ -27,13 +27,16 @@ Route::middleware(['auth:sanctum','ban'])->group(function () {
     // Admin-only routes
     Route::middleware('role:admin')->group(function () {
         Route::apiResource('users', UserController::class);
+        Route::post('users/update-status/{id}', [UserController::class, 'updateStatus']);
+
+
         Route::apiResource('admin', AdminController::class);
         Route::apiResource('categories', CategoryController::class);
         Route::apiResource('admin-products', ProductController::class);
         Route::apiResource('distributors', DistributorController::class);
         Route::apiResource('orders', OrderController::class)->only(['index', 'show', 'update']);
-        Route::post('approve-distributor/{id}', [DistributorApprovalController::class, 'approve']);
-        Route::post('reject-distributor/{id}', [DistributorApprovalController::class, 'reject']);
+        // Route::post('approve-distributor/{id}', [DistributorApprovalController::class, 'approve']);
+        // Route::post('reject-distributor/{id}', [DistributorApprovalController::class, 'reject']);
     });
 
     // Distributor-only routes
@@ -43,9 +46,9 @@ Route::middleware(['auth:sanctum','ban'])->group(function () {
         Route::apiResource('orders', OrderController::class)->only(['index', 'show']);
     });
 
-    // Customer-Distributor routes
+    // Customer & Distributor routes
     Route::middleware('role:customer,distributor')->group(function () {
-        Route::apiResource('orders', DistCustOrderController::class)->only(['store', 'index', 'show']);
+        Route::apiResource('orders', DistCustOrderController::class)->only(['index', 'show']);
         Route::apiResource('shipping-addresses', ShippingAddressController::class);
     });
 

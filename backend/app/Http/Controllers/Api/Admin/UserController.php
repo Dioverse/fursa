@@ -60,9 +60,28 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function updateStatus(Request $request, string $id)
     {
-        //
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found.'], 404);
+        }
+        
+        $validator = Validator::make($request->all(), [
+            'status' => ['sometimes', 'string', "in:pending,approved,rejected,banned"],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $user->fill($validator->validated());
+        $user->save();
+        return response()->json([
+            'message' => 'User updated successfully.',
+            'data' => $user,
+        ]);
     }
 
     /**

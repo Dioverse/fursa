@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('phone');
             $table->string('password');
-            $table->string('status');
+            $table->enum('status', ['pending', 'approved', 'rejected', 'banned'])->default('pending');
             $table->enum('role', ['admin', 'distributor', 'customer'])->default('customer');
             $table->rememberToken();
             $table->timestamps();
