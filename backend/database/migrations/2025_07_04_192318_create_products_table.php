@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('short_description')->nullable();
             $table->text('description')->nullable();
             $table->decimal('base_price', 10, 2);
+            $table->decimal('distributor_price', 10, 2);
             $table->string('category')->nullable();
             $table->string('image')->nullable();
             $table->integer('stock_quantity')->default(0);

@@ -17,12 +17,13 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         $name = fake()->words(3, true);
+        $base_price = fake()->randomFloat(2, 100, 1000);
         return [
-            // 'category_id' => \App\Models\Category::factory(),
             'name' => $name,
             'short_description' => fake()->sentence,
             'description' => fake()->paragraph,
-            'base_price' => fake()->randomFloat(2, 100, 1000),
+            'base_price' => $base_price,
+            'distributor_price' => $base_price * (1 - (20 + rand() * 10) / 100),
             'category' => fake()->word,
             'image' => fake()->image(word:$name),
             'stock_quantity' => fake()->numberBetween(10, 100),

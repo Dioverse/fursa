@@ -16,10 +16,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        $admins = User::whereNot('role', 'admin')->get();
+        $users = User::whereNot('role', 'admin')->get();
         return response()->json([
-            'message' => 'List of admin users retrieved successfully.',
-            'data' => $admins,
+            'message' => 'Users list retrieved successfully.',
+            'data' => $users,
         ]);
     }
 
@@ -34,9 +34,27 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): JsonResponse
     {
-        //
+        $user = User::find($id);
+
+        if ($user && $user->role === 'distributor') {
+            $type = "Distributor";
+            $user->load('distributor');
+        } elseif ($user->role === 'admin') {
+            $type = "Admin";
+        } else {
+            $type = "Customer";
+        }
+
+        if (!$user) {
+            return response()->json(['message' => "$type not found."], 404);
+        }
+
+        return response()->json([
+            'message' => "$type details retrieved successfully.",
+            'data' => $user,
+        ]);
     }
 
     /**

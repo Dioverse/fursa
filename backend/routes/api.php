@@ -29,7 +29,7 @@ Route::middleware(['auth:sanctum','ban'])->group(function () {
         Route::apiResource('users', UserController::class);
         Route::apiResource('admin', AdminController::class);
         Route::apiResource('categories', CategoryController::class);
-        Route::apiResource('products', ProductController::class);
+        Route::apiResource('admin-products', ProductController::class);
         Route::apiResource('distributors', DistributorController::class);
         Route::apiResource('orders', OrderController::class)->only(['index', 'show', 'update']);
         Route::post('approve-distributor/{id}', [DistributorApprovalController::class, 'approve']);

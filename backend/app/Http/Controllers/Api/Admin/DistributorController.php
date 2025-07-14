@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class DistributorController extends Controller
 {
@@ -12,7 +13,11 @@ class DistributorController extends Controller
      */
     public function index()
     {
-        //
+        $distributors = User::where('role', 'distributor')->get();
+        return response()->json([
+            'message' => 'Distributors list retrieved successfully.',
+            'data' => $distributors,
+        ]);
     }
 
     /**
