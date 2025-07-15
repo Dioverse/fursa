@@ -6,7 +6,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Mail\UserStatusChange;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -69,15 +71,21 @@ class UserController extends Controller
         }
         
         $validator = Validator::make($request->all(), [
-            'status' => ['sometimes', 'string', "in:pending,approved,rejected,banned"],
+            'status' => ['required', 'string', "in:approved,rejected,banned"],
+            'reason' => ['sometimes']
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
+        $status = $request->status;
+        $reason = $request->reason;
 
-        $user->fill($validator->validated());
+        $user->fill(['status'=>$status]);
         $user->save();
+
+        Mail::to($user->email)->queue(new UserStatusChange($user, $status, $reason));
+
         return response()->json([
             'message' => 'User updated successfully.',
             'data' => $user,

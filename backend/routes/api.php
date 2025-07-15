@@ -19,10 +19,22 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('register', [AuthController::class, 'register']);
+
+
+
+
+
 Route::post('login', [AuthController::class, 'login']);
-Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::middleware(['auth:sanctum','ban'])->group(function () {
+    Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])->middleware('signed')->name('verification.verify');
+    // Resend verification email
+    Route::post('/email/verification-notification', [AuthController::class, 'verificationSend'])->middleware('throttle:6,1')->name('verification.send');
+});
+
+Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
+    Route::post('logout', [AuthController::class, 'logout']);
 
     // Admin-only routes
     Route::middleware('role:admin')->group(function () {

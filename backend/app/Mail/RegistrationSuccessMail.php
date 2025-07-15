@@ -10,50 +10,36 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class UserLoggedInNotification extends Mailable
+class RegistrationSuccessMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $user;
-    public $loginTime;
-    public $ipAddress;
-
     /**
      * Create a new message instance.
-     *
-     * @param User $user The user who logged in.
-     * @param string $ipAddress The IP address from which the login occurred.
-     * @param string $loginTime The time of the login (e.g., Carbon::now()->toDateTimeString()).
-     * @return void
      */
-    public function __construct(User $user, string $ipAddress, string $loginTime)
+    public function __construct(User $user)
     {
         $this->user = $user;
-        $this->loginTime = $loginTime;
-        $this->ipAddress = $ipAddress;
     }
 
     /**
      * Get the message envelope.
-     *
-     * @return \Illuminate\Mail\Mailables\Envelope
      */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Security Alert: New Login to Your Account',
+            subject: 'Registration Successful :: ' . config('app.name'),
         );
     }
 
     /**
      * Get the message content definition.
-     *
-     * @return \Illuminate\Mail\Mailables\Content
      */
     public function content(): Content
     {
         return new Content(
-            view: 'email.new_login',
+            view: 'email.register',
         );
     }
 

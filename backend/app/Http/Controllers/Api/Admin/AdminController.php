@@ -46,13 +46,14 @@ class AdminController extends Controller
 
         // Force role to 'admin' (no role input allowed)
         $user = User::create([
-            'first_name'=> $request->first_name,
-            'last_name' => $request->last_name,
-            'email'     => $request->email,
-            'phone'     => $request->phone,
-            'password'  => Hash::make($request->password),
-            'role'      => 'admin',
-            'status'    => 'approved',
+            'first_name'        => $request->first_name,
+            'last_name'         => $request->last_name,
+            'email'             => $request->email,
+            'phone'             => $request->phone,
+            'password'          => Hash::make($request->password),
+            'role'              => 'admin',
+            'status'            => 'approved',
+            'email_verified_at' => now()
         ]);
 
         return response()->json([
