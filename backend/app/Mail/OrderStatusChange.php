@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -15,17 +16,23 @@ class OrderStatusChange extends Mailable
     use Queueable, SerializesModels;
 
     public $order;
+    public $items;
     public $status;
     public $message;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Order $order, $status, $message)
+    public function __construct(Order $order, $status)
     {
         $this->order = $order;
         $this->status = $status;
-        $this->message = $message;
+        
+        $this->items = OrderItem::with('products:name,short_description,image')->where("order_id", $order->id)->get();
+        
+        if ($status == "") {
+            
+        }
     }
 
     /**
@@ -33,7 +40,7 @@ class OrderStatusChange extends Mailable
      */
     public function envelope(): Envelope
     {
-        $subject = "Your order with ID: $this->order->order_id has been $this->status";
+        $subject = "Order Update :: " . config('app.name');
         return new Envelope(
             subject: $subject,
         );
@@ -45,7 +52,10 @@ class OrderStatusChange extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'email.status-update',
+            view: 'email.order-status-update',
+            with: [
+                "items"     => $this->items
+            ]
         );
     }
 

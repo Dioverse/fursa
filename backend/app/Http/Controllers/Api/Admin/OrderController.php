@@ -121,12 +121,16 @@ class OrderController extends Controller
 
         $order->with('user:first_name,email');
 
+        return response()->json([
+            'order' => $order,
+            'status' => $status,
+        ]);
         // Mail::to($order->email)->queue(new OrderStatusChange($order->user->email, $status, $order, $message));
 
-        return response()->json([
-            'message' => 'User updated successfully.',
-            'data' => ,
-        ]);
+        // return response()->json([
+        //     'message' => 'User updated successfully.',
+        //     'data' => $order,
+        // ]);
     }
 
 
