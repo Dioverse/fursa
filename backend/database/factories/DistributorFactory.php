@@ -61,7 +61,6 @@ class DistributorFactory extends Factory
             'id_of_contact' => null,
             'referee_letter' => null,
             'signature' => null,
-            'status' => 'pending',
             'approved_at' => null,
         ];
 

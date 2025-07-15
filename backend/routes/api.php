@@ -46,13 +46,13 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
         Route::apiResource('categories', CategoryController::class);
         Route::apiResource('admin-products', ProductController::class);
         Route::apiResource('distributors', DistributorController::class);
-        Route::apiResource('orders', OrderController::class)->only(['index', 'show', 'update']);
+        Route::apiResource('admin-orders', OrderController::class)->only(['index', 'show', 'update']);
         // Route::post('approve-distributor/{id}', [DistributorApprovalController::class, 'approve']);
         // Route::post('reject-distributor/{id}', [DistributorApprovalController::class, 'reject']);
     });
 
     // Distributor-only routes
-    Route::middleware('role:distributor')->group(function () {
+    Route::middleware('role:distributor')->prefix('distributor')->group(function () {
         Route::get('my-profile', [ProfileController::class, 'show']);
         Route::put('my-profile', [ProfileController::class, 'update']);
         Route::apiResource('orders', OrderController::class)->only(['index', 'show']);

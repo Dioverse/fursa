@@ -13,6 +13,12 @@ class Order extends Model
     public function items() {
         return $this->hasMany(OrderItem::class);
     }
+
+    public function shippingAddress()
+    {
+        return $this->belongsTo(ShippingAddress::class, 'shipping_address_id');
+    }
+    
     public function user() {
         return $this->belongsTo(User::class);
     }

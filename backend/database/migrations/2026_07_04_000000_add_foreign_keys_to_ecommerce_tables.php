@@ -29,9 +29,13 @@ return new class extends Migration {
         });
 
         // orders.user_id → users.id
+        // orders.shipping_address_id → shipping_addresses.id
         Schema::table('orders', function (Blueprint $table) {
             $table->foreign('user_id')
                   ->references('id')->on('users');
+
+            $table->foreign('shipping_address_id')
+                  ->references('id')->on('shipping_addresses');
         });
 
         // order_items.order_id → orders.id
@@ -78,7 +82,10 @@ return new class extends Migration {
         Schema::table('distributors', fn (Blueprint $table) => $table->dropForeign(['user_id']));
         Schema::table('products', fn (Blueprint $table) => $table->dropForeign(['category_id']));
         Schema::table('distributor_product_prices', fn (Blueprint $table) => $table->dropForeign(['product_id']));
-        Schema::table('orders', fn (Blueprint $table) => $table->dropForeign(['user_id']));
+        Schema::table('orders', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+            $table->dropForeign(['shipping_address_id']);
+        });
         Schema::table('order_items', function (Blueprint $table) {
             $table->dropForeign(['order_id']);
             $table->dropForeign(['product_id']);

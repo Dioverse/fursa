@@ -193,6 +193,11 @@ class AuthController extends Controller
 
     public function emailVerify(EmailVerificationRequest $request): JsonResponse
     {
+        // Check if the authenticated user's email is already verified
+        if ($request->user()->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email already verified.'], 400);
+        }
+        
         $request->fulfill(); // Mark user as verified
         return response()->json([
             'message' => 'Email verified successfully.'
