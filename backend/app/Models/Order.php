@@ -9,6 +9,15 @@ class Order extends Model
 {
     /** @use HasFactory<\Database\Factories\OrderFactory> */
     use HasFactory;
+
+    public $table = 'orders';
+    public $fillable = [
+        'user_id',
+        'shipping_address_id',
+        'order_id',
+        'total_amount',
+        'status'
+    ];
     
     public function items() {
         return $this->hasMany(OrderItem::class);

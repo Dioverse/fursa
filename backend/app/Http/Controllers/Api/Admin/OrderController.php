@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
+use App\Mail\OrderStatusChange;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
@@ -22,7 +23,7 @@ class OrderController extends Controller
         
         $query->with([
             'user:id,first_name,last_name,email', // Select specific user columns
-            'shippingAddress:address_line1,city,state' // Load all columns for shipping address, adjust if needed
+            'shippingAddress:address_line_one,city,state' // Load all columns for shipping address, adjust if needed
         ])->withCount('items'); // Count related order items
 
         // --- Filtering Options ---
@@ -90,9 +91,18 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): JsonResponse
     {
-        //
+        $order = Order::with(['user:id,first_name,last_name,email,role','shippingAddress'])->find($id);
+
+        if (!$order) {
+            return response()->json(['message' => "Order not found."], 404);
+        }
+
+        return response()->json([
+            'message' => "Order details retrieved successfully.",
+            'data' => $order,
+        ]);
     }
 
     /**
@@ -107,32 +117,24 @@ class OrderController extends Controller
         }
         
         $validator = Validator::make($request->all(), [
-            'status' => ['required', 'string', "in:approved,rejected,banned"],
-            'message' => ['sometimes']
+            'status' => ['required', 'string', "in:shipped,out for delivery,delivered"]
         ]);
+
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
+
         $status = $request->status;
-        $message = $request->message;
 
         $order->fill(['status'=>$status]);
+        
+        Mail::to($order->user->email)->queue(new OrderStatusChange($order, $status));   
         $order->save();
-
-        $order->with('user:first_name,email');
-
         return response()->json([
-            'order' => $order,
-            'status' => $status,
+            'message' => 'Order updated successfully.',
+            'data' => $order,
         ]);
-        // Mail::to($order->email)->queue(new OrderStatusChange($order->user->email, $status, $order, $message));
-
-        // return response()->json([
-        //     'message' => 'User updated successfully.',
-        //     'data' => $order,
-        // ]);
     }
-
 
     /**
      * Remove the specified resource from storage.

@@ -46,7 +46,10 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
         Route::apiResource('categories', CategoryController::class);
         Route::apiResource('admin-products', ProductController::class);
         Route::apiResource('distributors', DistributorController::class);
-        Route::apiResource('admin-orders', OrderController::class)->only(['index', 'show', 'update']);
+
+        Route::apiResource('admin-orders', OrderController::class)->only(['index', 'show', 'updateStatus']);
+        Route::post('admin-orders/update-status/{id}', [OrderController::class, 'updateStatus']);
+
         // Route::post('approve-distributor/{id}', [DistributorApprovalController::class, 'approve']);
         // Route::post('reject-distributor/{id}', [DistributorApprovalController::class, 'reject']);
     });
@@ -55,7 +58,6 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
     Route::middleware('role:distributor')->prefix('distributor')->group(function () {
         Route::get('my-profile', [ProfileController::class, 'show']);
         Route::put('my-profile', [ProfileController::class, 'update']);
-        Route::apiResource('orders', OrderController::class)->only(['index', 'show']);
     });
 
     // Customer & Distributor routes

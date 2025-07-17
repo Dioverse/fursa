@@ -110,8 +110,10 @@
 <body>
     <div class="container">
         <div class="content">
-            <p>Hello {{ $user->first_name ?? $user->email }},</p>
-            <p>{{ "Your order with ID: {$this->order->order_id} has been {$this->status}" }}</p>
+            <p>Hello {{ $order->user->first_name ?? $order->user->email }},</p>
+            <p>This notification is to inform you that {{ htmlspecialchars($messageText) }}</p>
+            
+            <p>Shipping Address: {{ $shippingAdd->address_line_one }} {{ $shippingAdd->address_line_two }}, {{ $shippingAdd->city }}, {{ $shippingAdd->state }}.</p>
 
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f4f4f4;">
                 <tr>
@@ -139,18 +141,19 @@
                                     <tr>
                                         <td><img src="{{ $item->product->image }}" width="200" alt=""></td>
                                         <td>{{ $item->product->name }}</td>
-                                        <td>{{ $item->product->unit_price }} * {{ $item->product->quantity }}</td>
+                                        <td>{{ $item->unit_price }} * {{ $item->quantity }}</td>
                                         <td>
                                             @php
-                                                $sub_total = $item->product->unit_price * $item->product->quantity;
-                                                $tot_arr += $sub_total;
+                                                $sub_total = $item->unit_price * $item->quantity;
+                                                $total += $sub_total;
                                             @endphp
+                                            {{ $sub_total }}
                                         </td>
                                     </tr>
                                 @endforeach
-                                <tr>            
-                                    <th>Total</th>
-                                    <td>{{ $total }}</td>
+                                <tr>
+                                    <th>Total:</th>
+                                    <th colspan="4" align="right">{{ $total }}</th>
                                 </tr>
                             </tbody>
                         </table>

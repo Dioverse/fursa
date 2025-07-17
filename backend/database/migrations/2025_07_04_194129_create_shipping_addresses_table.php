@@ -16,8 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('full_name');
             $table->string('phone');
-            $table->string('address_line1');
-            $table->string('address_line2')->nullable();
+            $table->string('address_line_one');
+            $table->string('address_line_two')->nullable();
             $table->string('city');
             $table->string('state');
             $table->string('postal_code')->nullable();

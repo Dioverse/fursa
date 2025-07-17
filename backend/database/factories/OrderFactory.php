@@ -22,7 +22,7 @@ class OrderFactory extends Factory
             'shipping_address_id' => \App\Models\ShippingAddress::factory(),
             'order_id' => Str::uuid()->toString(),
             'total_amount' => fake()->randomFloat(2, 1000, 10000),
-            'status' => fake()->randomElement(['pending', 'paid', 'shipped', 'delivered', 'cancelled']),
+            'status' => fake()->randomElement(['pending', 'shipped', 'out for delivery', 'delivered', 'cancelled']),
         ];
     }
 }

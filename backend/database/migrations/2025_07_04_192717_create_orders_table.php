@@ -18,7 +18,7 @@ return new class extends Migration
 
             $table->string('order_id');
             $table->decimal('total_amount', 12, 2);
-            $table->enum('status', ['pending', 'shipped', 'delivered', 'cancelled'])->default('pending');
+            $table->enum('status', ['pending', 'shipped', 'out for delivery', 'delivered', 'cancelled'])->default('pending');
             $table->timestamps();
         });
     }
