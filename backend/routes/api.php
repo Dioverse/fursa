@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Controllers\Api\Admin\OrderController;
+use App\Http\Controllers\Api\Admin\ContentController;
+use App\Http\Controllers\Api\Admin\PaymentController;
 use App\Http\Controllers\Api\Admin\ProductController;
 use App\Http\Controllers\Api\Admin\CategoryController;
 use App\Http\Controllers\Api\ShippingAddressController;
@@ -20,11 +22,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('register', [AuthController::class, 'register']);
-
-
-
-
-
+Route::get('login', function () {
+    return response()->json([
+        'message' => "Unauthenticated"
+    ], 401);
+})->name("login");
 Route::post('login', [AuthController::class, 'login']);
 
 Route::middleware(['auth:sanctum','ban'])->group(function () {
@@ -40,6 +42,8 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::apiResource('users', UserController::class);
         Route::post('users/update-status/{id}', [UserController::class, 'updateStatus']);
+        
+        Route::apiResource('content', ContentController::class);
 
 
         Route::apiResource('admin', AdminController::class);
@@ -47,11 +51,11 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
         Route::apiResource('admin-products', ProductController::class);
         Route::apiResource('distributors', DistributorController::class);
 
-        Route::apiResource('admin-orders', OrderController::class)->only(['index', 'show', 'updateStatus']);
+        Route::apiResource('admin-orders', OrderController::class)->only(['index', 'show']);
         Route::post('admin-orders/update-status/{id}', [OrderController::class, 'updateStatus']);
 
-        // Route::post('approve-distributor/{id}', [DistributorApprovalController::class, 'approve']);
-        // Route::post('reject-distributor/{id}', [DistributorApprovalController::class, 'reject']);
+        Route::apiResource('admin-payments', PaymentController::class)->only(['index', 'show']);
+        Route::post('admin-payments/update-status/{id}', [PaymentController::class, 'updateStatus']);
     });
 
     // Distributor-only routes

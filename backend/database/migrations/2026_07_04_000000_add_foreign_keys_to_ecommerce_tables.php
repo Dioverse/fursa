@@ -51,9 +51,14 @@ return new class extends Migration {
         });
 
         // payments.order_id → orders.id
+        // payments.user_id → users.id
         Schema::table('payments', function (Blueprint $table) {
             $table->foreign('order_id')
                   ->references('id')->on('orders')
+                  ->onDelete('cascade');
+
+            $table->foreign('user_id')
+                  ->references('id')->on('users')
                   ->onDelete('cascade');
         });
 
@@ -74,6 +79,27 @@ return new class extends Migration {
             $table->foreign('user_id')
                   ->references('id')->on('users')
                   ->onDelete('cascade');
+        });
+
+        Schema::table('carts', function (Blueprint $table) {
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
+        });
+
+        // cart_items.product_id → products.id
+        // cart_items.user_id → users.id
+        Schema::table('cart_items', function (Blueprint $table) {
+            $table->foreign('cart_id')
+                ->references('id')
+                ->on('carts')
+                ->onDelete('cascade');
+
+            $table->foreign('product_id')
+                ->references('id')
+                ->on('products')
+                ->onDelete('cascade');
         });
     }
 
@@ -96,5 +122,10 @@ return new class extends Migration {
             $table->dropForeign(['user_id']);
         });
         Schema::table('shipping_addresses', fn (Blueprint $table) => $table->dropForeign(['user_id']));
+        Schema::table('carts', fn (Blueprint $table) => $table->dropForeign(['user_id']));
+        Schema::table('cart_items', function (Blueprint $table) {
+            $table->dropForeign(['cart_id']);
+            $table->dropForeign(['product_id']);
+        });
     }
 };

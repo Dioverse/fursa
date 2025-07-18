@@ -18,8 +18,10 @@ class PaymentFactory extends Factory
     {
         return [
             'order_id' => \App\Models\Order::factory(),
+            'user_id' => \App\Models\User::factory(),
             'status' => fake()->randomElement(['pending', 'successful', 'failed']),
             'payment_gateway' => fake()->randomElement(['Paystack', 'Flutterwave']),
+            'payment_method' => fake()->randomElement(['card', 'transfer']),
             'transaction_reference' => strtoupper(fake()->bothify('TXN###??')),
             'amount' => fake()->randomFloat(2, 1000, 10000),
             'paid_at' => now(),

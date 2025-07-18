@@ -2,11 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Cart;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Product;
+use App\Models\CartItem;
 use App\Models\Category;
 use App\Models\Discount;
 use App\Models\OrderItem;
@@ -77,5 +79,23 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $customers->random()->id,
             ]);
         }
+
+        // Carts + cart Items for Customers
+        $customers->each(function ($customer) use ($products) {
+            $cart = Cart::factory()->create(['user_id' => $customer->id]);
+
+            // Get a collection of unique product IDs
+            $uniqueProductIds = $products->shuffle()->take(6)->pluck('id');
+
+            // Create CartItems for each unique product ID
+            $uniqueProductIds->each(function ($productId) use ($cart) {
+                CartItem::factory()->create([
+                    'cart_id' => $cart->id,
+                    'product_id' => $productId,
+                    'quantity' => rand(1, 5), // Example: random quantity
+                ]);
+            });
+        });
+        
     }
 }

@@ -28,9 +28,13 @@ class OrderController extends Controller
 
         // --- Filtering Options ---
 
-        // Filter by user_id
-        if ($request->has('user_id') && is_numeric($request->input('user_id'))) {
-            $query->where('user_id', $request->input('user_id'));
+        // Filter by user first_name or last_name
+        if ($request->has('user_name_search') && is_string($request->input('user_name_search'))) {
+            $searchTerm = '%' . $request->input('user_name_search') . '%';
+            $query->whereHas('user', function ($q) use ($searchTerm) {
+                $q->where('first_name', 'LIKE', $searchTerm)
+                  ->orWhere('last_name', 'LIKE', $searchTerm);
+            });
         }
 
         // Filter by status

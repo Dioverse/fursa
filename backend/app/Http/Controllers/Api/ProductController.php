@@ -6,6 +6,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
@@ -30,19 +31,19 @@ class ProductController extends Controller
         }
 
         // Filter by base_price range
+        // Determine price field based on user role (if authenticated)
+        $price_field = 'base_price';
+        $user = auth('sanctum')->user();
+
+        if ($user && $user->role == 'distributor') {
+            $price_field = 'distributor_price';
+        }
+        
         if ($request->has('min_price') && is_numeric($request->input('min_price'))) {
-            $query->where('base_price', '>=', $request->input('min_price'));
+            $query->where($price_field, '>=', $request->input('min_price'));
         }
         if ($request->has('max_price') && is_numeric($request->input('max_price'))) {
-            $query->where('base_price', '<=', $request->input('max_price'));
-        }
-
-        // Filter by stock_quantity range
-        if ($request->has('min_stock') && is_numeric($request->input('min_stock'))) {
-            $query->where('stock_quantity', '>=', $request->input('min_stock'));
-        }
-        if ($request->has('max_stock') && is_numeric($request->input('max_stock'))) {
-            $query->where('stock_quantity', '<=', $request->input('max_stock'));
+            $query->where($price_field, '<=', $request->input('max_price'));
         }
 
         // --- Filter by Tags ---
