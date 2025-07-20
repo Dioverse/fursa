@@ -28,6 +28,15 @@ Route::get('login', function () {
     ], 401);
 })->name("login");
 Route::post('login', [AuthController::class, 'login']);
+Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('reset-password', [AuthController::class, 'resetPassword']);
+
+Route::get('reset-password/{token}', function (string $token, Request $request) {
+    
+    $frontendUrl = config('app.frontend_url').'/reset-password';
+
+    return redirect()->away($frontendUrl . '?token=' . $token . '&email=' . $request->email);
+})->name('password.reset');
 
 Route::middleware(['auth:sanctum','ban'])->group(function () {
     Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])->middleware('signed')->name('verification.verify');

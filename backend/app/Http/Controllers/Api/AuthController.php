@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use Exception;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Distributor;
+use App\Rules\PasswordCheck;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -15,9 +17,13 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\RegistrationSuccessMail;
 use App\Mail\UserLoggedInNotification;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Validation\Rules\Password as PasswordRule;
+use Symfony\Component\Mailer\Exception\TransportException;
 
 class AuthController extends Controller
 {
@@ -175,7 +181,7 @@ class AuthController extends Controller
         }
 
         // Send Registration Success Email (your custom mail)
-        Mail::to($user->email)->send(new RegistrationSuccessMail($user));
+        Mail::to($user->email)->queue(new RegistrationSuccessMail($user));
 
         // Trigger Laravel's built-in email verification notification
         // This will send the verification email if the User model implements MustVerifyEmail
@@ -216,6 +222,166 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Verification link sent!']);
     }
+
+
+    public function forgotPassword(Request $request) {
+        $validatedData = Validator::make($request->all(['email']),[
+            'email' => "required|email|exists:users,email",
+        ],[
+            'email.required'=>'A valid email address is required.',
+            'email.email'=>'Provide a valid email address.',
+            'email.exists'=>'Account not found, check and try again.'
+        ]);
+        if ($validatedData->fails()) {
+            $arr = [
+                    'status'=> 'false',
+                    'data' => [
+                        'message' => 'Validation failed',
+                        'error' => $validatedData->errors(),
+                    ]
+                ];
+        } else {
+            try {
+                $response = Password::sendResetLink($request->only('email'));
+                switch ($response) {
+                    case Password::RESET_LINK_SENT:
+                        return response()->json(['status'=>'true','data'=>["message"=>"An email has been sent to your address, Please check your inbox for the password reset button."]],200);
+                    case Password::INVALID_USER:
+                        return response()->json(['status'=>'false','data'=>['message'=>"Account not found, check and try again."]],401);
+                    default:
+                        return response()->json(["status"=> "false","data"=>["message"=> "An error occured, please try again"]],400);
+                }
+            } catch (TransportException $ex) {
+                $arr = array("status" => "false", "message" => "An error occured, please try again", "data" => ['error' => $ex->getMessage()]);
+            } catch (Exception $ex) {
+                $arr = array("status" => "false", "message" => "An error occured, please try again", "data" => ['error' => $ex->getMessage()]);
+            }
+        }
+        return response()->json($arr,401);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        try {
+            $request->validate([
+                'token' => 'required',
+                'email' => 'required|email|exists:users,email',
+                'password' => 'required|confirmed|min:8',
+            ], [
+                'token.required' => 'Password reset token is missing.',
+                'email.required' => 'Email is required.',
+                'email.email' => 'Provide a valid email address.',
+                'email.exists' => 'Account not found.',
+                'password.required' => 'New password is required.',
+                'password.confirmed' => 'Password confirmation does not match.',
+                'password.min' => 'Password must be at least 8 characters.',
+            ]);
+
+            $response = Password::broker()->reset(
+                $request->only('email', 'password', 'password_confirmation', 'token'),
+                function ($user, $password) {
+                    $user->forceFill([
+                        'password' => Hash::make($password),
+                    ])->save();
+                    // ])->setRememberToken(null)->save();
+
+                    event(new PasswordReset($user));
+                }
+            );
+
+            switch ($response) {
+                case Password::PASSWORD_RESET:
+                    return response()->json([
+                        'status' => true,
+                        'data' => [
+                            'message' => 'Your password has been reset successfully.'
+                        ]
+                    ], 200);
+                case Password::INVALID_TOKEN:
+                    return response()->json([
+                        'status' => false,
+                        'data' => [
+                            'message' => 'This password reset token is invalid.'
+                        ]
+                    ], 400);
+                case Password::INVALID_USER:
+                    return response()->json([
+                        'status' => false,
+                        'data' => [
+                            'message' => 'The provided email is invalid.'
+                        ]
+                    ], 400);
+                default:
+                    return response()->json([
+                        'status' => false,
+                        'data' => [
+                            'message' => 'An error occurred during password reset. Please try again.'
+                        ]
+                    ], 400);
+            }
+        } catch (ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'data' => [
+                    'message' => 'Validation failed',
+                    'errors' => $e->errors()
+                ]
+            ], 422);
+        } catch (Exception $ex) {
+            return response()->json([
+                'status' => false,
+                'data' => [
+                    'message' => 'An unexpected error occurred during password reset.',
+                    'error' => $ex->getMessage()
+                ]
+            ], 500);
+        }
+    }
+
+    // public function updatePassword(Request $request) {
+    //     $validatedData = Validator::make($request->all(['current_password','password','password_confirmation']), [
+    //         'current_password' => ['required', new PasswordCheck],
+    //         'password' => ['required', 'confirmed', PasswordRule::min(6)->mixedCase()->numbers()->symbols()],
+    //         'password_confirmation' => 'required|min:6|same:password',
+    //     ],[
+    //         'current_password.required' => 'Your current password is required!',
+    //         'password.required' => 'Password is required for security!',
+    //         'password.confirmed' => 'Password & confirm password should be same!',
+    //         'password.min' => 'Password should have at least 6 characters',
+    //         'password_confirmation.required' => 'Password confirmation is required!',
+    //         'password_confirmation.min' => 'Confirm password should have at least 6 characters!',
+    //         'password_confirmation.same' => 'Confirm password does not match password!',
+    //     ]);
+
+    //     if ($validatedData->fails()) {
+    //         return response()->json([
+    //             'status'=>'false',
+    //             'data' => [
+    //                 'message' => "Validation failed",
+    //                 'error' => $validatedData->errors()
+    //             ]
+    //         ],400);
+    //     }
+    
+    //     $user = Auth::user();
+    
+    //     if ($user->update(['password' => Hash::make($request->password)])) {
+    //         return response()->json([
+    //             'status'=> 'true',
+    //             'data' => [
+    //                 'message'=> 'Password reset successfully',
+    //                 'user'=> Auth::user()->refresh()
+    //             ]
+    //         ],200);
+    //     }
+
+    //     return response()->json([
+    //         'status'=> 'false',
+    //         'data' => [
+    //             'message'=> 'Password reset failed',
+    //         ]
+    //     ],400);
+    // }
 
     public function logout(Request $request): JsonResponse
     {
