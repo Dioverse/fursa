@@ -101,16 +101,8 @@ function FeatureProduct() {
                     <div className="container">
                         <div className="row">
                             <div className="col-lg-12">
-                                <div className="title-area-between">
-                                    <h2 className="title-left">Featured Grocery</h2>
-                                    <div className="next-prev-swiper-wrapper">
-                                        <div className="swiper-button-prev">
-                                            <i className="fa-regular fa-chevron-left" />
-                                        </div>
-                                        <div className="swiper-button-next">
-                                            <i className="fa-regular fa-chevron-right" />
-                                        </div>
-                                    </div>
+                                <div className="title-area-center mb--30 mt--30 text-dark">
+                                    <h2 className="text-center">Popular Now</h2>
                                 </div>
                             </div>
                         </div>

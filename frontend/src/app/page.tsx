@@ -1,4 +1,5 @@
 import BannerOne from "@/components/banner/BannerOne";
+import AboutBanner from "@/components/banner/AboutBanner";
 import FeatureOne from "@/components/feature/FeatureOne";
 import HeaderOne from "@/components/header/HeaderOne";
 import DiscountProduct from "@/components/product/DiscountProduct";
@@ -11,6 +12,8 @@ import FooterOne from "@/components/footer/FooterOne";
 import { CartProvider } from "@/components/header/CartContext";
 import { WishlistProvider } from "@/components/header/WishlistContext";
 import { ToastContainer, toast } from 'react-toastify';
+import CategoryBb from '../components/banner/CategoryBb';
+import AboutOne from "@/components/about/AboutOne";
 
 
 export default function Home() {
@@ -21,10 +24,15 @@ export default function Home() {
           
         <ToastContainer position="top-right" autoClose={3000} />
           <HeaderOne />
-          <BannerOne />
-          <FeatureOne />
+          {/* <BannerOne /> */}
+          <AboutBanner />
+          {/* <CategoryBb /> */}
+          <CategoryBb />
+          {/* <FeatureOne /> */}
           <FeatureProduct />
-          <DiscountProduct />
+          {/* About section */}
+          <AboutOne/>
+          {/* <DiscountProduct /> */}
           <WeeklyBestSelling />
           <FeatureDiscount />
           <TrandingProduct />

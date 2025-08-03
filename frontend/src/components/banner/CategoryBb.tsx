@@ -11,29 +11,36 @@ import "swiper/css";
 import "swiper/css/navigation";
 
 const categories = [
-  { img: "/assets/images/category/01.png", name: "Organic Vegetable" },
-  { img: "/assets/images/category/02.png", name: "Organic Vegetable" },
-  { img: "/assets/images/category/03.png", name: "Organic Vegetable" },
-  { img: "/assets/images/category/04.png", name: "Organic Vegetable" },
-  { img: "/assets/images/category/05.png", name: "Organic Vegetable" },
-  { img: "/assets/images/category/06.png", name: "Organic Vegetable" },
-  { img: "/assets/images/category/07.png", name: "Organic Vegetable" },
-  { img: "/assets/images/category/08.png", name: "Organic Vegetable" },
-  { img: "/assets/images/category/09.png", name: "Organic Vegetable" },
-  { img: "/assets/images/category/10.png", name: "Organic Vegetable" },
-  { img: "/assets/images/category/06.png", name: "Organic Vegetable" },
+  { img: "/assets/images/category/01.png", name: "Motto Oil" },
+  { img: "/assets/images/category/02.png", name: "Heavy Duty Oil" },
+  { img: "/assets/images/category/03.png", name: "Industrial and hydraulic" },
+  { img: "/assets/images/category/04.png", name: "Gear Oil" },
+  { img: "/assets/images/category/05.png", name: "Antifreeze & Coolant" },
+  { img: "/assets/images/category/06.png", name: "Antifreeze & Coolant" },
+  { img: "/assets/images/category/07.png", name: "Greases" }
 ];
 
 function CategoryBannerBottom() {
   return (
     <div className="rts-caregory-area-one">
+
       <div className="container">
+          <div className="row">
+              <div className="col-lg-12">
+                  <div className="title-area-center mb--30 mt--30 text-dark">
+                      <h2 className="text-center">Categories</h2>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div className="container w-95">
         <div className="row">
           <div className="col-lg-12">
             <div className="category-area-main-wrapper-one">
               <Swiper
                 modules={[Navigation, Autoplay]}
-                spaceBetween={12}
+                spaceBetween={30}
                 slidesPerView={10}
                 loop={true}
                 speed={1000}

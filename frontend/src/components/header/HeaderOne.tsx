@@ -138,7 +138,7 @@ function HeaderOne() {
         <>
             <div className="rts-header-one-area-one">
                 {/* top bar */}
-                <div className="header-top-area">
+                {/* <div className="header-top-area">
                     <div className="container">
                         <div className="row">
                             <div className="col-lg-12">
@@ -158,7 +158,7 @@ function HeaderOne() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
 
                 {/* mid bar */}
                 {/* <div className="header-mid-one-wrapper">
@@ -208,7 +208,7 @@ function HeaderOne() {
                             <div className="col-lg-12">
                                 <div className="logo-search-category-wrapper">
                                     <a href="/" className="logo-area">
-                                        <img src="/assets/images/logo/logo-01.svg" alt="logo-main" className="logo" />
+                                        <img src="/assets/images/logo/logo-03.svg" alt="logo-main" className="logo" />
                                     </a>
                                     <div className="category-search-wrapper">
                                         

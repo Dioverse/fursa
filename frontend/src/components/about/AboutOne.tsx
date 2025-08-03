@@ -10,43 +10,21 @@ function ComponentName() {
       <div className="row align-items-center">
         <div className="col-lg-4">
           <div className="thumbnail-left">
-            <img src="assets/images/about/02.jpg" alt="" />
+            <img src="assets/images/about/03.png" alt="" />
           </div>
         </div>
         <div className="col-lg-8 pl--60 pl_md--10 pt_md--30 pl_sm--10 pt_sm--30">
           <div className="about-content-area-1">
             <h2 className="title">
-              Your Destination for Quality Produce <br /> and Pantry Essentials
+              About Us
             </h2>
             <p className="disc">
-              Venenatis augue consequat class magnis sed purus, euismod ligula
-              nibh congue quis vestibulum nostra, cubilia varius velit vitae
-              rhoncus. Turpis malesuada fringilla urna dui est torquent aliquet,
-              mi nec fermentum placerat nisi venenatis sapien, mattis nunc
-              nullam rutrum feugiat porta. Pharetra mi nisl consequat semper
-              quam litora aenean eros conubia molestie erat, et cursus integer
-              rutrum sollicitudin auctor curae inceptos senectus sagittis est,
+              Fursa Energy is a Nigerian-owned energy solutions company and the official national super distributor of MRS Lubricants.
             </p>
-            <div className="check-main-wrapper">
-              <div className="single-check-area">
-                Elementum sociis rhoncus aptent auctor urna justo
-              </div>
-              <div className="single-check-area">
-                Habitasse venenatis gravida nisl, sollicitudin posuere
-              </div>
-              <div className="single-check-area">
-                Uisque cum convallis nostra in sapien nascetur, netus
-              </div>
-              <div className="single-check-area">
-                Class nunc aliquet nulla dis senectus lputate porta
-              </div>
-              <div className="single-check-area">
-                Aenean gravida a est ante nisl nostra dui hendrerit
-              </div>
-              <div className="single-check-area">
-                Bibendum venenatis dignissim non himenaeos eget
-              </div>
-            </div>
+            <p className="disc">
+              With access to one of Africa's largest blending plants, Fursa offers a range of premium-grade lubricants, greases, and specialty oils tailored for industrial and automotive applications.
+            </p>
+            <button className="rts-btn btn-primary rts-btn-medium">Learn More</button>
           </div>
         </div>
       </div>
