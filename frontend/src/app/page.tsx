@@ -1,13 +1,13 @@
 import BannerOne from "@/components/banner/BannerOne";
-import AboutBanner from "@/components/banner/AboutBanner";
-import FeatureOne from "@/components/feature/FeatureOne";
+// import AboutBanner from "@/components/banner/AboutBanner";
+// import FeatureOne from "@/components/feature/FeatureOne";
 import HeaderOne from "@/components/header/HeaderOne";
-import DiscountProduct from "@/components/product/DiscountProduct";
+// import DiscountProduct from "@/components/product/DiscountProduct";
 import FeatureProduct from "@/components/product/FeatureProduct";
-import WeeklyBestSelling from "@/components/product/WeeklyBestSelling";
-import FeatureDiscount from "@/components/product/FeatureDiscount";
-import TrandingProduct from "@/components/product/TrandingProduct";
-import BlogOne from "@/components/blog/BlogOne";
+// import WeeklyBestSelling from "@/components/product/WeeklyBestSelling";
+// import FeatureDiscount from "@/components/product/FeatureDiscount";
+// import TrandingProduct from "@/components/product/TrandingProduct";
+// import BlogOne from "@/components/blog/BlogOne";
 import FooterOne from "@/components/footer/FooterOne";
 import { CartProvider } from "@/components/header/CartContext";
 import { WishlistProvider } from "@/components/header/WishlistContext";
@@ -22,6 +22,7 @@ import BusinessModel from "@/components/businessmodel/BusinessModel";
 import CustomerFeedback from "@/components/testimonials/TestimonilsOne";
 import BlogHome from "@/components/blog/BlogHome";
 import Brochure from "@/components/brochure/Brochure";
+import HomeBanner from "@/components/banner/HomeBanner";
 
 
 export default function Home() {
@@ -32,12 +33,16 @@ export default function Home() {
           
         <ToastContainer position="top-right" autoClose={3000} />
           <HeaderOne />
+
           {/* <BannerOne /> */}
-          <AboutBanner />
+          <HomeBanner />
+
           {/* <CategoryBb /> */}
           <CategoryBb />
+
           {/* <FeatureOne /> */}
           <FeatureProduct />
+
           {/* About section */}
           <AboutOne/>
 

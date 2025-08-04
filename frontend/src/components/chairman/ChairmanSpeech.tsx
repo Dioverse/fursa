@@ -3,7 +3,7 @@ import React from "react";
 function ChairmanMessage() {
   return (
     <section className="chairman-message py-5">
-      <div className="container-3">
+      <div className="container-3 w-95 justify-content-center">
         <h2 className="text-center fw-bold mb--50 mt--70">Message from the chairman</h2>
 
         <div className="row align-items-center">

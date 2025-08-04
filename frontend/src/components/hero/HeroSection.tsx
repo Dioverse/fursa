@@ -3,7 +3,7 @@ import React from "react";
 function HeroSection() {
   return (
     <section className="hero-section text-white text-center">
-      <div className="container">
+      <div className="container-3 w-95 justify-content-center">
         <span className="badge text-dark bg-light px-3 py-1 mb-3 small rounded-pill">
           ⚡ AI-Powered Engine Analysis
         </span>

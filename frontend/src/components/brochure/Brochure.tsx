@@ -10,7 +10,10 @@ function Brochure() {
             <div className="col-lg-12 justify-content-center">
                 <div className="title-area-left text-center pl--0">
                     <h2 className="title-center">Click on the Download Button to Download MRS product Brochure</h2>
-                    <a className="btn m-2 btn-primary btn-lg p-3"><i className="fas fa-download"></i> Download Brochure</a>
+                    <div className="mt--30 mb--30 button-wrapper"> 
+                      <a className="rts-btn btn-primary btn-sm" ><i className="fas fa-download"></i> Download Brochure</a>
+                    </div>
+                    
                 </div>
             </div>
 

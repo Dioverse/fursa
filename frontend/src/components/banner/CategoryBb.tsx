@@ -34,14 +34,14 @@ function CategoryBannerBottom() {
           </div>
       </div>
 
-      <div className="container w-95">
+      <div className="container w-95 justify-content-center">
         <div className="row">
-          <div className="col-lg-12">
+          <div className="col-lg-12 justify-content-center">
             <div className="category-area-main-wrapper-one">
               <Swiper
                 modules={[Navigation, Autoplay]}
-                spaceBetween={30}
-                slidesPerView={10}
+                spaceBetween={20}
+                slidesPerView={6}
                 loop={true}
                 speed={1000}
                 autoplay={{
@@ -63,8 +63,8 @@ function CategoryBannerBottom() {
                       <Image
                         src={cat.img}
                         alt={cat.name}
-                        width={60}
-                        height={60}
+                        width={100}
+                        height={100}
                         style={{ objectFit: "contain" }}
                       />
                       <p>{cat.name}</p>

@@ -107,7 +107,7 @@ function FeatureProduct() {
                             </div>
                         </div>
                     </div>
-                    <div className="container-3">
+                    <div className="container-3 w-95 justify-content-center">
                         <div className="row">
                             <div className="col-lg-12">
                                 <div className="category-area-main-wrapper-one">

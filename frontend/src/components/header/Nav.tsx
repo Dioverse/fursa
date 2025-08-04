@@ -12,7 +12,7 @@ function NavItem() {
                                 <div className="category-btn category-hover-header">
                                     <img className="parent" src="/assets/images/icons/bar-1.svg" alt="icons" />
                                     <span>Categories</span>
-                                    <CategoryMenu />
+                                    <CategoryMenu /> 
                                 </div>
                             </div>
                         </div>

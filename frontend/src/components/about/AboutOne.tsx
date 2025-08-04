@@ -6,7 +6,7 @@ function ComponentName() {
 <>
   {/* about area start */}
   <div className="rts-about-area rts-section-gap2 bg_primary">
-    <div className="container-3">
+    <div className="container-3 w-95 justify-content-center">
       <div className="row align-items-center">
         <div className="col-lg-5">
           <div className="thumbnail-left">

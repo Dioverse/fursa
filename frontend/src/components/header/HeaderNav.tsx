@@ -59,7 +59,7 @@ function ComponentName() {
                                 {/* button-area */}
                                 <div className="right-btn-area">
                                    
-                                    <button className="rts-btn btn-primary p-4 rts-btn-medium">
+                                    <button className="rts-btn btn-primary rounded-sm">
                                         Become a Distributor
                                     </button>
                                 </div>
