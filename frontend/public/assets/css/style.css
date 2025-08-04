@@ -16194,6 +16194,14 @@ a.over_link {
   background: #fff !important;
 }
 
+.text_white {
+  color: #fff !important;
+}
+
+.text_primary {
+  color: var(--color-primary) !important;
+}
+
 .header-style-two .header-top-area-two {
   background: var(--color-heading-1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.11);
@@ -17055,6 +17063,10 @@ li.with-megamenu:hover .rts-megamenu {
 }
 
 .bg_primary {
+  background: var(--color-primary) !important;
+}
+
+.text_primary {
   background: var(--color-primary) !important;
 }
 
@@ -18195,6 +18207,32 @@ li.with-megamenu:hover .rts-megamenu {
 
 .rts-btn.btn-primary {
   background: #A78E4C;
+  border-radius: 6px;
+  display: block;
+  max-width: max-content;
+}
+
+.rts-btn.btn-white {
+  background: #fff;
+  color: #A78E4C;
+  border-radius: 6px;
+  display: block;
+  max-width: max-content;
+}
+
+.rts-btn.btn-outline-primary {
+  background: transparent;
+  color: #A78E4C;
+  border: solid 2px #A78E4C;
+  border-radius: 6px;
+  display: block;
+  max-width: max-content;
+}
+
+.rts-btn.btn-outline-white {
+  background: transparent;
+  color: #fff;
+  border: solid 2px #fff;
   border-radius: 6px;
   display: block;
   max-width: max-content;
@@ -28828,4 +28866,100 @@ li.has-dropdown .submenu li>a .badge {
   width: 100%;
   margin-bottom: 30px;
   height: 62px;
+}
+
+
+/* ----------------------- WHy Choose us section -------------------- */
+.why-choose-us {
+  background-color: #fff;
+  color: #222;
+}
+
+.section-title {
+  font-size: 24px;
+  line-height: 1.4;
+}
+
+.section-subtitle {
+  color: #555;
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 16px;
+}
+
+.feature-item .icon {
+  width: 50px;
+  height: 50px;
+  background-color: #A78E4C ; /*#a5823d goldish color from screenshot */
+  color: white;
+  font-size: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px auto;
+}
+
+.feature-item p {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.4;
+}
+
+.view-more-btn {
+  background: transparent;
+  border: 1px solid #A78E4C;
+  padding: 12px 24px;
+  color: #A78E4C;
+  border-radius: 10px;
+  font-weight: 500;
+  transition: 0.3s ease;
+}
+
+.view-more-btn:hover {
+  background-color: #A78E4C;
+  color: #fff;
+}
+
+.button-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+/* Hero section */
+.hero-section {
+  background-color: #A78E4C; /* same gold color from your screenshot */
+  background-image: url('/path-to-subtle-pattern.svg'); /* optional for design effect */
+  background-size: cover;
+  background-position: center;
+  padding: 80px 0;
+}
+
+.hero-section .highlight {
+  color: #fff599;
+}
+
+.hero-section .btn {
+  font-weight: 500;
+  border-radius: 10px;
+  transition: 0.3s ease;
+}
+
+.hero-section .btn:hover {
+  transform: translateY(-2px);
+}
+
+
+/* Chairman speech */
+
+.chairman-message {
+  background-color: #fff;
+  color: #222;
+  font-size: 16px;
+}
+
+.chairman-message img {
+  max-width: 400px;
+  border-radius: 16px;
 }

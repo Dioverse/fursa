@@ -12,9 +12,11 @@ const CustomerFeedback = () => {
         <div className="rts-cuystomers-feedback-area rts-section-gap2">
             <div className="container-3">
                 <div className="row">
-                    <div className="col-lg-12">
-                        <div className="title-area-left pl--0">
-                            <h2 className="title-left mb--0">Customer Feedbacks</h2>
+                    <div className="col-lg-12 justify-content-center">
+                        <div className="title-area-left text-center pl--0">
+                            <h2 className="title-center">See What Clients Are Saying</h2>
+                            <h6 className='sub-title mb-1'>We are very proud of the service we provide and stand by every product we carry.</h6>
+                            <p>Read our testimonials from our happy customers.</p>
                         </div>
                     </div>
                 </div>
@@ -38,103 +40,82 @@ const CustomerFeedback = () => {
                                                 loop={true}
                                                 className="mySwiper-category-1"
                                                 breakpoints={{
-                                                    0: { slidesPerView: 1, spaceBetween: 30 },
-                                                    320: { slidesPerView: 1, spaceBetween: 30 },
-                                                    480: { slidesPerView: 1, spaceBetween: 30 },
-                                                    640: { slidesPerView: 1, spaceBetween: 30 },
-                                                    840: { slidesPerView: 2, spaceBetween: 30 },
-                                                    1140: { slidesPerView: 2, spaceBetween: 30 },
+                                                    0: { slidesPerView: 1, spaceBetween: 10 },
+                                                    480: { slidesPerView: 1, spaceBetween: 10 },
+                                                    640: { slidesPerView: 1, spaceBetween: 10 },
+                                                    840: { slidesPerView: 2, spaceBetween: 10 },
+                                                    1140: { slidesPerView: 3, spaceBetween: 30 }, // 👈 Update this to 3 slides per view
                                                 }}
                                             >
-                                                <SwiperSlide>
-                                                    <div className="single-customers-feedback-area">
-                                                        <div className="top-thumbnail-area">
-                                                            <div className="left">
-                                                                <img src="assets/images/testimonial/01.png" alt="logo" />
-                                                                <div className="information">
-                                                                    <h4 className="title">Andrew D. Smith</h4>
-                                                                    <span>Manager</span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="right">
-                                                                <img src="assets/images/testimonial/02.png" alt="logo" />
-                                                            </div>
-                                                        </div>
+                                                <SwiperSlide>   
+                                                    <div className="single-customers-feedback-area bg_primary">
                                                         <div className="body-content">
-                                                            <p className="disc">
+                                                            <p className="disc text-white mt--20">
                                                                 “According to the council of supply chain professionals the council of
                                                                 logistics management logistics is the process of planning, implementing
                                                                 and controlling procedures”
                                                             </p>
+                                                        </div>
+                                                        <div className="justify-content-center border-0 mb--0 mt--30">
+                                                            <div className="text-center text-white">
+                                                                <div className="">
+                                                                    <h4 className="title text-white">Ahmed Bello, Fleet Manager, <br/> North Logistics Ltd </h4>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
 
                                                 </SwiperSlide><SwiperSlide>
-                                                    <div className="single-customers-feedback-area">
-                                                        <div className="top-thumbnail-area">
-                                                            <div className="left">
-                                                                <img src="assets/images/testimonial/01.png" alt="logo" />
-                                                                <div className="information">
-                                                                    <h4 className="title">Andrew D. Smith</h4>
-                                                                    <span>Manager</span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="right">
-                                                                <img src="assets/images/testimonial/02.png" alt="logo" />
-                                                            </div>
-                                                        </div>
+                                                    <div className="single-customers-feedback-area bg_primary">
                                                         <div className="body-content">
-                                                            <p className="disc">
+                                                            <p className="disc text-white mt--20">
                                                                 “According to the council of supply chain professionals the council of
                                                                 logistics management logistics is the process of planning, implementing
                                                                 and controlling procedures”
                                                             </p>
+                                                        </div>
+                                                        <div className="justify-content-center border-0 mb--0 mt--30">
+                                                            <div className="text-center text-white">
+                                                                <div className="">
+                                                                    <h4 className="title text-white">Ahmed Bello, Fleet Manager, <br/> North Logistics Ltd </h4>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
 
                                                 </SwiperSlide><SwiperSlide>
-                                                    <div className="single-customers-feedback-area">
-                                                        <div className="top-thumbnail-area">
-                                                            <div className="left">
-                                                                <img src="assets/images/testimonial/01.png" alt="logo" />
-                                                                <div className="information">
-                                                                    <h4 className="title">Andrew D. Smith</h4>
-                                                                    <span>Manager</span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="right">
-                                                                <img src="assets/images/testimonial/02.png" alt="logo" />
-                                                            </div>
-                                                        </div>
+                                                    <div className="single-customers-feedback-area bg_primary">
                                                         <div className="body-content">
-                                                            <p className="disc">
+                                                            <p className="disc text-white mt--20">
                                                                 “According to the council of supply chain professionals the council of
                                                                 logistics management logistics is the process of planning, implementing
                                                                 and controlling procedures”
                                                             </p>
+                                                        </div>
+                                                        <div className="justify-content-center border-0 mb--0 mt--30">
+                                                            <div className="text-center text-white">
+                                                                <div className="">
+                                                                    <h4 className="title text-white">Ahmed Bello, Fleet Manager, <br/> North Logistics Ltd </h4>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
 
                                                 </SwiperSlide><SwiperSlide>
-                                                    <div className="single-customers-feedback-area">
-                                                        <div className="top-thumbnail-area">
-                                                            <div className="left">
-                                                                <img src="assets/images/testimonial/01.png" alt="logo" />
-                                                                <div className="information">
-                                                                    <h4 className="title">Andrew D. Smith</h4>
-                                                                    <span>Manager</span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="right">
-                                                                <img src="assets/images/testimonial/02.png" alt="logo" />
-                                                            </div>
-                                                        </div>
+                                                    <div className="single-customers-feedback-area bg_primary">
                                                         <div className="body-content">
-                                                            <p className="disc">
+                                                            <p className="disc text-white mt--20">
                                                                 “According to the council of supply chain professionals the council of
                                                                 logistics management logistics is the process of planning, implementing
                                                                 and controlling procedures”
                                                             </p>
+                                                        </div>
+                                                        <div className="justify-content-center border-0 mb--0 mt--30">
+                                                            <div className="text-center text-white">
+                                                                <div className="">
+                                                                    <h4 className="title text-white">Ahmed Bello, Fleet Manager, <br/> North Logistics Ltd </h4>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
 

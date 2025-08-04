@@ -98,16 +98,16 @@ function FeatureProduct() {
             <>
                 {/* rts grocery feature area start */}
                 <div className="rts-grocery-feature-area rts-section-gapBottom">
-                    <div className="container">
+                    <div className="container-3">
                         <div className="row">
                             <div className="col-lg-12">
-                                <div className="title-area-center mb--30 mt--30 text-dark">
+                                <div className="title-area-center mb--30 mt--70 text-dark">
                                     <h2 className="text-center">Popular Now</h2>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="container">
+                    <div className="container-3">
                         <div className="row">
                             <div className="col-lg-12">
                                 <div className="category-area-main-wrapper-one">

@@ -1,204 +1,84 @@
-import React from 'react'
+import React from 'react';
 
 function FooterOne() {
     return (
-        <div><>
-            {/* rts footer one area start */}
-            <div className="rts-footer-area pt--80 bg_light-1">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-lg-12">
-                            <div className="footer-main-content-wrapper pb--70 pb_sm--30">
-                                {/* single footer area wrapper */}
-                                <div className="single-footer-wized">
-                                    <h3 className="footer-title">About Company</h3>
-                                    <div className="call-area">
-                                        <div className="icon">
-                                            <i className="fa-solid fa-phone-rotary" />
-                                        </div>
-                                        <div className="info">
-                                            <span>Have Question? Call Us 24/7</span>
-                                            <a href="#" className="number">
-                                                +258 3692 2569
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div className="opening-hour">
-                                        <div className="single">
-                                            <p>
-                                                Monday - Friday: <span>8:00am - 6:00pm</span>
-                                            </p>
-                                        </div>
-                                        <div className="single">
-                                            <p>
-                                                Saturday: <span>8:00am - 6:00pm</span>
-                                            </p>
-                                        </div>
-                                        <div className="single">
-                                            <p>
-                                                Sunday: <span>Service Close</span>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* single footer area wrapper */}
-                                {/* single footer area wrapper */}
-                                <div className="single-footer-wized">
-                                    <h3 className="footer-title">Our Stores</h3>
-                                    <div className="footer-nav">
-                                        <ul>
-                                            <li>
-                                                <a href="#">Delivery Information</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Privacy Policy</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Terms &amp; Conditions</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Support Center</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Careers</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                {/* single footer area wrapper */}
-                                {/* single footer area wrapper */}
-                                <div className="single-footer-wized">
-                                    <h3 className="footer-title">Shop Categories</h3>
-                                    <div className="footer-nav">
-                                        <ul>
-                                            <li>
-                                                <a href="#">Contact Us</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Information</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">About Us</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Careers</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Nest Stories</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                {/* single footer area wrapper */}
-                                {/* single footer area wrapper */}
-                                <div className="single-footer-wized">
-                                    <h3 className="footer-title">Useful Links</h3>
-                                    <div className="footer-nav">
-                                        <ul>
-                                            <li>
-                                                <a href="#">Cancellation &amp; Returns</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Report Infringement</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Payments</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Shipping</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">FAQ</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                {/* single footer area wrapper */}
-                                {/* single footer area wrapper */}
-                                <div className="single-footer-wized">
-                                    <h3 className="footer-title">Our Newsletter</h3>
-                                    <p className="disc-news-letter">
-                                        Subscribe to the mailing list to receive updates one <br /> the
-                                        new arrivals and other discounts
-                                    </p>
-                                    <form className="footersubscribe-form" action="#">
-                                        <input
-                                            type="email"
-                                            placeholder="Your email address"
-                                            required
-                                        />
-                                        <button className="rts-btn btn-primary">Subscribe</button>
-                                    </form>
-                                    <p className="dsic">
-                                        I would like to receive news and special offer
-                                    </p>
-                                </div>
-                                {/* single footer area wrapper */}
-                            </div>
-                            <div className="social-and-payment-area-wrapper">
-                                <div className="social-one-wrapper">
-                                    <span>Follow Us:</span>
-                                    <ul>
-                                        <li>
-                                            <a href="#">
-                                                <i className="fa-brands fa-facebook-f" />
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#">
-                                                <i className="fa-brands fa-twitter" />
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#">
-                                                <i className="fa-brands fa-youtube" />
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#">
-                                                <i className="fa-brands fa-whatsapp" />
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#">
-                                                <i className="fa-brands fa-instagram" />
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div className="payment-access">
-                                    <span>Payment Accepts:</span>
-                                    <img src="assets/images/payment/01.png" alt="" />
-                                </div>
-                            </div>
+        <footer className="footer bg-dark text-white pt-5 pb-4">
+            <div className="container-3">
+                <div className="row">
+                    {/* Contact Info */}
+                    <div className="col-md-3 mb-4">
+                        <a href="/" className="logo-area mb--40">
+                            <img src="/assets/images/logo/logo-03.svg" alt="logo-main" className="logo" />
+                        </a>
+                        <p className='text-white lead'>
+                            <img src="assets/images/icons/mail.png" alt="email" width={16} className="me-2" />
+                            info@fursaenergy.com
+                        </p>
+                        <p className='text-white lead'>
+                            <img src="assets/images/icons/phone.png" alt="phone" width={16} className="me-2" />
+                            +234-XXX-000-0000
+                        </p>
+                        <p className='text-white mb--20 lead'>
+                            <img src="assets/images/icons/location.svg" alt="location" width={16} className="me-2" />
+                            4, Morija Close, Wuse 2, Abuja <br/> 6, Olumo Street, Parkview Estate, Ikoyi, Lagos
+                        </p>
+                        <p className='text-white lead'>
+                            <img alt="location" width={16} className="me-2" />
+                            6, Olumo Street, Parkview Estate, Ikoyi, Lagos
+                        </p>
+                    </div>
+
+                    {/* Quick Link */}
+                    <div className="col-md-2 mb-4">
+                        <h5 className="mb-3 text-white">Quick Link</h5>
+                        <ul className="list-unstyled">
+                            <li><a href="#" className="text-white">Home</a></li>
+                            <li><a href="#" className="text-white">About Us</a></li>
+                            <li><a href="#" className="text-white">Contact Us</a></li>
+                            <li><a href="#" className="text-white">Shop</a></li>
+                        </ul>
+                    </div>
+
+                    {/* Help */}
+                    <div className="col-md-2 mb-4">
+                        <h5 className="mb-3 text-white">Help</h5>
+                        <ul className="list-unstyled">
+                            <li><a href="#" className="text-white text-decoration-none">FAQ</a></li>
+                            <li><a href="#" className="text-white text-decoration-none">Terms & Condition</a></li>
+                            <li><a href="#" className="text-white text-decoration-none">Privacy Policy</a></li>
+                            <li><a href="#" className="text-white text-decoration-none">Refund Policy</a></li>
+                        </ul>
+                    </div>
+
+                    {/* Newsletter */}
+                    <div className="col-md-5">
+                        <h5 className="mb-3 text-white">Our Newsletter</h5>
+                        <div className="d-flex">
+                            <input type="email" className="form-control me-2" placeholder="Enter Your Email..." />
+                            <button className="btn btn-outline-light">
+                                <img src="assets/images/icons/linkedin.svg" alt="send" width={16} />
+                            </button>
+                        </div>
+                        <div className="mt-3">
+                            <a href="#" className="me-3">
+                                <i className="fa fa-linkedin text-lg text-white"></i>
+                                <img src="assets/images/icons/linkedin.svg" alt="linkedin" width={20} />
+                            </a>
+                            <a href="#" className="me-3">
+                                <img src="assets/images/icons/facebook.svg" alt="facebook" width={20} />
+                            </a>
+                            <a href="#" className="me-3">
+                                <img src="assets/images/icons/twitter.svg" alt="twitter" width={20} />
+                            </a>
+                            <a href="#">
+                                <img src="assets/images/icons/instagram.svg" alt="instagram" width={20} />
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-            {/* rts footer one area end */}
-            {/* rts copyright-area start */}
-            <div className="rts-copyright-area">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-lg-12">
-                            <div className="copyright-between-1">
-                                <p className="disc">
-                                    Copyright 2025 <a href="#">©Ekomart</a>. All rights reserved.
-                                </p>
-                                <a href="#" className="playstore-app-area">
-                                    <span>Download App</span>
-                                    <img src="assets/images/payment/02.png" alt="" />
-                                    <img src="assets/images/payment/03.png" alt="" />
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {/* rts copyright-area end */}
-        </>
-        </div>
-    )
+        </footer>
+    );
 }
 
-export default FooterOne
+export default FooterOne;

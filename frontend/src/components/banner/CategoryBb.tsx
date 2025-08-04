@@ -27,7 +27,7 @@ function CategoryBannerBottom() {
       <div className="container">
           <div className="row">
               <div className="col-lg-12">
-                  <div className="title-area-center mb--30 mt--30 text-dark">
+                  <div className="title-area-center mb--30 mt--70 text-dark">
                       <h2 className="text-center">Categories</h2>
                   </div>
               </div>

@@ -14,6 +14,14 @@ import { WishlistProvider } from "@/components/header/WishlistContext";
 import { ToastContainer, toast } from 'react-toastify';
 import CategoryBb from '../components/banner/CategoryBb';
 import AboutOne from "@/components/about/AboutOne";
+import Chooseus from "@/components/whychooseus/Chooseus"
+import HeroSection from "@/components/hero/HeroSection";
+import ChairmanSpeech from "@/components/chairman/ChairmanSpeech";
+import Partner from "@/components/partner/Partners";
+import BusinessModel from "@/components/businessmodel/BusinessModel";
+import CustomerFeedback from "@/components/testimonials/TestimonilsOne";
+import BlogHome from "@/components/blog/BlogHome";
+import Brochure from "@/components/brochure/Brochure";
 
 
 export default function Home() {
@@ -32,11 +40,36 @@ export default function Home() {
           <FeatureProduct />
           {/* About section */}
           <AboutOne/>
+
+          {/* Why choose us */}
+          <Chooseus />
+
+          {/* Herosection */}
+          <HeroSection />
+
+          {/* Chairman speech */}
+          <ChairmanSpeech />
+
+          {/* Strategic partners */}
+          <Partner/>
+
+          {/* Business type model */}
+          <BusinessModel />
+
+          {/* Testimonial */}
+          <CustomerFeedback />
+
+          {/* Our blog */}
+          <BlogHome />
+
+          {/* Brochure */}
+          <Brochure />
+
           {/* <DiscountProduct /> */}
-          <WeeklyBestSelling />
-          <FeatureDiscount />
+          {/* <WeeklyBestSelling /> */}
+          {/* <FeatureDiscount />
           <TrandingProduct />
-          <BlogOne />
+          <BlogOne /> */}
           <FooterOne />
         </div>
       </CartProvider>
