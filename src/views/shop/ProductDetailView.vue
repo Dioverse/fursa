@@ -1,0 +1,230 @@
+<template>
+    <DefaultLayout>
+        <div class="container mx-auto px-4 py-8">
+            <!-- Breadcrumb -->
+            <nav class="flex mb-6" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li>
+                        <RouterLink to="/" class="text-gray-700 hover:text-primary">Home</RouterLink>
+                    </li>
+                    <li><font-awesome-icon icon="chevron-right" class="mx-2 text-gray-400" /></li>
+                    <li>
+                        <RouterLink to="/shop" class="text-gray-700 hover:text-primary">Shop</RouterLink>
+                    </li>
+                    <li><font-awesome-icon icon="chevron-right" class="mx-2 text-gray-400" /></li>
+                    <li class="text-gray-500">{{ product.name }}</li>
+                </ol>
+            </nav>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Product Images -->
+                <div>
+                    <div class="bg-gray-100 rounded-lg p-8 mb-4">
+                        <img v-if="product.image" :src="product.image" :alt="product.name" class="w-full">
+                        <div v-else class="h-96 flex items-center justify-center">
+                            <font-awesome-icon icon="image" size="4x" class="text-gray-400" />
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button v-for="i in 4" :key="i" class="bg-gray-100 rounded p-2 hover:ring-2 hover:ring-primary">
+                            <font-awesome-icon icon="image" size="2x" class="text-gray-400" />
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div>
+                    <h1 class="text-3xl font-bold mb-4">{{ product.name }}</h1>
+
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="flex items-center">
+                            <font-awesome-icon v-for="i in 5" :key="i" icon="star"
+                                :class="i <= product.rating ? 'text-yellow-400' : 'text-gray-300'" />
+                        </div>
+                        <span class="text-gray-600">({{ product.reviews }} reviews)</span>
+                        <span class="text-green-600">✓ In Stock</span>
+                    </div>
+
+                    <div class="text-3xl font-bold text-primary mb-6">
+                        ₦{{ product.price.toLocaleString() }}
+                    </div>
+
+                    <div class="space-y-4 mb-6">
+                        <p class="text-gray-600">{{ product.description }}</p>
+                        <div>
+                            <span class="font-semibold">SKU:</span> {{ product.sku }}
+                        </div>
+                        <div>
+                            <span class="font-semibold">Volume:</span> {{ product.volume }}
+                        </div>
+                        <div>
+                            <span class="font-semibold">Category:</span> Motor Oil
+                        </div>
+                    </div>
+
+                    <!-- Quantity and Add to Cart -->
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="flex items-center border rounded-lg">
+                            <button @click="quantity--" :disabled="quantity <= 1"
+                                class="px-4 py-3 hover:bg-gray-100 disabled:opacity-50">
+                                <font-awesome-icon icon="minus" />
+                            </button>
+                            <input v-model="quantity" type="number" min="1" class="w-20 text-center border-x py-3">
+                            <button @click="quantity++" class="px-4 py-3 hover:bg-gray-100">
+                                <font-awesome-icon icon="plus" />
+                            </button>
+                        </div>
+                        <button @click="addToCart"
+                            class="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-opacity-90 transition">
+                            <font-awesome-icon icon="shopping-cart" class="mr-2" />
+                            Add to Cart
+                        </button>
+                        <button class="p-3 border rounded-lg hover:bg-gray-100">
+                            <font-awesome-icon icon="heart" />
+                        </button>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="border-t pt-6">
+                        <h3 class="font-semibold mb-4">Key Features:</h3>
+                        <ul class="space-y-2">
+                            <li class="flex items-start gap-2">
+                                <font-awesome-icon icon="check" class="text-green-600 mt-1" />
+                                <span>Premium quality motor oil</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <font-awesome-icon icon="check" class="text-green-600 mt-1" />
+                                <span>Suitable for all vehicle types</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <font-awesome-icon icon="check" class="text-green-600 mt-1" />
+                                <span>Extended engine protection</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <font-awesome-icon icon="check" class="text-green-600 mt-1" />
+                                <span>Improved fuel efficiency</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="mt-12">
+                <div class="border-b">
+                    <nav class="-mb-px flex gap-8">
+                        <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id"
+                            class="py-4 px-1 border-b-2 font-medium text-sm transition"
+                            :class="activeTab === tab.id ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'">
+                            {{ tab.label }}
+                        </button>
+                    </nav>
+                </div>
+
+                <div class="py-8">
+                    <div v-if="activeTab === 'description'" class="prose max-w-none">
+                        <p>{{ product.fullDescription }}</p>
+                    </div>
+
+                    <div v-if="activeTab === 'specifications'" class="space-y-4">
+                        <table class="w-full">
+                            <tbody>
+                                <tr v-for="spec in product.specifications" :key="spec.name" class="border-b">
+                                    <td class="py-3 font-medium">{{ spec.name }}</td>
+                                    <td class="py-3">{{ spec.value }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div v-if="activeTab === 'reviews'" class="space-y-6">
+                        <div v-for="review in product.reviewsList" :key="review.id" class="border-b pb-6">
+                            <div class="flex items-start justify-between mb-2">
+                                <div>
+                                    <h4 class="font-semibold">{{ review.author }}</h4>
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex">
+                                            <font-awesome-icon v-for="i in 5" :key="i" icon="star" size="sm"
+                                                :class="i <= review.rating ? 'text-yellow-400' : 'text-gray-300'" />
+                                        </div>
+                                        <span class="text-sm text-gray-600">{{ review.date }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600">{{ review.comment }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Products -->
+            <div class="mt-12">
+                <h2 class="text-2xl font-bold mb-6">Related Products</h2>
+                <ProductGrid :products="relatedProducts" />
+            </div>
+        </div>
+    </DefaultLayout>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { useToast } from 'vue-toastification'
+import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import ProductGrid from '@/components/products/ProductGrid.vue'
+import { useCartStore } from '@/stores/cart'
+
+const route = useRoute()
+const cartStore = useCartStore()
+const toast = useToast()
+
+const quantity = ref(1)
+const activeTab = ref('description')
+
+const tabs = [
+    { id: 'description', label: 'Description' },
+    { id: 'specifications', label: 'Specifications' },
+    { id: 'reviews', label: 'Reviews' }
+]
+
+const product = ref({
+    id: 1,
+    name: 'MRS 5L Motorcycle engine oil',
+    price: 145000,
+    sku: 'A23WERT5',
+    volume: '5 Litres',
+    rating: 4,
+    reviews: 23,
+    description: 'Premium quality motorcycle engine oil designed for optimal performance.',
+    fullDescription: 'MRS 5L Motorcycle engine oil is specially formulated to provide superior protection and performance for your motorcycle engine. With advanced additives and high-quality base oils, this product ensures smooth operation, reduced wear, and extended engine life.',
+    specifications: [
+        { name: 'Volume', value: '5 Litres' },
+        { name: 'Viscosity', value: '20W-50' },
+        { name: 'API Rating', value: 'SN/CF' },
+        { name: 'Package Type', value: 'Plastic Container' }
+    ],
+    reviewsList: [
+        { id: 1, author: 'John Doe', rating: 5, date: '2 days ago', comment: 'Excellent product! My engine runs smoother now.' },
+        { id: 2, author: 'Jane Smith', rating: 4, date: '1 week ago', comment: 'Good quality oil, fair price.' }
+    ]
+})
+
+const relatedProducts = ref([])
+
+const addToCart = () => {
+    cartStore.addItem({ ...product.value, quantity: quantity.value })
+    toast.success('Product added to cart!')
+    quantity.value = 1
+}
+
+onMounted(() => {
+    // Load product data based on route.params.id
+    // Load related products
+    relatedProducts.value = [
+        { id: 2, name: 'MRS Premium Motor Oil', price: 125000, sku: 'B45TYU', rating: 5 },
+        { id: 3, name: 'MRS Diesel Engine Oil', price: 165000, sku: 'C67HJK', rating: 4 },
+        { id: 4, name: 'MRS Hydraulic Oil', price: 155000, sku: 'D89MNO', rating: 5 },
+        { id: 5, name: 'MRS Gear Oil', price: 135000, sku: 'E12QWE', rating: 4 }
+    ]
+})
+</script>

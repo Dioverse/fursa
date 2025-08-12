@@ -1,0 +1,74 @@
+<template>
+    <DashboardLayout>
+        <div class="space-y-6">
+            <h1 class="text-2xl font-bold">My Wishlist</h1>
+
+            <div v-if="wishlistItems.length === 0" class="bg-white rounded-lg shadow-md p-12 text-center">
+                <font-awesome-icon icon="heart" size="3x" class="text-gray-400 mb-4" />
+                <h2 class="text-xl font-semibold mb-2">Your wishlist is empty</h2>
+                <p class="text-gray-600 mb-6">Save items you like to purchase them later</p>
+                <RouterLink to="/shop"
+                    class="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded hover:bg-opacity-90 transition">
+                    <font-awesome-icon icon="shopping-cart" />
+                    <span>Continue Shopping</span>
+                </RouterLink>
+            </div>
+
+            <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div v-for="item in wishlistItems" :key="item.id"
+                    class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+                    <div class="relative">
+                        <div class="h-48 bg-gray-200 flex items-center justify-center">
+                            <font-awesome-icon icon="image" size="3x" class="text-gray-400" />
+                        </div>
+                        <button @click="removeFromWishlist(item.id)"
+                            class="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition">
+                            <font-awesome-icon icon="times" class="text-red-500" />
+                        </button>
+                    </div>
+
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-2">{{ item.name }}</h3>
+                        <p class="text-gray-600 text-sm mb-2">{{ item.volume }}</p>
+                        <p class="text-primary text-xl font-bold mb-4">
+                            ₦{{ item.price.toLocaleString() }}
+                        </p>
+
+                        <button @click="moveToCart(item)"
+                            class="w-full bg-primary text-white py-2 rounded hover:bg-opacity-90 transition">
+                            <font-awesome-icon icon="shopping-cart" class="mr-2" />
+                            Move to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </DashboardLayout>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { useToast } from 'vue-toastification'
+import DashboardLayout from '@/layouts/DashboardLayout.vue'
+import { useCartStore } from '@/stores/cart'
+
+const toast = useToast()
+const cartStore = useCartStore()
+
+const wishlistItems = ref([
+    { id: 1, name: 'MRS 5L Motorcycle engine oil', price: 145000, volume: '5 Litres' },
+    { id: 2, name: 'MRS Premium Motor Oil', price: 125000, volume: '4 Litres' },
+    { id: 3, name: 'MRS Diesel Engine Oil', price: 165000, volume: '5 Litres' }
+])
+
+const removeFromWishlist = (id) => {
+    wishlistItems.value = wishlistItems.value.filter(item => item.id !== id)
+    toast.success('Item removed from wishlist')
+}
+
+const moveToCart = (item) => {
+    cartStore.addItem(item)
+    removeFromWishlist(item.id)
+    toast.success('Item moved to cart')
+}
+</script>
