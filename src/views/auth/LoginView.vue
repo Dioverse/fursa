@@ -2,9 +2,9 @@
     <AuthLayout>
         <template #sidebar>
             <div class="text-center">
-                <img src="/images/logo.png" alt="Fursa Energy" class="w-32 mx-auto mb-6" />
-                <h1 class="text-4xl font-bold mb-4">Welcome Back!</h1>
-                <p class="text-lg opacity-90">Welcome back to fursa. Log in to browse our exciting offers</p>
+                <!-- <img src="/images/logo.png" alt="Fursa Energy" class="w-32 mx-auto mb-6" /> -->
+                <!-- <h1 class="text-4xl font-bold mb-4">Welcome Back!</h1>
+                <p class="text-lg opacity-90">Welcome back to fursa. Log in to browse our exciting offers</p> -->
             </div>
         </template>
 

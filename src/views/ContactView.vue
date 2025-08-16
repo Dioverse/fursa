@@ -137,59 +137,11 @@
             </div>
         </section>
 
-        <!-- Bottom Features -->
-        <section class="py-8 bg-secondary text-white">
-            <div class="container mx-auto px-4">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    <div class="text-center">
-                        <div
-                            class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-2">
-                            <font-awesome-icon icon="shield-alt" />
-                        </div>
-                        <h5 class="text-sm font-semibold">Secure Payment Gateways</h5>
-                        <p class="text-xs opacity-75">48+ gateways to ensure your security</p>
-                    </div>
+        <!-- Bottom CTA Section -->
+        <CTA />
 
-                    <div class="text-center">
-                        <div
-                            class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-2">
-                            <font-awesome-icon icon="star" />
-                        </div>
-                        <h5 class="text-sm font-semibold">Genuine Customer Reviews</h5>
-                        <p class="text-xs opacity-75">Find verified reviews on our platforms</p>
-                    </div>
-
-                    <div class="text-center">
-                        <div
-                            class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-2">
-                            <font-awesome-icon icon="headset" />
-                        </div>
-                        <h5 class="text-sm font-semibold">24/7 Customer Support</h5>
-                        <p class="text-xs opacity-75">Always available for you</p>
-                    </div>
-
-                    <div class="text-center">
-                        <div
-                            class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-2">
-                            <font-awesome-icon icon="undo" />
-                        </div>
-                        <h5 class="text-sm font-semibold">Easy Return Policy</h5>
-                        <p class="text-xs opacity-75">Hassle-free returns</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Download CTA -->
-        <section class="py-6 bg-white">
-            <div class="container mx-auto px-4 text-center">
-                <p class="mb-3">Click on the Download Button to Download MRS product Brochure</p>
-                <button class="bg-primary text-white px-6 py-2 rounded hover:bg-opacity-90 transition">
-                    <font-awesome-icon icon="download" class="mr-2" />
-                    Download Brochure
-                </button>
-            </div>
-        </section>
+        <!-- Download Button -->
+        <Brochure/>
     </DefaultLayout>
 </template>
 
@@ -197,6 +149,8 @@
 import { ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import Brochure from '@/components/common/Brochure.vue'
+import CTA from '@/components/common/CTA.vue'
 
 const toast = useToast()
 

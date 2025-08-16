@@ -28,11 +28,15 @@
         <!-- Article Content -->
         <article class="py-16 bg-white">
             <div class="container mx-auto px-4">
+                
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 max-w-7xl mx-auto">
                     <!-- Main Content -->
                     <div class="lg:col-span-2">
+                        <div class="flex items-center justify-center bg-gray-100 rounded-lg mb-12">
+                            <img src="/images/engine-3d.png" alt="" class="w-full h-full object-cover">
+                        </div>
                         <div class="prose prose-lg max-w-none">
-                            <p class="lead text-xl text-gray-700 mb-6">
+                            <p class="lead text-xl text-primary mb-6">
                                 {{ post.excerpt }}
                             </p>
 
@@ -188,6 +192,13 @@
                 </div>
             </div>
         </section>
+
+        <!-- Bottom CTA Section -->
+        <CTA />
+
+        <!-- Download Button -->
+        <Brochure/>
+
     </DefaultLayout>
 </template>
 
@@ -196,6 +207,8 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import Brochure from '@/components/common/Brochure.vue'
+import CTA from '@/components/common/CTA.vue'
 
 const route = useRoute()
 const toast = useToast()

@@ -154,12 +154,20 @@
                 </div>
             </div>
         </section>
+
+        <!-- Bottom CTA Section -->
+        <CTA />
+
+        <!-- Download Button -->
+        <Brochure/>
     </DefaultLayout>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import Brochure from '@/components/common/Brochure.vue'
+import CTA from '@/components/common/CTA.vue'
 
 const categories = ref([
     'Motor Oil',

@@ -163,6 +163,10 @@
                 <ProductGrid :products="relatedProducts" />
             </div>
         </div>
+        <!-- Bottom CTA Section -->
+        <CTA />
+        <!-- Download Button -->
+        <Brochure/>
     </DefaultLayout>
 </template>
 
@@ -173,6 +177,8 @@ import { useToast } from 'vue-toastification'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import ProductGrid from '@/components/products/ProductGrid.vue'
 import { useCartStore } from '@/stores/cart'
+import Brochure from '@/components/common/Brochure.vue'
+import CTA from '@/components/common/CTA.vue'
 
 const route = useRoute()
 const cartStore = useCartStore()

@@ -58,11 +58,19 @@
                 </div>
             </div>
         </div>
+
+        <!-- Bottom CTA Section -->
+        <CTA />
+
+        <!-- Download Button -->
+        <Brochure/>
     </DefaultLayout>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import Brochure from '@/components/common/Brochure.vue'
+import CTA from '@/components/common/CTA.vue'
 
 const props = defineProps({
     formData: {

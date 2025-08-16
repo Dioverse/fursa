@@ -53,6 +53,12 @@
                 </div>
             </div>
         </div>
+
+        <!-- Bottom CTA Section -->
+        <CTA />
+
+        <!-- Download Button -->
+        <Brochure />
     </DefaultLayout>
 </template>
 
@@ -64,6 +70,8 @@ import CartItem from '@/components/cart/CartItem.vue'
 import CartSummary from '@/components/cart/CartSummary.vue'
 import EmptyCart from '@/components/cart/EmptyCart.vue'
 import { useCartStore } from '@/stores/cart'
+import Brochure from '@/components/common/Brochure.vue'
+import CTA from '@/components/common/CTA.vue'
 
 const cartStore = useCartStore()
 const toast = useToast()

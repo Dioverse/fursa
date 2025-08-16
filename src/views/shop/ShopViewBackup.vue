@@ -1,6 +1,6 @@
 <template>
     <DefaultLayout>
-        <!-- 1️⃣ Hero Section -->
+        <!-- Hero Section -->
         <section class="relative bg-gray-900">
             <div class="relative">
             <!-- Background image -->
@@ -15,8 +15,8 @@
             </div>
         </section>
 
-         <!-- 2️⃣ Features Section -->
-        <section class="py-12 px-6">
+         <!-- Features Section -->
+        <section class="py-16 px-6">
             <div class="container mx-auto px-4">
                 <div class="grid md:grid-cols-4 gap-6 bg-white border rounded-xl shadow-sm p-6">
                 
@@ -76,9 +76,9 @@
             </div>
         </section>
 
-        <!-- 3️⃣ Categories Section -->
-        <section class="py-6">
-            <div class="container mx-auto px-4">
+        <!-- Categories Section -->
+        <section class="py-16 px-6">
+            <div class="container mx-auto">
                 <div class="grid md:grid-cols-3 gap-6">
                 
                     <!-- Category 1 -->
@@ -108,121 +108,151 @@
                 </div>
             </div>
         </section>
-        
-        <section class="py-16 px-6">
-            <div class="container mx-auto px-4">
 
+        <section class="py-16">
+            <div class="container mx-auto px-4 py-8">
                 <!-- Breadcrumb -->
                 <nav class="flex mb-6" aria-label="Breadcrumb">
                     <ol class="inline-flex items-center space-x-1 md:space-x-3">
-                        <li class="inline-flex items-center">
-                            <RouterLink to="/" class="text-gray-700 hover:text-primary">
-                                <font-awesome-icon icon="home" class="mr-2" />
-                                Home
-                            </RouterLink>
-                        </li>
-                        <li>
-                            <div class="flex items-center">
-                                <font-awesome-icon icon="chevron-right" class="mx-2 text-gray-400" />
-                                <span class="text-gray-500">Shop</span>
-                            </div>
-                        </li>
+                    <li class="inline-flex items-center">
+                        <RouterLink to="/" class="text-gray-700 hover:text-primary">
+                        <font-awesome-icon icon="home" class="mr-2" />
+                        Home
+                        </RouterLink>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                        <font-awesome-icon icon="chevron-right" class="mx-2 text-gray-400" />
+                        <span class="text-gray-500">Shop</span>
+                        </div>
+                    </li>
                     </ol>
                 </nav>
 
-                <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     <!-- Sidebar Filters -->
-                    <aside class="lg:col-span-1">
-                        <CategoryFilter @update="handleFilterUpdate" />
+                    <aside class="lg:col-span-1 space-y-6">
+                    <!-- Price Filter -->
+                    <div class="bg-white border rounded-lg shadow-sm p-4">
+                        <h3 class="font-bold mb-4">🔎 What Price Fits?</h3>
+                        <div class="flex gap-2 items-center">
+                        <input v-model="minPrice" type="number" placeholder="Min" class="w-20 px-2 py-1 border rounded">
+                        <span>-</span>
+                        <input v-model="maxPrice" type="number" placeholder="Max" class="w-20 px-2 py-1 border rounded">
+                        </div>
+                        <button @click="applyPriceFilter"
+                        class="mt-4 w-full bg-primary text-white py-2 rounded hover:bg-primary-dark">
+                        Apply
+                        </button>
+                    </div>
+
+                    <!-- Product Categories -->
+                    <div class="bg-white border rounded-lg shadow-sm p-4">
+                        <h3 class="font-bold mb-4">Product Category</h3>
+
+                        <h4 class="font-semibold text-sm mb-2">Automotive Lubricant</h4>
+                        <div class="space-y-2 pl-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" value="Car Engine Oil" v-model="selectedCategories" class="mr-2">
+                            Car Engine Oil
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" value="Bike Engine Oil" v-model="selectedCategories" class="mr-2">
+                            Bike Engine Oil
+                        </label>
+                        </div>
+
+                        <h4 class="font-semibold text-sm mt-4 mb-2">Greases</h4>
+                        <div class="space-y-2 pl-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" value="Grease" v-model="selectedCategories" class="mr-2">
+                            Grease
+                        </label>
+                        </div>
+
+                        <h4 class="font-semibold text-sm mt-4 mb-2">Industrial Lubricants</h4>
+                        <div class="space-y-2 pl-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" value="Hydraulic Oils" v-model="selectedCategories" class="mr-2">
+                            Hydraulic Oils
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" value="Compressor Oils" v-model="selectedCategories" class="mr-2">
+                            Compressor Oils
+                        </label>
+                        </div>
+                    </div>
                     </aside>
 
                     <!-- Main Content -->
                     <main class="lg:col-span-3">
-                        <!-- Header -->
-                        <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-                            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                                <h1 class="text-2xl font-bold mb-4 md:mb-0">Motor Oil</h1>
+                    <!-- Header -->
+                    <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                        <h1 class="text-2xl font-bold mb-4 md:mb-0">Motor Oil</h1>
 
-                                <div class="flex items-center gap-4">
-                                    <!-- View Toggle -->
-                                    <div class="flex gap-2">
-                                        <button @click="viewMode = 'grid'" class="p-2 rounded"
-                                            :class="viewMode === 'grid' ? 'bg-primary text-white' : 'bg-gray-100'">
-                                            <font-awesome-icon icon="th" />
-                                        </button>
-                                        <button @click="viewMode = 'list'" class="p-2 rounded"
-                                            :class="viewMode === 'list' ? 'bg-primary text-white' : 'bg-gray-100'">
-                                            <font-awesome-icon icon="list" />
-                                        </button>
-                                    </div>
-
-                                    <!-- Sort Dropdown -->
-                                    <select v-model="sortBy"
-                                        class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                                        <option value="featured">Featured</option>
-                                        <option value="price-low">Price: Low to High</option>
-                                        <option value="price-high">Price: High to Low</option>
-                                        <option value="name">Name: A to Z</option>
-                                        <option value="rating">Best Rating</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Products Grid/List -->
-                        <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div v-for="i in 6" :key="i" class="animate-pulse">
-                                <div class="bg-gray-300 h-48 rounded-t-lg"></div>
-                                <div class="bg-white p-4 rounded-b-lg">
-                                    <div class="h-4 bg-gray-300 rounded mb-2"></div>
-                                    <div class="h-4 bg-gray-300 rounded w-3/4"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div v-else-if="products.length === 0" class="text-center py-12 bg-white rounded-lg shadow-md">
-                            <font-awesome-icon icon="box" size="3x" class="text-gray-400 mb-4" />
-                            <p class="text-gray-600">No products found matching your criteria</p>
-                            <button @click="clearFilters" class="mt-4 text-primary hover:underline">
-                                Clear all filters
+                        <div class="flex items-center gap-4">
+                            <!-- View Toggle -->
+                            <div class="flex gap-2">
+                            <button @click="viewMode = 'grid'" class="p-2 rounded"
+                                :class="viewMode === 'grid' ? 'bg-primary text-white' : 'bg-gray-100'">
+                                <font-awesome-icon icon="th" />
                             </button>
+                            <button @click="viewMode = 'list'" class="p-2 rounded"
+                                :class="viewMode === 'list' ? 'bg-primary text-white' : 'bg-gray-100'">
+                                <font-awesome-icon icon="list" />
+                            </button>
+                            </div>
+
+                            <!-- Sort Dropdown -->
+                            <select v-model="sortBy"
+                            class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="featured">Featured</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="name">Name: A to Z</option>
+                            <option value="rating">Best Rating</option>
+                            </select>
                         </div>
-
-                        <div v-else class="grid gap-6"
-                            :class="viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'">
-                            <ProductCard v-for="product in paginatedProducts" :key="product.id" :product="product"
-                                :view-mode="viewMode" />
                         </div>
+                    </div>
 
-                        <!-- Pagination -->
-                        <div v-if="products.length > 0" class="mt-8 flex justify-center">
-                            <nav class="flex items-center gap-2">
-                                <button @click="currentPage--" :disabled="currentPage === 1"
-                                    class="px-3 py-2 rounded border hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <font-awesome-icon icon="chevron-left" />
-                                </button>
-
-                                <button v-for="page in displayedPages" :key="page" @click="currentPage = page"
-                                    class="px-3 py-2 rounded border min-w-[40px]"
-                                    :class="currentPage === page ? 'bg-primary text-white' : 'hover:bg-gray-100'">
-                                    {{ page }}
-                                </button>
-
-                                <button @click="currentPage++" :disabled="currentPage === totalPages"
-                                    class="px-3 py-2 rounded border hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <font-awesome-icon icon="chevron-right" />
-                                </button>
-                            </nav>
+                    <!-- Products Grid/List -->
+                    <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div v-for="i in 6" :key="i" class="animate-pulse">
+                        <div class="bg-gray-300 h-48 rounded-t-lg"></div>
+                        <div class="bg-white p-4 rounded-b-lg">
+                            <div class="h-4 bg-gray-300 rounded mb-2"></div>
+                            <div class="h-4 bg-gray-300 rounded w-3/4"></div>
                         </div>
+                        </div>
+                    </div>
+
+                    <div v-else-if="products.length === 0"
+                        class="text-center py-12 bg-white rounded-lg shadow-md">
+                        <font-awesome-icon icon="box" size="3x" class="text-gray-400 mb-4" />
+                        <p class="text-gray-600">No products found matching your criteria</p>
+                        <button @click="clearFilters" class="mt-4 text-primary hover:underline">
+                        Clear all filters
+                        </button>
+                    </div>
+
+                    <div v-else class="grid gap-6"
+                        :class="viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'">
+                        <ProductCard v-for="product in filteredProducts" :key="product.id"
+                        :product="product" :view-mode="viewMode" />
+                    </div>
+
+                    <!-- Load More -->
+                    <div v-if="products.length > 0" class="mt-8 flex justify-center">
+                        <button @click="loadMore" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-dark">
+                        Load More
+                        </button>
+                    </div>
                     </main>
                 </div>
             </div>
         </section>
-
-        <!-- Bottom CTA Section -->
-        <CTA />
-        <!-- Download Button -->
-        <Brochure/>
 
     </DefaultLayout>
 </template>
@@ -234,22 +264,31 @@ import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import ProductCard from '@/components/products/ProductCard.vue'
 import CategoryFilter from '@/components/products/CategoryFilter.vue'
 import productsService from '@/services/products.service'
-import Brochure from '@/components/common/Brochure.vue'
-import CTA from '@/components/common/CTA.vue'
 
 const route = useRoute()
 const router = useRouter()
 
-const products = ref([])
-const loading = ref(false)
-const viewMode = ref('grid')
-const sortBy = ref('featured')
+// const products = ref([])
+const selectedCategories = ref([])
+const minPrice = ref(null)
+const maxPrice = ref(null)
 const currentPage = ref(1)
 const perPage = ref(12)
 const filters = ref({
     categories: [],
     priceRange: { min: '', max: '' }
 })
+
+const viewMode = ref("grid")
+const sortBy = ref("featured")
+const loading = ref(false)
+
+const products = ref([
+  { id: 1, name: "RUB Motor Oil", category: "Car Engine Oil", price: 120 },
+  { id: 2, name: "RUB Bike Oil", category: "Bike Engine Oil", price: 80 },
+  { id: 3, name: "Hydraulic Oil", category: "Hydraulic Oils", price: 200 },
+  // ... more products
+])
 
 // Mock products data
 onMounted(async () => {
@@ -273,39 +312,39 @@ onMounted(async () => {
 })
 
 const filteredProducts = computed(() => {
-    let result = [...products.value]
+  let filtered = products.value
 
-    // Apply category filter
-    if (filters.value.categories.length > 0) {
-        // Filter by categories
-    }
+  // Filter by category
+  if (selectedCategories.value.length > 0) {
+    filtered = filtered.filter(p =>
+      selectedCategories.value.includes(p.category)
+    )
+  }
 
-    // Apply price filter
-    if (filters.value.priceRange.min) {
-        result = result.filter(p => p.price >= filters.value.priceRange.min)
-    }
-    if (filters.value.priceRange.max) {
-        result = result.filter(p => p.price <= filters.value.priceRange.max)
-    }
+  // Filter by price
+  if (minPrice.value) {
+    filtered = filtered.filter(p => p.price >= minPrice.value)
+  }
+  if (maxPrice.value) {
+    filtered = filtered.filter(p => p.price <= maxPrice.value)
+  }
 
-    // Apply sorting
-    switch (sortBy.value) {
-        case 'price-low':
-            result.sort((a, b) => a.price - b.price)
-            break
-        case 'price-high':
-            result.sort((a, b) => b.price - a.price)
-            break
-        case 'name':
-            result.sort((a, b) => a.name.localeCompare(b.name))
-            break
-        case 'rating':
-            result.sort((a, b) => b.rating - a.rating)
-            break
-    }
-
-    return result
+  return filtered
 })
+
+const loadMore = () => {
+  console.log("Load more triggered")
+}
+
+const clearFilters = () => {
+  selectedCategories.value = []
+  minPrice.value = null
+  maxPrice.value = null
+   filters.value = {
+        categories: [],
+        priceRange: { min: '', max: '' }
+    }
+}
 
 const totalPages = computed(() =>
     Math.ceil(filteredProducts.value.length / perPage.value)
@@ -337,13 +376,6 @@ const displayedPages = computed(() => {
 const handleFilterUpdate = (newFilters) => {
     filters.value = newFilters
     currentPage.value = 1
-}
-
-const clearFilters = () => {
-    filters.value = {
-        categories: [],
-        priceRange: { min: '', max: '' }
-    }
 }
 
 // Watch for route query changes
