@@ -9,6 +9,7 @@ use App\Models\Distributor;
 use App\Rules\PasswordCheck;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\RegistrationSuccessMail;
 use App\Mail\UserLoggedInNotification;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Validator;
@@ -27,6 +29,262 @@ use Symfony\Component\Mailer\Exception\TransportException;
 
 class AuthController extends Controller
 {
+    
+    private function validateRegistration(Request $request, string $role): array
+    {
+        $userRules = $this->getUserValidationRules();
+        $validationRules = $role === 'distributor' 
+            ? array_merge($userRules, $this->getDistributorValidationRules()) 
+            : $userRules;
+        
+        $validator = Validator::make($request->all(), $validationRules);
+        
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+        
+        return $validator->validated();
+    }
+    
+    private function getUserValidationRules(): array
+    {
+        return [
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'phone' => ['required', 'string', 'max:20'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ];
+    }
+    
+    private function getDistributorValidationRules(): array
+    {
+        return [
+            // Company Information
+            'company_name' => 'required|string|max:255',
+            'registered_name' => 'nullable|string|max:255',
+            'rc_number' => 'required|string|max:100',
+            'business_address' => 'required|string|max:500',
+            'office_phone' => 'required|string|max:20',
+            'website' => 'required|url|max:255',
+            'company_type' => 'required|string|max:100',
+            
+            // Contact Person
+            'contact_full_name' => 'required|string|max:255',
+            'contact_position' => 'required|string|max:100',
+            'contact_mobile' => 'required|string|max:20',
+            'id_number' => 'required|string|max:100',
+            'means_of_id' => 'required|string|max:100',
+            
+            // Distribution Capacity
+            'years_in_business' => 'required|integer|min:0|max:200',
+            'current_product_lines' => 'required|string|max:500',
+            'monthly_capacity' => 'required|string|max:255',
+            'regions_covered' => 'required|string|max:255',
+            'number_of_sales_staff' => 'required|integer|min:0|max:10000',
+            'has_warehouse' => 'required|boolean',
+            'preferred_region' => 'required|string|max:255',
+            'has_vehicles' => 'required|boolean',
+            'vehicle_details' => 'required|string|max:500',
+            
+            // Distribution Strategy
+            'product_categories' => 'required|array',
+            'product_categories.*' => 'required|string|max:100',
+            'willing_to_train' => 'required|boolean',
+            'has_technical_knowledge' => 'required|boolean',
+            'distribution_start_time' => 'required|string|max:100',
+            
+            // States of Interest
+            'preferred_states' => 'required|array',
+            'preferred_states.*' => 'required|string|max:100',
+            'promo_participation' => 'required|in:Yes,No,Depends',
+            
+            // Banking
+            'bank_name' => 'required|string|max:255',
+            'account_name' => 'required|string|max:255',
+            'account_number' => 'required|string|max:20',
+            'bvn' => 'required|string|size:11',
+            'partnerships' => 'required|string',
+            
+            // Declaration
+            'declarant_name' => 'required|string|max:255',
+            'declaration_date' => 'required|date',
+            
+            // File Uploads
+            'cac_certificate' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'form_co7' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'memart' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'utility_bill' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'tin_certificate' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'id_of_contact' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'referee_letter' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'signature' => 'required|file|mimes:jpg,jpeg,png|max:1024',
+        ];
+    }
+    
+    private function createUser(array $validatedData, string $role): User
+    {
+        return User::create([
+            'first_name' => $validatedData['first_name'],
+            'last_name' => $validatedData['last_name'],
+            'email' => $validatedData['email'],
+            'phone' => $validatedData['phone'],
+            'password' => Hash::make($validatedData['password']),
+            'role' => $role === 'distributor' ? 'distributor' : 'customer',
+            'status' => $role === 'distributor' ? 'pending' : 'approved',
+            'email_verified_at' => null,
+        ]);
+    }
+    
+    private function createDistributorProfile(User $user, array $validatedData, Request $request): Distributor
+    {
+        // Prepare distributor data (exclude user fields)
+        $distributorData = collect($validatedData)
+            ->except(['first_name', 'last_name', 'email', 'phone', 'password', 'password_confirmation'])
+            ->toArray();
+        
+        // Handle file uploads
+        $distributorData = $this->handleFileUploads($distributorData, $request, $user->id);
+        
+        // Add user reference
+        $distributorData['user_id'] = $user->id;
+        $distributorData['email'] = $user->email;
+        
+        return Distributor::create($distributorData);
+    }
+    
+    private function handleFileUploads(array $distributorData, Request $request, int $userId): array
+    {
+        $fileFields = [
+            'cac_certificate', 'form_co7', 'memart', 'utility_bill',
+            'tin_certificate', 'id_of_contact', 'referee_letter', 'signature'
+        ];
+        
+        foreach ($fileFields as $field) {
+            if ($request->hasFile($field)) {
+                try {
+                    $file = $request->file($field);
+                    $extension = $file->getClientOriginalExtension();
+                    $filename = $field . '.' . $extension;
+                    
+                    // Store file with a more organized path structure
+                    $path = $file->storeAs(
+                        "distributors/{$userId}", 
+                        $filename, 
+                        'public'
+                    );
+                    
+                    $distributorData[$field] = $path;
+                } catch (\Exception $e) {
+                    // Log file upload error and throw exception to trigger rollback
+                    Log::error("File upload failed for {$field}: " . $e->getMessage());
+                    throw new \Exception("Failed to upload {$field}. Please try again.");
+                }
+            }
+        }
+        
+        return $distributorData;
+    }
+    
+    private function sendRegistrationEmail(User $user): void
+    {
+        try {
+            Mail::to($user->email)->queue(new RegistrationSuccessMail($user));
+        } catch (\Exception $e) {
+            // Log email sending error but don't fail the registration
+            Log::error('Failed to send registration email: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'email' => $user->email
+            ]);
+        }
+    }
+    
+    private function cleanupUserFiles(int $userId): void
+    {
+        try {
+            $userDirectory = "distributors/{$userId}";
+            if (Storage::disk('public')->exists($userDirectory)) {
+                Storage::disk('public')->deleteDirectory($userDirectory);
+            }
+        } catch (Exception $e) {
+            Log::error('Failed to cleanup user files: ' . $e->getMessage(), [
+                'user_id' => $userId
+            ]);
+        }
+    }
+
+    public function register(Request $request): JsonResponse
+    {
+        $role = $request->input('role', 'customer');
+        
+        try {
+            // Validate the request
+            $validatedData = $this->validateRegistration($request, $role);
+            
+            // Use database transaction to ensure data consistency
+            $result = DB::transaction(function () use ($validatedData, $role, $request, &$userId) {
+                // Create the user
+                $user = $this->createUser($validatedData, $role);
+                $userId = $user->id; // Store user ID for potential cleanup
+                
+                // Create distributor profile if needed
+                if ($role === 'distributor') {
+                    $this->createDistributorProfile($user, $validatedData, $request);
+                }
+                
+                return $user;
+            });
+            
+            // Send registration email (outside transaction to avoid rollback issues)
+            $this->sendRegistrationEmail($result);
+            
+            // Fire registration event
+            event(new Registered($result));
+            
+            // Generate API token
+            $token = $result->createToken('api-token')->plainTextToken;
+            
+            return response()->json([
+                'message' => 'Registration successful. Please check your email to verify your account.',
+                'user' => $result,
+                'token' => $token,
+                'token_type' => 'Bearer'
+            ], 201);
+            
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (Exception $e) {
+            if ($userId && $role === 'distributor') {
+                $this->cleanupUserFiles($userId);
+            }
+
+            // Log the error for debugging
+            Log::error('Registration failed: ' . $e->getMessage(), [
+                'email' => $request->email ?? 'unknown',
+                'role' => $role,
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'message' => 'Registration failed. Please try again.',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+            ], 500);
+        }
+    }
+    
+
+
+
+
+
+
+
+
+
+
     public function login(Request $request): JsonResponse
     {
         try {
@@ -88,148 +346,6 @@ class AuthController extends Controller
                 'error' => 'Please try again later.',
             ], 500);
         }
-    }
-
-    public function register(Request $request): JsonResponse
-    {
-        // Determine the role, defaulting to 'customer' if not provided
-        $role = $request->input('role', 'customer');
-
-        // Common user validation rules
-        $userRules = [
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name'  => ['required', 'string', 'max:255'],
-            'email'      => ['required', 'email', 'unique:users,email'],
-            'phone'      => ['required', 'string', 'max:20'],
-            'password'   => ['required', 'string', 'min:6', 'confirmed'], // Added 'confirmed' rule
-        ];
-
-        // Additional rules for distributors
-        $distributorRules = [
-            // Company
-            'company_name'        => 'required|string|max:255',
-            'registered_name'     => 'string|max:255',
-            'rc_number'           => 'required|string|max:100',
-            // 'email'               => 'required|email|max:255|unique:distributors,email',
-            'business_address'    => 'required|string|max:500',
-            'office_phone'        => 'required|string|max:20',
-            'website'             => 'required|url|max:255',
-            'company_type'        => 'required|string|max:100',
-
-            // Contact Person
-            'contact_full_name'   => 'required|string|max:255',
-            'contact_position'    => 'required|string|max:100',
-            'contact_mobile'      => 'required|string|max:20',
-            'id_number'           => 'required|string|max:100',
-            'means_of_id'         => 'required|string|max:100',
-
-            // Distribution Capacity
-            'years_in_business'   => 'required|integer|min:0|max:200',
-            'current_product_lines' => 'required|string|max:500',
-            'monthly_capacity'    => 'required|string|max:255',
-            'regions_covered'     => 'required|string|max:255',
-            'number_of_sales_staff'=> 'required|integer|min:0|max:10000',
-            'has_warehouse'       => 'required|boolean',
-            'preferred_region'    => 'required|string|max:255',
-            'has_vehicles'        => 'required|boolean',
-            'vehicle_details'     => 'required|string|max:500',
-
-            // Distribution Strategy
-            'product_categories'  => 'required|array',
-            'product_categories.*'=> 'required|string|max:100', // each category item
-            'willing_to_train'    => 'required|boolean',
-            'has_technical_knowledge' => 'required|boolean',
-            'distribution_start_time' => 'required|string|max:100',
-
-            // States of Interest
-            'preferred_states'    => 'required|array',
-            'preferred_states.*'  => 'required|string|max:100',
-            'promo_participation' => 'required|in:Yes,No,Depends',
-
-            // Banking
-            'bank_name'           => 'required|string|max:255',
-            'account_name'        => 'required|string|max:255',
-            'account_number'      => 'required|string|max:20',
-            'bvn'                 => 'required|string|max:11', // BVN is 11 digits in Nigeria
-            'partnerships'        => 'required|string',
-
-            // Declaration
-            'declarant_name'      => 'required|string|max:255',
-            'declaration_date'    => 'required|date',
-
-            // Uploads (files)
-            'cac_certificate'     => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'form_co7'            => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'memart'              => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'utility_bill'        => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'tin_certificate'     => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'id_of_contact'       => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'referee_letter'      => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'signature'           => 'required|file|mimes:jpg,jpeg,png|max:1024',
-        ];
-
-        // Merge rules conditionally based on the role
-        $validationRules = $role === 'distributor' ? array_merge($userRules, $distributorRules) : $userRules;
-
-        $validator = Validator::make($request->all(), $validationRules);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed.',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        // Create user
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name'  => $request->last_name,
-            'email'      => $request->email,
-            'phone'      => $request->phone,
-            'password'   => Hash::make($request->password), // Hash the password
-            'role'       => $role === 'distributor' ? 'distributor' : 'customer',
-            'status'     => $role === 'distributor' ? 'pending' : 'approved', // Default status based on role
-        ]);
-
-        // If distributor, create corresponding distributor profile
-        if ($role === 'distributor') {
-            $distributorData = collect($validator->validated())
-                ->except(['first_name', 'last_name', 'email', 'phone', 'password'])
-                ->all();
-
-            $fileFields = [
-                'cac_certificate', 'form_co7', 'memart', 'utility_bill',
-                'tin_certificate', 'id_of_contact', 'referee_letter', 'signature'
-            ];
-
-            foreach ($fileFields as $field) {
-                if ($request->hasFile($field)) {
-                    $file     = $request->file($field);
-                    $ext      = $file->getClientOriginalExtension();
-                    $filename = "{$field}.{$ext}";
-
-                    $path = $file->storeAs("distributors/{$user->id}", $filename, 'public');
-                    $distributorData[$field] = $path;
-                }
-            }
-
-            $distributorData['user_id'] = $user->id;
-            $distributorData['email'] = $user->email;
-            Distributor::create($distributorData);
-        }
-
-        // Send Registration Success Email (your custom mail)
-        Mail::to($user->email)->queue(new RegistrationSuccessMail($user));
-
-        event(new Registered($user));
-
-        $token = $user->createToken('api-token')->plainTextToken;
-        return response()->json([
-            'message'   => 'Registration successful. Please check your email to verify your account.',
-            'user'      => $user,
-            'token'     => $token,
-            'token_type'=> "Bearer"
-        ], 201); // 201 Created status code
     }
 
     public function emailVerify(EmailVerificationRequest $request): JsonResponse
