@@ -110,10 +110,10 @@ class AuthController extends Controller
             'company_name'        => 'required|string|max:255',
             'registered_name'     => 'string|max:255',
             'rc_number'           => 'required|string|max:100',
-            'email'               => 'required|email|max:255|unique:distributors,email',
+            // 'email'               => 'required|email|max:255|unique:distributors,email',
             'business_address'    => 'required|string|max:500',
-            'office_phone'        => 'string|max:20',
-            'website'             => 'url|max:255',
+            'office_phone'        => 'required|string|max:20',
+            'website'             => 'required|url|max:255',
             'company_type'        => 'required|string|max:100',
 
             // Contact Person
@@ -124,48 +124,48 @@ class AuthController extends Controller
             'means_of_id'         => 'required|string|max:100',
 
             // Distribution Capacity
-            'years_in_business'   => 'integer|min:0|max:200',
-            'current_product_lines' => 'string|max:500',
-            'monthly_capacity'    => 'string|max:255',
-            'regions_covered'     => 'string|max:255',
-            'number_of_sales_staff'=> 'integer|min:0|max:10000',
-            'has_warehouse'       => 'boolean',
+            'years_in_business'   => 'required|integer|min:0|max:200',
+            'current_product_lines' => 'required|string|max:500',
+            'monthly_capacity'    => 'required|string|max:255',
+            'regions_covered'     => 'required|string|max:255',
+            'number_of_sales_staff'=> 'required|integer|min:0|max:10000',
+            'has_warehouse'       => 'required|boolean',
             'preferred_region'    => 'required|string|max:255',
-            'has_vehicles'        => 'boolean',
-            'vehicle_details'     => 'string|max:500',
+            'has_vehicles'        => 'required|boolean',
+            'vehicle_details'     => 'required|string|max:500',
 
             // Distribution Strategy
-            'product_categories'  => 'array',
-            'product_categories.*'=> 'string|max:100', // each category item
-            'willing_to_train'    => 'boolean',
-            'has_technical_knowledge' => 'boolean',
-            'distribution_start_time' => 'string|max:100',
+            'product_categories'  => 'required|array',
+            'product_categories.*'=> 'required|string|max:100', // each category item
+            'willing_to_train'    => 'required|boolean',
+            'has_technical_knowledge' => 'required|boolean',
+            'distribution_start_time' => 'required|string|max:100',
 
             // States of Interest
-            'preferred_states'    => 'array',
-            'preferred_states.*'  => 'string|max:100',
-            'promo_participation' => 'in:Yes,No,Depends',
+            'preferred_states'    => 'required|array',
+            'preferred_states.*'  => 'required|string|max:100',
+            'promo_participation' => 'required|in:Yes,No,Depends',
 
             // Banking
             'bank_name'           => 'required|string|max:255',
             'account_name'        => 'required|string|max:255',
             'account_number'      => 'required|string|max:20',
-            'bvn'                 => 'string|max:11', // BVN is 11 digits in Nigeria
-            'partnerships'        => 'string',
+            'bvn'                 => 'required|string|max:11', // BVN is 11 digits in Nigeria
+            'partnerships'        => 'required|string',
 
             // Declaration
             'declarant_name'      => 'required|string|max:255',
             'declaration_date'    => 'required|date',
 
             // Uploads (files)
-            'cac_certificate'     => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'form_co7'            => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'memart'              => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'utility_bill'        => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'tin_certificate'     => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'id_of_contact'       => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'referee_letter'      => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'signature'           => 'file|mimes:jpg,jpeg,png|max:1024',
+            'cac_certificate'     => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'form_co7'            => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'memart'              => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'utility_bill'        => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'tin_certificate'     => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'id_of_contact'       => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'referee_letter'      => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'signature'           => 'required|file|mimes:jpg,jpeg,png|max:1024',
         ];
 
         // Merge rules conditionally based on the role
@@ -206,16 +206,15 @@ class AuthController extends Controller
                 if ($request->hasFile($field)) {
                     $file     = $request->file($field);
                     $ext      = $file->getClientOriginalExtension();
-                    $filename = "{$field}_{$user->id}.{$ext}";
+                    $filename = "{$field}.{$ext}";
 
-                    // Store in distributors/{user_id}/ with custom name
                     $path = $file->storeAs("distributors/{$user->id}", $filename, 'public');
-
                     $distributorData[$field] = $path;
                 }
             }
 
             $distributorData['user_id'] = $user->id;
+            $distributorData['email'] = $user->email;
             Distributor::create($distributorData);
         }
 
