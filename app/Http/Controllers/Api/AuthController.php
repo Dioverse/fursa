@@ -106,27 +106,66 @@ class AuthController extends Controller
 
         // Additional rules for distributors
         $distributorRules = [
+            // Company
             'company_name'        => 'required|string|max:255',
-            'rc_number'           => 'required|string',
-            'business_address'    => 'required|string',
-            'company_type'        => 'required|string',
-            'contact_full_name'   => 'required|string',
-            'contact_position'    => 'required|string',
-            'contact_mobile'      => 'required|string',
-            'id_number'           => 'required|string',
-            'means_of_id'         => 'required|string',
-            'preferred_region'    => 'required|string',
-            'bank_name'           => 'required|string',
-            'account_name'        => 'required|string',
-            'account_number'      => 'required|string',
-            'declarant_name'      => 'required|string',
+            'registered_name'     => 'string|max:255',
+            'rc_number'           => 'required|string|max:100',
+            'email'               => 'required|email|max:255|unique:distributors,email',
+            'business_address'    => 'required|string|max:500',
+            'office_phone'        => 'string|max:20',
+            'website'             => 'url|max:255',
+            'company_type'        => 'required|string|max:100',
+
+            // Contact Person
+            'contact_full_name'   => 'required|string|max:255',
+            'contact_position'    => 'required|string|max:100',
+            'contact_mobile'      => 'required|string|max:20',
+            'id_number'           => 'required|string|max:100',
+            'means_of_id'         => 'required|string|max:100',
+
+            // Distribution Capacity
+            'years_in_business'   => 'integer|min:0|max:200',
+            'current_product_lines' => 'string|max:500',
+            'monthly_capacity'    => 'string|max:255',
+            'regions_covered'     => 'string|max:255',
+            'number_of_sales_staff'=> 'integer|min:0|max:10000',
+            'has_warehouse'       => 'boolean',
+            'preferred_region'    => 'required|string|max:255',
+            'has_vehicles'        => 'boolean',
+            'vehicle_details'     => 'string|max:500',
+
+            // Distribution Strategy
+            'product_categories'  => 'array',
+            'product_categories.*'=> 'string|max:100', // each category item
+            'willing_to_train'    => 'boolean',
+            'has_technical_knowledge' => 'boolean',
+            'distribution_start_time' => 'string|max:100',
+
+            // States of Interest
+            'preferred_states'    => 'array',
+            'preferred_states.*'  => 'string|max:100',
+            'promo_participation' => 'in:Yes,No,Depends',
+
+            // Banking
+            'bank_name'           => 'required|string|max:255',
+            'account_name'        => 'required|string|max:255',
+            'account_number'      => 'required|string|max:20',
+            'bvn'                 => 'string|max:11', // BVN is 11 digits in Nigeria
+            'partnerships'        => 'string',
+
+            // Declaration
+            'declarant_name'      => 'required|string|max:255',
             'declaration_date'    => 'required|date',
-            // Add validation for other distributor-specific fields that are 'required'
-            // For example, if 'cac_certificate' is required:
-            // 'cac_certificate' => 'required|string', // Assuming it's a URL or path
-            // Note: Fields like 'registered_name', 'office_phone', 'website', etc.
-            // are in $request->only() but not in $distributorRules, meaning they are optional.
-            // If any of these are required, add them to $distributorRules.
+
+            // Uploads (files)
+            'cac_certificate'     => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'form_co7'            => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'memart'              => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'utility_bill'        => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'tin_certificate'     => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'id_of_contact'       => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'referee_letter'      => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'signature'           => 'file|mimes:jpg,jpeg,png|max:1024',
         ];
 
         // Merge rules conditionally based on the role
@@ -154,27 +193,27 @@ class AuthController extends Controller
 
         // If distributor, create corresponding distributor profile
         if ($role === 'distributor') {
-            // It's good practice to pass only validated data to create,
-            // or explicitly list the fields you expect.
-            // Using $validator->validated() for distributor specific fields ensures they are valid.
-            $distributorValidatedData = $validator->validated();
+            $distributorData = collect($validator->validated())
+                ->except(['first_name', 'last_name', 'email', 'phone', 'password'])
+                ->all();
 
-            // Filter out user-specific fields from distributor data
-            $distributorData = collect($distributorValidatedData)->only([
-                'company_name', 'rc_number', 'business_address', 'company_type',
-                'contact_full_name', 'contact_position', 'contact_mobile',
-                'id_number', 'means_of_id', 'preferred_region', 'bank_name',
-                'account_name', 'account_number', 'declarant_name', 'declaration_date',
-                // Include other distributor fields that are optional but might be present
-                'registered_name', 'office_phone', 'website', 'years_in_business',
-                'current_product_lines', 'monthly_capacity', 'regions_covered',
-                'number_of_sales_staff', 'has_warehouse', 'vehicle_details',
-                'product_categories', 'willing_to_train', 'has_technical_knowledge',
-                'distribution_start_time', 'preferred_states', 'promo_participation',
-                'bvn', 'partnerships', 'cac_certificate', 'form_co7',
-                'memart', 'utility_bill', 'tin_certificate', 'id_of_contact',
-                'referee_letter', 'signature',
-            ])->all();
+            $fileFields = [
+                'cac_certificate', 'form_co7', 'memart', 'utility_bill',
+                'tin_certificate', 'id_of_contact', 'referee_letter', 'signature'
+            ];
+
+            foreach ($fileFields as $field) {
+                if ($request->hasFile($field)) {
+                    $file     = $request->file($field);
+                    $ext      = $file->getClientOriginalExtension();
+                    $filename = "{$field}_{$user->id}.{$ext}";
+
+                    // Store in distributors/{user_id}/ with custom name
+                    $path = $file->storeAs("distributors/{$user->id}", $filename, 'public');
+
+                    $distributorData[$field] = $path;
+                }
+            }
 
             $distributorData['user_id'] = $user->id;
             Distributor::create($distributorData);
@@ -183,14 +222,12 @@ class AuthController extends Controller
         // Send Registration Success Email (your custom mail)
         Mail::to($user->email)->queue(new RegistrationSuccessMail($user));
 
-        // Trigger Laravel's built-in email verification notification
-        // This will send the verification email if the User model implements MustVerifyEmail
         event(new Registered($user));
 
         $token = $user->createToken('api-token')->plainTextToken;
         return response()->json([
             'message'   => 'Registration successful. Please check your email to verify your account.',
-            'user'      => $user, // Optionally return the user object
+            'user'      => $user,
             'token'     => $token,
             'token_type'=> "Bearer",
             
