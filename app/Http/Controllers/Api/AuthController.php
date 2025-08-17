@@ -229,8 +229,7 @@ class AuthController extends Controller
             'message'   => 'Registration successful. Please check your email to verify your account.',
             'user'      => $user,
             'token'     => $token,
-            'token_type'=> "Bearer",
-            
+            'token_type'=> "Bearer"
         ], 201); // 201 Created status code
     }
 
