@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\RegistrationSuccessMail;
 use App\Mail\UserLoggedInNotification;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Validator;
@@ -93,13 +92,6 @@ class AuthController extends Controller
 
     public function register(Request $request): JsonResponse
     {
-        $exitCode = Artisan::call('storage:link');
-
-    if ($exitCode === 0) {
-        return response()->json(['Storage link created successfully.']);
-    } else {
-        return response()->json(['Failed to create storage link.']);
-    }
         // Determine the role, defaulting to 'customer' if not provided
         $role = $request->input('role', 'customer');
 
