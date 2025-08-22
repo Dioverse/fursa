@@ -5,12 +5,12 @@
                 Email address:
             </label>
             <div class="relative">
-                <input v-model="form.email" type="email" placeholder="Johndoe@gmail.com"
+                <input v-model="form.user" type="email" placeholder="Johndoe@gmail.com"
                     class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    :class="{ 'border-red-500': errors.email }" required>
+                    :class="{ 'border-red-500': errors.user }" required>
                 <font-awesome-icon icon="envelope" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             </div>
-            <span v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email }}</span>
+            <span v-if="errors.user" class="text-red-500 text-sm mt-1">{{ errors.user }}</span>
         </div>
 
         <div>
@@ -54,13 +54,13 @@ import BaseButton from '@/components/common/BaseButton.vue'
 const emit = defineEmits(['submit'])
 
 const form = reactive({
-    email: '',
+    user: '',
     password: '',
     remember: false
 })
 
 const errors = reactive({
-    email: '',
+    user: '',
     password: ''
 })
 
@@ -68,13 +68,13 @@ const loading = ref(false)
 const showPassword = ref(false)
 
 const validateForm = () => {
-    errors.email = ''
+    errors.user = ''
     errors.password = ''
 
-    if (!form.email) {
-        errors.email = 'Email is required'
-    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-        errors.email = 'Email is invalid'
+    if (!form.user) {
+        errors.user = 'User is required'
+    } else if (!/\S+@\S+\.\S+/.test(form.user)) {
+        errors.user = 'User is invalid'
     }
 
     if (!form.password) {
@@ -83,7 +83,7 @@ const validateForm = () => {
         errors.password = 'Password must be at least 6 characters'
     }
 
-    return !errors.email && !errors.password
+    return !errors.user && !errors.password
 }
 
 const handleSubmit = async () => {

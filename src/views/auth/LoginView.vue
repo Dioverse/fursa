@@ -55,7 +55,8 @@ const handleLogin = async (credentials) => {
         const redirectTo = router.currentRoute.value.query.redirect || '/dashboard'
         router.push(redirectTo)
     } catch (error) {
-        toast.error(error.message || 'Login failed. Please try again.')
+        // console.error('Login error:', error.response?.data?.errors?.user[0] || error.message)
+        toast.error(error.response?.data?.errors?.user[0] || 'Invalid login credentials. Please try again.')
     }
 }
 </script>

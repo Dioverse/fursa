@@ -2,15 +2,15 @@ import api from './api'
 
 const authService = {
   async login(credentials) {
-    return api.post('/auth/login', credentials)
+    return api.post('/login', credentials)
   },
 
   async register(userData) {
-    return api.post('/auth/register', userData)
+    return api.post('/register', userData)
   },
 
   async logout() {
-    return api.post('/auth/logout')
+    return api.post('/logout')
   },
 
   async getCurrentUser() {

@@ -4,7 +4,7 @@
             <!-- Welcome Section -->
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h1 class="text-2xl font-bold mb-2">
-                    Hello {{ user?.firstName || 'John' }}!
+                    Hello {{ user?.first_name }}!
                     <button @click="handleLogout" class="text-primary hover:underline text-base font-normal ml-2">
                         Log Out
                     </button>

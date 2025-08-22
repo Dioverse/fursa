@@ -53,7 +53,15 @@ const handleRegister = async (userData) => {
         toast.success('Registration successful! Please login.')
         router.push('/login')
     } catch (error) {
-        toast.error(error.message || 'Registration failed. Please try again.')
+        if (error.response?.status === 422) {
+        const errors = error.response.data.errors;
+
+        // Grab first error message
+        const firstError = Object.values(errors)[0][0];
+        toast.error(firstError);
+        } else {
+        toast.error(error.response?.data?.message || "Registration failed. Please try again.");
+        }
     }
 }
 </script>

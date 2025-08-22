@@ -27,25 +27,23 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
-
-      const response = await authService.login(credentials);
       // Mock API call - replace with actual API
-      // const response = await new Promise((resolve) => {
-      //   setTimeout(() => {
-      //     resolve({
-      //       data: {
-      //         token: 'fake-jwt-token-' + Date.now(),
-      //         user: {
-      //           id: 1,
-      //           firstName: 'John',
-      //           lastName: 'Doe',
-      //           email: credentials.email,
-      //           phone: '+234-XXX-XXX-XXXX',
-      //         },
-      //       },
-      //     })
-      //   }, 1000)
-      // })
+      const response = await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            data: {
+              token: 'fake-jwt-token-' + Date.now(),
+              user: {
+                id: 1,
+                firstName: 'John',
+                lastName: 'Doe',
+                email: credentials.email,
+                phone: '+234-XXX-XXX-XXXX',
+              },
+            },
+          })
+        }, 1000)
+      })
 
       token.value = response.data.token
       user.value = response.data.user
@@ -65,7 +63,18 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
-      const response = await authService.register(userData);
+      // Mock API call - replace with actual API
+      const response = await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            data: {
+              message: 'Registration successful',
+              user: userData,
+            },
+          })
+        }, 1000)
+      })
+
       return response
     } catch (err) {
       error.value = err.response?.data?.message || 'Registration failed'
@@ -81,6 +90,7 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     router.push('/login')
+    toast.success('Logged out successfully')
   }
 
   function checkAuth() {

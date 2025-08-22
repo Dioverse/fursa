@@ -5,7 +5,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     First name:
                 </label>
-                <input v-model="form.firstName" type="text" placeholder="John"
+                <input v-model="form.first_name" type="text" placeholder="John"
                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required>
             </div>
@@ -13,7 +13,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Last name:
                 </label>
-                <input v-model="form.lastName" type="text" placeholder="Doe"
+                <input v-model="form.last_name" type="text" placeholder="Doe"
                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required>
             </div>
@@ -25,6 +25,18 @@
             </label>
             <div class="relative">
                 <input v-model="form.email" type="email" placeholder="Johndoe@gmail.com"
+                    class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    required>
+                <font-awesome-icon icon="envelope" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number:
+            </label>
+            <div class="relative">
+                <input v-model="form.phone" type="tel" placeholder="08111111111"
                     class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required>
                 <font-awesome-icon icon="envelope" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -52,7 +64,7 @@
                 Confirm Password:
             </label>
             <div class="relative">
-                <input v-model="form.confirmPassword" :type="showConfirmPassword ? 'text' : 'password'"
+                <input v-model="form.password_confirmation" :type="showConfirmPassword ? 'text' : 'password'"
                     class="w-full px-4 py-3 pl-10 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required>
                 <font-awesome-icon icon="lock" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -87,11 +99,12 @@ import BaseButton from '@/components/common/BaseButton.vue'
 const emit = defineEmits(['submit'])
 
 const form = reactive({
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: '',
+    phone: '',
     password: '',
-    confirmPassword: '',
+    password_confirmation: '',
     terms: false
 })
 
@@ -100,7 +113,7 @@ const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 
 const handleSubmit = async () => {
-    if (form.password !== form.confirmPassword) {
+    if (form.password !== form.password_confirmation) {
         alert('Passwords do not match')
         return
     }
