@@ -338,7 +338,7 @@ class AuthController extends Controller
                 'message' => 'The given data was invalid.',
                 'errors' => $e->errors(),
             ], 422);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Catch any other unexpected errors
             Log::error("API Login error: " . $e->getMessage() . " on line " . $e->getLine() . " in " . $e->getFile());
             return response()->json([

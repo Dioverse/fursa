@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Controllers\Api\Admin\OrderController;
@@ -80,6 +81,7 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
     });
 
     // Shared routes for all authenticated users
+    Route::apiResource('carts', CartController::class);
 });
 
 Route::get('products', [GeneralProductController::class, 'index']);
