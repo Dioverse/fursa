@@ -348,28 +348,40 @@ class AuthController extends Controller
 
     public function emailVerify(EmailVerificationRequest $request, $id, $hash): JsonResponse
     {
+        // Retrieve the user by ID from the verification link
         $user = User::findOrFail($id);
 
-        // This is the core security check. It ensures the hash in the URL is valid.
+        // If already verified, just return a fresh token
+        if ($user->hasVerifiedEmail()) {
+            return $this->verificationResponse($user, 'Email already verified.');
+        }
+
         if (! hash_equals($hash, sha1($user->getEmailForVerification()))) {
             throw new AuthorizationException;
         }
 
-        // Check if the user's email is already verified
-        if ($user->hasVerifiedEmail()) {
-            return response()->json(['message' => 'Email already verified.'], 400);
-        }
-        
-        // Mark the user's email as verified
+        // Fulfill the verification (marks email as verified)
         $user->markEmailAsVerified();
-        
-        // Send registration email
-        // You might need to adjust this to fit your application's logic.
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Send a welcome/registration email
         $this->sendRegistrationEmail($user);
 
+        return $this->verificationResponse($user, 'Email verified successfully.', $token);
+    }
+
+    /**
+     * Helper to standardize verification response.
+     */
+    protected function verificationResponse(User $user, string $message, ?string $token = null): JsonResponse
+    {
         return response()->json([
-            'message' => 'Email verified successfully.'
-        ]);
+            'message'     => $message,
+            'user'        => $user,
+            'token'       => $token,
+            'token_type'  => 'bearer',
+        ], 200);
     }
 
     public function verificationSend(Request $request): JsonResponse
