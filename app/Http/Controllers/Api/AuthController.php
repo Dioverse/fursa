@@ -357,7 +357,7 @@ class AuthController extends Controller
 
         // If already verified, just return a fresh token
         if ($user->hasVerifiedEmail()) {
-            return response()->json(['message' => 'Email already verified.'], 200);
+            return response()->json(['message' => 'Email already verified.'], 400);
         }
 
         // Fulfill the verification (marks email as verified)
