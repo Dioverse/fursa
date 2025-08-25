@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use Symfony\Component\Mailer\Exception\TransportException;
@@ -345,16 +346,27 @@ class AuthController extends Controller
         }
     }
 
-    public function emailVerify(EmailVerificationRequest $request): JsonResponse
+    public function emailVerify(EmailVerificationRequest $request, $id, $hash): JsonResponse
     {
-        // Check if the authenticated user's email is already verified
-        if ($request->user()->hasVerifiedEmail()) {
+        $user = User::findOrFail($id);
+
+        // This is the core security check. It ensures the hash in the URL is valid.
+        if (! hash_equals($hash, sha1($user->getEmailForVerification()))) {
+            throw new AuthorizationException;
+        }
+
+        // Check if the user's email is already verified
+        if ($user->hasVerifiedEmail()) {
             return response()->json(['message' => 'Email already verified.'], 400);
         }
         
-        $request->fulfill(); // Mark user as verified
-        // Send registration email (outside transaction to avoid rollback issues)
-        $this->sendRegistrationEmail($request->user());
+        // Mark the user's email as verified
+        $user->markEmailAsVerified();
+        
+        // Send registration email
+        // You might need to adjust this to fit your application's logic.
+        $this->sendRegistrationEmail($user);
+
         return response()->json([
             'message' => 'Email verified successfully.'
         ]);
