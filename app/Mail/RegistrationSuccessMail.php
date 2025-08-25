@@ -12,7 +12,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 class RegistrationSuccessMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use SerializesModels;
 
     public $user;
     /**
