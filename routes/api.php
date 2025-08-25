@@ -40,7 +40,6 @@ Route::get('reset-password/{token}', function (string $token, Request $request) 
 })->name('password.reset');
 
 Route::middleware(['auth:sanctum','ban'])->group(function () {
-    Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])->middleware('signed')->name('verification.verify');
     // Resend verification email
     Route::post('/email/verification-notification', [AuthController::class, 'verificationSend'])->middleware('throttle:6,1')->name('verification.send');
 });
@@ -87,3 +86,6 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
 Route::get('products', [GeneralProductController::class, 'index']);
 Route::get('products/{id}', [GeneralProductController::class, 'show']);
 Route::post('apply-discount', [GeneralProductController::class, 'apply']);
+
+// Email verification
+Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])->middleware('signed')->name('verification.verify');
