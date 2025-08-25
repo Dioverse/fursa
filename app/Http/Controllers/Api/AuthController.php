@@ -190,8 +190,8 @@ class AuthController extends Controller
     private function sendRegistrationEmail(User $user): void
     {
         try {
-            Mail::to($user->email)->queue(new RegistrationSuccessMail($user));
-        } catch (\Exception $e) {
+            Mail::to($user->email)->send(new RegistrationSuccessMail($user));
+        } catch (Exception $e) {
             // Log email sending error but don't fail the registration
             Log::error('Failed to send registration email: ' . $e->getMessage(), [
                 'user_id' => $user->id,
@@ -205,7 +205,7 @@ class AuthController extends Controller
         try {
             $userDirectory = "distributors/{$userId}";
             if (Storage::disk('public')->exists($userDirectory)) {
-                Storage::disk('public')->deleteDirectory($userDirectory);
+                Storage::disk(name: 'public')->deleteDirectory($userDirectory);
             }
         } catch (Exception $e) {
             Log::error('Failed to cleanup user files: ' . $e->getMessage(), [
