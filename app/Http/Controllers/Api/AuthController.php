@@ -357,7 +357,7 @@ class AuthController extends Controller
 
         // If already verified, just return a fresh token
         if ($user->hasVerifiedEmail()) {
-            return $this->verificationResponse($user, 'Email already verified.');
+            return response()->json(['message' => 'Email already verified.'], 200);
         }
 
         // Fulfill the verification (marks email as verified)
@@ -367,8 +367,12 @@ class AuthController extends Controller
 
         // Send a welcome/registration email
         $this->sendRegistrationEmail($user);
-
-        return $this->verificationResponse($user, 'Email verified successfully.', $token);
+        return response()->json([
+            'message'     => 'Email verified successfully.',
+            'user'        => $user,
+            'token'       => $token,
+            'token_type'  => 'bearer',
+        ], 200);
     }
 
     /**
