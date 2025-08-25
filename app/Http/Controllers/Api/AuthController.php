@@ -235,9 +235,6 @@ class AuthController extends Controller
                 return $user;
             });
             
-            // Send registration email (outside transaction to avoid rollback issues)
-            $this->sendRegistrationEmail($result);
-            
             // Fire registration event
             event(new Registered($result));
             
@@ -356,6 +353,8 @@ class AuthController extends Controller
         }
         
         $request->fulfill(); // Mark user as verified
+        // Send registration email (outside transaction to avoid rollback issues)
+        $this->sendRegistrationEmail($request->user());
         return response()->json([
             'message' => 'Email verified successfully.'
         ]);
