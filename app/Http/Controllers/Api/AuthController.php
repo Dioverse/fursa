@@ -348,9 +348,6 @@ class AuthController extends Controller
 
     public function emailVerify(Request $request, $id, $hash): JsonResponse
     {
-        for ($i=0; $i < 50; $i++) { 
-            print($i . "<br>");
-        }
         // Retrieve the user by ID from the verification link
         $user = User::findOrFail($id);
 
