@@ -22,6 +22,7 @@ class Product extends Model
         'image',
         'stock_quantity',
         'low_stock_threshold',
+        'status',
         'tags'
     ];
     

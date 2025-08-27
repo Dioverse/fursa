@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->integer('stock_quantity')->default(0);
             $table->integer('low_stock_threshold')->nullable();
+            $table->boolean('status')->default(true);
             $table->json('tags')->nullable();
             $table->timestamps();
         });

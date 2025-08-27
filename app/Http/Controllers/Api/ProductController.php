@@ -17,7 +17,7 @@ class ProductController extends Controller
     public function index(Request $request): JsonResponse
     {
         // Start building the query with eager loading for the category
-        $query = Product::with('category:id,name,slug');
+        $query = Product::with('category:id,name,slug')->where("status", true);
 
         // --- Filtering Options ---
         // Filter by category
@@ -88,7 +88,7 @@ class ProductController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $product = Product::with('category:id,name,slug')->find($id);
+        $product = Product::where("status", true)->with('category:id,name,slug')->find($id);
 
         if (!$product) {
             return response()->json(['message' => 'Product not found.'], 404);

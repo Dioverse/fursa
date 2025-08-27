@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Models\Product;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
@@ -17,6 +19,7 @@ class ProductController extends Controller
     {
         // Start building the query with eager loading for the category
         $query = Product::with('category:id,name,slug');
+        
 
         // --- Filtering Options ---
         // Filter by category
@@ -67,9 +70,20 @@ class ProductController extends Controller
 
         
         $products = $query->paginate($perPage);
+
+        $stats = Product::selectRaw('
+            COUNT(*) as total,
+            SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as active,
+            SUM(CASE WHEN stock_quantity = 0 THEN 1 ELSE 0 END) as out_of_stock,
+            SUM(CASE WHEN stock_quantity > 0 AND stock_quantity <= low_stock_threshold THEN 1 ELSE 0 END) as low_stock
+        ')->first();
+        
         return response()->json([
             'message' => 'Products retrieved successfully.',
-            'data' => $products,
+            'data' => [
+                'products'=>$products,
+                'stats'=>$stats
+            ],
         ]);
     }
 
@@ -80,16 +94,16 @@ class ProductController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name'               => 'required|string|max:255',
-            'category_id'        => 'nullable|exists:categories,id',
-            'short_description'  => 'nullable|string',
-            'description'        => 'nullable|string',
-            'base_price'         => 'required|numeric|min:0',
-            'distributor_price'  => 'required|numeric|min:0',
-            'image'              => 'nullable|url',
-            'stock_quantity'     => 'required|integer|min:0',
-            'low_stock_threshold'=> 'nullable|integer|min:0',
-            'tags'               => 'nullable|array',
+            'name'                => 'required|string|max:255,unique:products,name',
+            'category_id'         => 'nullable|exists:categories,id',
+            'short_description'   => 'nullable|string',
+            'description'         => 'nullable|string',
+            'base_price'          => 'required|numeric|min:0',
+            'distributor_price'   => 'required|numeric|min:0',
+            'image'               => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'stock_quantity'      => 'required|integer|min:0',
+            'low_stock_threshold' => 'nullable|integer|min:0',
+            'tags'                => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
@@ -99,6 +113,14 @@ class ProductController extends Controller
             ], 422);
         }
 
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $slug = Str::slug($request->name);
+            $extension = $request->file('image')->getClientOriginalExtension();
+            $fileName = $slug . '.' . $extension;
+            $imagePath = $request->file('image')->storeAs('products', $fileName, 'public');
+        }
+
         $product = Product::create([
             'name'                => $request->name,
             'category_id'         => $request->category_id,
@@ -106,7 +128,7 @@ class ProductController extends Controller
             'description'         => $request->description,
             'base_price'          => $request->base_price,
             'distributor_price'   => $request->distributor_price,
-            'image'               => $request->image,
+            'image'               => $imagePath,
             'stock_quantity'      => $request->stock_quantity,
             'low_stock_threshold' => $request->low_stock_threshold,
             'tags'                => $request->tags,
@@ -114,9 +136,10 @@ class ProductController extends Controller
 
         return response()->json([
             'message' => 'Product created successfully.',
-            'data' => $product,
+            'data'    => $product,
         ], 201);
     }
+
 
     /**
      * Display the specified resource.
@@ -147,26 +170,47 @@ class ProductController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'name'               => 'sometimes|string|max:255',
-            'category_id'        => 'nullable|exists:categories,id',
-            'short_description'  => 'nullable|string',
-            'description'        => 'nullable|string',
-            'base_price'         => 'sometimes|numeric|min:0',
-            'distributor_price'  => 'sometimes|numeric|min:0',
-            'image'              => 'nullable|url',
-            'stock_quantity'     => 'sometimes|integer|min:0',
-            'low_stock_threshold'=> 'nullable|integer|min:0',
-            'tags'               => 'nullable|array',
+            'name'                => 'sometimes|string|max:255',
+            'category_id'         => 'nullable|exists:categories,id',
+            'short_description'   => 'nullable|string',
+            'description'         => 'nullable|string',
+            'base_price'          => 'sometimes|numeric|min:0',
+            'distributor_price'   => 'sometimes|numeric|min:0',
+            'image'               => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'stock_quantity'      => 'sometimes|integer|min:0',
+            'low_stock_threshold' => 'nullable|integer|min:0',
+            'tags'                => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $product->update($request->only(['name','category_id','short_description','description','base_price','distributor_price','image','stock_quantity','low_stock_threshold','tags']));
+        $data = $request->only([
+            'name','category_id','short_description','description',
+            'base_price','distributor_price','stock_quantity',
+            'low_stock_threshold','tags'
+        ]);
+
+        // Handle image update
+        if ($request->hasFile('image')) {
+            // Delete previous image if exists
+            if ($product->image && Storage::disk('public')->exists($product->image)) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $slug = Str::slug($request->name ?? $product->name);
+            $extension = $request->file('image')->getClientOriginalExtension();
+            $fileName = "$slug.$extension";
+
+            // Store new image
+            $data['image'] = $request->file('image')->storeAs('products', $fileName, 'public');
+        }
+
+        $product->update($data);
+
         return response()->json([
             'message' => 'Product updated successfully.',
-            'data' => $product,
+            'data'    => $product,
         ]);
     }
 
@@ -176,12 +220,16 @@ class ProductController extends Controller
     public function destroy(string $id): JsonResponse
     {
         $product = Product::find($id);
+
         if (!$product) {
             return response()->json(['message' => 'Product not found.'], 404);
         }
+        // Delete product image if exists
+        if ($product->image && Storage::disk('public')->exists($product->image)) {
+            Storage::disk('public')->delete($product->image);
+        }
 
         $product->delete();
-
         return response()->json(['message' => 'Product deleted successfully.']);
     }
 }
