@@ -22,7 +22,6 @@ class Product extends Model implements AuditableContract
         'base_price',
         'distributor_price',
         'category',
-        'image',
         'stock_quantity',
         'low_stock_threshold',
         'status',
@@ -35,6 +34,11 @@ class Product extends Model implements AuditableContract
     
     public function distributorPrices() {
         return $this->hasMany(DistributorProductPrice::class);
+    }
+
+    public function images()
+    {
+        // return $this->hasMany(ProductImage::class);
     }
 
     public function isAuditable()
