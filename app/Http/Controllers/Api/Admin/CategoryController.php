@@ -16,7 +16,7 @@ class CategoryController extends Controller
      */
     public function index(): JsonResponse
     {
-        $categories = Category::all();
+        $categories = Category::withCount('products')->get(['id', 'name', 'slug']);
 
         return response()->json([
             'message' => 'Categories retrieved successfully.',

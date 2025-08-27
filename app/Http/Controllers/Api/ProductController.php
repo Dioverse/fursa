@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -68,9 +70,17 @@ class ProductController extends Controller
 
         
         $products = $query->paginate($perPage);
+        $categories = Category::select('categories.id','categories.name',
+            'categories.slug',DB::raw('COUNT(products.id) as active_products_count')
+        )
+        ->join('products', 'products.category_id', '=', 'categories.id')
+        ->where('products.status', 1)
+        ->groupBy('categories.id', 'categories.name', 'categories.slug')
+        ->get();
+
         return response()->json([
             'message' => 'Products retrieved successfully.',
-            'data' => $products,
+            'data' => ['products'=>$products, 'categories'=>$categories],
         ]);
     }
 
