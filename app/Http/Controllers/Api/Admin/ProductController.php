@@ -236,24 +236,25 @@ class ProductController extends Controller
         $validated = $request->validate([
             'product_id'       => 'required|exists:products,id',
             'opcode'           => 'required|integer|in:1,2,3',
-            'value'            => 'required|integer|min:0',
+            'quantity'         => 'required|integer|min:0',
             'update_threshold' => 'nullable|boolean',
             'new_threshold'    => 'nullable|integer|min:0',
+            'reason'           => 'required|string'
         ]);
 
         $product = Product::findOrFail($validated['product_id']);
 
         switch ($validated['opcode']) {
             case 1: // Add
-                $product->stock_quantity += $validated['value'];
+                $product->stock_quantity += $validated['quantity'];
                 break;
 
             case 2: // Subtract
-                $product->stock_quantity = max(0, $product->stock_quantity - $validated['value']);
+                $product->stock_quantity = max(0, $product->stock_quantity - $validated['quantity']);
                 break;
 
             case 3: // Set
-                $product->stock_quantity = $validated['value'];
+                $product->stock_quantity = $validated['quantity'];
                 break;
         }
 

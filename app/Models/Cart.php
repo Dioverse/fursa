@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use OwenIt\Auditing\Auditable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class Cart extends Model
+class Cart extends Model implements AuditableContract
 {
     /** @use HasFactory<\Database\Factories\CartFactory> */
-    use HasFactory;
+    use HasFactory, Auditable;
 
     protected $fillable = [
         'user_id',
@@ -56,5 +59,9 @@ class Cart extends Model
 
             return $item->quantity * $price;
         });
+    }
+    public function isAuditable()
+    {
+        return Auth::check() && Auth::user()->role === 'admin';
     }
 }

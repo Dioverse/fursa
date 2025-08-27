@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class CartItem extends Model
+class CartItem extends Model implements AuditableContract
 {
     /** @use HasFactory<\Database\Factories\CartItemFactory> */
-    use HasFactory;
+    use HasFactory, Auditable;
 
     protected $fillable = [
         'cart_id',
@@ -31,5 +34,10 @@ class CartItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function isAuditable()
+    {
+        return Auth::check() && Auth::user()->role === 'admin';
     }
 }
