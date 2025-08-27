@@ -59,6 +59,8 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
         Route::apiResource('admin', AdminController::class);
         Route::apiResource('categories', CategoryController::class);
         Route::apiResource('admin-products', ProductController::class);
+        Route::post('admin-products/{id}/images', [ProductController::class, 'addImages']);
+        Route::delete('admin-products/{id}/images', [ProductController::class, 'deleteImages']);
         Route::post('admin-products-stock', [ProductController::class, 'stock']);
         Route::apiResource('distributors', DistributorController::class);
 

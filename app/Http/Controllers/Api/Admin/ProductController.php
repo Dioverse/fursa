@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Models\Product;
 use Illuminate\Support\Str;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
@@ -187,7 +188,6 @@ class ProductController extends Controller
             'description'         => 'nullable|string',
             'base_price'          => 'sometimes|numeric|min:0',
             'distributor_price'   => 'sometimes|numeric|min:0',
-            'image'               => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'stock_quantity'      => 'sometimes|integer|min:0',
             'low_stock_threshold' => 'nullable|integer|min:0',
             'tags'                => 'nullable|array',
@@ -203,25 +203,11 @@ class ProductController extends Controller
             'low_stock_threshold','tags'
         ]);
 
-        // Handle image update
-        if ($request->hasFile('image')) {
-            // Delete previous image if exists
-            if ($product->image && Storage::disk('public')->exists($product->image)) {
-                Storage::disk('public')->delete($product->image);
-            }
-            $slug = Str::slug($request->name ?? $product->name);
-            $extension = $request->file('image')->getClientOriginalExtension();
-            $fileName = "$slug.$extension";
-
-            // Store new image
-            $data['image'] = $request->file('image')->storeAs('products', $fileName, 'public');
-        }
-
         $product->update($data);
 
         return response()->json([
             'message' => 'Product updated successfully.',
-            'data'    => $product,
+            'data'    => $product->load('images'),
         ]);
     }
 
@@ -242,6 +228,91 @@ class ProductController extends Controller
 
         $product->delete();
         return response()->json(['message' => 'Product deleted successfully.']);
+    }
+
+    /**
+     * Add multiple images to product.
+     */
+    public function addImages(Request $request, string $id): JsonResponse
+    {
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json(['message' => 'Product not found.'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'images'   => 'required|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $storedImages = [];
+
+        foreach ($request->file('images') as $file) {
+            $slug = Str::slug($product->name);
+            $extension = $file->getClientOriginalExtension();
+            $fileName = $slug.'-'.uniqid().'.'.$extension;
+
+            $path = $file->storeAs('products', $fileName, 'public');
+
+            $image = ProductImage::create([
+                'product_id' => $product->id,
+                'path'       => $path,
+            ]);
+
+            $storedImages[] = $image;
+        }
+
+        return response()->json([
+            'message' => 'Images added successfully.',
+            'data'    => $storedImages,
+        ]);
+    }
+
+    /**
+     * Delete specific images from product.
+     */
+    public function deleteImages(Request $request, string $id): JsonResponse
+    {
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json(['message' => 'Product not found.'], 404);
+        }
+
+        // return response()->json($request->image_ids);
+        $validator = Validator::make($request->all(), [
+            'image_ids'   => 'required|array',
+            'image_ids.*' => 'exists:product_images,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $deleted = [];
+
+        foreach ($request->image_ids as $imageId) {
+            $image = ProductImage::where('product_id', $product->id)->find($imageId);
+
+            if ($image) {
+                if (Storage::disk('public')->exists($image->path)) {
+                    Storage::disk('public')->delete($image->path);
+                }
+
+                $image->delete();
+                $deleted[] = $imageId;
+            }
+        }
+
+        return response()->json([
+            'message' => 'Selected images deleted successfully.',
+            'deleted' => $deleted,
+        ]);
     }
 
     public function stock(Request $request)

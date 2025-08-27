@@ -14,7 +14,7 @@ class DistributorProductPrice extends Model implements AuditableContract
     use HasFactory, Auditable;
 
     public $table = 'distributor_product_prices';
-    public $fillable = [
+    protected $fillable = [
         'product_id',
         'price'
     ];

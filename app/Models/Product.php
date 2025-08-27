@@ -14,7 +14,8 @@ class Product extends Model implements AuditableContract
     use HasFactory, Auditable;
 
     public $table = 'products';
-    public $fillable = [
+     protected $with = ['images:id,product_id,path'];
+    protected $fillable = [
         'category_id',
         'name',
         'short_description',
@@ -38,7 +39,7 @@ class Product extends Model implements AuditableContract
 
     public function images()
     {
-        // return $this->hasMany(ProductImage::class);
+        return $this->hasMany(ProductImage::class);
     }
 
     public function isAuditable()

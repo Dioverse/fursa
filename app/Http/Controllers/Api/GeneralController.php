@@ -50,7 +50,7 @@ class GeneralController extends Controller
             // fallback: random recommendations
             $recommendations = Product::inRandomOrder()
                 ->take(5)
-                ->get(['id', 'name', $user->isDistributor() ? 'distributor_price as price' : 'base_price as price', 'image']);
+                ->get(['id', 'name', $user->isDistributor() ? 'distributor_price as price' : 'base_price as price']);
         } else {
             // 2. Find categories of purchased products
             $categoryIds = Product::whereIn('id', $purchasedProductIds)
@@ -61,7 +61,7 @@ class GeneralController extends Controller
                 ->whereNotIn('id', $purchasedProductIds)
                 ->inRandomOrder()
                 ->take(5)
-                ->get(['id', 'name', $user->isDistributor() ? 'distributor_price as price' : 'base_price as price', 'image']);
+                ->get(['id', 'name', $user->isDistributor() ? 'distributor_price as price' : 'base_price as price']);
         }
 
         return $recommendations;

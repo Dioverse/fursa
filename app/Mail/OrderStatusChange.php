@@ -39,7 +39,7 @@ class OrderStatusChange extends Mailable
         }
 
         if ($this->order->id) {
-            $this->items = OrderItem::with('product:name,short_description,image')->where("order_id", $this->order->id)->get();
+            $this->items = OrderItem::with('product:name,short_description,')->where("order_id", $this->order->id)->get();
         } else {
             $this->items = collect();
         }

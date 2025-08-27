@@ -14,7 +14,7 @@ class Order extends Model implements AuditableContract
     use HasFactory, Auditable;
 
     public $table = 'orders';
-    public $fillable = [
+    protected $fillable = [
         'user_id',
         'shipping_address_id',
         'order_id',

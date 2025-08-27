@@ -14,7 +14,7 @@ class Category extends Model implements AuditableContract
     use HasFactory, Auditable;
 
     public $table = "categories";
-    public $fillable = [
+    protected $fillable = [
         'name',
         'slug',
         'description'
