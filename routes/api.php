@@ -77,8 +77,8 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
     // Customer & Distributor routes
     Route::middleware('role:customer,distributor')->group(function () {
         Route::get('dashboard', [GeneralController::class, 'dashboard']);
-        Route::apiResource('orders', DistCustOrderController::class)->only(['index', 'show']);
-        Route::apiResource('shipping-addresses', ShippingAddressController::class);
+        Route::apiResource('order', DistCustOrderController::class)->only(['index', 'show']);
+        Route::apiResource('shipping-address', ShippingAddressController::class);
     });
 
     // Shared routes for all authenticated users

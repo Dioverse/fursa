@@ -21,7 +21,7 @@ class GeneralController extends Controller
             'delivered'  => $user->order()->where('status', 'delivered')->count(),
             'cancelled'  => $user->order()->where('status', 'cancelled')->count(),
         ];
-        $recentOrders = $user->order()->latest()->take(5)
+        $recentOrders = $user->order()->withCount('orderItem')->latest()->take(5)
             ->get(['id', 'status', 'total_amount', 'created_at']);
 
         $cartCount = $user->cartItems()->count();

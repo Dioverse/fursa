@@ -77,13 +77,11 @@ class ProductController extends Controller
             SUM(CASE WHEN stock_quantity = 0 THEN 1 ELSE 0 END) as out_of_stock,
             SUM(CASE WHEN stock_quantity > 0 AND stock_quantity <= low_stock_threshold THEN 1 ELSE 0 END) as low_stock
         ')->first();
-        
+
         return response()->json([
             'message' => 'Products retrieved successfully.',
-            'data' => [
-                'products'=>$products,
-                'stats'=>$stats
-            ],
+            'data' => $products,
+            'stats'=>$stats
         ]);
     }
 
