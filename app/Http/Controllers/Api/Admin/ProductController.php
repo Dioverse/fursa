@@ -246,26 +246,30 @@ class ProductController extends Controller
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $storedImages = [];
+        $imagesToInsert = [];
+        $storedImages   = [];
 
         foreach ($request->file('images') as $file) {
-            $slug = Str::slug($product->name);
+            $slug      = Str::slug($product->name);
             $extension = $file->getClientOriginalExtension();
-            $fileName = $slug.'-'.uniqid().'.'.$extension;
+            $fileName  = $slug . '-' . uniqid() . '.' . $extension;
 
             $path = $file->storeAs('products', $fileName, 'public');
 
-            $image = ProductImage::create([
+            $imagesToInsert[] = [
                 'product_id' => $product->id,
                 'path'       => $path,
-            ]);
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
 
-            $storedImages[] = $image;
+            $storedImages[] = [
+                'path' => $path,
+            ];
         }
+
+        // Bulk insert
+        ProductImage::insert($imagesToInsert);
 
         return response()->json([
             'message' => 'Images added successfully.',
