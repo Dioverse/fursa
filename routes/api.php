@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\ShippingAddressController;
 use App\Http\Controllers\Api\Admin\DistributorController;
 use App\Http\Controllers\Api\Distributor\ProfileController;
 use App\Http\Controllers\Api\Admin\DistributorApprovalController;
+use App\Http\Controllers\Api\GeneralController;
 use App\Http\Controllers\Api\OrderController as DistCustOrderController;
 use App\Http\Controllers\Api\ProductController as GeneralProductController;
 
@@ -75,6 +76,7 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
 
     // Customer & Distributor routes
     Route::middleware('role:customer,distributor')->group(function () {
+        Route::get('dashboard', [GeneralController::class, 'dashboard']);
         Route::apiResource('orders', DistCustOrderController::class)->only(['index', 'show']);
         Route::apiResource('shipping-addresses', ShippingAddressController::class);
     });
