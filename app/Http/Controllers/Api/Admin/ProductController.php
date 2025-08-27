@@ -230,4 +230,47 @@ class ProductController extends Controller
         $product->delete();
         return response()->json(['message' => 'Product deleted successfully.']);
     }
+
+    public function stock(Request $request)
+    {
+        $validated = $request->validate([
+            'product_id'       => 'required|exists:products,id',
+            'opcode'           => 'required|integer|in:1,2,3',
+            'value'            => 'required|integer|min:0',
+            'update_threshold' => 'nullable|boolean',
+            'new_threshold'    => 'nullable|integer|min:0',
+        ]);
+
+        $product = Product::findOrFail($validated['product_id']);
+
+        switch ($validated['opcode']) {
+            case 1: // Add
+                $product->stock_quantity += $validated['value'];
+                break;
+
+            case 2: // Subtract
+                $product->stock_quantity = max(0, $product->stock_quantity - $validated['value']);
+                break;
+
+            case 3: // Set
+                $product->stock_quantity = $validated['value'];
+                break;
+        }
+
+        // Update threshold if requested
+        if (!empty($validated['update_threshold']) && isset($validated['new_threshold'])) {
+            $product->low_stock_threshold = $validated['new_threshold'];
+        }
+
+        $product->save();
+
+        return response()->json([
+            'message' => 'Stock updated successfully.',
+            'data' => [
+                'product_id'          => $product->id,
+                'stock_quantity'      => $product->stock_quantity,
+                'low_stock_threshold' => $product->low_stock_threshold,
+            ]
+        ]);
+    }
 }

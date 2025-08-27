@@ -51,7 +51,7 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
     // Admin-only routes
     Route::middleware('role:admin')->group(function () {
         Route::apiResource('users', UserController::class);
-        Route::post('users/update-status/{id}', [UserController::class, 'updateStatus']);
+        Route::post('users/update-status/{id}', [UserController::class]);
         
         Route::apiResource('content', ContentController::class);
 
@@ -59,6 +59,7 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
         Route::apiResource('admin', AdminController::class);
         Route::apiResource('categories', CategoryController::class);
         Route::apiResource('admin-products', ProductController::class);
+        Route::post('admin-products-stock', [ProductController::class, 'stock']);
         Route::apiResource('distributors', DistributorController::class);
 
         Route::apiResource('admin-orders', OrderController::class)->only(['index', 'show']);
