@@ -64,6 +64,8 @@ class User extends Authenticatable implements MustVerifyEmail, AuditableContract
     public function isDistributor() { return $this->role === 'distributor'; }
     
     public function isApproved() { return $this->status === 'approved'; }
+    
+    public function isDistributorApprov() { return $this->role === 'distributor' && $this->status === 'approved'; }
 
     public function distributor()
     {

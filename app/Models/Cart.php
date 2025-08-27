@@ -53,7 +53,7 @@ class Cart extends Model implements AuditableContract
             $price = $item->product->base_price ?? 0;
             
             $user = auth('sanctum')->user();
-            if ($user && $user->role === 'distributor') {
+            if ($user && $user->isDistributorApprov()) {
                 $price = $item->product->distributor_price ?? $price;
             }
 

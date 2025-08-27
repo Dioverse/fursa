@@ -2,33 +2,34 @@
 
 namespace App\Http\Controllers\Api\Distributor;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show()
     {
-        //
+        // Get the currently authenticated user
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        // Load distributor details if user is a distributor
+        if ($user->role === 'distributor') {
+            $user->load('distributor'); // assuming a relation named distributorDetails
+        }
+
+        return response()->json([
+            'user' => $user
+        ]);
     }
 
     /**
@@ -36,14 +37,216 @@ class ProfileController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+         $user = User::findOrFail($id);
+
+        // Validate common user fields
+        $userData = $this->validateBasicFields($request, $user);
+
+        $distributorData = [];
+
+        // If user is a distributor, validate distributor fields
+        if ($user->isDistributorApprov()) {
+            $distributorData = $this->validateDistributorApprovedFields($request);
+        } elseif ($user->isDistributor()) {
+            $distributorData = $this->validateDistributorFields($request);
+        }
+
+        // Update user
+        $user->update($userData);
+
+        // Update distributor if applicable
+        if (!empty($distributorData)) {
+            // Assuming you have a one-to-one relation: $user->distributor()
+            $user->distributor()->update($distributorData);
+        }
+
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'user' => $user->load('distributor') // Include distributor relation if needed
+        ]);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Validate basic user fields.
      */
-    public function destroy(string $id)
+    protected function validateBasicFields(Request $request, User $user)
     {
-        //
+        return $request->validate([
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
+            'phone' => ['required', 'string', 'max:20', Rule::unique('users')->ignore($user->id)],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+        ]);
+    }
+
+    /**
+     * Validate distributor-specific fields.
+     */
+    protected function validateDistributorFields(Request $request)
+    {
+        return $request->validate([
+            // // Company Information
+            'company_name' => 'required|string|max:255',
+            'registered_name' => 'nullable|string|max:255',
+            'rc_number' => 'required|string|max:100',
+            'business_address' => 'required|string|max:500',
+            'office_phone' => 'required|string|max:20',
+            'website' => 'required|url|max:255',
+            'company_type' => 'required|string|max:100',
+
+            // Contact Person
+            'contact_full_name' => 'required|string|max:255',
+            'contact_position' => 'required|string|max:100',
+            'contact_mobile' => 'required|string|max:20',
+            'id_number' => 'required|string|max:100',
+            'means_of_id' => 'required|string|max:100',
+
+            // Distribution Capacity
+            'years_in_business' => 'required|integer|min:0|max:200',
+            'current_product_lines' => 'required|string|max:500',
+            'monthly_capacity' => 'required|string|max:255',
+            'regions_covered' => 'required|string|max:255',
+            'number_of_sales_staff' => 'required|integer|min:0|max:10000',
+            'has_warehouse' => 'required|boolean',
+            'preferred_region' => 'required|string|max:255',
+            'has_vehicles' => 'required|boolean',
+            'vehicle_details' => 'required|string|max:500',
+
+            // Distribution Strategy
+            'product_categories' => 'required|array',
+            'product_categories.*' => 'required|string|max:100',
+            'willing_to_train' => 'required|boolean',
+            'has_technical_knowledge' => 'required|boolean',
+            'distribution_start_time' => 'required|string|max:100',
+
+            // States of Interest
+            'preferred_states' => 'required|array',
+            'preferred_states.*' => 'required|string|max:100',
+            'promo_participation' => 'required|in:Yes,No,Depends',
+
+            // Banking
+            'bank_name' => 'required|string|max:255',
+            'account_name' => 'required|string|max:255',
+            'account_number' => 'required|string|max:20',
+            'bvn' => 'required|string|size:11',
+            'partnerships' => 'required|string',
+
+            // Declaration
+            'declarant_name' => 'required|string|max:255',
+            'declaration_date' => 'required|date',
+        ]);
+    }
+
+    protected function validateDistributorApprovedFields(Request $request)
+    {
+        return $request->validate([
+            // // Company Information
+            // 'company_name' => 'required|string|max:255',
+            // 'registered_name' => 'nullable|string|max:255',
+            // 'rc_number' => 'required|string|max:100',
+            // 'business_address' => 'required|string|max:500',
+            // 'office_phone' => 'required|string|max:20',
+            // 'website' => 'required|url|max:255',
+            // 'company_type' => 'required|string|max:100',
+
+            // // Contact Person
+            // 'contact_full_name' => 'required|string|max:255',
+            // 'contact_position' => 'required|string|max:100',
+            // 'contact_mobile' => 'required|string|max:20',
+            // 'id_number' => 'required|string|max:100',
+            // 'means_of_id' => 'required|string|max:100',
+
+            // // Distribution Capacity
+            // 'years_in_business' => 'required|integer|min:0|max:200',
+            // 'current_product_lines' => 'required|string|max:500',
+            // 'monthly_capacity' => 'required|string|max:255',
+            // 'regions_covered' => 'required|string|max:255',
+            // 'number_of_sales_staff' => 'required|integer|min:0|max:10000',
+            // 'has_warehouse' => 'required|boolean',
+            // 'preferred_region' => 'required|string|max:255',
+            // 'has_vehicles' => 'required|boolean',
+            // 'vehicle_details' => 'required|string|max:500',
+
+            // // Distribution Strategy
+            // 'product_categories' => 'required|array',
+            // 'product_categories.*' => 'required|string|max:100',
+            // 'willing_to_train' => 'required|boolean',
+            // 'has_technical_knowledge' => 'required|boolean',
+            // 'distribution_start_time' => 'required|string|max:100',
+
+            // // States of Interest
+            // 'preferred_states' => 'required|array',
+            // 'preferred_states.*' => 'required|string|max:100',
+            // 'promo_participation' => 'required|in:Yes,No,Depends',
+
+            // Banking
+            'bank_name' => 'required|string|max:255',
+            'account_name' => 'required|string|max:255',
+            'account_number' => 'required|string|max:20',
+            'bvn' => 'required|string|size:11',
+            // 'partnerships' => 'required|string',
+
+            // // Declaration
+            // 'declarant_name' => 'required|string|max:255',
+            // 'declaration_date' => 'required|date',
+        ]);
+    }
+
+    public function updateDocuments(Request $request, string $id)
+    {
+        $user = User::findOrFail($id);
+
+        if (!$user->isDistributor() || $user->isDistributorApprov()) {
+            return response()->json([
+                'message' => 'Unable to update.'
+            ], 400);
+        }
+
+        // Validate file fields
+        $validated = $request->validate([
+            'cac_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'form_co7' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'memart' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'utility_bill' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'tin_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'id_of_contact' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'referee_letter' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'signature' => 'nullable|file|mimes:jpg,jpeg,png|max:1024',
+        ]);
+
+        // Handle file uploads
+        $distributorData = $this->handleFileUploads($validated, $request, $user->id);
+
+        // Update distributor table
+        $user->distributor()->update($distributorData);
+
+        return response()->json([
+            'message' => 'Distributor documents updated successfully',
+            'distributor' => $user->distributor
+        ]);
+    }
+
+    private function handleFileUploads(array $distributorData, Request $request, int $userId): array
+    {
+        $fileFields = [
+            'cac_certificate', 'form_co7', 'memart', 'utility_bill',
+            'tin_certificate', 'id_of_contact', 'referee_letter', 'signature'
+        ];
+
+        foreach ($fileFields as $field) {
+            if ($request->hasFile($field)) {
+                $file = $request->file($field);
+                $extension = $file->getClientOriginalExtension();
+                $filename = $field . '.' . $extension;
+
+                // Store file in organized path
+                $path = $file->storeAs("distributors/{$userId}", $filename, 'public');
+
+                $distributorData[$field] = $path;
+            }
+        }
+
+        return $distributorData;
     }
 }

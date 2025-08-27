@@ -73,13 +73,14 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
 
     // Distributor-only routes
     Route::middleware('role:distributor')->prefix('distributor')->group(function () {
-        Route::get('my-profile', [ProfileController::class, 'show']);
-        Route::put('my-profile', [ProfileController::class, 'update']);
     });
-
+    
     // Customer & Distributor routes
     Route::middleware('role:customer,distributor')->group(function () {
         Route::get('dashboard', [GeneralController::class, 'dashboard']);
+        Route::get('profile-details', [ProfileController::class, 'show']);
+        Route::put('profile-update', [ProfileController::class, 'update']);
+        Route::put('profile-document-upload', [ProfileController::class, 'updateDocuments']);
         Route::apiResource('order', DistCustOrderController::class)->only(['index', 'show']);
         Route::apiResource('shipping-address', ShippingAddressController::class);
     });

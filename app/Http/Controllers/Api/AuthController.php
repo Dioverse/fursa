@@ -140,7 +140,7 @@ class AuthController extends Controller
     private function createDistributorProfile(User $user, array $validatedData, Request $request): Distributor
     {
         // Prepare distributor data (exclude user fields)
-        $distributorData = collect($validatedData)
+        $distributorData = collect(value: $validatedData)
             ->except(['first_name', 'last_name', 'email', 'phone', 'password', 'password_confirmation'])
             ->toArray();
         

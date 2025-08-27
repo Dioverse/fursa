@@ -40,7 +40,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if ($user && $user->role === 'distributor') {
+        if ($user && $user->isDistributor()) {
             $type = "Distributor";
             $user->load('distributor');
         } elseif ($user->role === 'admin') {

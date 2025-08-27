@@ -37,7 +37,7 @@ class ProductController extends Controller
         $price_field = 'base_price';
         $user = auth('sanctum')->user();
 
-        if ($user && $user->role == 'distributor') {
+        if ($user && $user->isDistributorApprov()) {
             $price_field = 'distributor_price';
         }
         
