@@ -57,6 +57,7 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
 
 
         Route::apiResource('admin', AdminController::class);
+        Route::get('admin-dashboard', [AdminController::class, 'dashboard']);
         Route::apiResource('categories', CategoryController::class);
         Route::apiResource('admin-products', ProductController::class);
         Route::post('admin-products/{id}/images', [ProductController::class, 'addImages']);
