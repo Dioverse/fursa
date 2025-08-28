@@ -2,12 +2,14 @@
     <div class="bg-white border rounded-lg shadow-sm p-4 mb-12">
         <h3 class="font-bold mb-4">🔎 Widget Price Filter</h3>
         <div class="flex gap-2 items-center">
-        <input v-model="minPrice" type="number" placeholder="Min" class="w-20 px-2 py-1 border rounded">
+        <input v-model.number="minPrice" type="number" placeholder="Min" class="w-20 px-2 py-1 border rounded">
         <span>-</span>
-        <input v-model="maxPrice" type="number" placeholder="Max" class="w-20 px-2 py-1 border rounded">
+        <input v-model.number="maxPrice" type="number" placeholder="Max" class="w-20 px-2 py-1 border rounded">
         </div>
-        <button @click="applyPriceFilter"
-        class="mt-4 w-full bg-primary text-white py-2 rounded hover:bg-primary-dark">
+        <button 
+        @click="applyPriceFilter"
+        class="mt-4 w-full bg-primary text-white py-2 rounded hover:bg-primary-dark"
+        >
         Apply
         </button>
     </div>
@@ -24,14 +26,23 @@
         </h3>
 
         <div class="space-y-3">
-            <label v-for="category in categories" :key="category.id"
-                class="flex items-center gap-3 cursor-pointer hover:text-primary transition">
-                <input type="checkbox" :value="category.id" v-model="selectedCategories" @change="updateFilter"
-                    class="rounded border-gray-300 text-primary focus:ring-primary">
-                <span>{{ category.name }}</span>
-                <span class="text-gray-400 text-sm ml-auto">({{ category.count }})</span>
+            <label 
+            v-for="category in categories" 
+            :key="category.id"
+            class="flex items-center gap-3 cursor-pointer hover:text-primary transition"
+            >
+            <input 
+                type="checkbox" 
+                :value="category.id" 
+                v-model="selectedCategories" 
+                @change="updateCategoryFilter"
+                class="rounded border-gray-300 text-primary focus:ring-primary"
+            >
+            <span>{{ category.name }}</span>
+            <span class="text-gray-400 text-sm ml-auto">({{ category.count }})</span>
             </label>
         </div>
+
 
         <!-- <div class="mt-6 pt-6 border-t">
             <h4 class="font-semibold mb-3">Price Range</h4>
@@ -54,11 +65,20 @@
             <span>Industrial Lubricants</span>
         </h3>
 
-        <div class="space-y-3">
-            <label v-for="icategory in icategories" :key="icategory.id"
-                class="flex items-center gap-3 cursor-pointer hover:text-primary transition">
-                <input type="checkbox" :value="icategory.id" v-model="selectedCategories" @change="updateFilter"
-                    class="rounded border-gray-300 text-primary focus:ring-primary">
+        <div class="space-y-3 mb-6">
+            <h4 class="font-bold mb-2">Industrial</h4>
+            <label 
+                v-for="icategory in icategories" 
+                :key="icategory.id"
+                class="flex items-center gap-3 cursor-pointer hover:text-primary transition"
+            >
+                <input 
+                type="checkbox" 
+                :value="icategory.id" 
+                v-model="selectedCategories" 
+                @change="updateFilter"
+                class="rounded border-gray-300 text-primary focus:ring-primary"
+                >
                 <span>{{ icategory.name }}</span>
                 <span class="text-gray-400 text-sm ml-auto">({{ icategory.count }})</span>
             </label>
@@ -75,11 +95,20 @@
             <span>Greases</span>
         </h3>
 
-        <div class="space-y-3">
-            <label v-for="grease in greases" :key="grease.id"
-                class="flex items-center gap-3 cursor-pointer hover:text-primary transition">
-                <input type="checkbox" :value="grease.id" v-model="selectedCategories" @change="updateFilter"
-                    class="rounded border-gray-300 text-primary focus:ring-primary">
+        <div class="space-y-3 mb-6">
+            <h4 class="font-bold mb-2">Greases</h4>
+            <label 
+                v-for="grease in greases" 
+                :key="grease.id"
+                class="flex items-center gap-3 cursor-pointer hover:text-primary transition"
+            >
+                <input 
+                type="checkbox" 
+                :value="grease.id" 
+                v-model="selectedCategories" 
+                @change="updateFilter"
+                class="rounded border-gray-300 text-primary focus:ring-primary"
+                >
                 <span>{{ grease.name }}</span>
                 <span class="text-gray-400 text-sm ml-auto">({{ grease.count }})</span>
             </label>
@@ -96,11 +125,20 @@
             <span>Marine and Heavy Equipment Oil</span>
         </h3>
 
-        <div class="space-y-3">
-            <label v-for="marine in marines" :key="marine.id"
-                class="flex items-center gap-3 cursor-pointer hover:text-primary transition">
-                <input type="checkbox" :value="marine.id" v-model="selectedCategories" @change="updateFilter"
-                    class="rounded border-gray-300 text-primary focus:ring-primary">
+        <div class="space-y-3 mb-6">
+            <h4 class="font-bold mb-2">Marine</h4>
+            <label 
+                v-for="marine in marines" 
+                :key="marine.id"
+                class="flex items-center gap-3 cursor-pointer hover:text-primary transition"
+            >
+                <input 
+                type="checkbox" 
+                :value="marine.id" 
+                v-model="selectedCategories" 
+                @change="updateFilter"
+                class="rounded border-gray-300 text-primary focus:ring-primary"
+                >
                 <span>{{ marine.name }}</span>
                 <span class="text-gray-400 text-sm ml-auto">({{ marine.count }})</span>
             </label>
@@ -113,9 +151,61 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 
-const emit = defineEmits(['update'])
+const props = defineProps({
+  icategories: { type: Array, default: () => [] },
+  greases: { type: Array, default: () => [] },
+  marines: { type: Array, default: () => [] },
+  automotiveLubricants: { type: Array, default: () => [] },
+
+  // v-model:categories
+  categories: { type: Array, default: () => [] },
+
+  // v-model:priceRange
+  priceRange: {
+    type: Object,
+    default: () => ({ min: null, max: null })
+  }
+})
+
+const minPrice = ref(null)
+const maxPrice = ref(null)
+const selectedCategories = ref([])
+
+
+
+// Emit event to parent
+const emit = defineEmits(['update:categories', 'update:priceRange'])
+// const emit = defineEmits(['update'])
+
+const categoriesProxy = computed({
+  get: () => props.categories,
+  set: (val) => emit('update:categories', val)
+})
+
+const localMin = ref(props.priceRange?.min ?? null)
+const localMax = ref(props.priceRange?.max ?? null)
+
+watch(
+  () => props.priceRange,
+  (val) => {
+    localMin.value = val?.min ?? null
+    localMax.value = val?.max ?? null
+  },
+  { deep: true }
+)
+
+function applyPriceFilter() {
+  emit('update:priceRange', {
+    min: toNumberOrNull(localMin.value),
+    max: toNumberOrNull(localMax.value)
+  })
+}
+
+function updateCategoryFilter() {
+  emit("update:categories", selectedCategories.value)
+}
 
 const categories = ref([
     { id: 1, name: 'Engine Oil', count: 24 },
@@ -143,7 +233,6 @@ const marines = ref([
     { id: 12, name: 'Multipurpose and heavy duty Greases', count: 18 }
 ])
 
-const selectedCategories = ref([])
 const priceRange = reactive({
     min: '',
     max: ''
@@ -156,10 +245,34 @@ const updateFilter = () => {
     })
 }
 
-const clearFilters = () => {
-    selectedCategories.value = []
-    priceRange.min = ''
-    priceRange.max = ''
-    updateFilter()
+function clearPrice() {
+  localMin.value = null
+  localMax.value = null
+  emit('update:priceRange', { min: null, max: null })
 }
+
+function clearAll() {
+  emit('update:categories', [])
+  clearPrice()
+}
+
+function toNumber(val) {
+  const n = Number(val)
+  return Number.isFinite(n) ? n : null
+}
+
+function toNumberOrNull(val) {
+  const n = Number(val)
+  return Number.isFinite(n) ? n : null
+}
+// function updateFilter() {
+//   emit("update:categories", selectedCategories.value)
+// }
+
+// const clearFilters = () => {
+//     selectedCategories.value = []
+//     priceRange.min = ''
+//     priceRange.max = ''
+//     updateFilter()
+// }
 </script>

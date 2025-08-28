@@ -133,7 +133,16 @@
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
                     <!-- Sidebar Filters -->
                     <aside class="lg:col-span-1">
-                        <CategoryFilter @update="handleFilterUpdate" />
+                        <!-- <CategoryFilter @update="handleFilterUpdate" /> -->
+                         <CategoryFilter 
+                        :icategories="icategories"
+                        :greases="greases"
+                        :marines="marines"
+                        @update:categories="filters.categories = $event"
+                        />
+                         <!-- <CategoryFilter 
+                        @update:priceRange="filters.priceRange = $event" 
+                        /> -->
                     </aside>
 
                     <!-- Main Content -->
@@ -236,34 +245,48 @@ import CategoryFilter from '@/components/products/CategoryFilter.vue'
 import productsService from '@/services/products.service'
 import Brochure from '@/components/common/Brochure.vue'
 import CTA from '@/components/common/CTA.vue'
+import axios from "axios"
 
 const route = useRoute()
 const router = useRouter()
 
 const products = ref([])
+const minPrice = ref(null)
+const maxPrice = ref(null)
+
 const loading = ref(false)
 const viewMode = ref('grid')
 const sortBy = ref('featured')
 const currentPage = ref(1)
 const perPage = ref(12)
+
 const filters = ref({
     categories: [],
-    priceRange: { min: '', max: '' }
+    priceRange: { min: null, max: null }
 })
+
+const icategories = ref([])
+const greases = ref([])
+const marines = ref([])
+const automotiveLubricants = ref([])
 
 // Mock products data
 onMounted(async () => {
     loading.value = true
     try {
         // Replace with actual API call
-        products.value = Array.from({ length: 24 }, (_, i) => ({
-            id: i + 1,
-            name: `MRS ${['5L', '4L', '1L'][i % 3]} Motorcycle engine oil`,
-            price: 145000 + (i * 5000),
-            sku: `A23WERT${i}`,
-            rating: 4 + (i % 2),
-            image: null,
-            volume: ['5 Litres', '4 Litres', '1 Litre'][i % 3]
+        const resp = await axios.get('https://back.fursaenergy.com/public/api/products')
+        const apiProducts = resp.data?.data?.products?.data ?? []
+        // products.value = apiProducts
+        products.value = apiProducts.map(p => ({
+            id: p.id,
+            name: p.name,
+            price: parseFloat(p.base_price),
+            sku: p.id.toString().padStart(6, "0"),
+            rating: Math.floor(Math.random() * 2) + 4,
+            image: p.images.length ? p.images[0].url : "../../public/images/mrs_motor_oil.png",
+            volume: p.short_description || "N/A",
+            category: p.category?.name || "Uncategorized"
         }))
     } catch (error) {
         console.error('Failed to load products:', error)
@@ -273,39 +296,75 @@ onMounted(async () => {
 })
 
 const filteredProducts = computed(() => {
-    let result = [...products.value]
+  let result = [...products.value]
 
-    // Apply category filter
-    if (filters.value.categories.length > 0) {
-        // Filter by categories
-    }
+  // Category filter
+  if (filters.value.categories.length > 0) {
+    result = result.filter(p => filters.value.categories.includes(p.category_id))
+  }
 
-    // Apply price filter
-    if (filters.value.priceRange.min) {
-        result = result.filter(p => p.price >= filters.value.priceRange.min)
-    }
-    if (filters.value.priceRange.max) {
-        result = result.filter(p => p.price <= filters.value.priceRange.max)
-    }
+  // Price filter
+  if (filters.value.priceRange.min !== null) {
+    result = result.filter(p => p.price >= filters.value.priceRange.min)
+  }
+  if (filters.value.priceRange.max !== null) {
+    result = result.filter(p => p.price <= filters.value.priceRange.max)
+  }
 
-    // Apply sorting
-    switch (sortBy.value) {
-        case 'price-low':
-            result.sort((a, b) => a.price - b.price)
-            break
-        case 'price-high':
-            result.sort((a, b) => b.price - a.price)
-            break
-        case 'name':
-            result.sort((a, b) => a.name.localeCompare(b.name))
-            break
-        case 'rating':
-            result.sort((a, b) => b.rating - a.rating)
-            break
-    }
+  // Sorting
+  switch (sortBy.value) {
+    case "price-low":
+      result.sort((a, b) => a.price - b.price)
+      break
+    case "price-high":
+      result.sort((a, b) => b.price - a.price)
+      break
+    case "name":
+      result.sort((a, b) => a.name.localeCompare(b.name))
+      break
+    case "rating":
+      result.sort((a, b) => b.rating - a.rating)
+      break
+  }
 
-    return result
+  return result
 })
+
+
+// const filteredProducts = computed(() => {
+//     let result = [...products.value]
+
+//     // Apply category filter
+//     if (filters.value.categories.length > 0) {
+//         // Filter by categories
+//     }
+
+//     // Apply price filter
+//     if (filters.value.priceRange.min) {
+//         result = result.filter(p => p.price >= filters.value.priceRange.min)
+//     }
+//     if (filters.value.priceRange.max) {
+//         result = result.filter(p => p.price <= filters.value.priceRange.max)
+//     }
+
+//     // Apply sorting
+//     switch (sortBy.value) {
+//         case 'price-low':
+//             result.sort((a, b) => a.price - b.price)
+//             break
+//         case 'price-high':
+//             result.sort((a, b) => b.price - a.price)
+//             break
+//         case 'name':
+//             result.sort((a, b) => a.name.localeCompare(b.name))
+//             break
+//         case 'rating':
+//             result.sort((a, b) => b.rating - a.rating)
+//             break
+//     }
+
+//     return result
+// })
 
 const totalPages = computed(() =>
     Math.ceil(filteredProducts.value.length / perPage.value)
@@ -333,6 +392,12 @@ const displayedPages = computed(() => {
 
     return pages
 })
+
+function applyPriceFilter() {
+  filters.value.priceRange.min = minPrice.value ? parseFloat(minPrice.value) : null
+  filters.value.priceRange.max = maxPrice.value ? parseFloat(maxPrice.value) : null
+}
+
 
 const handleFilterUpdate = (newFilters) => {
     filters.value = newFilters
