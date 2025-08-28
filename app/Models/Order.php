@@ -35,6 +35,10 @@ class Order extends Model implements AuditableContract
         return $this->belongsTo(User::class);
     }
 
+    public function payment() {
+        return $this->hasOne(Payment::class);
+    }
+
     public function isAuditable()
     {
         return Auth::check() && Auth::user()->role === 'admin';

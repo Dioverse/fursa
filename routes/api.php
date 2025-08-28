@@ -79,10 +79,11 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
     Route::middleware('role:customer,distributor')->group(function () {
         Route::get('dashboard', [GeneralController::class, 'dashboard']);
         Route::get('profile-details', [ProfileController::class, 'show']);
-        Route::put('profile-update', [ProfileController::class, 'update']);
-        Route::put('profile-document-upload', [ProfileController::class, 'updateDocuments']);
-        Route::apiResource('order', DistCustOrderController::class)->only(['index', 'show']);
+        Route::post('profile-update', [ProfileController::class, 'update']);
+        Route::post('profile-document-upload', [ProfileController::class, 'updateDocuments']);
+        Route::apiResource('orders', DistCustOrderController::class)->only(['index', 'show', 'update']);
         Route::apiResource('shipping-address', ShippingAddressController::class);
+        Route::post('set-default-address/{id}', [ShippingAddressController::class, 'setDefaultAddress']);
     });
 
     // Shared routes for all authenticated users

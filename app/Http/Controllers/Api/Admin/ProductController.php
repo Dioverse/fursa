@@ -114,6 +114,7 @@ class ProductController extends Controller
         }
 
         // Create product
+        $slug = Str::slug($request->name);
         $product = Product::create([
             'name'                => $request->name,
             'category_id'         => $request->category_id,
@@ -124,11 +125,11 @@ class ProductController extends Controller
             'stock_quantity'      => $request->stock_quantity,
             'low_stock_threshold' => $request->low_stock_threshold,
             'tags'                => $request->tags,
+            'slug'                => $slug
         ]);
 
         // Handle multiple images
         if ($request->hasFile('images')) {
-            $slug = Str::slug($request->name);
             $images = [];
 
             foreach ($request->file('images') as $file) {
@@ -202,6 +203,7 @@ class ProductController extends Controller
             'base_price','distributor_price','stock_quantity',
             'low_stock_threshold','tags'
         ]);
+        $data['slug'] = Str::slug($request->name);
 
         $product->update($data);
 

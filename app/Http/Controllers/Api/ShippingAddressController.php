@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -55,23 +56,18 @@ class ShippingAddressController extends Controller
      * Display a specific shipping address.
      */
     public function show($id)
-{
-    try {
-        $address = Auth::user()->shippingAddress()->findOrFail($id);
+    {
+        $address = Auth::user()->shippingAddress()->where('id', $id)->first();
+
+        if (!$address) {
+            return response()->json(['message' => 'Shipping address not found'], 404);
+        }
 
         return response()->json([
-            'success' => true,
-            'data' => $address
+            'message' => 'Shipping address retrieved successfully.',
+            'data' => $address,
         ]);
-    } catch (ModelNotFoundException $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Shipping address not found for this user.'
-        ], 404);
     }
-}
-
-
 
     /**
      * Update a shipping address.
@@ -114,6 +110,33 @@ class ShippingAddressController extends Controller
 
         return response()->json([
             'message' => 'Shipping address deleted successfully.',
+        ]);
+    }
+
+    public function setDefaultAddress(Request $request, $id)
+    {
+        $user = Auth::user();
+
+        // Find the address belonging to the user
+        $address = $user->shippingAddress()->where('id', $id)->first();
+
+        if (!$address) {
+            return response()->json(['message' => 'Address not found.'], 404);
+        }
+
+        // Use transaction for atomic update
+        DB::transaction(function () use ($user, $address) {
+
+            // Set current default to false
+            $user->shippingAddress()->where('is_default', true)->update(['is_default' => false]);
+
+            // Set selected address as default
+            $address->update(['is_default' => true]);
+        });
+
+        return response()->json([
+            'message' => 'Default shipping address updated successfully.',
+            'data' => $address
         ]);
     }
 }

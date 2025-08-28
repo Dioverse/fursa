@@ -17,6 +17,11 @@ class OrderItem extends Model implements AuditableContract
         return $this->belongsTo(Product::class);
     }
 
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
     public function isAuditable()
     {
         return Auth::check() && Auth::user()->role === 'admin';

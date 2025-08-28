@@ -13,6 +13,20 @@ class ShippingAddress extends Model implements AuditableContract
     /** @use HasFactory<\Database\Factories\ShippingAddressFactory> */
     use HasFactory, Auditable;
 
+    protected $table = "shipping_addresses";
+    protected $fillable = [
+        'user_id',
+        'full_name',
+        'phone',
+        'address_line_one',
+        'address_line_two',
+        'city',
+        'state',
+        'postal_code',
+        'country',
+        'is_default'
+    ];
+
     public function user() {
         return $this->belongsTo(User::class);
     }

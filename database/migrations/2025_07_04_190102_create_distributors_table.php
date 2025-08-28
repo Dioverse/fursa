@@ -16,21 +16,21 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
 
             // Business Information
-            $table->string('company_name');
+            $table->string('company_name')->nullable();
             $table->string('registered_name')->nullable();
-            $table->string('rc_number');
-            $table->string('email');
-            $table->string('business_address');
+            $table->string('rc_number')->nullable();
+            $table->string('email')->nullable();
+            $table->string('business_address')->nullable();
             $table->string('office_phone')->nullable();
             $table->string('website')->nullable();
-            $table->string('company_type');
+            $table->string('company_type')->nullable();
 
             // Contact Person
-            $table->string('contact_full_name');
-            $table->string('contact_position');
-            $table->string('contact_mobile');
-            $table->string('id_number');
-            $table->string('means_of_id');
+            $table->string('contact_full_name')->nullable();
+            $table->string('contact_position')->nullable();
+            $table->string('contact_mobile')->nullable();
+            $table->string('id_number')->nullable();
+            $table->string('means_of_id')->nullable();
 
             // Distribution Capacity
             $table->integer('years_in_business')->nullable();
@@ -39,7 +39,7 @@ return new class extends Migration
             $table->string('regions_covered')->nullable();
             $table->integer('number_of_sales_staff')->nullable();
             $table->boolean('has_warehouse')->default(false);
-            $table->string('preferred_region');
+            $table->string('preferred_region')->nullable();
             $table->boolean('has_vehicles')->default(false);
             $table->string('vehicle_details')->nullable();
 
@@ -54,15 +54,15 @@ return new class extends Migration
             $table->string('promo_participation')->nullable(); // Yes, No, Depends
 
             // Banking
-            $table->string('bank_name');
-            $table->string('account_name');
-            $table->string('account_number');
+            $table->string('bank_name')->nullable();
+            $table->string('account_name')->nullable();
+            $table->string('account_number')->nullable();
             $table->string('bvn')->nullable();
             $table->text('partnerships')->nullable();
 
             // Declaration
-            $table->string('declarant_name');
-            $table->date('declaration_date');
+            $table->string('declarant_name')->nullable();
+            $table->date('declaration_date')->nullable();
 
             // Uploads
             $table->string('cac_certificate')->nullable();

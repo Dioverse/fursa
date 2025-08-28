@@ -35,9 +35,9 @@ class ProfileController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
-         $user = User::findOrFail($id);
+        $user = Auth::user();
 
         // Validate common user fields
         $userData = $this->validateBasicFields($request, $user);
@@ -56,13 +56,13 @@ class ProfileController extends Controller
 
         // Update distributor if applicable
         if (!empty($distributorData)) {
-            // Assuming you have a one-to-one relation: $user->distributor()
-            $user->distributor()->update($distributorData);
+            $distributorData['email'] = $user->email;
+            $user->distributor()->updateOrCreate(['user_id' => $user->id], $distributorData);
         }
 
         return response()->json([
             'message' => 'Profile updated successfully',
-            'user' => $user->load('distributor') // Include distributor relation if needed
+            'user' => $user->load('distributor')
         ]);
     }
 
@@ -74,9 +74,8 @@ class ProfileController extends Controller
         return $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
+            // 'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
             'phone' => ['required', 'string', 'max:20', Rule::unique('users')->ignore($user->id)],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
     }
 
@@ -193,9 +192,9 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function updateDocuments(Request $request, string $id)
+    public function updateDocuments(Request $request)
     {
-        $user = User::findOrFail($id);
+        $user = Auth::user();
 
         if (!$user->isDistributor() || $user->isDistributorApprov()) {
             return response()->json([
@@ -205,7 +204,7 @@ class ProfileController extends Controller
 
         // Validate file fields
         $validated = $request->validate([
-            'cac_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'cac_certificate' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'form_co7' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'memart' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'utility_bill' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
@@ -219,11 +218,11 @@ class ProfileController extends Controller
         $distributorData = $this->handleFileUploads($validated, $request, $user->id);
 
         // Update distributor table
-        $user->distributor()->update($distributorData);
+        $user->distributor()->updateOrCreate(['user_id' => $user->id], $distributorData);
 
         return response()->json([
             'message' => 'Distributor documents updated successfully',
-            'distributor' => $user->distributor
+            'user' => $user->load('distributor')
         ]);
     }
 
