@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\GeneralController;
+use App\Http\Controllers\Api\Admin\PostController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Controllers\Api\Admin\OrderController;
@@ -13,9 +15,9 @@ use App\Http\Controllers\Api\Admin\ProductController;
 use App\Http\Controllers\Api\Admin\CategoryController;
 use App\Http\Controllers\Api\ShippingAddressController;
 use App\Http\Controllers\Api\Admin\DistributorController;
+use App\Http\Controllers\Api\Admin\PostCategoryController;
 use App\Http\Controllers\Api\Distributor\ProfileController;
 use App\Http\Controllers\Api\Admin\DistributorApprovalController;
-use App\Http\Controllers\Api\GeneralController;
 use App\Http\Controllers\Api\OrderController as DistCustOrderController;
 use App\Http\Controllers\Api\ProductController as GeneralProductController;
 
@@ -70,6 +72,9 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
 
         Route::apiResource('admin-payments', PaymentController::class)->only(['index', 'show']);
         Route::post('admin-payments/update-status/{id}', [PaymentController::class, 'updateStatus']);
+
+        Route::apiResource('admin-posts', PostController::class);
+        Route::apiResource('admin-post-categories', PostCategoryController::class);
     });
 
     // Distributor-only routes

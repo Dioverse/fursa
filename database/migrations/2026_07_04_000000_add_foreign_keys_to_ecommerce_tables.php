@@ -101,6 +101,16 @@ return new class extends Migration {
                 ->on('products')
                 ->onDelete('cascade');
         });
+
+        Schema::create('posts', function (Blueprint $table) {
+            $table->foreign('user_id')
+                  ->references('id')->on('users')
+                  ->onDelete('cascade');
+
+            $table->foreign('post_category_id')
+                  ->references('id')->on('post_categories')
+                  ->nullOnDelete();
+        });
     }
 
     public function down(): void
@@ -126,6 +136,10 @@ return new class extends Migration {
         Schema::table('cart_items', function (Blueprint $table) {
             $table->dropForeign(['cart_id']);
             $table->dropForeign(['product_id']);
+        });
+        Schema::table('posts', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+            $table->dropForeign(['post_category_id']);
         });
     }
 };
