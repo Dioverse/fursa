@@ -35,7 +35,7 @@ return new class extends Migration {
                   ->references('id')->on('users');
 
             $table->foreign('shipping_address_id')
-                  ->references('id')->on('shipping_addresses');
+                  ->references('id')->on('shipping_addresses')->onDelete('set null');;
         });
 
         // order_items.order_id → orders.id

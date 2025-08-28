@@ -14,7 +14,7 @@ class ShippingAddressController extends Controller
      */
     public function index()
     {
-        $addresses = Auth::user()->shippingAddress()->get();
+        $addresses = Auth::user()->shippingAddress()->orderBy("is_default", "desc")->get();
 
         return response()->json([
             'message' => 'Shipping addresses retrieved successfully.',
@@ -58,7 +58,6 @@ class ShippingAddressController extends Controller
     public function show($id)
     {
         $address = Auth::user()->shippingAddress()->where('id', $id)->first();
-
         if (!$address) {
             return response()->json(['message' => 'Shipping address not found'], 404);
         }
@@ -74,7 +73,10 @@ class ShippingAddressController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $address = Auth::user()->shippingAddress()->findOrFail($id);
+        $address = Auth::user()->shippingAddress()->where('id', $id)->first();
+        if (!$address) {
+            return response()->json(['message' => 'Shipping address not found'], 404);
+        }
 
         $request->validate([
             'full_name' => 'sometimes|string|max:255',
@@ -105,7 +107,11 @@ class ShippingAddressController extends Controller
      */
     public function destroy($id)
     {
-        $address = Auth::user()->shippingAddress()->findOrFail($id);
+        $address = Auth::user()->shippingAddress()->where('id', $id)->first();
+        if (!$address) {
+            return response()->json(['message' => 'Shipping address not found'], 404);
+        }
+
         $address->delete();
 
         return response()->json([
