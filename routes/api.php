@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\ShippingAddressController;
 use App\Http\Controllers\Api\Admin\DistributorController;
 use App\Http\Controllers\Api\Admin\PostCategoryController;
 use App\Http\Controllers\Api\Distributor\ProfileController;
+use App\Http\Controllers\Api\PostController as DistCustPostController;
 use App\Http\Controllers\Api\OrderController as DistCustOrderController;
 use App\Http\Controllers\Api\ProductController as GeneralProductController;
 
@@ -63,6 +64,7 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
         Route::apiResource('admin-products', ProductController::class);
         Route::post('admin-products/{id}/images', [ProductController::class, 'addImages']);
         Route::delete('admin-products/{id}/images', [ProductController::class, 'deleteImages']);
+        Route::post('admin-products-toggle/{id}', [ProductController::class, 'toggleStatus']);
         Route::post('admin-products-stock', [ProductController::class, 'stock']);
         Route::get('distributors', [DistributorController::class, 'index']);
         Route::patch('distributors/{id}/status', [DistributorController::class, 'update']);
@@ -99,6 +101,10 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
 Route::get('products', [GeneralProductController::class, 'index']);
 Route::get('products/{id}', [GeneralProductController::class, 'show']);
 Route::post('apply-discount', [GeneralProductController::class, 'apply']);
+
+Route::get('posts', [DistCustPostController::class, 'index']);
+Route::get('posts/{id}', [DistCustPostController::class, 'show']);
+
 
 // Email verification
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])->middleware('signed')->name('verification.verify');

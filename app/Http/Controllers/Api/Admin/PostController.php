@@ -2,22 +2,61 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\Post;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Models\PostCategory;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::with(['category','author'])
-            ->latest()->paginate(10);
-    
+        $query = Post::with(['category:id,name', 'author:id,first_name,last_name']);
+
+        if ($request->filled('category_id')) {
+            $categoryIds = is_array($request->category_id)
+                ? $request->category_id
+                : explode(',', $request->category_id);
+
+            $query->whereIn('post_category_id', $categoryIds);
+        }
+
+        if ($request->filled('author')) {
+            $query->whereHas('author', function ($q) use ($request) {
+                $q->where('first_name', 'like', '%' . $request->author . '%')
+                ->orWhere('last_name', 'like', '%' . $request->author . '%');
+            });
+        }
+
+        if ($request->filled('published')) {
+            $query->where('published', filter_var($request->published, FILTER_VALIDATE_BOOLEAN));
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                ->orWhere('excerpt', 'like', "%{$search}%")
+                ->orWhere('body', 'like', "%{$search}%");
+            });
+        }
+
+        $perPage = $request->query('per_page', 10);
+        $perPage = max(1, (int) $perPage);
+        // Default ordering = latest posts
+        $posts = $query->latest()->paginate($perPage);
+
+        $categories = PostCategory::orderBy('name')->get(["id","name"]);
+
         return response()->json([
             "message" => "Posts retrieved successfully",
-            'data' => $posts
+            "data" => $posts,
+            "filters" => [
+                "categories" => $categories,
+                "published" => ["true" => 1, "false" => 0]
+            ]
         ]);
     }
 
@@ -26,11 +65,12 @@ class PostController extends Controller
         $request->validate([
             'title'     => 'required|string|max:255',
             'body'      => 'required',
-            'post_category_id' => 'nullable|exists:post_categories,id',
-            'featured_image'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'published' => 'required|boolean',
+            'post_category_id' => 'required|exists:post_categories,id',
+            'featured_image'   => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data = $request->only(['title','body','post_category_id']);
+        $data = $request->only(['title','body','published','post_category_id']);
         $data['slug'] = Str::slug($request->title).'-'.uniqid();
         $data['user_id'] = $request->user()->id;
         $data['excerpt'] = Str::limit(strip_tags($request->body), 150);
@@ -65,16 +105,17 @@ class PostController extends Controller
 
     public function update(Request $request, Post $post)
     {
-        $this->authorize('update', $post);
+        // $this->authorize('update', $post);
 
         $request->validate([
             'title'     => 'sometimes|string|max:255',
             'body'      => 'sometimes',
-            'post_category_id' => 'nullable|exists:post_categories,id',
-            'featured_image'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'published' => 'required|boolean',
+            'post_category_id' => 'required|exists:post_categories,id',
+            'featured_image'   => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data = $request->only(['title','body','post_category_id']);
+        $data = $request->only(['title','body','published','post_category_id']);
         if ($request->filled('title')) {
             $data['slug'] = Str::slug($request->title).'-'.uniqid();
         }

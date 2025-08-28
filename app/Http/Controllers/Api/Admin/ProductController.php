@@ -364,4 +364,21 @@ class ProductController extends Controller
             ]
         ]);
     }
+
+    public function toggleStatus($id)
+    {
+        $product = Product::where('id',$id)->first();
+        if (!$product) {
+            return response()->json([
+                'message' => "Product not found."
+            ]);
+        }
+        // Toggle ban (if 1 → 0, if 0 → 1)
+        $product->status = !$product->status;
+        $product->save();
+
+        return response()->json([
+            'message' => $product->status ? 'Product is now active' : 'Product is now inactive',
+        ]);
+    }
 }

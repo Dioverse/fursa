@@ -23,8 +23,15 @@ class ProductController extends Controller
 
         // --- Filtering Options ---
         // Filter by category
-        if ($request->has('category') && is_string($request->input('category'))) {
-            $query->whereRelation('category', 'slug', $request->input('category'));
+        if ($request->filled('category')) {
+            $categoryIds = $request->input('category');
+
+            // Handle both comma-separated string and array
+            if (is_string($categoryIds)) {
+                $categoryIds = explode(',', $categoryIds);
+            }
+
+            $query->whereInRelation('category', 'id', $categoryIds);
         }
 
         // Filter by product name (partial match)
@@ -104,9 +111,17 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product not found.'], 404);
         }
 
+        $related = Product::where(function ($q) use ($product) {
+            $q->where('category_id', $product->category_id)
+            ->orWhere('name', 'like', '%' . $product->name . '%');
+        })->where('id', '!=', $product->id)
+        ->where('published', true)->inRandomOrder()->take(3)
+        ->with(['category:id,name,slug', 'author:id,first_name,last_name'])->get();
+
         return response()->json([
             'message' => 'Product retrieved successfully.',
             'data' => $product,
+            'related' => $related
         ]);
     }
 
