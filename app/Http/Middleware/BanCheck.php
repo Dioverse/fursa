@@ -17,7 +17,7 @@ class BanCheck
     {
         if (!in_array($request->user()->role, $roles)) {
         }
-        if ($request->user()->ban === true) {
+        if ($request->user()->ban == 1) {
             return response()->json(['message' => 'Your account has been banned. Contact support'], 403);
         }
 

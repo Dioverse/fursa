@@ -17,7 +17,6 @@ use App\Http\Controllers\Api\ShippingAddressController;
 use App\Http\Controllers\Api\Admin\DistributorController;
 use App\Http\Controllers\Api\Admin\PostCategoryController;
 use App\Http\Controllers\Api\Distributor\ProfileController;
-use App\Http\Controllers\Api\Admin\DistributorApprovalController;
 use App\Http\Controllers\Api\OrderController as DistCustOrderController;
 use App\Http\Controllers\Api\ProductController as GeneralProductController;
 
@@ -53,7 +52,7 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
     // Admin-only routes
     Route::middleware('role:admin')->group(function () {
         Route::apiResource('users', UserController::class);
-        Route::post('users/update-status/{id}', [UserController::class]);
+        Route::post('users/toggle-ban/{id}', [UserController::class, 'toggleBan']);
         
         Route::apiResource('content', ContentController::class);
 
@@ -65,7 +64,8 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
         Route::post('admin-products/{id}/images', [ProductController::class, 'addImages']);
         Route::delete('admin-products/{id}/images', [ProductController::class, 'deleteImages']);
         Route::post('admin-products-stock', [ProductController::class, 'stock']);
-        Route::apiResource('distributors', DistributorController::class);
+        Route::get('distributors', [DistributorController::class, 'index']);
+        Route::patch('distributors/{id}/status', [DistributorController::class, 'update']);
 
         Route::apiResource('admin-orders', OrderController::class)->only(['index', 'show']);
         Route::post('admin-orders/update-status/{id}', [OrderController::class, 'updateStatus']);

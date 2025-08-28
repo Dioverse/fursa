@@ -16,21 +16,37 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::whereNot('role', 'admin')->get();
+        $query = User::query()
+            ->with('distributor');
+
+        // --- User filters ---
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+        if ($request->filled('first_name')) {
+            $query->where('first_name', 'like', '%' . $request->first_name . '%');
+        }
+        if ($request->filled('last_name')) {
+            $query->where('last_name', 'like', '%' . $request->last_name . '%');
+        }
+        if ($request->filled('email')) {
+            $query->where('email', 'like', '%' . $request->email . '%');
+        }
+        if ($request->filled('phone')) {
+            $query->where('phone', 'like', '%' . $request->phone . '%');
+        }
+
+        $perPage = $request->query('per_page', 10);
+        $perPage = max(1, (int) $perPage);
+        $users = $query->paginate($perPage);
+
         return response()->json([
             'message' => 'Users list retrieved successfully.',
-            'data' => $users,
+            'data'    => $users,
+            'role' => ['distributor','customer']
         ]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
     }
 
     /**
@@ -59,44 +75,21 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function updateStatus(Request $request, string $id)
+    public function toggleBan(Request $request, $id)
     {
-        $user = User::find($id);
-
-        if (!$user) {
-            return response()->json(['message' => 'User not found.'], 404);
+        $user = User::where('id',$id)->first();
+        if (!$user || $user->id == $request->user()->id) {
+            return response()->json([
+                'message' => "User not found."
+            ]);
         }
-        
-        $validator = Validator::make($request->all(), [
-            'status' => ['required', 'string', "in:approved,rejected,banned"],
-            'reason' => ['sometimes']
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-        $status = $request->status;
-        $reason = $request->reason;
-
-        $user->fill(['status'=>$status]);
+        // Toggle ban (if 1 → 0, if 0 → 1)
+        $user->ban = !$user->ban;
         $user->save();
 
-        Mail::to($user->email)->queue(new UserStatusChange($user, $status, $reason));
-
         return response()->json([
-            'message' => 'User updated successfully.',
-            'data' => $user,
+            'message' => $user->ban ? 'User has been banned' : 'User has been unbanned',
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }

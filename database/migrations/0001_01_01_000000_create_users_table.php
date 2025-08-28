@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('phone');
             $table->string('password');
-            $table->enum('status', ['pending', 'approved', 'rejected', 'banned'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->enum('role', ['admin', 'distributor', 'customer'])->default('customer');
             $table->boolean('ban')->default(true);
             $table->rememberToken();
