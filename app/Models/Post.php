@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use OwenIt\Auditing\Auditable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class Post extends Model
+class Post extends Model implements AuditableContract
 {
-    use HasFactory;
+    use HasFactory, Auditable;
 
     protected $fillable = [
         'user_id', 'post_category_id', 'title', 'slug',
@@ -21,5 +24,9 @@ class Post extends Model
 
     public function author() {
         return $this->belongsTo(User::class, 'user_id');
+    }
+    public function isAuditable()
+    {
+        return Auth::check() && Auth::user()->role === 'admin';
     }
 }

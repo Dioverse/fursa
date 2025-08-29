@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\Admin\ContentController;
 use App\Http\Controllers\Api\Admin\PaymentController;
 use App\Http\Controllers\Api\Admin\ProductController;
 use App\Http\Controllers\Api\Admin\CategoryController;
+use App\Http\Controllers\Api\Admin\SettingsController;
 use App\Http\Controllers\Api\ShippingAddressController;
 use App\Http\Controllers\Api\Admin\DistributorController;
 use App\Http\Controllers\Api\Admin\PostCategoryController;
@@ -77,12 +78,16 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
 
         Route::apiResource('admin-posts', PostController::class);
         Route::apiResource('admin-post-categories', PostCategoryController::class);
+
+        Route::get('admin-settings', [SettingsController::class, 'index']);
+        Route::get('admin-settings/{key}', [SettingsController::class, 'show']);
+        Route::post('admin-settings', [SettingsController::class, 'update']);
     });
 
     // Distributor-only routes
     Route::middleware('role:distributor')->prefix('distributor')->group(function () {
     });
-    
+
     // Customer & Distributor routes
     Route::middleware('role:customer,distributor')->group(function () {
         Route::get('dashboard', [GeneralController::class, 'dashboard']);
