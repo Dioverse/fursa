@@ -247,14 +247,17 @@ import Brochure from '@/components/common/Brochure.vue'
 import CTA from '@/components/common/CTA.vue'
 import axios from "axios"
 
+const icategories = ref([])
+const greases = ref([])
+const marines = ref([])
+const automotiveLubricants = ref([])
+
 const route = useRoute()
 const router = useRouter()
 
 const products = ref([])
-const minPrice = ref(null)
-const maxPrice = ref(null)
-
 const loading = ref(false)
+
 const viewMode = ref('grid')
 const sortBy = ref('featured')
 const currentPage = ref(1)
@@ -265,11 +268,6 @@ const filters = ref({
     priceRange: { min: null, max: null }
 })
 
-const icategories = ref([])
-const greases = ref([])
-const marines = ref([])
-const automotiveLubricants = ref([])
-
 // Mock products data
 onMounted(async () => {
     loading.value = true
@@ -277,7 +275,7 @@ onMounted(async () => {
         // Replace with actual API call
         const resp = await axios.get('https://back.fursaenergy.com/public/api/products')
         const apiProducts = resp.data?.data?.products?.data ?? []
-        // products.value = apiProducts
+
         products.value = apiProducts.map(p => ({
             id: p.id,
             name: p.name,
@@ -286,7 +284,8 @@ onMounted(async () => {
             rating: Math.floor(Math.random() * 2) + 4,
             image: p.images.length ? p.images[0].url : "../../public/images/mrs_motor_oil.png",
             volume: p.short_description || "N/A",
-            category: p.category?.name || "Uncategorized"
+            category: p.category?.name || "Uncategorized",
+            category_id: Number(p.category?.id ?? p.category_id ?? NaN)
         }))
     } catch (error) {
         console.error('Failed to load products:', error)
@@ -300,31 +299,21 @@ const filteredProducts = computed(() => {
 
   // Category filter
   if (filters.value.categories.length > 0) {
-    result = result.filter(p => filters.value.categories.includes(p.category_id))
+    const selected = new Set(filters.value.categories.map(Number))
+    result = result.filter(p => selected.has(Number(p.category_id)))
   }
 
   // Price filter
-  if (filters.value.priceRange.min !== null) {
-    result = result.filter(p => p.price >= filters.value.priceRange.min)
-  }
-  if (filters.value.priceRange.max !== null) {
-    result = result.filter(p => p.price <= filters.value.priceRange.max)
-  }
+  const { min, max } = filters.value.priceRange
+  if (Number.isFinite(min)) result = result.filter(p => p.price >= min)
+  if (Number.isFinite(max)) result = result.filter(p => p.price <= max)
 
   // Sorting
   switch (sortBy.value) {
-    case "price-low":
-      result.sort((a, b) => a.price - b.price)
-      break
-    case "price-high":
-      result.sort((a, b) => b.price - a.price)
-      break
-    case "name":
-      result.sort((a, b) => a.name.localeCompare(b.name))
-      break
-    case "rating":
-      result.sort((a, b) => b.rating - a.rating)
-      break
+    case 'price-low':  result.sort((a, b) => a.price - b.price); break
+    case 'price-high': result.sort((a, b) => b.price - a.price); break
+    case 'name':       result.sort((a, b) => a.name.localeCompare(b.name)); break
+    case 'rating':     result.sort((a, b) => b.rating - a.rating); break
   }
 
   return result
@@ -366,15 +355,15 @@ const filteredProducts = computed(() => {
 //     return result
 // })
 
-const totalPages = computed(() =>
-    Math.ceil(filteredProducts.value.length / perPage.value)
-)
+// const totalPages = computed(() =>
+//     Math.ceil(filteredProducts.value.length / perPage.value)
+// )
 
-const paginatedProducts = computed(() => {
-    const start = (currentPage.value - 1) * perPage.value
-    const end = start + perPage.value
-    return filteredProducts.value.slice(start, end)
-})
+// const paginatedProducts = computed(() => {
+//     const start = (currentPage.value - 1) * perPage.value
+//     const end = start + perPage.value
+//     return filteredProducts.value.slice(start, end)
+// })
 
 const displayedPages = computed(() => {
     const pages = []
@@ -412,12 +401,11 @@ const clearFilters = () => {
 }
 
 // Watch for route query changes
-watch(() => route.query, (query) => {
-    if (query.category) {
-        // Apply category from URL
-    }
-    if (query.search) {
-        // Apply search from URL
-    }
-}, { immediate: true })
+watch(() => filters.value, () => { currentPage.value = 1 }, { deep: true })
+
+const totalPages = computed(() => Math.ceil(filteredProducts.value.length / perPage.value))
+const paginatedProducts = computed(() => {
+  const start = (currentPage.value - 1) * perPage.value
+  return filteredProducts.value.slice(start, start + perPage.value)
+})
 </script>
