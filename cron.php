@@ -9,3 +9,4 @@ $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 
 $kernel->call('schedule:run');
 $kernel->call('cache:clear');
+$kernel->call('storage:link');
