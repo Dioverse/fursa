@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
+
 // Lazy load views
 const HomeView = () => import('@/views/HomeView.vue')
 const LoginView = () => import('@/views/auth/LoginView.vue')
@@ -16,7 +17,7 @@ const CartView = () => import('@/views/cart/CartView.vue')
 const CheckoutView = () => import('@/views/cart/CheckoutView.vue')
 const DistributorRegistrationView = () =>
   import('@/views/distributor/DistributorRegistrationView.vue')
-
+const VerifyView = () => import('@/views/auth/VerifyView.vue')
 // Additional views
 const AboutView = () => import('@/views/AboutView.vue')
 const ContactView = () => import('@/views/ContactView.vue')
@@ -46,6 +47,12 @@ const router = createRouter({
       name: 'register',
       component: RegisterView,
       meta: { title: 'Register', guest: true },
+    },
+    {
+      path: '/verify',
+      name: 'verify',
+      component: VerifyView,
+      meta: { title: 'Verify', guest: true },
     },
     {
       path: '/shop',

@@ -86,15 +86,24 @@
             </label>
         </div>
 
-        <BaseButton type="submit" variant="primary" size="lg" fullWidth :loading="loading" icon="user-plus">
-            Sign Up
-        </BaseButton>
+        <BaseButton
+        type="submit"
+        variant="primary"
+        size="lg"
+        fullWidth
+        icon="user-plus"
+        :loading="authStore.loading"
+        text="Sign Up"
+        loadingText="Signing Up..."
+        />
     </form>
 </template>
 
 <script setup>
 import { ref, reactive } from 'vue'
 import BaseButton from '@/components/common/BaseButton.vue'
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
 
 const emit = defineEmits(['submit'])
 

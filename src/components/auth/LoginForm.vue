@@ -41,9 +41,19 @@
             </RouterLink>
         </div>
 
-        <BaseButton type="submit" variant="primary" size="lg" fullWidth :loading="loading" icon="sign-in-alt">
+        <!-- <BaseButton type="submit" variant="primary" size="lg" fullWidth :loading="loading" icon="sign-in-alt">
             Sign In
-        </BaseButton>
+        </BaseButton> -->
+        <BaseButton
+        type="submit"
+        variant="primary"
+        size="lg"
+        fullWidth
+        icon="user-plus"
+        :loading="authStore.loading"
+        text="Sign In"
+        loadingText="Signing In..."
+        />
     </form>
 </template>
 
