@@ -21,7 +21,6 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->decimal('base_price', 10, 2);
             $table->decimal('distributor_price', 10, 2);
-            $table->string('category')->nullable();
             $table->string('image')->nullable();
             $table->integer('stock_quantity')->default(0);
             $table->integer('low_stock_threshold')->nullable();

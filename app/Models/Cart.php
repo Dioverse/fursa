@@ -43,13 +43,13 @@ class Cart extends Model implements AuditableContract
      */
     public function getTotalAmount(): float
     {
-        if ($this->relationLoaded('items')) {
-            $this->items->loadMissing('product');
+        if ($this->relationLoaded('cartItems')) {
+            $this->cartItems->loadMissing('product');
         } else {
-            $this->loadMissing('items.product');
+            $this->loadMissing('cartItems.product');
         }
 
-        return $this->items->sum(function ($item) {
+        return round($this->cartItems->sum(function ($item) {
             $price = $item->product->base_price ?? 0;
             
             $user = auth('sanctum')->user();
@@ -58,7 +58,7 @@ class Cart extends Model implements AuditableContract
             }
 
             return $item->quantity * $price;
-        });
+        }), 2);
     }
     public function isAuditable()
     {

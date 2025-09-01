@@ -11,14 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('cms', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->json('shipping_address')->nullable();
-
-            $table->string('order_id');
-            $table->decimal('total_amount', 12, 2);
-            $table->enum('status', ['pending', 'out for delivery', 'delivered', 'cancelled'])->default('pending');
+            $table->string('name'); // e.g. blog, homepage
+            $table->json('content'); // hierarchical content
             $table->timestamps();
         });
     }
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::dropIfExists('cms');
     }
 };

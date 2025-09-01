@@ -13,6 +13,14 @@ class OrderItem extends Model implements AuditableContract
     /** @use HasFactory<\Database\Factories\OrderItemFactory> */
     use HasFactory, Auditable;
     
+    protected $table = "order_items";
+    protected $fillable = [
+        'order_id',
+        'product_id',
+        'quantity',
+        'unit_price'
+    ];
+
     public function product() {
         return $this->belongsTo(Product::class);
     }

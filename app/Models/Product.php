@@ -22,12 +22,15 @@ class Product extends Model implements AuditableContract
         'description',
         'base_price',
         'distributor_price',
-        'category',
         'stock_quantity',
         'low_stock_threshold',
         'status',
         'slug',
         'tags'
+    ];
+
+    protected $casts = [
+        'tags'    => 'array',
     ];
     
     public function category() {
