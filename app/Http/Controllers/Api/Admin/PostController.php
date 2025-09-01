@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use Carbon\Carbon;
 use App\Models\Post;
 use Illuminate\Support\Str;
 use App\Models\PostCategory;
@@ -65,7 +66,7 @@ class PostController extends Controller
         $request->validate([
             'title'     => 'required|string|max:255',
             'body'      => 'required',
-            'published' => 'required|boolean',
+            'published' => 'nullable|boolean',
             'post_category_id' => 'required|exists:post_categories,id',
             'featured_image'   => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
@@ -80,6 +81,9 @@ class PostController extends Controller
             $filename  = $data['slug'] . '.' . $extension;
             $path = $request->file('featured_image')->storeAs('posts',$filename,'public');
             $data['featured_image'] = $path;
+        }
+        if ($request->filled('published') && $request->published) {
+            $data['published_at'] = Carbon::now();
         }
 
         $post = Post::create($data);
@@ -112,7 +116,7 @@ class PostController extends Controller
         $request->validate([
             'title'     => 'sometimes|string|max:255',
             'body'      => 'sometimes',
-            'published' => 'required|boolean',
+            'published' => 'nullable|boolean',
             'post_category_id' => 'required|exists:post_categories,id',
             'featured_image'   => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
@@ -137,6 +141,9 @@ class PostController extends Controller
                 Storage::disk('public')->move($post->featured_image, $newPath);
                 $data['featured_image'] = $newPath;
             }
+        }
+        if ($request->filled('published') && $request->published) {
+            $data['published_at'] = Carbon::now();
         }
 
         $post->update($data);
