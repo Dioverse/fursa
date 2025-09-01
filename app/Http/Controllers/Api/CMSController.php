@@ -48,7 +48,8 @@ class CMSController extends Controller
                 }
             }
         }
-        $response = count($response) === 1 ? array_values($response) : $response;
+        // $response = count($response) === 1 ? $response[0] : $response;
+        // print_r($response);
         return response()->json($response);
     }
 }
