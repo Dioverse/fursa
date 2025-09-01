@@ -15,7 +15,7 @@ class LanguageStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'    => ['required', 'string', 'min:2', 'max:60', 'regex:/^[a-z][a-z0-9_\-]*$/i'],
+            'name'    => ['required', 'string', 'min:2', 'max:60', 'unique:language,name', 'regex:/^[a-z][a-z0-9_\-]*$/i'],
             // Content must be sections => { lang => string }
             'content' => ['required', 'array', 'min:1'],
             // Each section must be an object/assoc array

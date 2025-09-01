@@ -11,7 +11,7 @@ class Language extends Model implements AuditableContract
 {
     use Auditable;
 
-    protected $table = 'language';
+    protected $table = 'languages';
 
     protected $fillable = [
         'name',
