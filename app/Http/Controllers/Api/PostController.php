@@ -63,9 +63,9 @@ class PostController extends Controller
     /**
      * Show a single post
      */
-    public function show($id)
+    public function show($slug)
     {
-        $post = Post::where('id', $id)->where("published", true)->first();
+        $post = Post::where('slug', $slug)->where("published", true)->first();
         if (!$post) {
             return response()->json(["message" => "Post not found"], 404);
         }

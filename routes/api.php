@@ -116,7 +116,7 @@ Route::get('products/{id}', [GeneralProductController::class, 'show']);
 Route::post('apply-discount', [GeneralProductController::class, 'apply']);
 
 Route::get('posts', [DistCustPostController::class, 'index']);
-Route::get('posts/{id}', [DistCustPostController::class, 'show']);
+Route::get('posts/{slug}', [DistCustPostController::class, 'show']);
 
 Route::get('/cms/fetch/{lang}/{qry}', [DistCustCMSController::class, 'fetch']);
 
