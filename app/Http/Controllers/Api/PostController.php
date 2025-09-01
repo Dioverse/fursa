@@ -51,10 +51,9 @@ class PostController extends Controller
         // $tags = Post::pluck('tags')->flatten()->unique()->values();
         return response()->json([
             'message' => 'Posts retrieved successfully.',
-            'data' => $posts,
+            'posts' => $posts,
             'filters' => [
                 'categories'    => $categories,
-                // 'tags'          => $tags,
                 'sort'          => ['latest','oldest','popular']
             ]
         ]);
