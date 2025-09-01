@@ -118,7 +118,7 @@ Route::post('apply-discount', [GeneralProductController::class, 'apply']);
 Route::get('posts', [DistCustPostController::class, 'index']);
 Route::get('posts/{slug}', [DistCustPostController::class, 'show']);
 
-Route::get('/language/fetch/{lang}/{qry}', [DistCustLanguageController::class, 'fetch']);
+Route::get('/lang/fetch/{lang}/{qry}', [DistCustLanguageController::class, 'fetch']);
 
 // Email verification
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])->middleware('signed')->name('verification.verify');
