@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\GeneralController;
-use App\Http\Controllers\Api\Admin\CMSController;
+use App\Http\Controllers\Api\Admin\LanguageController;
 use App\Http\Controllers\Api\Admin\PostController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Admin\AdminController;
@@ -19,7 +19,7 @@ use App\Http\Controllers\Api\ShippingAddressController;
 use App\Http\Controllers\Api\Admin\DistributorController;
 use App\Http\Controllers\Api\Admin\PostCategoryController;
 use App\Http\Controllers\Api\Distributor\ProfileController;
-use App\Http\Controllers\Api\CMSController as DistCustCMSController;
+use App\Http\Controllers\Api\LanguageController as DistCustLanguageController;
 use App\Http\Controllers\Api\PostController as DistCustPostController;
 use App\Http\Controllers\Api\PaymentController as ApiPaymentController;
 use App\Http\Controllers\Api\OrderController as DistCustOrderController;
@@ -82,7 +82,7 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
 
         Route::apiResource('admin-posts', PostController::class);
         Route::apiResource('admin-post-categories', PostCategoryController::class);
-        Route::apiResource('admin-cms', CMSController::class)->only(['store','update']);
+        Route::apiResource('admin-language', LanguageController::class)->only(['store','update']);
 
         // Route::get('admin-settings', [SettingsController::class, 'index']);
         // Route::get('admin-settings/{key}', [SettingsController::class, 'show']);
@@ -118,7 +118,7 @@ Route::post('apply-discount', [GeneralProductController::class, 'apply']);
 Route::get('posts', [DistCustPostController::class, 'index']);
 Route::get('posts/{slug}', [DistCustPostController::class, 'show']);
 
-Route::get('/cms/fetch/{lang}/{qry}', [DistCustCMSController::class, 'fetch']);
+Route::get('/language/fetch/{lang}/{qry}', [DistCustLanguageController::class, 'fetch']);
 
 // Email verification
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])->middleware('signed')->name('verification.verify');

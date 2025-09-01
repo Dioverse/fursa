@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class CMS extends Model implements AuditableContract
+class Language extends Model implements AuditableContract
 {
     use Auditable;
 
-    protected $table = 'cms';
+    protected $table = 'language';
 
     protected $fillable = [
         'name',

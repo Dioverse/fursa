@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\CMS;
+use App\Models\Language;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class CMSController extends Controller
+class LanguageController extends Controller
 {
     public function fetch(Request $request,$lang,$name)
     {
@@ -25,23 +25,23 @@ class CMSController extends Controller
             $group = $parts[0];         // e.g. "about"
             $section = $parts[1] ?? null; // e.g. "vision"
 
-            $cms = CMS::where('name', $group)->first();
+            $language = Language::where('name', $group)->first();
 
-            if (!$cms) {
+            if (!$language) {
                 continue;
             }
 
             if ($section) {
                 // Single section requested
-                if (isset($cms->content[$section])) {
-                    $translations = $cms->content[$section];
+                if (isset($language->content[$section])) {
+                    $translations = $language->content[$section];
                     $response[$group][$section] = $lang && isset($translations[$lang])
                         ? $translations[$lang]
                         : $translations;
                 }
             } else {
                 // All sections requested
-                foreach ($cms->content as $sec => $translations) {
+                foreach ($language->content as $sec => $translations) {
                     $response[$group][$sec] = $lang && isset($translations[$lang])
                         ? $translations[$lang]
                         : $translations;

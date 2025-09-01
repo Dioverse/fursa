@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cms', function (Blueprint $table) {
+        Schema::create('language', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // e.g. blog, homepage
             $table->json('content'); // hierarchical content
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cms');
+        Schema::dropIfExists('language');
     }
 };

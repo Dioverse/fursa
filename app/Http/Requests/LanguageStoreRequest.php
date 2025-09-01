@@ -5,20 +5,22 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
-class CMSUpdateRequest extends FormRequest
+class LanguageStoreRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return true; // Gate as needed
     }
 
     public function rules(): array
     {
         return [
             'name'    => ['required', 'string', 'min:2', 'max:60', 'regex:/^[a-z][a-z0-9_\-]*$/i'],
-            // For updates, allow partial sections/languages, but keep same structure
+            // Content must be sections => { lang => string }
             'content' => ['required', 'array', 'min:1'],
+            // Each section must be an object/assoc array
             'content.*' => ['required', 'array', 'min:1'],
+            // We don’t validate keys here (they're dynamic), we’ll check in withValidator()
         ];
     }
 
@@ -28,7 +30,7 @@ class CMSUpdateRequest extends FormRequest
             'name.regex' => 'The name may only contain letters, numbers, underscores, and hyphens, and must start with a letter.',
             'content.required' => 'Content is required and must be a JSON object.',
             'content.array' => 'Content must be a JSON object (key/value).',
-            'content.min' => 'Provide at least one section to update.',
+            'content.min' => 'At least one section is required.',
             'content.*.array' => 'Each section must be an object of language translations.',
             'content.*.min' => 'Each section must include at least one language key.',
         ];
@@ -45,18 +47,21 @@ class CMSUpdateRequest extends FormRequest
             }
 
             $sectionNameRegex = '/^[a-z][a-z0-9_\-]*$/i';
-            $localeRegex = '/^[a-z]{2,3}(?:-[A-Z]{2})?$/';
+            $localeRegex = '/^[a-z]{2,3}(?:-[A-Z]{2})?$/'; // en, fr, en-US, pt-BR
 
+            // Optional hard limits (defensive)
             if (count($content) > 200) {
                 $v->errors()->add('content', 'Too many sections (max 200).');
             }
 
             foreach ($content as $section => $translations) {
+                // Section key validation
                 if (!is_string($section) || !preg_match($sectionNameRegex, $section)) {
                     $v->errors()->add("content.$section", "Invalid section name: $section.");
                     continue;
                 }
 
+                // Must be assoc array of { lang => string }
                 if (!is_array($translations) || !$this->isAssoc($translations)) {
                     $v->errors()->add("content.$section", 'Section must be an object of language=>value pairs.');
                     continue;

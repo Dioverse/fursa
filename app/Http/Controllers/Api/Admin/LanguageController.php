@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Requests\CMSStoreRequest;
-use App\Http\Requests\CMSUpdateRequest;
-use App\Models\CMS;
+use App\Http\Requests\LanguageStoreRequest;
+use App\Http\Requests\LanguageUpdateRequest;
+use App\Models\Language;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
-class CMSController extends Controller
+class LanguageController extends Controller
 {
     /**
      * Store a whole group (overwrites the group if it exists).
@@ -17,16 +17,16 @@ class CMSController extends Controller
      *  - name: "blog"
      *  - content: { "header1": {"en":"hello","fr":"bonjour"}, ... }
      */
-    public function store(CMSStoreRequest $request): JsonResponse
+    public function store(LanguageStoreRequest $request): JsonResponse
     {
         $payload = $request->validated();
 
         // Normalize (trim strings)
         $normalized = $this->normalizeContent($payload['content']);
 
-        $cms = DB::transaction(function () use ($payload, $normalized) {
+        $lang = DB::transaction(function () use ($payload, $normalized) {
             // Upsert: overwrite group content fully
-            return CMS::updateOrCreate(
+            return Language::updateOrCreate(
                 ['name' => $payload['name']],
                 ['content' => $normalized]
             );
@@ -34,7 +34,7 @@ class CMSController extends Controller
 
         return response()->json([
             'message' => 'Content stored successfully.',
-            'data'    => $cms,
+            'data'    => $lang,
         ], 201);
     }
 
@@ -44,12 +44,12 @@ class CMSController extends Controller
      *  - name: "blog"
      *  - content: { "header1": {"es":"hola"} } // merges into existing
      */
-    public function update(CMSUpdateRequest $request): JsonResponse
+    public function update(LanguageUpdateRequest $request): JsonResponse
     {
         $payload = $request->validated();
 
-        $cms = CMS::where('name', $payload['name'])->first();
-        if (!$cms) {
+        $lang = Language::where('name', $payload['name'])->first();
+        if (!$lang) {
             return response()->json([
                 'message' => 'Group not found.',
                 'errors'  => ['name' => ['The specified group does not exist.']],
@@ -58,8 +58,8 @@ class CMSController extends Controller
 
         $incoming = $this->normalizeContent($payload['content']);
 
-        $updated = DB::transaction(function () use ($cms, $incoming) {
-            $existing = $cms->content ?? [];
+        $updated = DB::transaction(function () use ($lang, $incoming) {
+            $existing = $lang->content ?? [];
 
             // Merge section by section
             foreach ($incoming as $section => $translations) {
@@ -69,8 +69,8 @@ class CMSController extends Controller
                 );
             }
 
-            $cms->update(['content' => $existing]);
-            return $cms->refresh();
+            $lang->update(['content' => $existing]);
+            return $lang->refresh();
         });
 
         return response()->json([
