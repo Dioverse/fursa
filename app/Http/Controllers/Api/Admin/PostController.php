@@ -103,10 +103,12 @@ class PostController extends Controller
         ]);
     }
 
-    public function update(Request $request, Post $post)
+    public function update(Request $request, $id)
     {
-        // $this->authorize('update', $post);
-
+        $post = Post::where('id', $id)->first();
+        if (!$post) {
+            return response()->json(["message"=>"Post not found"], 404);
+        }
         $request->validate([
             'title'     => 'sometimes|string|max:255',
             'body'      => 'sometimes',
