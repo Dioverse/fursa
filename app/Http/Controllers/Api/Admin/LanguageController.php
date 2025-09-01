@@ -33,7 +33,7 @@ class LanguageController extends Controller
         });
 
         return response()->json([
-            'message' => 'Content stored successfully.',
+            'message' => 'Language set stored successfully.',
             'data'    => $lang,
         ], 201);
     }
@@ -44,37 +44,38 @@ class LanguageController extends Controller
      *  - name: "blog"
      *  - content: { "header1": {"es":"hola"} } // merges into existing
      */
-    public function update(LanguageUpdateRequest $request): JsonResponse
+    public function update(LanguageUpdateRequest $request, $name): JsonResponse
     {
         $payload = $request->validated();
 
-        $lang = Language::where('name', $payload['name'])->first();
+        $lang = Language::where('name', $name)->first();
         if (!$lang) {
             return response()->json([
-                'message' => 'Group not found.',
-                'errors'  => ['name' => ['The specified group does not exist.']],
+                'message' => 'Language set not found.',
+                'errors'  => ['name' => ['The specified language set does not exist.']],
             ], 404);
         }
 
-        $incoming = $this->normalizeContent($payload['content']);
+        $updated = DB::transaction(function () use ($lang, $payload) {
+            $currentContent = $lang->content ?? [];
 
-        $updated = DB::transaction(function () use ($lang, $incoming) {
-            $existing = $lang->content ?? [];
+            // Request content (sections to replace)
+            $newContent = $payload['content'] ?? [];
 
-            // Merge section by section
-            foreach ($incoming as $section => $translations) {
-                $existing[$section] = array_merge(
-                    is_array($existing[$section] ?? null) ? $existing[$section] : [],
-                    $translations
-                );
+            // Replace entire keys (not deep merge)
+            foreach ($newContent as $key => $value) {
+                $currentContent[$key] = $value;
             }
 
-            $lang->update(['content' => $existing]);
+            // Save back
+            $lang->content = $currentContent;
+            $lang->save();
+
             return $lang->refresh();
         });
 
         return response()->json([
-            'message' => 'Content updated successfully.',
+            'message' => 'Language set updated successfully.',
             'data'    => $updated,
         ]);
     }

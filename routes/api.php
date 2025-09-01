@@ -82,7 +82,8 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
 
         Route::apiResource('admin-posts', PostController::class);
         Route::apiResource('admin-post-categories', PostCategoryController::class);
-        Route::apiResource('admin-language', LanguageController::class)->only(['store','update']);
+        Route::post('admin-language', [LanguageController::class, 'store']);
+        Route::post('admin-language-update/{name}', [LanguageController::class, 'update']);
 
         // Route::get('admin-settings', [SettingsController::class, 'index']);
         // Route::get('admin-settings/{key}', [SettingsController::class, 'show']);

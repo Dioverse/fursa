@@ -15,7 +15,6 @@ class LanguageUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'    => ['required', 'string', 'min:2', 'max:60', 'regex:/^[a-z][a-z0-9_\-]*$/i'],
             // For updates, allow partial sections/languages, but keep same structure
             'content' => ['required', 'array', 'min:1'],
             'content.*' => ['required', 'array', 'min:1'],
@@ -25,7 +24,6 @@ class LanguageUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.regex' => 'The name may only contain letters, numbers, underscores, and hyphens, and must start with a letter.',
             'content.required' => 'Content is required and must be a JSON object.',
             'content.array' => 'Content must be a JSON object (key/value).',
             'content.min' => 'Provide at least one section to update.',
