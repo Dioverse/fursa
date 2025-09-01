@@ -26,13 +26,13 @@ class PostController extends Controller
 
         // --- Multiple categories filter ---
         if ($request->filled('categories')) {
-            $categoryIds = $request->input('categories');
+            $categorySlugs = $request->input('categories');
 
-            if (is_string($categoryIds)) {
-                $categoryIds = explode(',', $categoryIds);
+            if (is_string($categorySlugs)) {
+                $categorySlugs = explode(',', $categorySlugs);
             }
 
-            $query->whereIn('post_category_id', $categoryIds);
+            $query->whereIn('slug', $categorySlugs);
         }
 
         // --- Sort options ---

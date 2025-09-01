@@ -35,7 +35,7 @@ class PostCategoryController extends Controller
 
         $category = PostCategory::create([
             'name' => $request->name,
-            'slug' => Str::slug($request->name) . '-' . uniqid(),
+            'slug' => Str::slug($request->name),
         ]);
 
         return response()->json([
@@ -77,7 +77,7 @@ class PostCategoryController extends Controller
 
         $postCategory->update([
             'name' => $request->name,
-            'slug' => Str::slug($request->name) . '-' . uniqid(),
+            'slug' => Str::slug($request->name),
         ]);
 
         return response()->json([
