@@ -48,16 +48,18 @@
 
                     <!-- Language Selector -->
                     <div class="relative">
-                        <button @click="showLangMenu = !showLangMenu" class="flex items-center gap-1 text-white">
-                            <span>🇬🇧</span>
-                            <span>English</span>
+                        <!-- Button -->
+                        <button  @click="showLangMenu = !showLangMenu" class="flex items-center gap-1 text-white">
+                            <span>{{ languageStore.current.toUpperCase() }}</span>
+                            <span>{{ languageStore.currentName }}</span>
                             <font-awesome-icon :icon="showLangMenu ? 'chevron-up' : 'chevron-down'" />
                         </button>
+
+                        <!-- Dropdown -->
                         <div v-if="showLangMenu" class="absolute right-0 mt-2 bg-white rounded shadow-lg py-2 w-32">
-                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">English</a>
-                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">Yoruba</a>
-                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">Igbo</a>
-                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">Hausa</a>
+                        <a v-for="lang in languageStore.allowedLanguages" :key="lang.code" href="#" class="block px-4 py-2 hover:bg-gray-100" @click.prevent="switchLang(lang.code)">
+                            {{ lang.name }}
+                        </a>
                         </div>
                     </div>
                 </div>
@@ -128,6 +130,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
+import { useLanguageStore } from '@/stores/language'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -136,19 +139,26 @@ const cartStore = useCartStore()
 const searchQuery = ref('')
 const mobileMenuOpen = ref(false)
 const showLangMenu = ref(false)
+const languageStore = useLanguageStore()
 const wishlistCount = computed(() => 0) // Replace with actual wishlist store
 
 const handleSearch = () => {
-    if (searchQuery.value.trim()) {
-        router.push({
-            name: 'shop',
-            query: { search: searchQuery.value }
-        })
-        searchQuery.value = ''
-        mobileMenuOpen.value = false
-    }
+  if (searchQuery.value.trim()) {
+    router.push({
+      name: 'shop',
+      query: { search: searchQuery.value }
+    })
+    searchQuery.value = ''
+    mobileMenuOpen.value = false
+  }
+}
+
+const switchLang = (lang) => {
+  languageStore.set(lang)
+  showLangMenu.value = false
 }
 </script>
+
 
 <style scoped>
 .badge {

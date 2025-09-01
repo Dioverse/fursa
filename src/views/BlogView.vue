@@ -7,9 +7,9 @@
             </div>
             <div class="relative container mx-auto px-4 h-full flex items-center justify-center text-center">
                 <div>
-                    <h1 class="text-5xl font-bold text-white mb-4">Our Blog</h1>
+                    <h1 class="text-5xl font-bold text-white mb-4">{{ language.bread_crumb_header || 'Our Blog' }}</h1>
                     <p class="text-white opacity-90">
-                        Stay updated with the latest news, tips, and insights from Fursa Energy
+                        {{ language.breadcrumb_paragraph || 'Stay updated with the latest news, tips, and insights from Fursa Energy' }}
                     </p>
                 </div>
             </div>
@@ -22,7 +22,7 @@
                     <!-- Main Content -->
                     <div class="lg:col-span-2">
                         <!-- Top Blog -->
-                        <h2 class="text-2xl font-bold mb-6">Top Blog</h2>
+                        <h2 class="text-2xl font-bold mb-6">{{ language.top_blog_header_1 || 'Top Blog' }}</h2>
 
                         <!-- Blog Grid -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
@@ -40,14 +40,14 @@
                                     <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ post.excerpt }}</p>
                                     <RouterLink :to="`/blog/${post.id}`"
                                         class="text-primary hover:underline inline-flex items-center">
-                                        Learn More <font-awesome-icon icon="arrow-right" class="ml-2 text-sm" />
+                                        {{ language.buttons || 'Learn more' }} <font-awesome-icon icon="arrow-right" class="ml-2 text-sm" />
                                     </RouterLink>
                                 </div>
                             </article>
                         </div>
 
                         <!-- Latest Post -->
-                        <h2 class="text-2xl font-bold mb-6">Latest Post</h2>
+                        <h2 class="text-2xl font-bold mb-6">{{ language.latest_post_header_1 || 'Latest Post' }}</h2>
 
                         <div class="space-y-6">
                             <article v-for="post in latestPosts" :key="post.id"
@@ -71,7 +71,7 @@
                                             </div>
                                             <RouterLink :to="`/blog/${post.id}`"
                                                 class="text-primary hover:underline inline-flex items-center">
-                                                Learn More <font-awesome-icon icon="arrow-right" class="ml-2 text-sm" />
+                                                {{ language.buttons || 'Learn more' }} <font-awesome-icon icon="arrow-right" class="ml-2 text-sm" />
                                             </RouterLink>
                                         </div>
                                     </div>
@@ -84,7 +84,7 @@
                     <div class="lg:col-span-1">
                         <!-- Categories -->
                         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                            <h3 class="text-xl font-bold mb-4">Categories</h3>
+                            <h3 class="text-xl font-bold mb-4">{{ language.sidebar_categories_header || 'Categories' }}</h3>
                             <div class="space-y-2">
                                 <button v-for="category in categories" :key="category"
                                     class="block w-full text-left px-4 py-2 bg-primary bg-opacity-10 text-primary rounded hover:bg-opacity-20 transition">
@@ -95,7 +95,7 @@
 
                         <!-- Tags -->
                         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                            <h3 class="text-xl font-bold mb-4">Tags</h3>
+                            <h3 class="text-xl font-bold mb-4">{{ language.sidebar_tags_header || 'Tags' }}</h3>
                             <div class="flex flex-wrap gap-2">
                                 <span v-for="tag in tags" :key="tag"
                                     class="px-3 py-1 bg-primary bg-opacity-10 text-primary rounded-full text-sm">
@@ -106,7 +106,7 @@
 
                         <!-- Popular Blogs -->
                         <div class="bg-white rounded-lg shadow-md p-6">
-                            <h3 class="text-xl font-bold mb-4">Popular Blogs</h3>
+                            <h3 class="text-xl font-bold mb-4">{{ language.sidebar_popular_blogs_header || 'Popular Blogs' }}</h3>
                             <div class="space-y-4">
                                 <article v-for="post in popularPosts" :key="post.id" class="flex gap-3">
                                     <div class="w-20 h-20 bg-gray-200 rounded flex-shrink-0">
@@ -128,7 +128,7 @@
 
                 <!-- Related Posts -->
                 <div class="mt-12">
-                    <h2 class="text-2xl font-bold mb-6">Related Post</h2>
+                    <h2 class="text-2xl font-bold mb-6">{{ language.related_posts_header || 'Related Post' }}</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <article v-for="post in relatedPosts" :key="post.id"
                             class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
@@ -145,7 +145,7 @@
                                     <p class="text-gray-600 text-sm mb-3 line-clamp-3">{{ post.excerpt }}</p>
                                     <RouterLink :to="`/blog/${post.id}`"
                                         class="text-primary hover:underline inline-flex items-center text-sm">
-                                        Learn More <font-awesome-icon icon="arrow-right" class="ml-2 text-xs" />
+                                        {{ language.buttons || 'Learn more' }} <font-awesome-icon icon="arrow-right" class="ml-2 text-xs" />
                                     </RouterLink>
                                 </div>
                             </div>
@@ -164,10 +164,30 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { useLanguageStore } from '@/stores/language'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import Brochure from '@/components/common/Brochure.vue'
 import CTA from '@/components/common/CTA.vue'
+
+const languageStore = useLanguageStore()
+const language = ref({})
+
+onMounted(async () => {
+  try {
+    const data = await languageStore.getContent('blog'); // call once
+    console.log('API response:', data);
+
+    // If your API returns { blog: {...} } instead of just {...}
+    language.value = data.blog || data;
+
+    console.log('language populated:', language.value);
+  } catch (err) {
+    console.error('Error fetching language content:', err)
+  }
+})
+
 
 const categories = ref([
     'Motor Oil',
