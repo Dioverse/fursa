@@ -1,7 +1,7 @@
-// services/blog.service.js
+// services/posts.service.js
 import api from './api'
 
-const blogService = {
+const postsService = {
   /**
    * Fetch list of posts
    * @param {Object} params - optional query params { search, categories, sort, per_page, page }
@@ -11,12 +11,12 @@ const blogService = {
   },
 
   /**
-   * Fetch single post details by ID
-   * @param {Number|String} id
+   * Fetch single post details by slug
+   * @param {String} slug
    */
-  async view(id) {
-    return api.get(`/posts/${id}`)
+  async view(slug) {
+    return api.get(`/posts/${slug}`)
   }
 }
 
-export default blogService
+export default postsService

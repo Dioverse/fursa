@@ -26,24 +26,53 @@
 
                         <!-- Blog Grid -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                            <article v-for="post in topPosts" :key="post.id"
+                            <div v-if="posts.length < 1" class="min-h-[300px] flex items-center justify-center text-center text-gray-500">
+                                <h2 class="text-xl font-semibold">No posts available at the moment.</h2>
+                            </div>
+                            <article v-for="post in posts" :key="post.id"
                                 class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
-                                <div class="h-48 bg-gray-200 relative">
+                                <RouterLink :to="`/blog/${post.slug}`" class="h-48 bg-gray-200 relative">
                                     <img v-if="post.image" :src="post.image" :alt="post.title"
                                         class="w-full h-full object-cover">
-                                    <div v-else class="w-full h-full flex items-center justify-center">
-                                        <img src="/images/engine-3d.png" alt="" class="w-full h-full object-cover">
+                                    <div v-else class="items-center justify-center">
+                                        <img :src="IMG_URL + post.featured_image" :alt="post.title" class="w-full h-full object-cover">
                                     </div>
-                                </div>
+                                </RouterLink>
                                 <div class="p-6">
                                     <h3 class="font-bold text-lg mb-2 line-clamp-2">{{ post.title }}</h3>
                                     <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ post.excerpt }}</p>
-                                    <RouterLink :to="`/blog/${post.id}`"
-                                        class="text-primary hover:underline inline-flex items-center">
-                                        {{ language.buttons || 'Learn more' }} <font-awesome-icon icon="arrow-right" class="ml-2 text-sm" />
-                                    </RouterLink>
+                                    <div class="flex items-center justify-between">
+                                            <div class="text-sm text-gray-500">
+                                            <span>{{ `${post.author?.first_name || 'Media Team'} ${post.author?.last_name || '' }` }}</span> •
+                                            <span>{{ formatDate(post.published_at) }}</span>
+                                        </div>
+                                        <RouterLink :to="`/blog/${post.slug}`"
+                                            class="text-primary hover:underline inline-flex items-center">
+                                            {{ language.buttons || 'Learn more' }} <font-awesome-icon icon="arrow-right" class="ml-2 text-sm" />
+                                        </RouterLink>
+                                    </div>
                                 </div>
                             </article>
+                                
+                        </div>
+                        <!-- Pagination -->
+                        <div v-if="links && links.length > 0" class="flex justify-center mt-8">
+                            <nav class="inline-flex space-x-2">
+                                <button
+                                v-for="(link, index) in links"
+                                :key="index"
+                                :disabled="!link.url"
+                                @click="goToPage(link)"
+                                v-html="link.label"
+                                class="px-3 py-1 rounded-md border text-sm"
+                                :class="[
+                                    link.active
+                                    ? 'bg-blue-600 text-white border-blue-600'
+                                    : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100',
+                                    !link.url ? 'opacity-50 cursor-not-allowed' : ''
+                                ]"
+                                />
+                            </nav>
                         </div>
 
                         <!-- Latest Post -->
@@ -82,19 +111,68 @@
 
                     <!-- Sidebar -->
                     <div class="lg:col-span-1">
-                        <!-- Categories -->
-                        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                            <h3 class="text-xl font-bold mb-4">{{ language.sidebar_categories_header || 'Categories' }}</h3>
-                            <div class="space-y-2">
-                                <button v-for="category in categories" :key="category"
-                                    class="block w-full text-left px-4 py-2 bg-primary bg-opacity-10 text-primary rounded hover:bg-opacity-20 transition">
-                                    {{ category }}
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-3">
+                            <h3 class="text-xl font-bold mb-4">
+                                {{ language.sidebar_search_header || 'Search' }}
+                            </h3>
+                            <form @submit.prevent="applyFilters" class="space-y-2">
+                                <input
+                                type="text"
+                                class="form-text w-full outline-none text-blue-600 rounded-sm border-gray-300 focus:ring-blue-500"
+                                placeholder="Enter keyword..."
+                                v-model="filters.search"
+                                >
+                                <button
+                                type="submit"
+                                class="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 transition"
+                                >
+                                Search
                                 </button>
+                            </form>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-3">
+                            <h3 class="text-xl font-bold mb-4">
+                                {{ language.sidebar_categories_header || 'Categories' }}
+                            </h3>
+                            <div class="space-y-2">
+                                <label 
+                                    v-for="category in availableFilters.categories" 
+                                    :key="category.slug" 
+                                    class="flex items-center space-x-3 px-4 py-2 bg-blue-50 text-blue-700 rounded-md transition-all duration-200 ease-in-out cursor-pointer hover:bg-blue-100"
+                                >
+                                    <input 
+                                    type="checkbox"
+                                    class="form-checkbox h-5 w-5 text-blue-600 rounded-sm border-gray-300 focus:ring-blue-500"
+                                    :value="category.slug"
+                                    v-model="filters.categories"
+                                    @change="applyFilters"
+                                    >
+                                    <span class="text-base font-medium">{{ category.name }}</span>
+                                </label>
                             </div>
                         </div>
 
+                        <!-- <div class="bg-white rounded-lg shadow-md p-6 mb-3">
+                            <h3 class="text-xl font-bold mb-4">
+                                {{ language.sidebar_per_page_header || 'Posts per page' }}
+                            </h3>
+                            <div class="space-y-2">
+                                <select 
+                                    v-model="filters.per_page" 
+                                    @change="applyFilters"
+                                    class="form-select w-full px-3 py-2 border rounded-md text-blue-700 bg-blue-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                >
+                                    <option :value="1">1</option>
+                                    <option :value="2">2</option>
+                                    <option :value="3">3</option>
+                                    <option :value="4">4</option>
+                                </select>
+                            </div>
+                        </div> -->
+
                         <!-- Tags -->
-                        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-3">
                             <h3 class="text-xl font-bold mb-4">{{ language.sidebar_tags_header || 'Tags' }}</h3>
                             <div class="flex flex-wrap gap-2">
                                 <span v-for="tag in tags" :key="tag"
@@ -164,30 +242,81 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import { ref, reactive, onMounted } from 'vue'
+import { IMG_URL } from '@/utils/urls'
 import { useLanguageStore } from '@/stores/language'
+import { usePostStore } from '@/stores/posts'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import Brochure from '@/components/common/Brochure.vue'
 import CTA from '@/components/common/CTA.vue'
+import { formatDate } from '@/utils/helpers'
 
 const languageStore = useLanguageStore()
+const postsStore = usePostStore()
+
 const language = ref({})
+const posts = ref([])
+const links = ref([])
+const filters = reactive({
+  search: '',
+  categories: [],
+  sort: 'latest',
+  per_page: 10,
+  page: 1
+})
+const availableFilters = ref({
+  categories: [],
+  sort: []
+})
 
-onMounted(async () => {
+// fetch language content
+const loadLanguage = async () => {
   try {
-    const data = await languageStore.getContent('blog'); // call once
-    console.log('API response:', data);
-
-    // If your API returns { blog: {...} } instead of just {...}
-    language.value = data.blog || data;
-
-    console.log('language populated:', language.value);
+    const data = await languageStore.getContent('blog')
+    language.value = data.blog || data
   } catch (err) {
     console.error('Error fetching language content:', err)
   }
+}
+
+// fetch posts and filters
+const loadPosts = async (query = {}) => {
+  try {
+    const res = await postsStore.fetchPosts(query)
+    posts.value = res.posts?.data || res.posts || []
+    links.value = res.posts?.links || []
+    availableFilters.value = res.filters || { categories: [], sort: [] }
+  } catch (err) {
+    console.error('Error fetching posts:', err)
+  }
+}
+
+// run both on mount
+onMounted(() => {
+  loadLanguage()
+  loadPosts()
 })
 
+// handler for filter form submission
+const applyFilters = () => {
+  const query = {
+    ...filters,
+    categories: filters.categories.join(',') // <-- convert array to comma separated string
+  }
+  loadPosts(query)
+}
+
+const goToPage = (link) => {
+  if (!link.url) return
+  console.log(link);
+
+  // extract the page number from the URL
+  const page = new URL(link.url).searchParams.get("page")
+
+  // update filter and re-fetch
+  filters.page = page
+  applyFilters()
+}
 
 const categories = ref([
     'Motor Oil',
@@ -202,37 +331,6 @@ const tags = ref([
     'Maintenance',
     'Performance',
     'Lubricants'
-])
-
-const topPosts = ref([
-    {
-        id: 1,
-        title: 'Choosing the Right Engine Oil: What Retailers Need to Know',
-        excerpt: 'When it comes to engine performance and longevity, few things are more critical than engine oil...',
-        image: null,
-        date: 'Life Of Engine Oil'
-    },
-    {
-        id: 2,
-        title: 'Choosing the Right Engine Oil: What Retailers Need to Know',
-        excerpt: 'When it comes to engine performance and longevity, few things are more critical than engine oil...',
-        image: null,
-        date: 'Life Of Engine Oil'
-    },
-    {
-        id: 3,
-        title: 'Choosing the Right Engine Oil: What Retailers Need to Know',
-        excerpt: 'When it comes to engine performance and longevity, few things are more critical than engine oil...',
-        image: null,
-        date: 'Life Of Engine Oil'
-    },
-    {
-        id: 4,
-        title: 'Choosing the Right Engine Oil: What Retailers Need to Know',
-        excerpt: 'When it comes to engine performance and longevity, few things are more critical than engine oil...',
-        image: null,
-        date: 'Life Of Engine Oil'
-    }
 ])
 
 const latestPosts = ref([

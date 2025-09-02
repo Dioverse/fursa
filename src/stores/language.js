@@ -9,12 +9,12 @@ const allowedLanguages = [
   { code: 'ar', name: 'Arabic' },
   { code: 'es', name: 'Spanish' },
   { code: 'zh', name: 'Chinese' },
-  { code: 'ru', name: 'Russian' }
+  { code: 'ru', name: 'Russian' },
 ]
 
 function initLanguage() {
   let lang = localStorage.getItem('language')
-  const validCodes = allowedLanguages.map(l => l.code)
+  const validCodes = allowedLanguages.map((l) => l.code)
   if (!lang || !validCodes.includes(lang)) {
     lang = 'en'
     localStorage.setItem('language', lang)
@@ -28,11 +28,11 @@ export const useLanguageStore = defineStore('language', () => {
   const error = ref(null)
 
   const currentName = computed(() => {
-    return allowedLanguages.find(l => l.code === current.value)?.name || 'English'
+    return allowedLanguages.find((l) => l.code === current.value)?.name || 'English'
   })
 
   function set(lang) {
-    const validCodes = allowedLanguages.map(l => l.code)
+    const validCodes = allowedLanguages.map((l) => l.code)
     if (validCodes.includes(lang)) {
       current.value = lang
       localStorage.setItem('language', lang)
@@ -61,6 +61,6 @@ export const useLanguageStore = defineStore('language', () => {
     error,
     allowedLanguages,
     set,
-    getContent
+    getContent,
   }
 })

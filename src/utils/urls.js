@@ -1,0 +1,1 @@
+export const IMG_URL = (import.meta.env.VITE_BASE_URL || 'https://back.fursaenergy.com/public') + "/storage/"
