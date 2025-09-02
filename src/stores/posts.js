@@ -37,5 +37,7 @@ export const usePostStore = defineStore('posts', () => {
   return {
     fetchPosts,
     fetchPostDetails,
+    loading,
+    error,
   }
 })
