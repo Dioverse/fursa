@@ -32,7 +32,9 @@ class PostController extends Controller
                 $categorySlugs = explode(',', $categorySlugs);
             }
 
-            $query->whereIn('slug', $categorySlugs);
+            $query->whereHas('categories', function ($q) use ($categorySlugs) {
+                $q->whereIn('slug', $categorySlugs);
+            });
         }
 
         // --- Sort options ---
