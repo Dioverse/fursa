@@ -82,7 +82,7 @@ class PostController extends Controller
 
         return response()->json([
             'message' => "Post details retrieved successfully",
-            'data' => $post,
+            'post' => $post,
             'related' => $related
         ]);
     }
