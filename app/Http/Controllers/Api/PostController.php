@@ -51,6 +51,7 @@ class PostController extends Controller
         $posts = $query->paginate($perPage);
         $categories = PostCategory::orderBy('name')->get(["id","name","slug"]);
         // $tags = Post::pluck('tags')->flatten()->unique()->values();
+        sleep(10);
         return response()->json([
             'message' => 'Posts retrieved successfully.',
             'posts' => $posts,
