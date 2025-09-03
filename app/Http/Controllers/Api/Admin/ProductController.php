@@ -6,6 +6,7 @@ use App\Models\Product;
 use Illuminate\Support\Str;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -94,7 +95,7 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'                => 'required|string|max:255|unique:products,name',
-            'category_id'         => 'nullable|exists:categories,id',
+            'category_id'         => ['nullable', Rule::exists('categories', 'id')->where('id', '!=', $request->category_id)->whereNotNull('parent_id')],
             'short_description'   => 'nullable|string',
             'description'         => 'nullable|string',
             'base_price'          => 'required|numeric|min:0',
@@ -184,7 +185,7 @@ class ProductController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name'                => 'sometimes|string|max:255',
-            'category_id'         => 'nullable|exists:categories,id',
+            'category_id'         => ['nullable', Rule::exists('categories', 'id')->where('id', '!=', $request->category_id)->whereNotNull('parent_id')],
             'short_description'   => 'nullable|string',
             'description'         => 'nullable|string',
             'base_price'          => 'sometimes|numeric|min:0',

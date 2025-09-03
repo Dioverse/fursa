@@ -21,6 +21,13 @@ return new class extends Migration {
                   ->nullOnDelete();
         });
 
+        // categories.parent_id → categories.id
+        Schema::table('categories', function (Blueprint $table) {
+            $table->foreign('parent_id')
+                  ->references('id')->on('categories')
+                  ->nullOnDelete();
+        });
+
         // distributor_product_prices.product_id → products.id
         Schema::table('distributor_product_prices', function (Blueprint $table) {
             $table->foreign('product_id')

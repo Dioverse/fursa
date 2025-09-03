@@ -66,6 +66,7 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
         Route::apiResource('admin', AdminController::class);
         Route::get('admin-dashboard', [AdminController::class, 'dashboard']);
         Route::apiResource('categories', CategoryController::class);
+        Route::apiResource('categories', CategoryController::class);
         Route::apiResource('admin-products', ProductController::class);
         Route::post('admin-products/{id}/images', [ProductController::class, 'addImages']);
         Route::delete('admin-products/{id}/images', [ProductController::class, 'deleteImages']);
@@ -118,6 +119,7 @@ Route::post('apply-discount', [GeneralProductController::class, 'apply']);
 
 Route::get('posts', [DistCustPostController::class, 'index']);
 Route::get('posts/{slug}', [DistCustPostController::class, 'show']);
+Route::get('blog-categories', [DistCustPostController::class, 'getCategories']);
 
 Route::get('/lang/fetch/{lang}/{qry}', [DistCustLanguageController::class, 'fetch']);
 

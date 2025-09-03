@@ -17,11 +17,23 @@ class Category extends Model implements AuditableContract
     protected $fillable = [
         'name',
         'slug',
-        'description'
+        'description',
+        'image',
+        'parent_id'
     ];
     
     public function products() {
         return $this->hasMany(Product::class);
+    }
+
+    public function subcategories()
+    {
+        return $this->hasMany(Category::class, 'parent_id');
+    }
+    
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
     }
 
     public function isAuditable()

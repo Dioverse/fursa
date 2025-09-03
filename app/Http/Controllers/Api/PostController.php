@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Post;
+use App\Models\Category;
 use App\Models\PostCategory;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 
 class PostController extends Controller
@@ -84,6 +86,18 @@ class PostController extends Controller
             'message' => "Post details retrieved successfully",
             'post' => $post,
             'related' => $related
+        ]);
+    }
+
+    public function getBlogCategories(Request $request): JsonResponse
+    {
+        $categories = PostCategory::whereHas('posts')
+            ->withCount('posts')
+            ->get(['id', 'name', 'slug']);
+
+        return response()->json([
+            'message' => 'Categories retrieved successfully.',
+            'data'    => $categories,
         ]);
     }
 }
