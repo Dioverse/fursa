@@ -20,6 +20,20 @@ export const usePostStore = defineStore('posts', () => {
     }
   }
 
+  async function fetchBlogCategories() {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await postsService.listCategories()
+      return response.data
+    } catch (err) {
+      error.value = err.response?.data?.message || 'Failed to fetch categories'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function fetchPostDetails(slug) {
     loading.value = true
     error.value = null
@@ -36,6 +50,7 @@ export const usePostStore = defineStore('posts', () => {
 
   return {
     fetchPosts,
+    fetchBlogCategories,
     fetchPostDetails,
     loading,
     error,

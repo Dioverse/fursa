@@ -22,6 +22,7 @@ const VerifyView = () => import('@/views/auth/VerifyView.vue')
 const AboutView = () => import('@/views/AboutView.vue')
 const ContactView = () => import('@/views/ContactView.vue')
 const BlogView = () => import('@/views/BlogView.vue')
+const BlogCategoryView = () => import('@/views/BlogCategoryView.vue')
 const BlogDetailsView = () => import('@/views/BlogDetailsView.vue')
 const FAQView = () => import('@/views/FAQView.vue')
 const TermsView = () => import('@/views/TermsView.vue')
@@ -131,6 +132,12 @@ const router = createRouter({
       name: 'blog',
       component: BlogView,
       meta: { title: 'Blog' },
+    },
+    {
+      path: '/blog/c/:slug',
+      name: 'blog-category',
+      component: BlogCategoryView,
+      meta: { title: 'Blog Category' },
     },
     {
       path: '/blog/:slug',

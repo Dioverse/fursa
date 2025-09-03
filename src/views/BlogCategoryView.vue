@@ -10,8 +10,8 @@
         <div v-else>
           <router-link v-for="(post, index) in posts.slice(1).filter((_, i) => i % 3 === 0)" :key="post.id"
             :to="`/blog/${post.slug}`" class="flex-1 flex flex-col">
-            <img :src="post.featured_image ? IMG_URL + post.featured_image : IMG_URL + post.thumbnail"
-              :alt="post.title" class="w-full h-auto object-cover rounded-lg mb-4" />
+            <img :src="post.featured_image ? IMG_URL + post.featured_image : IMG_URL + post.thumbnail" :alt="post.title"
+              class="w-full h-auto object-cover rounded-lg mb-4" />
             <span class="text-xs text-gray-500 font-bold uppercase tracking-wide">
               {{ post.category?.name }}
             </span>
@@ -39,15 +39,15 @@
       <div v-else-if="postLoading">
         <SkeletonCardBlogCenter />
       </div>
-      
+
 
       <!-- Right Column - Sidebar -->
       <div v-if="!postLoading" class="lg:block">
         <div class="flex flex-col space-y-4">
           <router-link v-for="(post, index) in posts.slice(1).filter((_, i) => i % 3 !== 0)" :key="post.id"
             :to="`/blog/${post.slug}`" class="flex items-center space-x-4">
-            <img :src="post.featured_image ? IMG_URL + post.featured_image : IMG_URL + post.thumbnail"
-              :alt="post.title" class="w-24 h-16 object-cover rounded-lg" />
+            <img :src="post.featured_image ? IMG_URL + post.featured_image : IMG_URL + post.thumbnail" :alt="post.title"
+              class="w-24 h-16 object-cover rounded-lg" />
             <div class="flex flex-col">
               <span class="text-xs text-gray-500 font-bold uppercase tracking-wide">
                 {{ post.category?.name }}
@@ -68,7 +68,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
+import { useRoute } from "vue-router";
 import { usePostStore } from "@/stores/posts";
 import BlogLayout from "@/layouts/BlogLayout.vue";
 import SkeletonCardBlog from "@/components/common/SkeletonCardBlog.vue";
@@ -80,6 +81,8 @@ import { IMG_URL } from "@/utils/urls";
 const postsStore = usePostStore();
 const postLoading = ref(true);
 const posts = ref([]);
+const route = useRoute();
+const categorySlug = ref(route.params.slug || null);
 
 // fetch posts
 const loadPosts = async (query = {}) => {
@@ -95,8 +98,18 @@ const loadPosts = async (query = {}) => {
   }
 };
 
+watch(
+  () => route.params.slug,
+  (newSlug) => {
+    categorySlug.value = newSlug;
+    loadPosts({ categories: categorySlug.value });
+  },
+  { immediate: true } // fetch on initial load
+);
+
+
 onMounted(() => {
-  loadPosts();
+  loadPosts({ categories: categorySlug.value });
 });
 </script>
 

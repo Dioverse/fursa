@@ -97,7 +97,7 @@
                                 <article v-for="related in relatedPosts" :key="related.id" class="group">
                                     <RouterLink :to="`/blog/${related.id}`" class="flex gap-3">
                                         <div class="w-20 h-20 bg-gray-200 rounded flex-shrink-0 overflow-hidden">
-                                            <img v-if="related.image" :src="related.image" :alt="related.title"
+                                            <img v-if="related.featured_image" :src="IMG_URL+related.featured_image" :alt="related.title"
                                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform">
                                             <div v-else class="w-full h-full flex items-center justify-center">
                                                 <span class="text-2xl">🛢️</span>
@@ -108,7 +108,7 @@
                                                 class="font-semibold text-sm mb-1 line-clamp-2 group-hover:text-primary transition">
                                                 {{ related.title }}
                                             </h4>
-                                            <p class="text-xs text-gray-500">{{ related.date }}</p>
+                                            <p class="text-xs text-gray-500">{{ formatDate(related.published_at, 'long') }}</p>
                                         </div>
                                     </RouterLink>
                                 </article>
@@ -185,6 +185,7 @@ import { useToast } from 'vue-toastification'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import Brochure from '@/components/common/Brochure.vue'
 import CTA from '@/components/common/CTA.vue'
+import { formatDate } from '@/utils/helpers'
 
 const route = useRoute()
 const slug = route.params.slug
@@ -203,6 +204,7 @@ const loadPostDetails = async () => {
     postLoading.value = true
     const res = await postsStore.fetchPostDetails(slug)
     post.value = res.post || res.post || []
+    relatedPosts.value = res.related || res.related || []
   } catch (err) {
     console.error('Error fetching posts:', err)
   } finally {
@@ -295,14 +297,6 @@ const commentForm = ref({
     email: '',
     message: ''
 })
-
-const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    })
-}
 
 const submitComment = () => {
     // Add comment logic

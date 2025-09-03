@@ -10,6 +10,10 @@ const postsService = {
     return api.get('/posts', { params })
   },
 
+  async listCategories() {
+    return api.get('/blog-categories')
+  },
+
   /**
    * Fetch single post details by slug
    * @param {String} slug
