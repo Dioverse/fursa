@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 use App\Models\PostCategory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class PostCategoryController extends Controller
 {
@@ -30,17 +31,24 @@ class PostCategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:post_categories,name',
+            'name'  => 'required|string|max:255|unique:post_categories,name',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048', // optional image validation
         ]);
 
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('categories', 'public'); // store in storage/app/public/categories
+        }
+
         $category = PostCategory::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
+            'name'  => $request->name,
+            'slug'  => Str::slug($request->name),
+            'image' => $imagePath, // can be null
         ]);
 
         return response()->json([
             'message' => "Category created successfully",
-            'data' => $category
+            'data'    => $category
         ], 201);
     }
 
@@ -67,22 +75,36 @@ class PostCategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $postCategory = PostCategory::where('id', $id)->first();
+        $postCategory = PostCategory::find($id);
+
         if (!$postCategory) {
-            return response()->json(["message"=>"Category not found"], 404);
+            return response()->json(["message" => "Category not found"], 404);
         }
+
         $request->validate([
-            'name' => 'required|string|max:255|unique:post_categories,name,' . $id,
+            'name'  => 'required|string|max:255|unique:post_categories,name,' . $id,
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+        $imagePath = $postCategory->image;
+
+        // if new image uploaded, delete old one and replace
+        if ($request->hasFile('image')) {
+            if ($imagePath && Storage::disk('public')->exists($imagePath)) {
+                Storage::disk('public')->delete($imagePath);
+            }
+            $imagePath = $request->file('image')->store('categories', 'public');
+        }
+
         $postCategory->update([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
+            'name'  => $request->name,
+            'slug'  => Str::slug($request->name),
+            'image' => $imagePath,
         ]);
 
         return response()->json([
             'message' => "Category updated successfully",
-            'data' => $postCategory
+            'data'    => $postCategory
         ]);
     }
 
@@ -91,15 +113,21 @@ class PostCategoryController extends Controller
      */
     public function destroy($id)
     {
-        $postCategory = PostCategory::where('id', $id)->first();
+        $postCategory = PostCategory::find($id);
+
         if (!$postCategory) {
-            return response()->json(["message"=>"Category not found"], 404);
+            return response()->json(["message" => "Category not found"], 404);
+        }
+
+        // delete stored image if exists
+        if ($postCategory->image && Storage::disk('public')->exists($postCategory->image)) {
+            Storage::disk('public')->delete($postCategory->image);
         }
 
         $postCategory->delete();
 
         return response()->json([
             'message' => "Category deleted successfully"
-        ], 201);
+        ]);
     }
 }
