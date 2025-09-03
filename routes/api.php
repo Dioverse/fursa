@@ -119,7 +119,7 @@ Route::post('apply-discount', [GeneralProductController::class, 'apply']);
 
 Route::get('posts', [DistCustPostController::class, 'index']);
 Route::get('posts/{slug}', [DistCustPostController::class, 'show']);
-Route::get('blog-categories', [DistCustPostController::class, 'getCategories']);
+Route::get('blog-categories', [DistCustPostController::class, 'getBlogCategories']);
 
 Route::get('/lang/fetch/{lang}/{qry}', [DistCustLanguageController::class, 'fetch']);
 
