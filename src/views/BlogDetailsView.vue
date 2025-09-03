@@ -3,23 +3,23 @@
         <!-- Hero Section -->
         <section class="relative h-96 bg-gray-900">
             <div class="absolute inset-0">
-                <img :src="post.image || '/images/hero-img.png'" :alt="post.title"
+                <img :src="IMG_URL + post.featured_image || '/images/hero-img.png'" :alt="post.title"
                     class="w-full h-full object-cover opacity-60">
             </div>
             <div class="relative container mx-auto px-4 h-full flex items-center">
                 <div class="text-white max-w-3xl">
                     <div class="flex items-center gap-4 mb-4">
-                        <span class="bg-primary px-3 py-1 rounded text-sm">{{ post.category }}</span>
-                        <span class="opacity-75">{{ post.readTime }} min read</span>
+                        <span class="bg-primary px-3 py-1 rounded text-sm">{{ post.category?.name }}</span>
+                        <span class="opacity-75">{{ post?.readTime }} min read</span>
                     </div>
                     <h1 class="text-4xl md:text-5xl font-bold mb-4">{{ post.title }}</h1>
                     <div class="flex items-center gap-6">
                         <div class="flex items-center gap-2">
-                            <img :src="post.authorImage || '/images/avatar.jpg'" :alt="post.author"
+                            <img :src="post?.authorImage || '/images/avatar.jpg'" :alt="`${post.author?.first_name || 'Media Team'} ${post.author?.last_name || '' }`"
                                 class="w-10 h-10 rounded-full">
-                            <span>{{ post.author }}</span>
+                            <span>{{ `${post.author?.first_name || 'Media Team'} ${post.author?.last_name || '' }` }}</span>
                         </div>
-                        <span class="opacity-75">{{ formatDate(post.date) }}</span>
+                        <span class="opacity-75">{{ formatDate(post.published_at) }}</span>
                     </div>
                 </div>
             </div>
@@ -32,30 +32,15 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 max-w-7xl mx-auto">
                     <!-- Main Content -->
                     <div class="lg:col-span-2">
-                        <div class="flex items-center justify-center bg-gray-100 rounded-lg mb-12">
+                        <!-- <div class="flex items-center justify-center bg-gray-100 rounded-lg mb-12">
                             <img src="/images/engine-3d.png" alt="" class="w-full h-full object-cover">
-                        </div>
+                        </div> -->
                         <div class="prose prose-lg max-w-none">
-                            <p class="lead text-xl text-primary mb-6">
+                            <!-- <p class="lead text-xl text-primary mb-6">
                                 {{ post.excerpt }}
-                            </p>
+                            </p> -->
 
-                            <div v-html="post.content" class="space-y-4"></div>
-
-                            <!-- Key Takeaways -->
-                            <div class="bg-blue-50 border-l-4 border-blue-500 p-6 my-8">
-                                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
-                                    <font-awesome-icon icon="lightbulb" class="text-blue-500" />
-                                    Key Takeaways
-                                </h3>
-                                <ul class="space-y-2">
-                                    <li v-for="takeaway in post.keyTakeaways" :key="takeaway"
-                                        class="flex items-start gap-2">
-                                        <font-awesome-icon icon="check" class="text-blue-500 mt-1" />
-                                        <span>{{ takeaway }}</span>
-                                    </li>
-                                </ul>
-                            </div>
+                            <div v-html="post.body" class="space-y-4"></div>
 
                             <!-- Tags -->
                             <div class="flex flex-wrap gap-2 my-8">
@@ -90,10 +75,10 @@
                             <!-- Author Bio -->
                             <div class="bg-gray-50 rounded-lg p-6 my-8">
                                 <div class="flex items-start gap-4">
-                                    <img :src="post.authorImage || '/images/avatar.jpg'" :alt="post.author"
+                                    <img :src="post.author?.image || '/images/avatar.jpg'" :alt="`${post.author?.first_name || 'Media Team'} ${post.author?.last_name || '' }`"
                                         class="w-20 h-20 rounded-full">
                                     <div>
-                                        <h4 class="font-bold text-lg mb-1">{{ post.author }}</h4>
+                                        <h4 class="font-bold text-lg mb-1">{{ `${post.author?.first_name || 'Media Team'} ${post.author?.last_name || '' }` }}</h4>
                                         <p class="text-gray-600 text-sm mb-3">{{ post.authorTitle }}</p>
                                         <p class="text-gray-700">{{ post.authorBio }}</p>
                                     </div>
@@ -104,17 +89,6 @@
 
                     <!-- Sidebar -->
                     <aside class="lg:col-span-1">
-                        <!-- Table of Contents -->
-                        <div class="bg-white rounded-lg shadow-md p-6 mb-8 sticky top-4">
-                            <h3 class="text-lg font-bold mb-4">Table of Contents</h3>
-                            <ul class="space-y-2">
-                                <li v-for="section in post.tableOfContents" :key="section.id">
-                                    <a :href="`#${section.id}`" class="text-gray-700 hover:text-primary transition">
-                                        {{ section.title }}
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
 
                         <!-- Related Posts -->
                         <div class="bg-white rounded-lg shadow-md p-6">
@@ -204,6 +178,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { IMG_URL } from '@/utils/urls'
+import { usePostStore } from '@/stores/posts'
 import { useRoute } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
@@ -211,64 +187,91 @@ import Brochure from '@/components/common/Brochure.vue'
 import CTA from '@/components/common/CTA.vue'
 
 const route = useRoute()
+const slug = route.params.slug
+
 const toast = useToast()
 
-// Blog post data
-const post = ref({
-    id: 1,
-    title: 'Choosing the Right Engine Oil: What Retailers Need to Know',
-    excerpt: 'When it comes to engine performance and longevity, few things are more critical than engine oil. Whether you\'re a retailer guiding customers or an end-user selecting oil for your vehicle, understanding the role of engine oil and choosing the right type is essential.',
-    content: `
-    <h2 id="understanding-viscosity">Understanding Oil Viscosity</h2>
-    <p>Oil viscosity is one of the most important factors to consider when selecting engine oil. The viscosity grade, such as 5W-30 or 10W-40, indicates how the oil flows at different temperatures.</p>
-    
-    <h2 id="synthetic-vs-conventional">Synthetic vs Conventional Oil</h2>
-    <p>The debate between synthetic and conventional oil continues to be relevant for retailers and consumers alike. Here's what you need to know about each type...</p>
-    
-    <h2 id="oil-change-intervals">Recommended Oil Change Intervals</h2>
-    <p>Understanding when to change engine oil is crucial for maintaining engine health and performance...</p>
-  `,
-    category: 'Engine Maintenance',
-    author: 'Precious Adesanya',
-    authorTitle: 'Technical Specialist',
-    authorBio: 'Precious has over 10 years of experience in the lubricants industry and specializes in engine performance optimization.',
-    authorImage: null,
-    date: new Date('2024-01-15'),
-    readTime: 5,
-    tags: ['Engine Oil', 'Maintenance', 'Viscosity', 'Synthetic Oil'],
-    keyTakeaways: [
-        'Understanding viscosity ratings is crucial for proper oil selection',
-        'Synthetic oils offer superior protection in extreme conditions',
-        'Regular oil changes are essential for engine longevity',
-        'Always consult your vehicle manual for specifications'
-    ],
-    tableOfContents: [
-        { id: 'understanding-viscosity', title: 'Understanding Oil Viscosity' },
-        { id: 'synthetic-vs-conventional', title: 'Synthetic vs Conventional Oil' },
-        { id: 'oil-change-intervals', title: 'Recommended Oil Change Intervals' }
-    ]
+const postsStore = usePostStore()
+const postLoading = ref(postsStore.loading)
+const post = ref([])
+const relatedPosts = ref([])
+
+// fetch posts and filters
+const loadPostDetails = async () => {
+  try {
+    post.value = []
+    postLoading.value = true
+    const res = await postsStore.fetchPostDetails(slug)
+    post.value = res.post || res.post || []
+  } catch (err) {
+    console.error('Error fetching posts:', err)
+  } finally {
+    postLoading.value = false
+  }
+}
+
+// run both on mount
+onMounted(() => {
+  loadPostDetails()
 })
 
-const relatedPosts = ref([
-    {
-        id: 2,
-        title: 'Understanding Oil Viscosity Ratings: A Complete Guide',
-        date: '2 days ago',
-        image: null
-    },
-    {
-        id: 3,
-        title: '5 Signs Your Engine Oil Needs Changing',
-        date: '1 week ago',
-        image: null
-    },
-    {
-        id: 4,
-        title: 'The Benefits of Synthetic Oil for Modern Engines',
-        date: '2 weeks ago',
-        image: null
-    }
-])
+
+
+// const post = ref({
+//     id: 1,
+//     title: 'Choosing the Right Engine Oil: What Retailers Need to Know',
+//     excerpt: 'When it comes to engine performance and longevity, few things are more critical than engine oil. Whether you\'re a retailer guiding customers or an end-user selecting oil for your vehicle, understanding the role of engine oil and choosing the right type is essential.',
+//     content: `
+//     <h2 id="understanding-viscosity">Understanding Oil Viscosity</h2>
+//     <p>Oil viscosity is one of the most important factors to consider when selecting engine oil. The viscosity grade, such as 5W-30 or 10W-40, indicates how the oil flows at different temperatures.</p>
+    
+//     <h2 id="synthetic-vs-conventional">Synthetic vs Conventional Oil</h2>
+//     <p>The debate between synthetic and conventional oil continues to be relevant for retailers and consumers alike. Here's what you need to know about each type...</p>
+    
+//     <h2 id="oil-change-intervals">Recommended Oil Change Intervals</h2>
+//     <p>Understanding when to change engine oil is crucial for maintaining engine health and performance...</p>
+//   `,
+//     category: 'Engine Maintenance',
+//     author: 'Precious Adesanya',
+//     authorTitle: 'Technical Specialist',
+//     authorBio: 'Precious has over 10 years of experience in the lubricants industry and specializes in engine performance optimization.',
+//     authorImage: null,
+//     date: new Date('2024-01-15'),
+//     readTime: 5,
+//     tags: ['Engine Oil', 'Maintenance', 'Viscosity', 'Synthetic Oil'],
+//     keyTakeaways: [
+//         'Understanding viscosity ratings is crucial for proper oil selection',
+//         'Synthetic oils offer superior protection in extreme conditions',
+//         'Regular oil changes are essential for engine longevity',
+//         'Always consult your vehicle manual for specifications'
+//     ],
+//     tableOfContents: [
+//         { id: 'understanding-viscosity', title: 'Understanding Oil Viscosity' },
+//         { id: 'synthetic-vs-conventional', title: 'Synthetic vs Conventional Oil' },
+//         { id: 'oil-change-intervals', title: 'Recommended Oil Change Intervals' }
+//     ]
+// })
+
+// const relatedPosts = ref([
+//     {
+//         id: 2,
+//         title: 'Understanding Oil Viscosity Ratings: A Complete Guide',
+//         date: '2 days ago',
+//         image: null
+//     },
+//     {
+//         id: 3,
+//         title: '5 Signs Your Engine Oil Needs Changing',
+//         date: '1 week ago',
+//         image: null
+//     },
+//     {
+//         id: 4,
+//         title: 'The Benefits of Synthetic Oil for Modern Engines',
+//         date: '2 weeks ago',
+//         image: null
+//     }
+// ])
 
 const comments = ref([
     {
@@ -320,11 +323,6 @@ const submitComment = () => {
         message: ''
     }
 }
-
-onMounted(() => {
-    // Load blog post based on route.params.id
-    console.log('Loading blog post:', route.params.id)
-})
 </script>
 
 <style scoped>

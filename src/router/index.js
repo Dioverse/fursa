@@ -133,7 +133,7 @@ const router = createRouter({
       meta: { title: 'Blog' },
     },
     {
-      path: '/blog/:id',
+      path: '/blog/:slug',
       name: 'blog-detail',
       component: BlogDetailsView,
       meta: { title: 'Blog Details' },

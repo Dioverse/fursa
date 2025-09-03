@@ -20,11 +20,11 @@ export const usePostStore = defineStore('posts', () => {
     }
   }
 
-  async function fetchPostDetails(id) {
+  async function fetchPostDetails(slug) {
     loading.value = true
     error.value = null
     try {
-      const response = await postsService.view(id)
+      const response = await postsService.view(slug)
       return response.data
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to fetch post details'
