@@ -104,8 +104,7 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h4
-                                                class="font-semibold text-sm mb-1 line-clamp-2 group-hover:text-primary transition">
+                                            <h4 class="font-semibold text-sm mb-1 line-clamp-2 group-hover:text-primary transition">
                                                 {{ related.title }}
                                             </h4>
                                             <p class="text-xs text-gray-500">{{ formatDate(related.published_at, 'long') }}</p>
