@@ -40,12 +40,10 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('reset-password', [AuthController::class, 'resetPassword']);
 
-Route::get('reset-password/{token}', function (string $token, Request $request) {
-    
-    $frontendUrl = config('app.frontend_url').'/reset-password';
-
-    return redirect()->away($frontendUrl . '?token=' . $token . '&email=' . $request->email);
-})->name('password.reset');
+// Route::get('reset-password/{token}', function (string $token, Request $request) {
+//     $frontendUrl = config('app.frontend_url').'/reset-password';
+//     return redirect()->away($frontendUrl . '?token=' . $token . '&email=' . $request->email);
+// })->name('password.reset');
 
 Route::middleware(['auth:sanctum','ban'])->group(function () {
     // Resend verification email
@@ -58,6 +56,7 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
     // Admin-only routes
     Route::middleware('role:admin')->group(function () {
         Route::apiResource('users', UserController::class);
+        Route::post('users/{id}/change-password', [UserController::class, 'changePassword']);
         Route::post('users/toggle-ban/{id}', [UserController::class, 'toggleBan']);
         
         Route::apiResource('content', ContentController::class);

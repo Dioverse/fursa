@@ -375,19 +375,6 @@ class AuthController extends Controller
         ], 200);
     }
 
-    /**
-     * Helper to standardize verification response.
-     */
-    protected function verificationResponse(User $user, string $message, ?string $token = null): JsonResponse
-    {
-        return response()->json([
-            'message'     => $message,
-            'user'        => $user,
-            'token'       => $token,
-            'token_type'  => 'bearer',
-        ], 200);
-    }
-
     public function verificationSend(Request $request): JsonResponse
     {
         // Check if the authenticated user's email is already verified

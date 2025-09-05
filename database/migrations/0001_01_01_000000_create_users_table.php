@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('password');
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->enum('role', ['admin', 'distributor', 'customer'])->default('customer');
-            $table->boolean('ban')->default(true);
+            $table->boolean('ban')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });
