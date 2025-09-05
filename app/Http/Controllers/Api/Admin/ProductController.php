@@ -326,16 +326,16 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'product_id'       => 'required|exists:products,id',
-            'opcode'           => 'required|integer|in:1,2,3',
+            'operation'           => 'required|integer|in:1,2,3',
             'quantity'         => 'required|integer|min:0',
             'update_threshold' => 'nullable|boolean',
-            'new_threshold'    => 'nullable|integer|min:0',
+            'low_stock_threshold'    => 'nullable|integer|min:0',
             // 'reason'           => 'required|string'
         ]);
 
         $product = Product::findOrFail($validated['product_id']);
 
-        switch ($validated['opcode']) {
+        switch ($validated['operation']) {
             case 1: // Add
                 $product->stock_quantity += $validated['quantity'];
                 break;
@@ -350,8 +350,8 @@ class ProductController extends Controller
         }
 
         // Update threshold if requested
-        if (!empty($validated['update_threshold']) && isset($validated['new_threshold'])) {
-            $product->low_stock_threshold = $validated['new_threshold'];
+        if (!empty($validated['update_threshold']) && isset($validated['low_stock_threshold'])) {
+            $product->low_stock_threshold = $validated['low_stock_threshold'];
         }
 
         $product->save();
