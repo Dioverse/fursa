@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\NotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -33,6 +34,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('register', [AuthController::class, 'register']);
 Route::get('login', function () {
     return response()->json([
+        'redirect' => "unauthenticated",
         'message' => "Unauthenticated"
     ], 401);
 })->name("login");
@@ -124,3 +126,9 @@ Route::get('/lang/fetch/{lang}/{qry}', [DistCustLanguageController::class, 'fetc
 
 // Email verification
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])->middleware('signed')->name('verification.verify');
+
+
+
+Route::prefix('test')->group(function () {
+    Route::post('email', [NotificationController::class, 'emailTest']);
+});

@@ -6,21 +6,20 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class BanCheck
+class EnsureEmailIsVerifiedApi
 {
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, ...$roles)
+    public function handle(Request $request, Closure $next)
     {
-        if (!in_array($request->user()->role, $roles)) {
-        }
-        if ($request->user()->ban == 1) {
+        if (!$request->user() ||
+            !$request->user()->hasVerifiedEmail()) {
             return response()->json([
-                'redirect'   => 'banned',
-                'message' => 'Your account has been banned. Contact support'
+                'redirect' => 'unverified',
+                'message' => 'Your email address is not verified.'
             ], 403);
         }
 
