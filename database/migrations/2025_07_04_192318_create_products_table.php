@@ -25,6 +25,7 @@ return new class extends Migration
             $table->integer('stock_quantity')->default(0);
             $table->integer('low_stock_threshold')->nullable();
             $table->boolean('status')->default(true);
+            $table->boolean('is_featured')->default(false);
             $table->json('tags')->nullable();
             $table->timestamps();
         });

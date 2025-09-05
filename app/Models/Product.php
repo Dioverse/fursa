@@ -26,6 +26,7 @@ class Product extends Model implements AuditableContract
         'low_stock_threshold',
         'status',
         'slug',
+        'is_featured',
         'tags'
     ];
 

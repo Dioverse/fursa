@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Support\Str;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
@@ -19,60 +20,62 @@ class ProductController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        // Start building the query with eager loading for the category
-        $query = Product::with('category:id,name,slug');
-        
+        $query = Product::with(['category:id,name,slug']);
 
         // --- Filtering Options ---
-        // Filter by category
-        if ($request->has('category') && is_string($request->input('category'))) {
-            $query->whereRelation('category', 'slug', $request->input('category'));
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->input('category_id'));
         }
 
-        // Filter by product name (partial match)
-        if ($request->has('name') && is_string($request->input('name'))) {
-            $query->where('name', 'like', '%' . $request->input('name') . '%');
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->input('search') . '%');
         }
 
-        // Filter by base_price range
-        if ($request->has('min_price') && is_numeric($request->input('min_price'))) {
-            $query->where('base_price', '>=', $request->input('min_price'));
-        }
-        if ($request->has('max_price') && is_numeric($request->input('max_price'))) {
-            $query->where('base_price', '<=', $request->input('max_price'));
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
         }
 
-        // Filter by stock_quantity range
-        if ($request->has('min_stock') && is_numeric($request->input('min_stock'))) {
-            $query->where('stock_quantity', '>=', $request->input('min_stock'));
+        if ($request->filled('stock_status')) {
+            if ($request->input('stock_status') === 'out_of_stock') {
+                $query->where('stock_quantity', '=', 0);
+            } elseif ($request->input('stock_status') === 'low_stock') {
+                $query->whereColumn('stock_quantity', '<=', 'low_stock_threshold')
+                    ->where('stock_quantity', '>', 0);
+            } elseif ($request->input('stock_status') === 'in_stock') {
+                $query->where('stock_quantity', '>', 0);
+            }
         }
-        if ($request->has('max_stock') && is_numeric($request->input('max_stock'))) {
-            $query->where('stock_quantity', '<=', $request->input('max_stock'));
+
+        if ($request->filled('price_from')) {
+            $query->where('base_price', '>=', $request->input('price_from'))
+                ->orWhere('distributor_price', '>=', $request->input('price_from'));
+        }
+        if ($request->filled('price_to')) {
+            $query->where('base_price', '<=', $request->input('price_to'))
+                ->orWhere('distributor_price', '<=', $request->input('price_from'));;
         }
 
-        // // --- Filter by Tags ---
-        // // Expects a comma-separated string of tags, e.g., ?tags=electronics,smart-home
-        // if ($request->has('tags') && is_string($request->input('tags'))) {
-        //     $requestedTags = explode(',', $request->input('tags'));
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->input('date_from'));
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->input('date_to'));
+        }
 
-        //     // We'll use a nested 'where' clause with 'orWhereJsonContains'
-        //     // to find products that have ANY of the requested tags.
-        //     $query->where(function ($q) use ($requestedTags) {
-        //         foreach ($requestedTags as $tag) {
-        //             $q->orWhereJsonContains('tags', trim($tag)); // trim to remove any whitespace around tags
-        //         }
-        //     });
-        // }
+        if ($request->filled('featured')) {
+            $query->where('is_featured', (bool) $request->input('featured'));
+        }
 
-        // --- Pagination ---
-        // Get the number of items per page from the request, default to 10 if not provided
-        $perPage = $request->query('per_page', 10);
-        // Ensure per_page is a positive integer
-        $perPage = max(1, (int) $perPage);
+        // Sorting
+        $sortBy = $request->query('sort_by', 'id');
+        $sortOrder = $request->query('sort_order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
 
-        
+        // Pagination
+        $perPage = max(1, (int) $request->query('per_page', 10));
         $products = $query->paginate($perPage);
 
+        // Stats
         $stats = Product::selectRaw('
             COUNT(*) as total,
             SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as active,
@@ -80,12 +83,28 @@ class ProductController extends Controller
             SUM(CASE WHEN stock_quantity > 0 AND stock_quantity <= low_stock_threshold THEN 1 ELSE 0 END) as low_stock
         ')->first();
 
+        $categories = Category::where('parent_id',null)->orWhere('parent_id','')->with(relations: 'subcategories:id,name,parent_id')->get(['id','name']);
         return response()->json([
             'message' => 'Products retrieved successfully.',
-            'data' => $products,
-            'stats'=>$stats
+            'data'    => $products,
+            'stats'   => $stats,
+            'filters' =>  [
+                'status'       => ['inactive' => 0, 'active' => 1],
+                'stock_status' => ['in_stock', 'out_of_stock', 'low_stock'],
+                'is_featured'  => ['not_featured' => 0, 'featured' => 1],
+                'sort_by'      => [
+                    'Created' => 'created_at',
+                    'Name' => 'name',
+                    'Price' => 'base_price',
+                    'Distributor Price' => 'distributor_price',
+                    'Stock Quantity' => 'stock_quantity'
+                ],
+                'sort_order'   => ['Ascending' => 'asc', 'Descending' => 'desc'],
+                'categories'   => $categories
+            ],
         ]);
     }
+
 
 
     /**
