@@ -72,7 +72,7 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
         Route::post('admin-products/{id}/images', [ProductController::class, 'addImages']);
         Route::delete('admin-products/{id}/images', [ProductController::class, 'deleteImages']);
         Route::post('admin-products-toggle/{id}', [ProductController::class, 'toggleStatus']);
-        Route::post('admin-products-stock', [ProductController::class, 'stock']);
+        Route::post('admin-products-stock/{id}', [ProductController::class, 'stock']);
         Route::get('distributors', [DistributorController::class, 'index']);
         Route::patch('distributors/{id}/status', [DistributorController::class, 'update']);
 

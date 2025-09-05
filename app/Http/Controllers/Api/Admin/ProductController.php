@@ -322,28 +322,27 @@ class ProductController extends Controller
         ]);
     }
 
-    public function stock(Request $request)
+    public function stock(Request $request, $id)
     {
+        $product = Product::find($id);
+        if (!$product) {
+            return response()->json(['message' => 'Product not found.'], 404);
+        }
+
         $validated = $request->validate([
-            'product_id'       => 'required|exists:products,id',
             'operation'           => 'required|integer|in:1,2,3',
             'quantity'         => 'required|integer|min:0',
             'update_threshold' => 'nullable|boolean',
             'low_stock_threshold'    => 'nullable|integer|min:0',
-            // 'reason'           => 'required|string'
         ]);
-
-        $product = Product::findOrFail($validated['product_id']);
 
         switch ($validated['operation']) {
             case 1: // Add
                 $product->stock_quantity += $validated['quantity'];
                 break;
-
             case 2: // Subtract
                 $product->stock_quantity = max(0, $product->stock_quantity - $validated['quantity']);
                 break;
-
             case 3: // Set
                 $product->stock_quantity = $validated['quantity'];
                 break;
@@ -359,7 +358,7 @@ class ProductController extends Controller
         return response()->json([
             'message' => 'Stock updated successfully.',
             'data' => [
-                'product_id'          => $product->id,
+                'product_id'          => $id,
                 'stock_quantity'      => $product->stock_quantity,
                 'low_stock_threshold' => $product->low_stock_threshold,
             ]
