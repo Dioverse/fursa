@@ -95,7 +95,7 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'                => 'required|string|max:255|unique:products,name',
-            'category_id'         => ['nullable', Rule::exists('categories', 'id')->where('id', '!=', $request->category_id)->whereNotNull('parent_id')],
+            'category_id'         => ['nullable', Rule::exists('categories', 'id')->whereNotNull('parent_id')],
             'short_description'   => 'nullable|string',
             'description'         => 'nullable|string',
             'base_price'          => 'required|numeric|min:0',

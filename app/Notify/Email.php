@@ -34,7 +34,7 @@ class Email extends NotifyProcess implements Notifiable{
     /**
     * Send notification
     *
-    * @return void|bool
+    * @return void|array|bool
     */
 	public function send(){
 
@@ -47,12 +47,12 @@ class Email extends NotifyProcess implements Notifiable{
 			try{
 				$this->$method();
 				$this->createLog('email');
+				return [];
 			}catch(\Exception $e){
 				$this->createErrorLog($e->getMessage());
-				session()->flash('mail_error',$e->getMessage());
+				return ['mail_error'=>true];
 			}
 		}
-
 	}
 
     /**

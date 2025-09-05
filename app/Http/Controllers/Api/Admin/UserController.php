@@ -99,13 +99,7 @@ class UserController extends Controller
             return response()->json(['message' => 'User not found.'], 404);
         }
         
-        $request->validate([
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
-        // 4. Update the password
-        $user->password = Hash::make($request->password);
-        $user->save();
+        // notify(99)
 
         // 5. Return a success response
         return response()->json(['message' => 'Password successfully updated.']);

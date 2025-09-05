@@ -41,7 +41,11 @@ function notify($user, $templateName, $shortCodes = null, $sendVia = null, $crea
     $notify->createLog    = $createLog;
     $notify->pushImage    = $pushImage;
     $notify->userColumn   = isset($user->id) ? $user->getForeignKey() : 'user_id';
-    $notify->send();
+    print("FROM HELPERS\n");
+    print_r($notify->send());
+    print("\nEND FROM HELPERS\n");
+    
+    return $notify->send();
 }
 
 function getFilePath($key)

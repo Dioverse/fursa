@@ -136,7 +136,6 @@ class NotificationController extends Controller
         $template->save();
 
         return response()->json([
-            'status'  => 'success',
             'message' => 'Notification template updated successfully',
             'data'    => $template,
         ]);
@@ -145,7 +144,6 @@ class NotificationController extends Controller
     public function emailSetting()
     {
         return response()->json([
-            'status'  => 'success',
             'message' => 'Email settings fetched successfully',
             'data'    => gs('mail_config'),
         ]);
@@ -201,6 +199,7 @@ class NotificationController extends Controller
         $receiverName = explode('@', $request->email)[0];
         $subject      = strtoupper($config->name) . ' Configuration Success';
         $message      = 'Your email notification setting is configured successfully for ' . gs('site_name');
+        $ntfy         = [];
         
         if (gs('en')) {
             $user = [
@@ -208,7 +207,7 @@ class NotificationController extends Controller
                 'email'    => $request->email,
                 'fullname' => $receiverName,
             ];
-            notify($user, 'DEFAULT', [
+            $ntfy = notify($user, 'DEFAULT', [
                 'subject' => $subject,
                 'message' => $message,
             ], ['email'], false);
@@ -219,12 +218,9 @@ class NotificationController extends Controller
             ], 400);
         }
 
-        if (session('mail_error')) {
             return response()->json([
-                'status'  => 'error',
-                'message' => session('mail_error'),
+                $ntfy
             ], 500);
-        }
 
         return response()->json([
             'status'  => 'success',

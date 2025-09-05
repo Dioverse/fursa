@@ -45,7 +45,7 @@ class Push extends NotifyProcess implements Notifiable
     /**
      * Send notification
      *
-     * @return void|bool
+     * @return void|array|bool
      */
     public function send()
     {
@@ -92,6 +92,7 @@ class Push extends NotifyProcess implements Notifiable
             } catch (\Exception $e) {
                 $this->createErrorLog($e->getMessage());
                 session()->flash('firebase_error', $e->getMessage());
+				return ['firebase_error'=>$e->getMessage()];
             }
         }
     }

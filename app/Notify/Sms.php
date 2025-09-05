@@ -32,7 +32,7 @@ class Sms extends NotifyProcess implements Notifiable{
     /**
     * Send notification
     *
-    * @return void|bool
+    * @return void|array|bool
     */
 	public function send(){
 
@@ -52,7 +52,7 @@ class Sms extends NotifyProcess implements Notifiable{
                 }
 			} catch (\Exception $e) {
 				$this->createErrorLog('SMS Error: '.$e->getMessage());
-				session()->flash('sms_error','API Error: '.$e->getMessage());
+                return ['sms_error'=>'API Error: '.$e->getMessage()];
 			}
 		}
 

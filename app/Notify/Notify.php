@@ -89,7 +89,7 @@ class Notify
     *
     * This method is creating instances of notifications to send the notification.
     *
-    * @return void
+    * @return array
     */
 	public function send(){
 		$methods = [];
@@ -103,6 +103,7 @@ class Notify
 			$methods = $this->notifyMethods();
 		}
 
+        $err = [];
         //send the notification via methods one by one
 		foreach($methods as $method){
 			$notify = new $method;
@@ -112,8 +113,14 @@ class Notify
 			$notify->createLog = $this->createLog;
 			$notify->userColumn = $this->userColumn;
 			$notify->pushImage = $this->pushImage;
-			$notify->send();
+			$err[$method] = $notify->send();
 		}
+
+        print("FROM NOTIFY\n");
+        print_r($err);
+        print("\nEND FROM NOTIFY\n");
+
+        return $err;
 	}
 
     /**

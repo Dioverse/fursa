@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class GeneralSetting extends Model
 {
+    protected $table = 'general_settings';
+    public $timestamps = false;
+
     protected $casts = [
         'mail_config' => 'object',
         'sms_config'            => 'object',
