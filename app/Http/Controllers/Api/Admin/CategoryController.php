@@ -154,7 +154,7 @@ class CategoryController extends Controller
 
             // Save new image with slug as filename
             $extension = $request->file('image')->getClientOriginalExtension();
-            $fileName = $category->slug . '.' . $extension;
+            $fileName = $category->slug.uniqid() . '.' . $extension;
 
             $path = $request->file('image')->storeAs('categories', $fileName, 'public');
             $category->image = $path;
