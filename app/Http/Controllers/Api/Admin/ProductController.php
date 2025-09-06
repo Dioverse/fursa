@@ -400,4 +400,53 @@ class ProductController extends Controller
             'message' => $product->status ? 'Product is now active' : 'Product is now inactive',
         ]);
     }
+
+    public function bulkAction(Request $request)
+    {
+        $request->validate([
+            'action' => 'required|string|in:activate,deactivate,feature,unfeature,delete',
+            'product_ids' => 'required|array|min:1',
+            'product_ids.*' => 'integer|exists:products,id',
+        ]);
+
+        $action = $request->input('action');
+        $productIds = $request->input('product_ids');
+
+        switch ($action) {
+            case 'activate':
+                Product::whereIn('id', $productIds)->update(['status' => 1]);
+                break;
+
+            case 'deactivate':
+                Product::whereIn('id', $productIds)->update(['status' => 0]);
+                break;
+
+            case 'feature':
+                Product::whereIn('id', $productIds)->update(['is_featured' => 1]);
+                break;
+
+            case 'unfeature':
+                Product::whereIn('id', $productIds)->update(['is_featured' => 0]);
+                break;
+
+            case 'delete':
+                $products = Product::whereIn('id', $productIds)->get();
+
+                foreach ($products as $product) {
+                    $inUse = $product->orderItems()->exists();
+
+                    if ($inUse) {
+                        $product->status = 0; // soft delete (inactive)
+                        $product->save();
+                    } else {
+                        $product->delete();
+                    }
+                }
+                break;
+        }
+
+        return response()->json([
+            'message' => "Select products '$action'd successfully.",
+        ]);
+    }
 }
