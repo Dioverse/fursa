@@ -45,7 +45,7 @@ function notify($user, $templateName, $shortCodes = null, $sendVia = null, $crea
     print_r($notify->send());
     print("\nEND FROM HELPERS\n");
     
-    return $notify->send();
+    // return $notify->send();
 }
 
 function getFilePath($key)

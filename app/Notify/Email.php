@@ -94,7 +94,7 @@ class Email extends NotifyProcess implements Notifiable{
         }else{
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         }
-        $mail->Port       = $config->port;
+        $mail->Port    = $config->port;
         $mail->CharSet = 'UTF-8';
         //Recipients
         $mail->setFrom($this->getEmailFrom()['email'], $this->getEmailFrom()['name']);
