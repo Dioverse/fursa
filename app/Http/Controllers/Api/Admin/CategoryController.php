@@ -99,9 +99,6 @@ class CategoryController extends Controller
                 'message' => 'Category not found.',
             ], 404);
         }
-        if (empty($category->parent_id) || $category->parent_id === null) {
-            $category->with("subcategories:id,name,parent_id,image");
-        }
 
         return response()->json([
             'message' => 'Category retrieved successfully.',
