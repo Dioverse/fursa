@@ -446,7 +446,7 @@ class ProductController extends Controller
         }
 
         return response()->json([
-            'message' => "Select products '$action'd successfully.",
+            'message' => "Select products $action".'d'." successfully.",
         ]);
     }
 }
