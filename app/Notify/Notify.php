@@ -119,7 +119,6 @@ class Notify
         print("FROM NOTIFY\n");
         print_r($err);
         print("\nEND FROM NOTIFY\n");
-
         return $err;
 	}
 
