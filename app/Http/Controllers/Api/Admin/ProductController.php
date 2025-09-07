@@ -430,7 +430,7 @@ class ProductController extends Controller
                     $products = Product::whereIn('id', $productIds)->get();
 
                     foreach ($products as $product) {
-                        $inUse = $product->orderItem()->exists();
+                        $inUse = $product->orderItems()->exists();
 
                         if ($inUse) {
                             $product->status = 0; // soft delete (inactive)
