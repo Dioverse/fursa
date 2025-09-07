@@ -47,6 +47,11 @@ class Product extends Model implements AuditableContract
         return $this->hasMany(ProductImage::class);
     }
 
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
     public function isAuditable()
     {
         return Auth::check() && Auth::user()->role === 'admin';
