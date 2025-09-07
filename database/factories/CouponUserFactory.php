@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\DiscountUser>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CouponUser>
  */
-class DiscountUserFactory extends Factory
+class CouponUserFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,7 @@ class DiscountUserFactory extends Factory
     public function definition(): array
     {
         return [
-            'discount_id' => \App\Models\Discount::factory(),
+            'coupon_id' => \App\Models\Coupon::factory(),
             'user_id' => \App\Models\User::factory(),
         ];
     }

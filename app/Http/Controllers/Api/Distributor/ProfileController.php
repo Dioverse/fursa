@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api\Distributor;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class ProfileController extends Controller
 {
@@ -39,31 +41,38 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        // Validate common user fields
-        $userData = $this->validateBasicFields($request, $user);
+        try {
+            if (!in_array("", $request->only(['first_name','last_name','phone']))) {
+                $userData = $this->validateBasicFields($request, $user);
+            }
 
-        $distributorData = [];
+            $distributorData = [];
 
-        // If user is a distributor, validate distributor fields
-        if ($user->isDistributorApprov()) {
-            $distributorData = $this->validateDistributorApprovedFields($request);
-        } elseif ($user->isDistributor()) {
-            $distributorData = $this->validateDistributorFields($request);
+            if ($user->isDistributorApprov()) {
+                $distributorData = $this->validateDistributorApprovedFields($request);
+            } elseif ($user->isDistributorReject()) {
+                $distributorData = $this->validateDistributorFields($request);
+            }
+
+            DB::transaction(function () use ($user, $userData, $distributorData) {
+                $user->update($userData);
+
+                if (!empty($distributorData)) {
+                    $user->distributor()->updateOrCreate(['user_id' => $user->id], $distributorData);
+                }
+            });
+
+            return response()->json([
+                'message' => 'Profile updated successfully',
+                'user' => $user->load('distributor')
+            ]);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         }
-
-        // Update user
-        $user->update($userData);
-
-        // Update distributor if applicable
-        if (!empty($distributorData)) {
-            $distributorData['email'] = $user->email;
-            $user->distributor()->updateOrCreate(['user_id' => $user->id], $distributorData);
-        }
-
-        return response()->json([
-            'message' => 'Profile updated successfully',
-            'user' => $user->load('distributor')
-        ]);
     }
 
     /**

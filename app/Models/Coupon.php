@@ -8,10 +8,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class DiscountUser extends Model implements AuditableContract
+class Coupon extends Model implements AuditableContract
 {
-    /** @use HasFactory<\Database\Factories\DiscountUserFactory> */
+    /** @use HasFactory<\Database\Factories\CouponFactory> */
     use HasFactory, Auditable;
+    
+    public function users() {
+        return $this->belongsToMany(User::class, 'coupon_user');
+    }
 
     public function isAuditable()
     {

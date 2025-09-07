@@ -12,9 +12,12 @@ class DistributorController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $distributors = User::with('distributor')->where('role', 'distributor')->get();
+        $perPage = $request->query('per_page', 10);
+        $perPage = max(1, (int) $perPage);
+
+        $distributors = User::with('distributor')->where('role', 'distributor')->paginate($perPage);
         return response()->json([
             'message' => 'Distributors list retrieved successfully.',
             'data' => $distributors

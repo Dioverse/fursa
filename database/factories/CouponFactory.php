@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Discount>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Coupon>
  */
-class DiscountFactory extends Factory
+class CouponFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,7 @@ class DiscountFactory extends Factory
     public function definition(): array
     {
         return [
-            'code' => strtoupper(fake()->bothify('DISCOUNT###')),
+            'code' => strtoupper(fake()->bothify('Coupon###')),
             'type' => fake()->randomElement(['percent', 'fixed']),
             'value' => fake()->randomFloat(2, 5, 50),
             'expires_at' => now()->addDays(30),

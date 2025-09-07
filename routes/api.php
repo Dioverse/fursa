@@ -125,7 +125,7 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
 
 Route::get('products', [GeneralProductController::class, 'index']);
 Route::get('products/{id}', [GeneralProductController::class, 'show']);
-Route::post('apply-discount', [GeneralProductController::class, 'apply']);
+Route::post('apply-coupon', [GeneralProductController::class, 'apply']);
 
 Route::get('posts', [DistCustPostController::class, 'index']);
 Route::get('posts/{slug}', [DistCustPostController::class, 'show']);
