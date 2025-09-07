@@ -120,7 +120,7 @@ class ProductController extends Controller
             'images.*'            => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'stock_quantity'      => 'required|integer|min:0',
             'low_stock_threshold' => 'nullable|integer|min:0',
-            'tags'                => 'nullable|array',
+            // 'tags'                => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
@@ -207,7 +207,7 @@ class ProductController extends Controller
             'distributor_price'   => 'sometimes|numeric|min:0',
             'stock_quantity'      => 'sometimes|integer|min:0',
             'low_stock_threshold' => 'nullable|integer|min:0',
-            'tags'                => 'nullable|array',
+            // 'tags'                => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
