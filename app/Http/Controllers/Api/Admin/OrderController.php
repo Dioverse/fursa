@@ -119,14 +119,10 @@ class OrderController extends Controller
         if (!$order) {
             return response()->json(['message' => 'Order not found.'], 404);
         }
-        
-        $validator = Validator::make($request->all(), [
+
+        $request->validate([
             'status' => ['required', 'string', "in:shipped,out for delivery,delivered"]
         ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
 
         $status = $request->status;
 

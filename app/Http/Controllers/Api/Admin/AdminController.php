@@ -35,20 +35,13 @@ class AdminController extends Controller
     public function store(Request $request): JsonResponse
     {
         // Validate input (only allow 'admin' as role)
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'first_name'    => ['sometimes', 'string', 'max:255'],
             'last_name'     => ['sometimes', 'string', 'max:255'],
             'email'    => ['required', 'email', 'unique:users,email'],
             'phone'    => ['required', 'string', 'max:20'],
             'password' => ['required', 'string', 'min:6'],
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors'  => $validator->errors(),
-            ], 422);
-        }
 
         // Force role to 'admin' (no role input allowed)
         $user = User::create([
@@ -100,20 +93,13 @@ class AdminController extends Controller
             ], 404);
         }
 
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'first_name' => ['sometimes', 'string', 'max:255'],
             'last_name'  => ['sometimes', 'string', 'max:255'],
             'email'      => ['sometimes', 'email', "unique:users,email,{$admin->id}"],
             'phone'      => ['sometimes', 'string', 'max:20'],
             'password'   => ['sometimes', 'string', 'min:6'],
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors'  => $validator->errors(),
-            ], 422);
-        }
 
         $admin->update([
             'first_name' => $request->first_name ?? $admin->first_name,

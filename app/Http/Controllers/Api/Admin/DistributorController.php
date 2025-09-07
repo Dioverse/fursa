@@ -29,24 +29,22 @@ class DistributorController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'status' => 'required|in:approved,rejected',
-        ]);
-
         $user = User::findOrFail($id);
 
         // Ensure user is distributor
         if ($user->role !== 'distributor') {
-            return response()->json([
-                'message' => 'Only distributors can have their status updated.'
-            ], 403);
+            return response()->json(['message' => 'Only distributors can have their status updated.'], 403);
         }
+
+        $request->validate([
+            'status' => 'required|in:approved,rejected',
+            'reason' => 'required_if:status,rejected|string'
+        ]);
+
 
         // Prevent re-approval
         if ($request->status === 'approved' && $user->status === 'approved') {
-            return response()->json([
-                'message' => 'Distributor already approved.'
-            ], 422);
+            return response()->json(['message' => 'Distributor already approved.'], 422);
         }
 
         // Update user status
@@ -56,16 +54,14 @@ class DistributorController extends Controller
         // Update distributor table if approved
         if ($request->status === 'approved') {
             if (!$user->distributor) {
-                return response()->json([
-                    'message' => 'Distributor record not found for this user.'
-                ], 404);
+                return response()->json(['message' => 'Distributor record not found for this user.'], 404);
             }
-
             $user->distributor->approved_at = Carbon::now();
             $user->distributor->save();
         } elseif ($request->status === 'rejected') {
             if ($user->distributor) {
-                $user->distributor->approved_at = null; // optional reset
+                $user->distributor->approved_at = null;
+                $user->distributor->reason = $request->reason;
                 $user->distributor->save();
             }
         }

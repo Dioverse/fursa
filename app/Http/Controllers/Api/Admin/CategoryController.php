@@ -48,19 +48,12 @@ class CategoryController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'name'        => 'required|string|max:255|unique:categories,name',
             'description' => 'nullable|string',
             'parent_id'   => 'nullable|exists:categories,id',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // 2MB max
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed.',
-                'errors'  => $validator->errors(),
-            ], 422);
-        }
 
         $slug = Str::slug($request->name);
         $imagePath = null;
@@ -119,19 +112,12 @@ class CategoryController extends Controller
             ], 404);
         }
 
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'name'        => 'sometimes|string|max:255|unique:categories,name,' . $id,
             'description' => 'nullable|string',
             'parent_id'   => 'nullable|exists:categories,id',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed.',
-                'errors'  => $validator->errors(),
-            ], 422);
-        }
 
         if ($request->filled('name')) {
             $category->name = $request->name;

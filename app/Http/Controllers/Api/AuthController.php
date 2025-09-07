@@ -390,39 +390,25 @@ class AuthController extends Controller
 
 
     public function forgotPassword(Request $request) {
-        $validatedData = Validator::make($request->all(['email']),[
-            'email' => "required|email|exists:users,email",
-        ],[
-            'email.required'=>'A valid email address is required.',
-            'email.email'=>'Provide a valid email address.',
-            'email.exists'=>'Account not found, check and try again.'
+        $request->validate([
+            'email' => 'required|email',
+        ], [
+            'email.required' => 'A valid email address is required.',
+            'email.email' => 'Provide a valid email address.',
         ]);
-        if ($validatedData->fails()) {
-            $arr = [
-                    'status'=> 'false',
-                    'data' => [
-                        'message' => 'Validation failed',
-                        'error' => $validatedData->errors(),
-                    ]
-                ];
-        } else {
-            try {
-                $response = Password::sendResetLink($request->only('email'));
-                switch ($response) {
-                    case Password::RESET_LINK_SENT:
-                        return response()->json(['status'=>'true','data'=>["message"=>"An email has been sent to your address, Please check your inbox for the password reset button."]],200);
-                    case Password::INVALID_USER:
-                        return response()->json(['status'=>'false','data'=>['message'=>"Account not found, check and try again."]],401);
-                    default:
-                        return response()->json(["status"=> "false","data"=>["message"=> "An error occured, please try again"]],400);
-                }
-            } catch (TransportException $ex) {
-                $arr = array("status" => "false", "message" => "An error occured, please try again", "data" => ['error' => $ex->getMessage()]);
-            } catch (Exception $ex) {
-                $arr = array("status" => "false", "message" => "An error occured, please try again", "data" => ['error' => $ex->getMessage()]);
-            }
+
+        try {
+            $response = Password::sendResetLink($request->only('email'));
+            return response()->json([
+                "message" => "If an account with that email exists, we have sent a password reset link."
+            ], 200);
+
+        } catch (Exception $ex) {
+            // 4. Catch any exceptions (like mailer issues) and return a generic error.
+            return response()->json([
+                "message" => "An error occurred, please try again."
+            ], 500);
         }
-        return response()->json($arr,401);
     }
 
     public function resetPassword(Request $request)

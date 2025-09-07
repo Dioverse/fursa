@@ -109,7 +109,7 @@ class ProductController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'name'                => 'required|string|max:255|unique:products,name',
             'category_id'         => ['nullable', Rule::exists('categories', 'id')->whereNotNull('parent_id')],
             'short_description'   => 'nullable|string',
@@ -122,13 +122,6 @@ class ProductController extends Controller
             'low_stock_threshold' => 'nullable|integer|min:0',
             // 'tags'                => 'nullable|array',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors'  => $validator->errors(),
-            ], 422);
-        }
 
         // Create product
         $slug    = Str::slug($request->name);
@@ -198,7 +191,8 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product not found.'], 404);
         }
 
-        $validator = Validator::make($request->all(), [
+        $request->validate([
+
             'name'                => 'sometimes|string|max:255',
             'category_id'         => ['nullable', Rule::exists('categories', 'id')->where('id', '!=',$request->category_id)->whereNotNull('parent_id')],
             'short_description'   => 'nullable|string',
@@ -209,10 +203,6 @@ class ProductController extends Controller
             'low_stock_threshold' => 'nullable|integer|min:0',
             // 'tags'                => 'nullable|array',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
 
         $data = $request->only([
             'name', 'category_id', 'short_description', 'description',
@@ -259,7 +249,7 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product not found.'], 404);
         }
 
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'images'   => 'required|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
@@ -307,14 +297,11 @@ class ProductController extends Controller
         }
 
         // return response()->json($request->image_ids);
-        $validator = Validator::make($request->all(), [
+        $request->validate([
+
             'image_ids'   => 'required|array',
             'image_ids.*' => 'exists:product_images,id',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
 
         $deleted = [];
 
