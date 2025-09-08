@@ -16,10 +16,14 @@ class Order extends Model implements AuditableContract
     public $table = 'orders';
     protected $fillable = [
         'user_id',
-        'shipping_address_id',
+        'shipping_address',
         'order_id',
         'total_amount',
         'status'
+    ];
+
+    protected $casts = [
+        'shipping_address'    => 'array',
     ];
     
     public function orderItem() {
