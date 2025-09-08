@@ -1,16 +1,17 @@
 <?php
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\Category;
 use App\Models\Product;
+use App\Models\Category;
+use App\Models\Discount;
+use Illuminate\Support\Str;
 use App\Models\ProductImage;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
@@ -392,9 +393,13 @@ class ProductController extends Controller
     public function bulkAction(Request $request)
     {
         $request->validate([
-            'action'        => 'required|string|in:activate,deactivate,feature,unfeature,delete',
-            'product_ids'   => 'required|array|min:1',
-            'product_ids.*' => 'integer|exists:products,id',
+            'action'                => 'required|string|in:activate,deactivate,feature,unfeature,delete,discount,undiscount',
+            'product_ids'           => 'required|array|min:1',
+            'product_ids.*'         => 'integer|exists:products,id',
+            'discount_type'         => 'required_if:action,discount|in:percentage,fixed',
+            'discount_value'        => 'required_if:action,discount|numeric|min:0',
+            'discount_start_date'   => 'required_if:action,discount|date',
+            'discount_end_date'     => 'required_if:action,discount|date|after_or_equal:discount_start_date',
         ]);
 
         $action     = $request->input('action');
@@ -431,6 +436,26 @@ class ProductController extends Controller
                             $product->delete();
                         }
                     }
+                    break;
+                
+                case 'discount':
+                    foreach ($productIds as $id) {
+                        Discount::updateOrCreate(
+                            ['product_id' => $id],
+                            [
+                                'type'       => $request->discount_type,
+                                'value'      => $request->discount_value,
+                                'start_date' => $request->discount_start_date,
+                                'end_date'   => $request->discount_end_date,
+                            ]
+                        );
+                    }
+                    $action .= 'e';
+                    break;
+
+                case 'undiscount':
+                    Discount::whereIn('product_id', $productIds)->delete();
+                    $action .= 'e';
                     break;
             }
 
