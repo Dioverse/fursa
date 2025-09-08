@@ -20,7 +20,7 @@ class ProductController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Product::with(['category:id,name,slug']);
+        $query = Product::with(['category:id,name,slug', 'activeDiscount:product_id,type,value,start_date,end_date']);
 
         // --- Filtering Options ---
         if ($request->filled('category_id')) {

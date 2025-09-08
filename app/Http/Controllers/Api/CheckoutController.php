@@ -16,7 +16,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Services\Payments\PaymentManager;
 
-class PaymentController extends Controller
+class CheckoutController extends Controller
 {
     public function initialize(Request $request)
     {

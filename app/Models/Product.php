@@ -55,10 +55,10 @@ class Product extends Model implements AuditableContract
         return $this->hasMany(OrderItem::class);
     }
 
-    public function discounts()
-    {
-        return $this->hasMany(Discount::class);
-    }
+    // public function discounts()
+    // {
+    //     return $this->hasOne(Discount::class);
+    // }
 
     public function toArray()
     {

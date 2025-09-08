@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\Admin\PostCategoryController;
 use App\Http\Controllers\Api\Distributor\ProfileController;
 use App\Http\Controllers\Api\LanguageController as DistCustLanguageController;
 use App\Http\Controllers\Api\PostController as DistCustPostController;
-use App\Http\Controllers\Api\PaymentController as ApiPaymentController;
+use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\OrderController as DistCustOrderController;
 use App\Http\Controllers\PaymentController as DistCustPaymentController;
 use App\Http\Controllers\Api\ProductController as GeneralProductController;
@@ -120,8 +120,8 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
     Route::apiResource('carts', CartController::class)->only(['index','store']);
     Route::delete('carts/rm', [CartController::class, 'unSetItem']);
     Route::patch('carts/update', [CartController::class, 'updateItemQuantity']);
-    Route::post('checkout/init', [ApiPaymentController::class, 'initialize']);
-    Route::post('checkout/{gateway}/{transId}', [ApiPaymentController::class, 'checkout']);
+    Route::post('checkout/init', [CheckoutController::class, 'initialize']);
+    Route::post('checkout/{gateway}/{transId}', [CheckoutController::class, 'checkout']);
 
 });
 
