@@ -26,6 +26,7 @@ class PaymentService
                 'user_id'   => $order->user_id,
                 'order_id'  => $order->id,
                 'status'    => $payment['status'],
+                'paid_at'   => now(),
                 'amount'    => $payment['amount'],
                 'currency'  => $payment['currency'],
                 'method'    => $payment['method'],
