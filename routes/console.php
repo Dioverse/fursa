@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Schedule;
     })->describe('Start a queue worker safely with retries and no duplicates');
 
     // Schedule the command
-    Schedule::command('queue:worker-safe')
+    Schedule::command('queue:worker-safe --memory=128 --timeout=60')
         ->everyMinute()
         ->withoutOverlapping()
         ->runInBackground();

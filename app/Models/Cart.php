@@ -66,6 +66,7 @@ class Cart extends Model implements AuditableContract
         //     return $item->quantity * $price;
         // }), 2);
     }
+    
     public function isAuditable()
     {
         return Auth::check() && Auth::user()->role === 'admin';
