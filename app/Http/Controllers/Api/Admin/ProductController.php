@@ -46,12 +46,17 @@ class ProductController extends Controller
         }
 
         if ($request->filled('price_from')) {
-            $query->where('base_price', '>=', $request->input('price_from'))
+            $query->where(function ($q) use ($request) {
+                $q->where('base_price', '>=', $request->input('price_from'))
                 ->orWhere('distributor_price', '>=', $request->input('price_from'));
+            });
         }
+
         if ($request->filled('price_to')) {
-            $query->where('base_price', '<=', $request->input('price_to'))
-                ->orWhere('distributor_price', '<=', $request->input('price_from'));
+            $query->where(function ($q) use ($request) {
+                $q->where('base_price', '<=', $request->input('price_to'))
+                ->orWhere('distributor_price', '<=', $request->input('price_to'));
+            });
         }
 
         if ($request->filled('date_from')) {
@@ -82,7 +87,7 @@ class ProductController extends Controller
             SUM(CASE WHEN stock_quantity > 0 AND stock_quantity <= low_stock_threshold THEN 1 ELSE 0 END) as low_stock
         ')->first();
 
-        $categories = Category::where('parent_id', null)->orWhere('parent_id', '')->with(relations: 'subcategories:id,name,parent_id')->get(['id', 'name']);
+        $categories = Category::where('parent_id', null)->orWhere('parent_id', '')->with('subcategories:id,name,parent_id')->get(['id', 'name']);
         return response()->json([
             'message' => 'Products retrieved successfully.',
             'data'    => $products,
@@ -168,7 +173,7 @@ class ProductController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $product = Product::with('category:id,name,slug')->find($id);
+        $product = Product::with(['category:id,name,slug', 'activeDiscount:product_id,type,value,start_date,start_date'])->find($id);
 
         if (! $product) {
             return response()->json(['message' => 'Product not found.'], 404);
@@ -376,7 +381,7 @@ class ProductController extends Controller
             ]);
         }
         // Toggle ban (if 1 → 0, if 0 → 1)
-        $product->status = ! $product->status;
+        $product->status = !$product->status;
         $product->save();
 
         return response()->json([

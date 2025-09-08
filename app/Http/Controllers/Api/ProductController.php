@@ -19,7 +19,7 @@ class ProductController extends Controller
     public function index(Request $request): JsonResponse
     {
         // Start building the query with eager loading for the category
-        $query = Product::with('category:id,name,slug')->where("status", true);
+        $query = Product::with(['category:id,name,slug', 'images:id,product_id,path'])->where("status", true);
 
         // --- Filtering Options ---
         // Filter by category
@@ -44,9 +44,7 @@ class ProductController extends Controller
         $price_field = 'base_price';
         $user = auth('sanctum')->user();
 
-        if ($user && $user->isDistributorApprov()) {
-            $price_field = 'distributor_price';
-        }
+        if ($user && $user->isDistributorApprov()) { $price_field = 'distributor_price'; }
         
         if ($request->has('min_price') && is_numeric($request->input('min_price'))) {
             $query->where($price_field, '>=', $request->input('min_price'));
@@ -105,7 +103,7 @@ class ProductController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $product = Product::where("status", true)->with('category:id,name,slug')->find($id);
+        $product = Product::where("status", true)->with(['category:id,name,slug','images:id,product_id,path'])->find($id);
 
         if (!$product) {
             return response()->json(['message' => 'Product not found.'], 404);
@@ -114,9 +112,9 @@ class ProductController extends Controller
         $related = Product::where(function ($q) use ($product) {
             $q->where('category_id', $product->category_id)
             ->orWhere('name', 'like', '%' . $product->name . '%');
-        })->where('id', '!=', $product->id)
-        ->where('published', true)->inRandomOrder()->take(3)
-        ->with(['category:id,name,slug', 'author:id,first_name,last_name'])->get();
+        })->where('id', '!=', $product->id)->where('status', true)
+        ->inRandomOrder()->take(3)->with(['category:id,name,slug', 'images:id,product_id,path'])
+        ->get(['id','name','category_id','slug','short_description','stock_quantity','low_stock_threshold','is_featured','distributor_price','base_price']);
 
         return response()->json([
             'message' => 'Product retrieved successfully.',

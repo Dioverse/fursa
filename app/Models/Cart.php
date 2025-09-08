@@ -50,15 +50,21 @@ class Cart extends Model implements AuditableContract
         }
 
         return round($this->cartItems->sum(function ($item) {
-            $price = $item->product->base_price ?? 0;
-            
-            $user = auth('sanctum')->user();
-            if ($user && $user->isDistributorApprov()) {
-                $price = $item->product->distributor_price ?? $price;
-            }
+            $price = $item->product->price ?? 0;
 
             return $item->quantity * $price;
         }), 2);
+
+        // return round($this->cartItems->sum(function ($item) {
+        //     $price = $item->product->base_price ?? 0;
+            
+        //     $user = auth('sanctum')->user();
+        //     if ($user && $user->isDistributorApprov()) {
+        //         $price = $item->product->distributor_price ?? $price;
+        //     }
+
+        //     return $item->quantity * $price;
+        // }), 2);
     }
     public function isAuditable()
     {

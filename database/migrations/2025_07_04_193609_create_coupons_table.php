@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('discounts', function (Blueprint $table) {
+        Schema::create('coupons', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->enum('type', ['percent', 'fixed']); // e.g., 20% off or ₦1000 off
+            $table->enum('type', ['percentage', 'fixed'])->default('percentage');
             $table->decimal('value', 10, 2);
-            $table->date('expires_at')->nullable();
-            $table->integer('max_usage')->nullable();
+            $table->timestamp('start_date');
+            $table->timestamp('end_date');
+            $table->integer('usage_limit')->nullable(); // null = unlimited
             $table->integer('used_count')->default(0);
+            $table->decimal('min_order', 10, 2)->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('discounts');
+        Schema::dropIfExists('coupons');
     }
 };

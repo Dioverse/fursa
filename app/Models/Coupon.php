@@ -13,6 +13,14 @@ class Coupon extends Model implements AuditableContract
     /** @use HasFactory<\Database\Factories\CouponFactory> */
     use HasFactory, Auditable;
     
+
+    public function isValid()
+    {
+        return $this->start_date <= now()
+            && $this->end_date >= now()
+            && ($this->usage_limit === null || $this->used_count < $this->usage_limit);
+    }
+
     public function users() {
         return $this->belongsToMany(User::class, 'coupon_user');
     }

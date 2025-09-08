@@ -92,7 +92,7 @@ class PaymentController extends Controller
                 'product_name'   => $product->name,
                 'product_slug'   => $product->slug,
                 'quantity'       => $item->quantity,
-                'price'          => $user->role == "distributor" ? $product->distributor_price : $product->base_price,
+                'price'          => $product->price,
                 'stock_quantity' => $product->stock_quantity,
                 'category_name'  => $product->category?->name,   // safe navigation operator
                 'category_slug'  => $product->category?->slug,   // safe navigation operator

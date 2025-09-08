@@ -117,7 +117,9 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
     });
 
     // Shared routes for all authenticated users
-    Route::apiResource('carts', CartController::class);
+    Route::apiResource('carts', CartController::class)->only(['index','store']);
+    Route::delete('carts/rm', [CartController::class, 'unSetItem']);
+    Route::patch('carts/update', [CartController::class, 'updateItemQuantity']);
     Route::post('checkout/init', [ApiPaymentController::class, 'initialize']);
     Route::post('checkout/{gateway}/{transId}', [ApiPaymentController::class, 'checkout']);
 

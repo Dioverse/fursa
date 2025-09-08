@@ -49,22 +49,16 @@ class GeneralController extends Controller
 
         if ($purchasedProductIds->isEmpty()) {
             // fallback: random recommendations
-            $recommendations = Product::inRandomOrder()
-                ->take(5)
-                ->get(['id', 'name', $user->isDistributorApprov() ? 'distributor_price as price' : 'base_price as price']);
+            $recommendations = Product::class;
         } else {
             // 2. Find categories of purchased products
-            $categoryIds = Product::whereIn('id', $purchasedProductIds)
-                ->pluck('category_id');
+            $categoryIds = Product::whereIn('id', $purchasedProductIds)->pluck('category_id');
 
-            // 3. Recommend products from those categories (excluding ones already purchased)
-            $recommendations = Product::whereIn('category_id', $categoryIds)
-                ->whereNotIn('id', $purchasedProductIds)
-                ->inRandomOrder()
-                ->take(5)
-                ->get(['id', 'name', $user->isDistributorApprov() ? 'distributor_price as price' : 'base_price as price']);
+            $recommendations = Product::whereIn('category_id', $categoryIds);
         }
 
-        return $recommendations;
+        return $recommendations->with(['category:id,name,slug','images:id,product_id,path'])
+            ->inRandomOrder()->take(5)
+            ->get(['id','name','category_id','slug','short_description','stock_quantity','low_stock_threshold','is_featured','distributor_price','base_price']);
     }
 }

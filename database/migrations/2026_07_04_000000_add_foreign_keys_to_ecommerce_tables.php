@@ -65,11 +65,11 @@ return new class extends Migration {
                   ->onDelete('cascade');
         });
 
-        // discount_users.discount_id → discounts.id
-        // discount_users.user_id → users.id
-        Schema::table('discount_users', function (Blueprint $table) {
-            $table->foreign('discount_id')
-                  ->references('id')->on('discounts')
+        // coupon_users.coupon_id → coupons.id
+        // coupon_users.user_id → users.id
+        Schema::table('coupon_users', function (Blueprint $table) {
+            $table->foreign('coupon_id')
+                  ->references('id')->on('coupons')
                   ->onDelete('cascade');
 
             $table->foreign('user_id')
@@ -129,8 +129,8 @@ return new class extends Migration {
             $table->dropForeign(['product_id']);
         });
         Schema::table('payments', fn (Blueprint $table) => $table->dropForeign(['order_id']));
-        Schema::table('discount_users', function (Blueprint $table) {
-            $table->dropForeign(['discount_id']);
+        Schema::table('coupon_users', function (Blueprint $table) {
+            $table->dropForeign(['coupon_id']);
             $table->dropForeign(['user_id']);
         });
         Schema::table('shipping_addresses', fn (Blueprint $table) => $table->dropForeign(['user_id']));
@@ -142,6 +142,10 @@ return new class extends Migration {
         Schema::table('posts', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
             $table->dropForeign(['post_category_id']);
+        });
+
+        Schema::table('discounts', function (Blueprint $table) {
+            $table->dropForeign(['product_id']);
         });
     }
 };
