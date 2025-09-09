@@ -463,7 +463,7 @@ onMounted(async () => {
     loading.value = true
     try {
         // Mock data - replace with actual API call
-        const response = await axios.get("https://back.fursaenergy.com/public/api/products")
+        const response = await axios.get("https://fursa.jarustraining.com.ng/api/products")
         const products = response.data.data.products.data
         popularProducts.value = products.slice(0, 4).map(p => ({
             id: p.id,

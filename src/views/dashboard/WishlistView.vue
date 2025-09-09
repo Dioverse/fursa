@@ -3,26 +3,43 @@
         <div class="space-y-6">
             <h1 class="text-2xl font-bold">My Wishlist</h1>
 
-            <div v-if="wishlistItems.length === 0" class="bg-white rounded-lg shadow-md p-12 text-center">
+            <!-- Empty State -->
+            <div
+                v-if="wishlistItems.length === 0"
+                class="bg-white rounded-lg shadow-md p-12 text-center"
+            >
                 <font-awesome-icon icon="heart" size="3x" class="text-gray-400 mb-4" />
                 <h2 class="text-xl font-semibold mb-2">Your wishlist is empty</h2>
-                <p class="text-gray-600 mb-6">Save items you like to purchase them later</p>
-                <RouterLink to="/shop"
-                    class="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded hover:bg-opacity-90 transition">
+                <p class="text-gray-600 mb-6">
+                    Save items you like to purchase them later
+                </p>
+                <RouterLink
+                    to="/shop"
+                    class="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded hover:bg-opacity-90 transition"
+                >
                     <font-awesome-icon icon="shopping-cart" />
                     <span>Continue Shopping</span>
                 </RouterLink>
             </div>
 
-            <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div v-for="item in wishlistItems" :key="item.id"
-                    class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+            <!-- Wishlist Items -->
+            <div
+                v-else
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+            >
+                <div
+                    v-for="item in wishlistItems"
+                    :key="item.id"
+                    class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition"
+                >
                     <div class="relative">
                         <div class="h-48 bg-gray-200 flex items-center justify-center">
                             <font-awesome-icon icon="image" size="3x" class="text-gray-400" />
                         </div>
-                        <button @click="removeFromWishlist(item.id)"
-                            class="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition">
+                        <button
+                            @click="removeFromWishlist(item.id)"
+                            class="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition"
+                        >
                             <font-awesome-icon icon="times" class="text-red-500" />
                         </button>
                     </div>
@@ -34,8 +51,10 @@
                             ₦{{ item.price.toLocaleString() }}
                         </p>
 
-                        <button @click="moveToCart(item)"
-                            class="w-full bg-primary text-white py-2 rounded hover:bg-opacity-90 transition">
+                        <button
+                            @click="moveToCart(item)"
+                            class="w-full bg-primary text-white py-2 rounded hover:bg-opacity-90 transition"
+                        >
                             <font-awesome-icon icon="shopping-cart" class="mr-2" />
                             Move to Cart
                         </button>
@@ -47,25 +66,45 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useToast } from 'vue-toastification'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import { useCartStore } from '@/stores/cart'
 
 const toast = useToast()
 const cartStore = useCartStore()
+const wishlistItems = ref([])
 
-const wishlistItems = ref([
-    { id: 1, name: 'MRS 5L Motorcycle engine oil', price: 145000, volume: '5 Litres' },
-    { id: 2, name: 'MRS Premium Motor Oil', price: 125000, volume: '4 Litres' },
-    { id: 3, name: 'MRS Diesel Engine Oil', price: 165000, volume: '5 Litres' }
-])
+// Load wishlist from localStorage
+onMounted(() => {
+    const storedWishlist = localStorage.getItem('wishlist')
+    wishlistItems.value = storedWishlist ? JSON.parse(storedWishlist) : []
+})
 
+// Save wishlist to localStorage
+const saveWishlist = () => {
+    localStorage.setItem('wishlist', JSON.stringify(wishlistItems.value))
+}
+
+// Add to wishlist
+const addToWishlist = (item) => {
+    if (!wishlistItems.value.find(i => i.id === item.id)) {
+        wishlistItems.value.push(item)
+        saveWishlist()
+        toast.success('Item added to wishlist')
+    } else {
+        toast.info('Item already in wishlist')
+    }
+}
+
+// Remove from wishlist
 const removeFromWishlist = (id) => {
     wishlistItems.value = wishlistItems.value.filter(item => item.id !== id)
+    saveWishlist()
     toast.success('Item removed from wishlist')
 }
 
+// Move to cart
 const moveToCart = (item) => {
     cartStore.addItem(item)
     removeFromWishlist(item.id)

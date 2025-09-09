@@ -51,8 +51,8 @@
         fullWidth
         icon="user-plus"
         :loading="authStore.loading"
-        text="Sign In"
-        loadingText="Signing In..."
+        text="Login"
+        loadingText="Logging In..."
         />
     </form>
 </template>
@@ -60,6 +60,11 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import BaseButton from '@/components/common/BaseButton.vue'
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
+const loading = ref(false)
+const showPassword = ref(false)
+
 
 const emit = defineEmits(['submit'])
 
@@ -74,8 +79,6 @@ const errors = reactive({
     password: ''
 })
 
-const loading = ref(false)
-const showPassword = ref(false)
 
 const validateForm = () => {
     errors.user = ''

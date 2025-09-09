@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useToast } from 'vue-toastification'
 import BaseButton from '@/components/common/BaseButton.vue'
@@ -59,18 +59,48 @@ const cartStore = useCartStore()
 const toast = useToast()
 const isInWishlist = ref(false)
 
-const handleAddToCart = () => {
-    cartStore.addItem(props.product)
-    toast.success('Product added to cart!')
+// ✅ Load wishlist and check if product exists
+const loadWishlist = () => {
+    const storedWishlist = localStorage.getItem('wishlist')
+    return storedWishlist ? JSON.parse(storedWishlist) : []
 }
 
+// ✅ Save wishlist
+const saveWishlist = (wishlist) => {
+    localStorage.setItem('wishlist', JSON.stringify(wishlist))
+}
+
+// ✅ Toggle wishlist add/remove
 const toggleWishlist = () => {
+    let wishlist = loadWishlist()
+
+    if (isInWishlist.value) {
+        // Remove
+        wishlist = wishlist.filter(item => item.id !== props.product.id)
+        toast.success('Removed from wishlist')
+    } else {
+        // Add
+        wishlist.push(props.product)
+        toast.success('Added to wishlist')
+    }
+
+    saveWishlist(wishlist)
     isInWishlist.value = !isInWishlist.value
-    toast.success(isInWishlist.value ? 'Added to wishlist' : 'Removed from wishlist')
+}
+
+// ✅ Check if product is already in wishlist on mount
+onMounted(() => {
+    const wishlist = loadWishlist()
+    isInWishlist.value = wishlist.some(item => item.id === props.product.id)
+})
+
+const handleAddToCart = () => {
+    cartStore.addItem(props.product)
+    // toast.success('Product added to cart!')
 }
 
 const quickView = () => {
-    // Implement quick view modal
     console.log('Quick view:', props.product)
+    // open quick view modal if available
 }
 </script>

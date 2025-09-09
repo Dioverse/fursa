@@ -37,8 +37,12 @@
             </label>
             <div class="relative">
                 <input v-model="form.phone" type="tel" placeholder="08111111111"
+                    inputmode="numeric"
                     class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    required>
+                    maxlength="11"
+                    pattern="[0-9]*"
+                    required
+                    @input="form.phone = form.phone.replace(/[^0-9]/g, '')">
                 <font-awesome-icon icon="envelope" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             </div>
         </div>

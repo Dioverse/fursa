@@ -75,6 +75,8 @@ import RecentOrders from '@/components/dashboard/RecentOrders.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
 import ordersService from '@/services/orders.service'
+import axios from 'axios'
+const baseUrl = import.meta.env.VITE_API_BASE_URL
 
 const router = useRouter()
 const toast = useToast()
@@ -83,13 +85,50 @@ const cartStore = useCartStore()
 
 const user = computed(() => authStore.user)
 const recentOrders = ref([])
+const loading = ref(false)
+const error = ref(null)
+
+// const stats = ref({
+//     ongoingOrders: 18,
+//     cartItems: cartStore.itemCount,
+//     wishlistItems: 0,
+//     totalOrders: 5
+// })
 
 const stats = ref({
-    ongoingOrders: 18,
-    cartItems: cartStore.itemCount,
-    wishlistItems: 0,
-    totalOrders: 5
+  ongoingOrders: 0,
+  cartItems: cartStore.itemCount,
+  wishlistItems: 0,
+  totalOrders: 0
 })
+
+const fetchDashboard = async () => {
+  loading.value = true
+  try {
+    const token = localStorage.getItem('token')
+    const { data } = await axios.get(`${baseUrl}/dashboard`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    console.log('Dashboard data:', data.data.recent_orders)
+
+    stats.value = {
+      ongoingOrders: data.data.orders_summary.pending ?? 0,
+      cartItems: cartStore.itemCount,
+      wishlistItems: data.data.wishlistItems ?? 0,
+      totalOrders: data.data.orders_summary.total ?? 0
+    }
+
+    recentOrders.value = data.data.recent_orders || []
+  } catch (err) {
+    console.error('Failed to fetch dashboard:', err)
+    error.value = 'Could not load dashboard stats'
+  } finally {
+    loading.value = false
+  }
+}
 
 const handleLogout = () => {
     authStore.logout()
@@ -97,17 +136,23 @@ const handleLogout = () => {
     router.push('/')
 }
 
-onMounted(async () => {
-    try {
-        // Fetch recent orders - using mock data for now
-        recentOrders.value = [
-            { id: '#2345', date: 'January 7, 2025', status: 'Processing', total: 250000, items: 7 },
-            { id: '#2345', date: 'January 7, 2025', status: 'Completed', total: 430000, items: 6 },
-            { id: '#2345', date: 'January 7, 2025', status: 'Completed', total: 430000, items: 6 },
-            { id: '#2345', date: 'January 7, 2025', status: 'Completed', total: 430000, items: 6 }
-        ]
-    } catch (error) {
-        console.error('Failed to load dashboard data:', error)
-    }
+onMounted(() => {
+  fetchDashboard()
 })
+
+onMounted(fetchDashboard)
+
+// onMounted(async () => {
+//     try {
+//         // Fetch recent orders - using mock data for now
+//         recentOrders.value = [
+//             { id: '#2345', date: 'January 7, 2025', status: 'Processing', total: 250000, items: 7 },
+//             { id: '#2345', date: 'January 7, 2025', status: 'Completed', total: 430000, items: 6 },
+//             { id: '#2345', date: 'January 7, 2025', status: 'Completed', total: 430000, items: 6 },
+//             { id: '#2345', date: 'January 7, 2025', status: 'Completed', total: 430000, items: 6 }
+//         ]
+//     } catch (error) {
+//         console.error('Failed to load dashboard data:', error)
+//     }
+// })
 </script>

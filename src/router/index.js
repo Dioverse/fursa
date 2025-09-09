@@ -8,7 +8,10 @@ const LoginView = () => import('@/views/auth/LoginView.vue')
 const RegisterView = () => import('@/views/auth/RegisterView.vue')
 const DashboardView = () => import('@/views/dashboard/DashboardView.vue')
 const OrdersView = () => import('@/views/dashboard/OrdersView.vue')
+const OrderDetailsView = () => import('@/views/dashboard/OrderDetailsView.vue')
+const TrackOrdersView = () => import('@/views/dashboard/TrackOrdersView.vue')
 const ProfileView = () => import('@/views/dashboard/ProfileView.vue')
+const AddressesView = () => import('@/views/dashboard/AddressesView.vue')
 const WishlistView = () => import('@/views/dashboard/WishlistView.vue')
 const ShopView = () => import('@/views/shop/ShopView.vue')
 const ProductDetailView = () => import('@/views/shop/ProductDetailView.vue')
@@ -104,6 +107,18 @@ const router = createRouter({
       meta: { title: 'My Orders', requiresAuth: true },
     },
     {
+      path: '/dashboard/orders/:id',
+      name: 'order-details',
+      component: OrderDetailsView,
+      meta: { title: 'Order Details', requiresAuth: true },
+    },
+    {
+      path: '/dashboard/track-order/:id',
+      name: 'track-order',
+      component: TrackOrdersView,
+      meta: { title: 'Track Order' },
+    },
+    {
       path: '/dashboard/profile',
       name: 'profile',
       component: ProfileView,
@@ -114,6 +129,12 @@ const router = createRouter({
       name: 'wishlist',
       component: WishlistView,
       meta: { title: 'Wishlist', requiresAuth: true },
+    },
+    {
+      path: '/dashboard/addresses',
+      name: 'addresses',
+      component: AddressesView,
+      meta: { title: 'Addresses', requiresAuth: true },
     },
     {
       path: '/about',

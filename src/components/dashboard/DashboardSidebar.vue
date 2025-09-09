@@ -18,13 +18,13 @@
                         <span>Orders</span>
                     </RouterLink>
                 </li>
-                <li>
+                <!-- <li>
                     <RouterLink to="/dashboard/track-order"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 transition">
                         <font-awesome-icon icon="search" />
                         <span>Track your Order</span>
                     </RouterLink>
-                </li>
+                </li> -->
                 <li>
                     <RouterLink to="/dashboard/profile"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 transition"

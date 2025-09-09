@@ -87,19 +87,21 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, computed, reactive } from 'vue'
 import { useToast } from 'vue-toastification'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import { useAuthStore } from '@/stores/auth'
 
+
 const toast = useToast()
 const authStore = useAuthStore()
+const user = computed(() => authStore.user)
 
 const form = reactive({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'johndoe@gmail.com',
-    phone: '+234 XXX XXX XXXX'
+    firstName: user.value.first_name,
+    lastName: user.value.last_name,
+    email: user.value.email,
+    phone: user.value.phone
 })
 
 const passwordForm = reactive({
