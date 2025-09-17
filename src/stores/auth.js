@@ -3,6 +3,9 @@ import { ref, computed } from 'vue'
 import authService from '@/services/auth.service'
 import router from '@/router'
 import { useToast } from 'vue-toastification'
+import { useCartStore } from '@/stores/cart'
+
+
 
 export const useAuthStore = defineStore('auth', () => {
 
@@ -16,6 +19,7 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref(null)
   const loading = ref(false)
   const error = ref(null)
+  const cartStore = useCartStore()
 
   const isAuthenticated = computed(() => !!token.value)
   const userFullName = computed(() => {
@@ -51,6 +55,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = response.data.user
       localStorage.setItem('token', token.value)
       localStorage.setItem('user', JSON.stringify(user.value))
+      await cartStore.syncCart()
 
       return response
     } catch (err) {

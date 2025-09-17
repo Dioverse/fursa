@@ -273,13 +273,13 @@ onMounted(async () => {
     loading.value = true
     try {
         // Replace with actual API call
-        const resp = await axios.get('https://back.fursaenergy.com/public/api/products')
+        const resp = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/products`)
         const apiProducts = resp.data?.data?.products?.data ?? []
 
         products.value = apiProducts.map(p => ({
             id: p.id,
             name: p.name,
-            price: parseFloat(p.base_price),
+            price: parseFloat(p.price),
             sku: p.id.toString().padStart(6, "0"),
             rating: Math.floor(Math.random() * 2) + 4,
             image: p.images.length ? p.images[0].url : "../../public/images/mrs_motor_oil.png",

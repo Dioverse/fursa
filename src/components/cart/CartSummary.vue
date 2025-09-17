@@ -98,6 +98,7 @@ const proceedToCheckout = () => {
         toast.warning('Your cart is empty')
         return
     }
+
     router.push('/checkout')
 }
 </script>

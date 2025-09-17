@@ -9,4 +9,13 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://fursa.jarustraining.com.ng',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 })

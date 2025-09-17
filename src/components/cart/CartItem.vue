@@ -13,6 +13,7 @@
 
         <div class="text-lg font-semibold">
             ₦{{ item.price.toLocaleString() }}
+             <!-- ₦{{ (item.price)}}  -->
         </div>
 
         <div class="flex items-center gap-2">
@@ -62,6 +63,10 @@ const updateQuantity = (newQuantity) => {
 
 const removeItem = () => {
     cartStore.removeItem(props.item.id)
-    toast.success('Item removed from cart')
+    // toast.success('Item removed from cart')
 }
+
+
+
+
 </script>

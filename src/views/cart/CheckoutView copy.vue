@@ -86,9 +86,8 @@
   </DefaultLayout>
 </template>
 
-
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useToast } from 'vue-toastification'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import CTA from '@/components/common/CTA.vue'
@@ -97,110 +96,50 @@ import CartSummary from '@/components/cart/CartSummary.vue'
 import { useCartStore } from '@/stores/cart'
 import { useAuthStore } from '@/stores/auth'
 
+
 const toast = useToast()
 const cartStore = useCartStore()
 const authStore = useAuthStore()
 const user = computed(() => authStore.user)
 
+// State
 const paymentMethod = ref('card')
 const showAddressModal = ref(false)
-const hasAddress = ref(false)
-
-const availableGateway = ref(null) // 'paystack' | 'flutterwave' | null
-const paystackKey = ref(null)
-const flutterwaveKey = ref(null)
-
-const userCart = ref(null) // backend cart snapshot
+const hasAddress = ref(false) // later connect to user profile/address store
 
 // Cart values
+const cart = cartStore
+const discount = ref(0)
+
 const subtotal = computed(() => cartStore.totalPrice)
 const shipping = computed(() => subtotal.value > 50000 ? 0 : 2500)
-const tax = computed(() => subtotal.value * 0.075)
-const cartTotal = computed(() => subtotal.value + shipping.value + tax.value)
-
-// --- Fetch checkout/init ---
-onMounted(async () => {
-  try {
-    const token = localStorage.getItem('token')
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/checkout/init`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        },
-        body: {
-            'gateway': 'paystack'
-        }
-    })
-
-    if (!res.ok) throw new Error('Failed to initialize checkout')
-
-    const data = await res.json()
-    console.log('Checkout init data:', data)
-
-    // 1. Handle address
-    hasAddress.value = !!data.data.shipping_addresses
+const tax = computed(() => subtotal.value * 0.075) // 7.5% VAT
+const cartTotal = computed(() => subtotal.value + shipping.value + tax.value - discount.value)
 
 
-    // 2. Handle gateways
-    if (data.data.gateways?.paystack?.status === 'active') {
-
-      availableGateway.value = 'paystack'
-      paystackKey.value = data.data.gateways.paystack.public_key
-    
-    } else if (data.gateways?.flutterwave?.status === 'active') {
-
-      availableGateway.value = 'flutterwave'
-      flutterwaveKey.value = data.data.gateways.flutterwave.public_key
-
-    }
-
-    // 3. Handle user cart snapshot
-    userCart.value = data.data.user_cart
-
-    // --- Cart validation ---
-    // if (userCart.value?.originalAmount !== subtotal.value) {
-    //   toast.error('Cart subtotal mismatch. Please refresh your cart.')
-    // }
-
-    const localItems = JSON.stringify(cartStore.items)
-    const backendItems = JSON.stringify(userCart.value?.cart_items || [])
-
-    // if (localItems !== backendItems) {
-    //   toast.error('Cart items mismatch. Please refresh your cart.')
-    // }
-
-  } catch (err) {
-    console.error(err)
-    toast.error('Checkout initialization failed')
-  }
-})
-
-// --- Paystack ---
 const handlePaystackSuccess = async (response) => {
-    
   try {
     const token = localStorage.getItem('token')
     const orderPayload = {
       reference: response.reference,
-      items: cartStore.items,
-      total_amount: cartTotal.value,
+      items: cart.items,
+      total_amount: cartTotal.value
     }
 
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/checkout/paystack/${response.reference}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
-      body: JSON.stringify(orderPayload),
+      body: JSON.stringify(orderPayload)
     })
 
     if (!res.ok) throw new Error('Failed to save order')
 
     await res.json()
     toast.success('Payment successful & order saved!')
-    cartStore.clearCart()
+    cart.clearCart()
   } catch (err) {
     console.error(err)
     toast.error('Payment successful but failed to save order')
@@ -208,65 +147,29 @@ const handlePaystackSuccess = async (response) => {
 }
 
 
-// --- Paystack ---
+// Paystack Payment
 const payWithPaystack = () => {
-  if (!cartStore.items.length) {
+  if (!cart.items.length) {
     toast.error('Cart is empty!')
     return
   }
 
-  if (availableGateway.value !== 'paystack') {
-    toast.error('Paystack is not available')
-    return
-  }
-
   const handler = PaystackPop.setup({
-    key: paystackKey.value,
+    key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
     email: user.value.email || 'customer@example.com',
-    amount: parseInt(cartTotal.value) * 100,
+    amount: parseInt(cartTotal.value) * 100, // Paystack expects kobo
     currency: 'NGN',
     ref: '' + Math.floor(Math.random() * 1000000000 + 1),
 
     callback: function (response) {
       handlePaystackSuccess(response)
     },
+
     onClose: function () {
       toast.info('Transaction cancelled')
-    },
+    }
   })
 
   handler.openIframe()
-}
-
-// --- Flutterwave ---
-const payWithFlutterwave = () => {
-  if (!cartStore.items.length) {
-    toast.error('Cart is empty!')
-    return
-  }
-
-  if (availableGateway.value !== 'flutterwave') {
-    toast.error('Flutterwave is not available')
-    return
-  }
-
-  FlutterwaveCheckout({
-    public_key: flutterwaveKey.value,
-    tx_ref: Date.now(),
-    amount: cartTotal.value,
-    currency: 'NGN',
-    payment_options: 'card,ussd,banktransfer',
-    customer: {
-      email: user.value.email,
-      name: user.value.name,
-    },
-    callback: function (response) {
-      // handle Flutterwave success
-      console.log(response)
-    },
-    onclose: function () {
-      toast.info('Transaction cancelled')
-    },
-  })
 }
 </script>
