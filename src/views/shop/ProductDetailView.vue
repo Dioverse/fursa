@@ -79,9 +79,12 @@
                             <font-awesome-icon icon="shopping-cart" class="mr-2" />
                             Add to Cart
                         </button>
+
                         <button @click="saveWishlist" class="p-3 border rounded-lg hover:bg-gray-100">
-                            <font-awesome-icon icon="heart" />
+                            <font-awesome-icon :icon="['fas', wishlistStore.items.find(p => p.id === product.id) ? 'heart' : 'heart']"
+                            :class="wishlistStore.items.find(p => p.id === product.id) ? 'text-red-500' : 'text-gray-400'" />
                         </button>
+
                     </div>
 
                     <!-- Features -->
@@ -177,6 +180,7 @@ import { useToast } from 'vue-toastification'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import ProductGrid from '@/components/products/ProductGrid.vue'
 import { useCartStore } from '@/stores/cart'
+import { useWishlistStore } from '@/stores/wishlist'
 import Brochure from '@/components/common/Brochure.vue'
 import CTA from '@/components/common/CTA.vue'
 
@@ -186,23 +190,20 @@ const product = ref({})
 const relatedProducts = ref([])
 
 const cartStore = useCartStore()
+const wishlistStore  = useWishlistStore()
 const toast = useToast()
 
 const quantity = ref(1)
 const activeTab = ref('description')
+// const wishlist = ref(JSON.parse(localStorage.getItem('wishlist')) || [])
+const wishlist = ref(
+  Array.isArray(JSON.parse(localStorage.getItem('wishlist')))
+    ? JSON.parse(localStorage.getItem('wishlist'))
+    : []
+)
 
 const isInWishlist = ref(false)
 
-// ✅ Load wishlist and check if product exists
-const loadWishlist = () => {
-    const storedWishlist = localStorage.getItem('wishlist')
-    return storedWishlist ? JSON.parse(storedWishlist) : []
-}
-
-// ✅ Save wishlist
-const saveWishlist = (wishlist) => {
-    localStorage.setItem('wishlist', JSON.stringify(wishlist))
-}
 
 const tabs = [
     { id: 'description', label: 'Description' },
@@ -210,44 +211,47 @@ const tabs = [
     { id: 'reviews', label: 'Reviews' }
 ]
 
-// const product = ref({
-//     id: 1,
-//     name: 'MRS 5L Motorcycle engine oil',
-//     price: 145000,
-//     sku: 'A23WERT5',
-//     volume: '5 Litres',
-//     rating: 4,
-//     reviews: 23,
-//     description: 'Premium quality motorcycle engine oil designed for optimal performance.',
-//     fullDescription: 'MRS 5L Motorcycle engine oil is specially formulated to provide superior protection and performance for your motorcycle engine. With advanced additives and high-quality base oils, this product ensures smooth operation, reduced wear, and extended engine life.',
-//     specifications: [
-//         { name: 'Volume', value: '5 Litres' },
-//         { name: 'Viscosity', value: '20W-50' },
-//         { name: 'API Rating', value: 'SN/CF' },
-//         { name: 'Package Type', value: 'Plastic Container' }
-//     ],
-//     reviewsList: [
-//         { id: 1, author: 'John Doe', rating: 5, date: '2 days ago', comment: 'Excellent product! My engine runs smoother now.' },
-//         { id: 2, author: 'Jane Smith', rating: 4, date: '1 week ago', comment: 'Good quality oil, fair price.' }
-//     ]
-// })
 
 const addToCart = () => {
     cartStore.addItem({ ...product.value, quantity: quantity.value })
-    toast.success('Product added to cart!')
+    // toast.success('Product added to cart!')
     quantity.value = 1
 }
 
-// onMounted(() => {
-//     // Load product data based on route.params.id
-//     // Load related products
-//     relatedProducts.value = [
-//         { id: 2, name: 'MRS Premium Motor Oil', price: 125000, sku: 'B45TYU', rating: 5 },
-//         { id: 3, name: 'MRS Diesel Engine Oil', price: 165000, sku: 'C67HJK', rating: 4 },
-//         { id: 4, name: 'MRS Hydraulic Oil', price: 155000, sku: 'D89MNO', rating: 5 },
-//         { id: 5, name: 'MRS Gear Oil', price: 135000, sku: 'E12QWE', rating: 4 }
-//     ]
-// })
+const saveWishlist = () => {
+  const exists = wishlistStore.items.find(p => p.id === product.value.id)
+  if (exists) {
+    wishlistStore.remove(product.value.id)
+    toast.info(`${product.value.name} removed from wishlist`)
+  } else {
+    wishlistStore.add(product.value)
+    toast.success(`${product.value.name} added to wishlist`)
+  }
+}
+
+// ✅ Save wishlist
+// const saveWishlist = () => {
+
+//   if (!Array.isArray(wishlist.value)) {
+//     wishlist.value = []
+//   }
+
+//   const exists = wishlist.value.find(item => item.id === product.value.id)
+
+//   if (exists) {
+//     // Remove from wishlist
+//     wishlist.value = wishlist.value.filter(item => item.id !== product.value.id)
+//     toast.info(`${product.value.name} removed from wishlist`)
+//     isInWishlist.value = false
+//   } else {
+//     // Add to wishlist
+//     wishlist.value.push(product.value)
+//     toast.success(`${product.value.name} added to wishlist`)
+//     isInWishlist.value = true
+//   }
+
+//   localStorage.setItem('wishlist', JSON.stringify(wishlist.value))
+// }
 
 onMounted(async () => {
   const id = route.params.id
@@ -282,6 +286,12 @@ onMounted(async () => {
       })),
       reviewsList: [] // your API doesn’t send reviews yet
     }
+
+    if (!Array.isArray(wishlist.value)) {
+        wishlist.value = []
+    }
+
+    isInWishlist.value = wishlist.value.some(item => item.id === product.value.id)
 
     // Related products
     relatedProducts.value = json.related.map(p => ({

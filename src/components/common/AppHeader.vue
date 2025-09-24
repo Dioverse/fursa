@@ -25,7 +25,7 @@
                 <div class="flex items-center gap-2 md:gap-4">
                     <button class="bg-white px-3 py-2 rounded flex items-center gap-2 hover:bg-gray-100 transition">
                         <font-awesome-icon icon="heart" class="text-red-500" />
-                        <span class="hidden md:inline">{{ wishlistCount }}</span>
+                        <span class="hidden md:inline">{{ wishlistStore.count }}</span>
                     </button>
 
                     <RouterLink to="/cart"
@@ -130,17 +130,18 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
+import { useWishlistStore } from '@/stores/wishlist'
 import { useLanguageStore } from '@/stores/language'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
+const wishlistStore  = useWishlistStore()
 
 const searchQuery = ref('')
 const mobileMenuOpen = ref(false)
 const showLangMenu = ref(false)
 const languageStore = useLanguageStore()
-const wishlistCount = computed(() => 0) // Replace with actual wishlist store
 
 const handleSearch = () => {
   if (searchQuery.value.trim()) {

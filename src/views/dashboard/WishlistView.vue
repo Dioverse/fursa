@@ -5,7 +5,7 @@
 
             <!-- Empty State -->
             <div
-                v-if="wishlistItems.length === 0"
+                v-if="wishlistStore.items.length === 0"
                 class="bg-white rounded-lg shadow-md p-12 text-center"
             >
                 <font-awesome-icon icon="heart" size="3x" class="text-gray-400 mb-4" />
@@ -28,7 +28,7 @@
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
             >
                 <div
-                    v-for="item in wishlistItems"
+                    v-for="item in wishlistStore.items"
                     :key="item.id"
                     class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition"
                 >
@@ -46,9 +46,9 @@
 
                     <div class="p-4">
                         <h3 class="font-semibold mb-2">{{ item.name }}</h3>
-                        <p class="text-gray-600 text-sm mb-2">{{ item.volume }}</p>
+                        <p class="text-gray-600 text-sm mb-2">{{ item.short_description }}</p>
                         <p class="text-primary text-xl font-bold mb-4">
-                            ₦{{ item.price.toLocaleString() }}
+                            ₦{{ Number(item.price).toLocaleString() }}
                         </p>
 
                         <button
@@ -66,48 +66,25 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
 import { useToast } from 'vue-toastification'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import { useCartStore } from '@/stores/cart'
+import { useWishlistStore } from '@/stores/wishlist'
 
 const toast = useToast()
 const cartStore = useCartStore()
-const wishlistItems = ref([])
-
-// Load wishlist from localStorage
-onMounted(() => {
-    const storedWishlist = localStorage.getItem('wishlist')
-    wishlistItems.value = storedWishlist ? JSON.parse(storedWishlist) : []
-})
-
-// Save wishlist to localStorage
-const saveWishlist = () => {
-    localStorage.setItem('wishlist', JSON.stringify(wishlistItems.value))
-}
-
-// Add to wishlist
-const addToWishlist = (item) => {
-    if (!wishlistItems.value.find(i => i.id === item.id)) {
-        wishlistItems.value.push(item)
-        saveWishlist()
-        toast.success('Item added to wishlist')
-    } else {
-        toast.info('Item already in wishlist')
-    }
-}
+const wishlistStore = useWishlistStore()
 
 // Remove from wishlist
 const removeFromWishlist = (id) => {
-    wishlistItems.value = wishlistItems.value.filter(item => item.id !== id)
-    saveWishlist()
+    wishlistStore.remove(id)
     toast.success('Item removed from wishlist')
 }
 
 // Move to cart
 const moveToCart = (item) => {
     cartStore.addItem(item)
-    removeFromWishlist(item.id)
+    wishlistStore.remove(item.id)
     toast.success('Item moved to cart')
 }
 </script>
