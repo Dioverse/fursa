@@ -199,33 +199,34 @@ Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])-
 //     ]);
 // });
 
-// Route::get('/test-notification/{email}', function ($email) {
-//     Cache::forget("GeneralSetting");
+Route::get('/test-notification/{email}/{queue?}', function ($email, $queue) {
+    Illuminate\Support\Facades\Cache::forget("GeneralSetting");
 
-//     $user = new User();
-//     $user->first_name = 'ark';
-//     $user->last_name = "lar";
-//     $user->id = 1;
-//     $user->email = $email;
-//     $user->phone = "08152397199";
+    $user = new App\Models\User();
+    $user->first_name = 'Ark';
+    $user->last_name = "lar";
+    $user->id = 1;
+    $user->email = $email;
+    $user->phone = "08152397199";
 
-//     // $user = 1;
-//     notify(
-//         templateName: 'TEST_TEMPLATE',
-//         user: $user,
-//         shortCodes: [
-//             'subject' => 'System Update',
-//             'test_message' => 'Hello World',
-//             'user_name' => 'Quadri'
-//         ],
-//         sendVia: ['email'],
-//         queue: false
-//     );
+    // $user = 1;
+    notify(
+        templateName: 'TEST_TEMPLATE',
+        user: $user,
+        shortCodes: [
+            'subject' => 'System Update',
+            'test_message' => 'Hello World',
+            'user_name' => 'Quadri'
+        ],
+        sendVia: ['email'],
+        queue: $queue ? true : false
+    );
 
-//     return response()->json([
-//         'message' => 'Test notification queued successfully',
-//         'queue_connection' => config('queue.default'),
-//         'email' => $email
-//     ]);
-// });
+    return response()->json([
+        'message' => 'Test notification queued successfully',
+        'queue_connection' => config('queue.default'),
+        'email' => $email,
+        'queue' => $queue
+    ]);
+});
 
