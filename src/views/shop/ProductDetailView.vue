@@ -12,7 +12,7 @@
                         <RouterLink to="/shop" class="text-gray-700 hover:text-primary">Shop</RouterLink>
                     </li>
                     <li><font-awesome-icon icon="chevron-right" class="mx-2 text-gray-400" /></li>
-                    <li class="text-gray-500">{{ product.name }}</li>
+                    <li class="text-gray-500">{{ product?.name }}</li>
                 </ol>
             </nav>
 
@@ -46,7 +46,7 @@
                     </div>
 
                     <div class="text-3xl font-bold text-primary mb-6">
-                        ₦{{ product.price.toLocaleString() }}
+                        ₦{{ product?.price?.toLocaleString() }}
                     </div>
 
                     <div class="space-y-4 mb-6">
@@ -79,7 +79,7 @@
                             <font-awesome-icon icon="shopping-cart" class="mr-2" />
                             Add to Cart
                         </button>
-                        <button class="p-3 border rounded-lg hover:bg-gray-100">
+                        <button @click="saveWishlist" class="p-3 border rounded-lg hover:bg-gray-100">
                             <font-awesome-icon icon="heart" />
                         </button>
                     </div>
@@ -180,12 +180,29 @@ import { useCartStore } from '@/stores/cart'
 import Brochure from '@/components/common/Brochure.vue'
 import CTA from '@/components/common/CTA.vue'
 
+
 const route = useRoute()
+const product = ref({})
+const relatedProducts = ref([])
+
 const cartStore = useCartStore()
 const toast = useToast()
 
 const quantity = ref(1)
 const activeTab = ref('description')
+
+const isInWishlist = ref(false)
+
+// ✅ Load wishlist and check if product exists
+const loadWishlist = () => {
+    const storedWishlist = localStorage.getItem('wishlist')
+    return storedWishlist ? JSON.parse(storedWishlist) : []
+}
+
+// ✅ Save wishlist
+const saveWishlist = (wishlist) => {
+    localStorage.setItem('wishlist', JSON.stringify(wishlist))
+}
 
 const tabs = [
     { id: 'description', label: 'Description' },
@@ -193,29 +210,27 @@ const tabs = [
     { id: 'reviews', label: 'Reviews' }
 ]
 
-const product = ref({
-    id: 1,
-    name: 'MRS 5L Motorcycle engine oil',
-    price: 145000,
-    sku: 'A23WERT5',
-    volume: '5 Litres',
-    rating: 4,
-    reviews: 23,
-    description: 'Premium quality motorcycle engine oil designed for optimal performance.',
-    fullDescription: 'MRS 5L Motorcycle engine oil is specially formulated to provide superior protection and performance for your motorcycle engine. With advanced additives and high-quality base oils, this product ensures smooth operation, reduced wear, and extended engine life.',
-    specifications: [
-        { name: 'Volume', value: '5 Litres' },
-        { name: 'Viscosity', value: '20W-50' },
-        { name: 'API Rating', value: 'SN/CF' },
-        { name: 'Package Type', value: 'Plastic Container' }
-    ],
-    reviewsList: [
-        { id: 1, author: 'John Doe', rating: 5, date: '2 days ago', comment: 'Excellent product! My engine runs smoother now.' },
-        { id: 2, author: 'Jane Smith', rating: 4, date: '1 week ago', comment: 'Good quality oil, fair price.' }
-    ]
-})
-
-const relatedProducts = ref([])
+// const product = ref({
+//     id: 1,
+//     name: 'MRS 5L Motorcycle engine oil',
+//     price: 145000,
+//     sku: 'A23WERT5',
+//     volume: '5 Litres',
+//     rating: 4,
+//     reviews: 23,
+//     description: 'Premium quality motorcycle engine oil designed for optimal performance.',
+//     fullDescription: 'MRS 5L Motorcycle engine oil is specially formulated to provide superior protection and performance for your motorcycle engine. With advanced additives and high-quality base oils, this product ensures smooth operation, reduced wear, and extended engine life.',
+//     specifications: [
+//         { name: 'Volume', value: '5 Litres' },
+//         { name: 'Viscosity', value: '20W-50' },
+//         { name: 'API Rating', value: 'SN/CF' },
+//         { name: 'Package Type', value: 'Plastic Container' }
+//     ],
+//     reviewsList: [
+//         { id: 1, author: 'John Doe', rating: 5, date: '2 days ago', comment: 'Excellent product! My engine runs smoother now.' },
+//         { id: 2, author: 'Jane Smith', rating: 4, date: '1 week ago', comment: 'Good quality oil, fair price.' }
+//     ]
+// })
 
 const addToCart = () => {
     cartStore.addItem({ ...product.value, quantity: quantity.value })
@@ -223,14 +238,63 @@ const addToCart = () => {
     quantity.value = 1
 }
 
-onMounted(() => {
-    // Load product data based on route.params.id
-    // Load related products
-    relatedProducts.value = [
-        { id: 2, name: 'MRS Premium Motor Oil', price: 125000, sku: 'B45TYU', rating: 5 },
-        { id: 3, name: 'MRS Diesel Engine Oil', price: 165000, sku: 'C67HJK', rating: 4 },
-        { id: 4, name: 'MRS Hydraulic Oil', price: 155000, sku: 'D89MNO', rating: 5 },
-        { id: 5, name: 'MRS Gear Oil', price: 135000, sku: 'E12QWE', rating: 4 }
-    ]
+// onMounted(() => {
+//     // Load product data based on route.params.id
+//     // Load related products
+//     relatedProducts.value = [
+//         { id: 2, name: 'MRS Premium Motor Oil', price: 125000, sku: 'B45TYU', rating: 5 },
+//         { id: 3, name: 'MRS Diesel Engine Oil', price: 165000, sku: 'C67HJK', rating: 4 },
+//         { id: 4, name: 'MRS Hydraulic Oil', price: 155000, sku: 'D89MNO', rating: 5 },
+//         { id: 5, name: 'MRS Gear Oil', price: 135000, sku: 'E12QWE', rating: 4 }
+//     ]
+// })
+
+onMounted(async () => {
+  const id = route.params.id
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/products/${id}`)
+    const json = await res.json()
+
+    const apiProduct = json.data
+    
+
+    // 🔄 Map API to UI structure
+    product.value = {
+      id: apiProduct.id,
+      name: apiProduct.name,
+      price: parseFloat(apiProduct.price),
+      discountedPrice: parseFloat(apiProduct.discounted_price) || null,
+      sku: apiProduct.sku,
+      volume: apiProduct.volume || null, // not in API? keep fallback
+      rating: apiProduct.rating || 0,   // not in API yet? default 0
+      reviews: apiProduct.reviews || 0, // not in API yet? default 0
+      description: apiProduct.short_description,
+      fullDescription: apiProduct.description,
+      specifications: [
+        { name: 'Stock Quantity', value: apiProduct.stock_quantity },
+        { name: 'Low Stock Threshold', value: apiProduct.low_stock_threshold },
+        { name: 'Category', value: apiProduct.category?.name }
+      ],
+      images: apiProduct.images.map(img => ({
+        id: img.id,
+        url: `https://fursa.jarustraining.com.ng/storage/${img.path}`
+      })),
+      reviewsList: [] // your API doesn’t send reviews yet
+    }
+
+    // Related products
+    relatedProducts.value = json.related.map(p => ({
+      id: p.id,
+      name: p.name,
+      price: parseFloat(p.price),
+      description: p.short_description,
+      image: p.images[0]
+        ? `https://fursa.jarustraining.com.ng/storage/${p.images[0].path}`
+        : null
+    }))
+  } catch (error) {
+    console.error('Error fetching product:', error)
+  }
 })
 </script>

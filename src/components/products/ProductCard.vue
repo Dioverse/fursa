@@ -21,7 +21,9 @@
         </div>
 
         <div class="p-4">
-            <h3 class="font-semibold text-lg mb-1 line-clamp-2">{{ product.name }}</h3>
+            <h3 class="font-semibold text-lg mb-1 line-clamp-2">
+                <a :href="`/product/${product.id}`">{{ product.name }}</a>
+            </h3>
             <p class="text-gray-600 text-sm mb-2">{{ product.volume || '5 Litres' }}</p>
             <p class="text-gray-500 text-xs mb-3">SKU: {{ product.sku }}</p>
 
@@ -47,6 +49,7 @@ import { ref, onMounted } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useToast } from 'vue-toastification'
 import BaseButton from '@/components/common/BaseButton.vue'
+
 
 const props = defineProps({
     product: {
