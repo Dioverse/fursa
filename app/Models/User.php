@@ -99,4 +99,14 @@ public function shippingAddress()
     {
         return $this->hasManyThrough(CartItem::class, Cart::class);
     }
+
+    public function wishlist()
+    {
+        return $this->hasOne(Wishlist::class);
+    }
+
+    public function wishlistItems()
+    {
+        return $this->hasManyThrough(WishlistItem::class, Wishlist::class);
+    }
 }
