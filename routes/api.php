@@ -1,12 +1,11 @@
 <?php
 
-use App\Http\Controllers\Api\Admin\NotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\GeneralController;
-use App\Http\Controllers\Api\Admin\LanguageController;
+use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\Admin\PostController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Admin\AdminController;
@@ -15,17 +14,21 @@ use App\Http\Controllers\Api\Admin\ContentController;
 use App\Http\Controllers\Api\Admin\PaymentController;
 use App\Http\Controllers\Api\Admin\ProductController;
 use App\Http\Controllers\Api\Admin\CategoryController;
+use App\Http\Controllers\Api\Admin\LanguageController;
 use App\Http\Controllers\Api\Admin\SettingsController;
+use App\Http\Controllers\Api\Admin\ShippingController;
+use App\Http\Controllers\Api\Admin\InventoryController;
 use App\Http\Controllers\Api\ShippingAddressController;
 use App\Http\Controllers\Api\Admin\DistributorController;
+use App\Http\Controllers\Api\Admin\NotificationController;
 use App\Http\Controllers\Api\Admin\PostCategoryController;
 use App\Http\Controllers\Api\Distributor\ProfileController;
-use App\Http\Controllers\Api\LanguageController as DistCustLanguageController;
 use App\Http\Controllers\Api\PostController as DistCustPostController;
-use App\Http\Controllers\Api\CheckoutController;
+
 use App\Http\Controllers\Api\OrderController as DistCustOrderController;
 use App\Http\Controllers\PaymentController as DistCustPaymentController;
 use App\Http\Controllers\Api\ProductController as GeneralProductController;
+use App\Http\Controllers\Api\LanguageController as DistCustLanguageController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -52,7 +55,7 @@ Route::middleware(['auth:sanctum','ban'])->group(function () {
     Route::post('/email/verification-notification', [AuthController::class, 'verificationSend'])->middleware('throttle:6,1')->name('verification.send');
 });
 
-Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
+Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
 
     // Admin-only routes
@@ -72,13 +75,19 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
         Route::post('admin-products/{id}/images', [ProductController::class, 'addImages']);
         Route::delete('admin-products/{id}/images', [ProductController::class, 'deleteImages']);
         Route::post('admin-products-toggle/{id}', [ProductController::class, 'toggleStatus']);
-        Route::post('admin-products-bulk-action', [ProductController::class, 'bulkAction']);
-        Route::post('admin-products-stock/{id}', [ProductController::class, 'stock']);
+        Route::post('admin-products-bulk-action', [InventoryController::class, 'bulkAction']);
+        Route::post('admin-products-stock/{id}', [InventoryController::class, 'stock']);
+        Route::get('admin-inventory-logs', [InventoryController::class, 'index']);
+        Route::get('admin-inventory-logs/{id}', [InventoryController::class, 'show']);
         Route::get('distributors', [DistributorController::class, 'index']);
         Route::patch('distributors/{id}/status', [DistributorController::class, 'update']);
 
         Route::apiResource('admin-orders', OrderController::class)->only(['index', 'show']);
         Route::post('admin-orders/update-status/{id}', [OrderController::class, 'updateStatus']);
+
+        Route::apiResource('admin-shippings', ShippingController::class);
+        Route::post('admin-shippings-bulk-action', [ShippingController::class, 'bulkAction']);
+
 
         Route::apiResource('admin-payments', PaymentController::class)->only(['index', 'show']);
         Route::post('admin-payments/update-status/{id}', [PaymentController::class, 'updateStatus']);
@@ -89,16 +98,47 @@ Route::middleware(['auth:sanctum','ban', 'verified'])->group(function () {
         // Route::post('admin-language-update/{name}', [LanguageController::class, 'update']);
 
 
+
+
+        // Dashboard & Statistics
+        Route::get('admin/settings/notifications', [NotificationController::class, 'index']);
+        Route::get('admin/settings/notifications/statistics', [NotificationController::class, 'statistics']);
+        Route::get('admin/settings/notifications/queue-status', [NotificationController::class, 'queueStatus']);
+
+        // Logs Management
+        Route::get('admin/settings/notifications/logs', [NotificationController::class, 'logs']);
+        Route::delete('admin/settings/notifications/logs', [NotificationController::class, 'clearLogs']);
+        Route::get('admin/settings/notifications/logs/export', [NotificationController::class, 'exportLogs']);
+        Route::post('admin/settings/notifications/logs/retry', [NotificationController::class, 'retryFailed']);
+
+        // Templates
+        Route::get('admin/settings/notifications/templates', [NotificationController::class, 'templates']);
+        Route::post('admin/settings/notifications/templates', [NotificationController::class, 'templateCreate']);
+        Route::get('admin/settings/notifications/templates/{id}', [NotificationController::class, 'templateEdit']);
+        Route::put('admin/settings/notifications/templates/{id}', [NotificationController::class, 'templateUpdate']);
+        Route::delete('admin/settings/notifications/templates/{id}', [NotificationController::class, 'templateDelete']);
+        Route::post('admin/settings/notifications/templates/validate', [NotificationController::class, 'validateTemplate']);
+
+        // Testing & Sending
+        Route::post('admin/settings/notifications/test', [NotificationController::class, 'sendTest']);
+        Route::post('admin/settings/notifications/bulk', [NotificationController::class, 'sendBulk']);
+
+        // Configuration
         Route::get('admin/settings/notifications/email', [NotificationController::class, 'emailSetting']);
-        Route::post('admin/settings/notifications/email', [NotificationController::class, 'emailSettingUpdate']);
+        Route::put('admin/settings/notifications/email', [NotificationController::class, 'emailSettingUpdate']);
+        Route::post('admin/settings/notifications/email/test', [NotificationController::class, 'emailTest']);
+        Route::put('admin/settings/notifications/email/global', [NotificationController::class, 'globalEmailUpdate']);
 
+        Route::get('admin/settings/notifications/sms', [NotificationController::class, 'smsSetting']);
+        Route::put('admin/settings/notifications/sms', [NotificationController::class, 'smsSettingUpdate']);
+        Route::post('admin/settings/notifications/sms/test', [NotificationController::class, 'smsTest']);
+        Route::put('admin/settings/notifications/sms/global', [NotificationController::class, 'globalSmsUpdate']);
 
-
-
-
-        // Route::get('admin-settings', [SettingsController::class, 'index']);
-        // Route::get('admin-settings/{key}', [SettingsController::class, 'show']);
-        // Route::post('admin-settings', [SettingsController::class, 'update']);
+        Route::get('admin/settings/notifications/push', [NotificationController::class, 'pushSetting']);
+        Route::put('admin/settings/notifications/push', [NotificationController::class, 'pushSettingUpdate']);
+        Route::put('admin/settings/notifications/push/global', [NotificationController::class, 'globalPushUpdate']);
+        Route::post('admin/settings/notifications/push/config', [NotificationController::class, 'pushConfigUpload']);
+        Route::get('admin/settings/notifications/push/config', [NotificationController::class, 'pushConfigDownload']);
     });
 
     // Distributor-only routes
@@ -140,6 +180,57 @@ Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])-
 
 
 
-Route::prefix('test')->group(function () {
-    Route::post('email', [NotificationController::class, 'emailTest']);
+
+
+
+
+
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use App\Jobs\ProcessNotificationJob;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Cache;
+
+Route::get('/test-queue-setup', function () {
+    return response()->json([
+        'laravel_version' => app()->version(),
+        'queue_connection' => config('queue.default'),
+        'database_connection' => config('database.default'),
+        'jobs_table_exists' => Schema::hasTable('jobs'),
+        'failed_jobs_table_exists' => Schema::hasTable('failed_jobs'),
+        'notification_service_bound' => app()->bound('notify'),
+        'pending_jobs' => DB::table('jobs')->count(),
+        'failed_jobs' => DB::table('failed_jobs')->count(),
+    ]);
 });
+
+Route::get('/test-notification/{email}', function ($email) {
+    Cache::forget("GeneralSetting");
+
+    $user = new User();
+    $user->first_name = 'ark';
+    $user->last_name = "lar";
+    $user->id = 1;
+    $user->email = $email;
+    $user->phone = "08152397199";
+
+    // $user = 1;
+    notify(
+        templateName: 'TEST_TEMPLATE',
+        user: $user,
+        shortCodes: [
+            'subject' => 'System Update',
+            'test_message' => 'Hello World',
+            'user_name' => 'Quadri'
+        ],
+        sendVia: ['email'],
+        queue: false
+    );
+
+    return response()->json([
+        'message' => 'Test notification queued successfully',
+        'queue_connection' => config('queue.default'),
+        'email' => $email
+    ]);
+});
+

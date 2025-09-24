@@ -29,6 +29,14 @@ use Illuminate\Support\Facades\Schedule;
              '--timeout'        => 60,
             '--stop-when-empty' => true,
         ]);
+        $this->call('queue:work', [
+            '--queue'           => 'notifications',
+            '--tries'           => 3,
+            '--delay'           => 2,
+            '--memory'          => 128,
+            '--timeout'         => 60,
+            '--stop-when-empty' => true,
+        ]);
     })->describe('Start a queue worker safely with retries and no duplicates');
 
     // Schedule the command

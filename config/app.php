@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Facade;
+
 return [
 
     /*
@@ -53,6 +55,12 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+
+    "frontend_url" => env('FRONTEND_URL', 'https://fursaenergy.com/'),
+    
+    "frontend_verify_path" => env('FRONTEND_VERIFY_PATH', "verify-email"),
+
+    "frontend_forgot_pass" => env('FRONTEND_FORGOT_PASS', "reset-password"),
 
     /*
     |--------------------------------------------------------------------------
@@ -123,5 +131,10 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+    'aliases' => Facade::defaultAliases()->merge([
+        // Your custom aliases here
+        'Notify' => App\Facades\Notify::class,
+    ])->toArray(),
 
 ];

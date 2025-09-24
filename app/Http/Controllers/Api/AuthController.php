@@ -6,11 +6,13 @@ use Exception;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Distributor;
+use Illuminate\Support\Str;
 use App\Rules\PasswordCheck;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -176,28 +178,15 @@ class AuthController extends Controller
                     );
                     
                     $distributorData[$field] = $path;
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     // Log file upload error and throw exception to trigger rollback
                     Log::error("File upload failed for {$field}: " . $e->getMessage());
-                    throw new \Exception("Failed to upload {$field}. Please try again.");
+                    throw new Exception("Failed to upload {$field}. Please try again.");
                 }
             }
         }
         
         return $distributorData;
-    }
-    
-    private function sendRegistrationEmail(User $user): void
-    {
-        try {
-            Mail::to($user->email)->send(new RegistrationSuccessMail($user));
-        } catch (Exception $e) {
-            // Log email sending error but don't fail the registration
-            Log::error('Failed to send registration email: ' . $e->getMessage(), [
-                'user_id' => $user->id,
-                'email' => $user->email
-            ]);
-        }
     }
     
     private function cleanupUserFiles(int $userId): void
@@ -213,6 +202,29 @@ class AuthController extends Controller
             ]);
         }
     }
+
+    private function getVerificationLink($id, $email)
+    {
+        $hash = sha1($email);
+        $temporarySignedUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(10),
+            ['id' => $id,'hash' => $hash,]
+        );
+
+        // Extract query params (?expires=..&signature=..)
+        $queryParams = parse_url($temporarySignedUrl, PHP_URL_QUERY);
+        // Parse query string into array
+        parse_str($queryParams, $params);
+        // Add our required fields explicitly
+        $params['id']   = $id;
+        $params['hash'] = $hash;
+        // Build final query string
+        $finalQuery = http_build_query($params);
+        // Return full frontend verification link
+        return rtrim(config('app.frontend_url'), '/') . '/' . config('app.frontend_verify_path') . '?' . $finalQuery;
+    }
+
 
     public function register(Request $request): JsonResponse
     {
@@ -235,13 +247,14 @@ class AuthController extends Controller
                 
                 return $user;
             });
+
+            // event(new Registered($result));
+            $link = $this->getVerificationLink($result->id,$result->email);
+            notify('EMAIL_VERIFY', $result, [
+                "name" => $result->first_name, "verification_link" => $link
+            ], ['email'], false);
             
-            // Fire registration event
-            event(new Registered($result));
-            
-            // Generate API token
             $token = $result->createToken('api-token')->plainTextToken;
-            
             return response()->json([
                 'message' => 'Registration successful. Please check your email to verify your account.',
                 'user' => $result,
@@ -255,9 +268,7 @@ class AuthController extends Controller
                 'errors' => $e->errors(),
             ], 422);
         } catch (Exception $e) {
-            if ($userId && $role === 'distributor') {
-                $this->cleanupUserFiles($userId);
-            }
+            if ($userId && $role === 'distributor') { $this->cleanupUserFiles($userId); }
 
             // Log the error for debugging
             Log::error('Registration failed: ' . $e->getMessage(), [
@@ -321,7 +332,10 @@ class AuthController extends Controller
             $loginTime = Carbon::now()->toDateTimeString();
 
             // 7. Send email notification (still queued for performance)
-            Mail::to($user->email)->queue(new UserLoggedInNotification($user, $ipAddress, $loginTime));
+            // Mail::to($user->email)->queue(new UserLoggedInNotification($user, $ipAddress, $loginTime));
+            notify("LOGIN_ALERT", $user, [
+                "name" => $user->first_name, "ipAddress" => $ipAddress, "loginTime" => $loginTime
+            ], ["email"],false);
 
             // 8. Return success response with user data and the token
             return response()->json([
@@ -362,11 +376,13 @@ class AuthController extends Controller
 
         // Fulfill the verification (marks email as verified)
         $user->markEmailAsVerified();
-
         $token = $user->createToken('api-token')->plainTextToken;
 
         // Send a welcome/registration email
-        $this->sendRegistrationEmail($user);
+        // $this->sendRegistrationEmail($user);
+        $template = $user->role == 'distributor' ? "REGISTERED_DISTRIBUTOR" : "REGISTERED_USER";
+        notify($template, $user, ["name" => $user->first_name], ['email'], false);
+
         return response()->json([
             'message'     => 'Email verified successfully.',
             'user'        => $user,
@@ -383,28 +399,43 @@ class AuthController extends Controller
         }
 
         // Send the verification email notification
-        $request->user()->sendEmailVerificationNotification();
-
+        $user = $request->user();
+        $link = $this->getVerificationLink($user->id,$user->email);
+        notify('EMAIL_VERIFY', $user, [
+            "name" => $user->first_name, "verification_link" => $link
+        ], ['email'], false);
+            
         return response()->json(['message' => 'Verification link sent!']);
     }
 
-
-    public function forgotPassword(Request $request) {
+    public function forgotPassword(Request $request)
+    {
         $request->validate([
             'email' => 'required|email',
-        ], [
-            'email.required' => 'A valid email address is required.',
-            'email.email' => 'Provide a valid email address.',
         ]);
 
         try {
-            $response = Password::sendResetLink($request->only('email'));
+            $user = User::where('email', $request->email)->first();
+
+            if ($user) {
+                // Create password reset token
+                $token = Str::random(64);
+
+                DB::table('password_reset_tokens')->updateOrInsert(
+                    ['email' => $user->email],
+                    ['token' => Hash::make($token),'created_at' => Carbon::now()]
+                );
+
+                // Build reset link (frontend URL)
+                $resetLink = rtrim(config('app.frontend_url'), "/") . "/" . trim(config('app.frontend_forgot_pass'), "/") . "?token={$token}&email=" . urlencode($user->email);
+                notify('PASSWORD_RESET_LINK', $user, ['name' => $user->name, 'resetLink' => $resetLink],["email"], false);
+            }
+
             return response()->json([
-                "message" => "If an account with that email exists, we have sent a password reset link."
+                "message" => "If an account with that email exists, a password reset link is on its way."
             ], 200);
 
         } catch (Exception $ex) {
-            // 4. Catch any exceptions (like mailer issues) and return a generic error.
             return response()->json([
                 "message" => "An error occurred, please try again."
             ], 500);
@@ -433,10 +464,16 @@ class AuthController extends Controller
                 function ($user, $password) {
                     $user->forceFill([
                         'password' => Hash::make($password),
-                    // ])->save();
-                    ])->setRememberToken(null)->save();
+                    ]);
+
+                    // generate a new remember token
+                    $user->setRememberToken(Str::random(60));
+
+                    $user->save();
 
                     event(new PasswordReset($user));
+
+                    notify('PASSWORD_RESET_SUCCESS',$user,['name' => $user->name],["email"],false);
                 }
             );
 
@@ -488,51 +525,6 @@ class AuthController extends Controller
             ], 500);
         }
     }
-
-    // public function updatePassword(Request $request) {
-    //     $validatedData = Validator::make($request->all(['current_password','password','password_confirmation']), [
-    //         'current_password' => ['required', new PasswordCheck],
-    //         'password' => ['required', 'confirmed', PasswordRule::min(6)->mixedCase()->numbers()->symbols()],
-    //         'password_confirmation' => 'required|min:6|same:password',
-    //     ],[
-    //         'current_password.required' => 'Your current password is required!',
-    //         'password.required' => 'Password is required for security!',
-    //         'password.confirmed' => 'Password & confirm password should be same!',
-    //         'password.min' => 'Password should have at least 6 characters',
-    //         'password_confirmation.required' => 'Password confirmation is required!',
-    //         'password_confirmation.min' => 'Confirm password should have at least 6 characters!',
-    //         'password_confirmation.same' => 'Confirm password does not match password!',
-    //     ]);
-
-    //     if ($validatedData->fails()) {
-    //         return response()->json([
-    //             'status'=>'false',
-    //             'data' => [
-    //                 'message' => "Validation failed",
-    //                 'error' => $validatedData->errors()
-    //             ]
-    //         ],400);
-    //     }
-    
-    //     $user = Auth::user();
-    
-    //     if ($user->update(['password' => Hash::make($request->password)])) {
-    //         return response()->json([
-    //             'status'=> 'true',
-    //             'data' => [
-    //                 'message'=> 'Password reset successfully',
-    //                 'user'=> Auth::user()->refresh()
-    //             ]
-    //         ],200);
-    //     }
-
-    //     return response()->json([
-    //         'status'=> 'false',
-    //         'data' => [
-    //             'message'=> 'Password reset failed',
-    //         ]
-    //     ],400);
-    // }
 
     public function logout(Request $request): JsonResponse
     {

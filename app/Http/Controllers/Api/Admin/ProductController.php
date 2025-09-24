@@ -126,6 +126,7 @@ class ProductController extends Controller
             'images.*'            => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'stock_quantity'      => 'required|integer|min:0',
             'low_stock_threshold' => 'nullable|integer|min:0',
+            'sku'                 => 'required|unique:products,sku'
             // 'tags'                => 'nullable|array',
         ]);
 
@@ -142,6 +143,7 @@ class ProductController extends Controller
             'low_stock_threshold' => $request->low_stock_threshold,
             'tags'                => $request->tags,
             'slug'                => $slug,
+            'sku'                 => strtoupper(Str::slug($request->sku)),
         ]);
 
         // Handle multiple images
@@ -193,7 +195,7 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
 
-        if (! $product) {
+        if (!$product) {
             return response()->json(['message' => 'Product not found.'], 404);
         }
 
@@ -207,7 +209,7 @@ class ProductController extends Controller
             'distributor_price'   => 'sometimes|numeric|min:0',
             'stock_quantity'      => 'sometimes|integer|min:0',
             'low_stock_threshold' => 'nullable|integer|min:0',
-            // 'tags'                => 'nullable|array',
+            'sku'                 => 'required|unique:products,sku'
         ]);
 
         $data = $request->only([
@@ -216,6 +218,7 @@ class ProductController extends Controller
             'low_stock_threshold', 'tags',
         ]);
         $data['slug'] = Str::slug($request->name);
+        $data['sku'] = strtoupper(Str::slug($request->sku));
 
         $product->update($data);
 
@@ -330,49 +333,6 @@ class ProductController extends Controller
         ]);
     }
 
-    public function stock(Request $request, $id)
-    {
-        $product = Product::find($id);
-        if (! $product) {
-            return response()->json(['message' => 'Product not found.'], 404);
-        }
-
-        $validated = $request->validate([
-            'operation'           => 'required|integer|in:1,2,3',
-            'quantity'            => 'required|integer|min:0',
-            'update_threshold'    => 'nullable|boolean',
-            'low_stock_threshold' => 'nullable|integer|min:0',
-        ]);
-
-        switch ($validated['operation']) {
-            case 1: // Add
-                $product->stock_quantity += $validated['quantity'];
-                break;
-            case 2: // Subtract
-                $product->stock_quantity = max(0, $product->stock_quantity - $validated['quantity']);
-                break;
-            case 3: // Set
-                $product->stock_quantity = $validated['quantity'];
-                break;
-        }
-
-        // Update threshold if requested
-        if (! empty($validated['update_threshold']) && isset($validated['low_stock_threshold'])) {
-            $product->low_stock_threshold = $validated['low_stock_threshold'];
-        }
-
-        $product->save();
-
-        return response()->json([
-            'message' => 'Stock updated successfully.',
-            'data'    => [
-                'product_id'          => $id,
-                'stock_quantity'      => $product->stock_quantity,
-                'low_stock_threshold' => $product->low_stock_threshold,
-            ],
-        ]);
-    }
-
     public function toggleStatus($id)
     {
         $product = Product::where('id', $id)->first();
@@ -388,84 +348,5 @@ class ProductController extends Controller
         return response()->json([
             'message' => $product->status ? 'Product is now active' : 'Product is now inactive',
         ]);
-    }
-
-    public function bulkAction(Request $request)
-    {
-        $request->validate([
-            'action'                => 'required|string|in:activate,deactivate,feature,unfeature,delete,discount,undiscount',
-            'product_ids'           => 'required|array|min:1',
-            'product_ids.*'         => 'integer|exists:products,id',
-            'discount_type'         => 'required_if:action,discount|in:percentage,fixed',
-            'discount_value'        => 'required_if:action,discount|numeric|min:0',
-            'discount_start_date'   => 'required_if:action,discount|date',
-            'discount_end_date'     => 'required_if:action,discount|date|after_or_equal:discount_start_date',
-        ]);
-
-        $action     = $request->input('action');
-        $productIds = $request->input('product_ids');
-
-        try {
-            switch ($action) {
-                case 'activate':
-                    Product::whereIn('id', $productIds)->update(['status' => 1]);
-                    break;
-
-                case 'deactivate':
-                    Product::whereIn('id', $productIds)->update(['status' => 0]);
-                    break;
-
-                case 'feature':
-                    Product::whereIn('id', $productIds)->update(['is_featured' => 1]);
-                    break;
-
-                case 'unfeature':
-                    Product::whereIn('id', $productIds)->update(['is_featured' => 0]);
-                    break;
-
-                case 'delete':
-                    $products = Product::whereIn('id', $productIds)->get();
-
-                    foreach ($products as $product) {
-                        $inUse = $product->orderItems()->exists();
-
-                        if ($inUse) {
-                            $product->status = 0; // soft delete (inactive)
-                            $product->save();
-                        } else {
-                            $product->delete();
-                        }
-                    }
-                    break;
-                
-                case 'discount':
-                    foreach ($productIds as $id) {
-                        Discount::updateOrCreate(
-                            ['product_id' => $id],
-                            [
-                                'type'       => $request->discount_type,
-                                'value'      => $request->discount_value,
-                                'start_date' => $request->discount_start_date,
-                                'end_date'   => $request->discount_end_date,
-                            ]
-                        );
-                    }
-                    $action .= 'e';
-                    break;
-
-                case 'undiscount':
-                    Discount::whereIn('product_id', $productIds)->delete();
-                    $action .= 'e';
-                    break;
-            }
-
-            return response()->json([
-                'message' => "Select products $action" . 'd' . " successfully.",
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'API Error: ' . $e->getMessage(),
-            ]);
-        }
     }
 }

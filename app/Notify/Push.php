@@ -1,116 +1,108 @@
 <?php
 namespace App\Notify;
 
-use App\Notify\Notifiable;
-use App\Notify\NotifyProcess;
+use GuzzleHttp\Client;
 
-class Push extends NotifyProcess implements Notifiable
+class Push extends NotifyProcess
 {
-    /**
-     * Device Id of receiver
-     *
-     * @var array
-     */
-    public $deviceId;
-    public $redirectUrl;
-    public $pushImage;
-    /**
-     * Assign value to properties
-     *
-     * @return void
-     */
-    public function __construct()
+    protected function prevConfiguration()
     {
-        $this->statusField    = 'push_status';
-        $this->body           = 'push_body';
+        $this->body = 'push_body';
+        $this->statusField = 'push_status';
         $this->globalTemplate = 'push_template';
-        $this->notifyConfig   = 'firebase_config';
+        $this->notifyConfig = 'firebase_config';
+        $this->sentFrom = 'Firebase';
     }
-    public function redirectForApp($getTemplateName)
-    {
-        $screens = [
-            'TRX_HISTORY'      => ['BAL_ADD', 'BAL_SUB', 'REFERRAL_COMMISSION'],
-            'DEPOSIT_HISTORY'  => ['DEPOSIT_COMPLETE'],
-            'WITHDRAW_HISTORY' => ['WITHDRAW_APPROVE', 'WITHDRAW_REJECT', 'WITHDRAW_REQUEST'],
-            'TRADE_HISTORY'    => ['NEW_TRADE', 'TRADE_CANCELED', 'TRADE_REPORTED', 'TRADE_COMPLETED', 'TRADE_SETTLED', 'TRADE_CHAT'],
-            'HOME'             => ['KYC_REJECT', 'KYC_APPROVE'],
-        ];
-        foreach ($screens as $screen => $array) {
-            if (in_array($getTemplateName, $array)) {
-                return $screen;
-            }
-        }
-        return 'HOME';
-    }
-    /**
-     * Send notification
-     *
-     * @return void|array|bool
-     */
+
     public function send()
     {
-        //get message from parent
         $message = $this->getMessage();
-        if (gs('pn') && $message) {
-            try {
-                $credentialsFilePath = getFilePath('pushConfig') . '/push_config.json';
-                $client              = new \Google_Client();
-                $client->setAuthConfig($credentialsFilePath);
-                $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
-                $client->fetchAccessTokenWithAssertion();
-                $token        = $client->getAccessToken();
-                $access_token = $token['access_token'];
-                $headers      = [
-                    "Authorization: Bearer $access_token",
-                    'Content-Type: application/json',
-                ];
-                $data['notification'] = [
-                    'body'  => $message,
-                    'title' => $this->getTitle(),
-                    'image' => asset(getFilePath('push')) . '/' . $this->pushImage,
-                ];
-                $data['data'] = [
-                    'icon'             => siteFavicon(),
-                    'click_action'     => $this->redirectUrl,
-                    'app_click_action' => $this->redirectForApp($this->templateName),
-                ];
-                foreach ($this->toAddress as $toAddress) {
-                    $data['token']      = $toAddress;
-                    $payloadData['message'] = $data;
-                    $payload            = json_encode($payloadData);
-                    $ch                 = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/v1/projects/' . gs('firebase_config')->projectId . '/messages:send');
-                    curl_setopt($ch, CURLOPT_POST, true);
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-                    $res = curl_exec($ch);
-                    curl_close($ch);
-                    // dd($res);
-                }
-            } catch (\Exception $e) {
-                $this->createErrorLog($e->getMessage());
-                session()->flash('firebase_error', $e->getMessage());
-				return ['firebase_error'=>$e->getMessage()];
-            }
+
+        if (!$message) {
+            return false;
+        }
+
+        try {
+            return $this->sendViaFcm();
+        } catch (\Exception $e) {
+            $this->createErrorLog('Push notification failed: ' . $e->getMessage());
+            $this->createLog('push', false);
+            return false;
         }
     }
-    /**
-     * Configure some properties
-     *
-     * @return void
-     */
-    public function prevConfiguration()
+
+    public function sendBulk(array $notifications)
     {
-        if ($this->user) {
-            $this->deviceId     = $this->user->deviceTokens()->pluck('token')->toArray();
-            $this->receiverName = $this->user->fullname;
+        $config = json_decode(gs('firebase_config'), true);
+        $serverKey = $config['server_key'] ?? null;
+
+        if (!$serverKey) {
+            throw new \Exception('Firebase server key not configured');
         }
-        $this->toAddress = $this->deviceId;
+
+        $client = new Client([
+            'base_uri' => 'https://fcm.googleapis.com/fcm/',
+            'headers' => [
+                'Authorization' => 'key=' . $serverKey,
+                'Content-Type' => 'application/json',
+            ],
+        ]);
+
+        $messages = [];
+        foreach ($notifications as $n) {
+            $messages[] = [
+                'to' => $n['fcm_token'],
+                'notification' => [
+                    'title' => $n['subject'],
+                    'body' => strip_tags($n['message']),
+                    'image' => $n['image'] ?? null,
+                ],
+                'data' => $n['data'] ?? [],
+            ];
+        }
+
+        // Send in one batch
+        foreach ($messages as $msg) {
+            $client->post('send', ['json' => $msg]);
+        }
     }
-    private function getTitle()
+
+    private function sendViaFcm()
     {
-        return $this->replaceTemplateShortCode($this->template->push_title ?? gs('push_title'));
+        $config = json_decode(gs('firebase_config'), true);
+        $serverKey = $config['server_key'] ?? null;
+
+        if (!$serverKey) {
+            throw new \Exception('Firebase server key not configured');
+        }
+
+        $fcmToken = $this->user->fcm_token ?? null;
+        if (!$fcmToken) {
+            throw new \Exception('FCM token not found for user');
+        }
+
+        $client = new Client([
+            'base_uri' => 'https://fcm.googleapis.com/fcm/',
+            'headers' => [
+                'Authorization' => 'key=' . $serverKey,
+                'Content-Type' => 'application/json',
+            ],
+        ]);
+
+        $payload = [
+            'to' => $fcmToken,
+            'notification' => [
+                'title' => $this->subject,
+                'body' => strip_tags($this->finalMessage),
+                'image' => $this->pushImage,
+            ],
+            'data' => $this->shortCodes ?? [],
+        ];
+
+        $response = $client->post('send', ['json' => $payload]);
+
+        $success = $response->getStatusCode() === 200;
+        $this->createLog('push', $success);
+        return $success;
     }
 }

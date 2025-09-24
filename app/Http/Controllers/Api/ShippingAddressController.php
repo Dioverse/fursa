@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -28,27 +29,43 @@ class ShippingAddressController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'full_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
+            'full_name'        => 'required|string|max:255',
+            'phone'            => 'required|string|max:20',
             'address_line_one' => 'required|string|max:255',
             'address_line_two' => 'nullable|string|max:255',
-            'city' => 'required|string|max:100',
-            'state' => 'required|string|max:100',
+            'city'             => 'required|string|max:100',
+            'province'         => ['required', Rule::exists('shippings', 'province')->where('is_active', true)],
+            'state'       => 'required|string|max:100',
             'postal_code' => 'nullable|string|max:20',
-            'country' => 'nullable|string|max:100',
-            'is_default' => 'boolean',
+            'country'     => 'nullable|string|max:100',
+            'is_default'  => 'boolean',
         ]);
 
-        // If new address is set as default, reset others
-        if ($request->boolean('is_default')) {
-            Auth::user()->shippingAddress()->update(['is_default' => false]);
-        }
+        $user = Auth::user();
 
-        $address = Auth::user()->shippingAddress()->create($request->all());
+        $address = DB::transaction(function () use ($request, $user) {
+            $ships = $user->shippingAddress();
+
+            // If the new address is set as default, reset others
+            if ($request->boolean('is_default')) {
+                $ships->update(['is_default' => false]);
+            } else {
+                // Ensure at least one default exists
+                if ($ships->where('is_default', true)->doesntExist()) {
+                    $request->merge(['is_default' => true]);
+                }
+            }
+
+            return $ships->create($request->only([
+                'full_name','phone','address_line_one',
+                'address_line_two','province','city',
+                'state','postal_code','country','is_default'
+            ]));
+        });
 
         return response()->json([
             'message' => 'Shipping address created successfully.',
-            'data' => $address,
+            'data'    => $address,
         ], 201);
     }
 
@@ -73,32 +90,50 @@ class ShippingAddressController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $address = Auth::user()->shippingAddress()->where('id', $id)->first();
-        if (!$address) {
+        $user = Auth::user();
+        $address = $user->shippingAddress()->where('id', $id)->first();
+
+        if (! $address) {
             return response()->json(['message' => 'Shipping address not found'], 404);
         }
 
         $request->validate([
-            'full_name' => 'sometimes|string|max:255',
-            'phone' => 'sometimes|string|max:20',
+            'full_name'        => 'sometimes|string|max:255',
+            'phone'            => 'sometimes|string|max:20',
             'address_line_one' => 'sometimes|string|max:255',
             'address_line_two' => 'nullable|string|max:255',
-            'city' => 'sometimes|string|max:100',
-            'state' => 'sometimes|string|max:100',
-            'postal_code' => 'nullable|string|max:20',
-            'country' => 'nullable|string|max:100',
-            'is_default' => 'boolean',
+            'city'             => 'sometimes|string|max:100',
+            // 'province'         => 'sometimes|string|exists:shippings,province',
+            'province'         => ['required', Rule::exists('shippings', 'province')->where('is_active', true)],
+            'state'            => 'sometimes|string|max:100',
+            'postal_code'      => 'nullable|string|max:20',
+            'country'          => 'nullable|string|max:100',
+            'is_default'       => 'boolean',
         ]);
 
-        if ($request->boolean('is_default')) {
-            Auth::user()->shippingAddress()->update(['is_default' => false]);
-        }
+        DB::transaction(function () use ($request, $user, $address) {
+            $ships = $user->shippingAddress();
 
-        $address->update($request->all());
+            if ($request->boolean('is_default')) {
+                // Reset other defaults
+                $ships->update(['is_default' => false]);
+            } else {
+                // Ensure at least one default exists
+                if ($ships->where('is_default', true)->where('id', '!=', $address->id)->doesntExist()) {
+                    $request->merge(['is_default' => true]);
+                }
+            }
+
+            $address->update($request->only([
+                'full_name','phone','address_line_one',
+                'address_line_two','province','city',
+                'state','postal_code','country','is_default'
+            ]));
+        });
 
         return response()->json([
             'message' => 'Shipping address updated successfully.',
-            'data' => $address,
+            'data'    => $address->fresh(), // return updated values
         ]);
     }
 

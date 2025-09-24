@@ -7,9 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class NotificationLog extends Model
 {
-    use ApiQuery;
+    protected $fillable = [
+        'user_id', 'notification_type', 'sender', 'sent_from', 'sent_to',
+        'subject', 'image', 'message', 'status', 'error_message'
+    ];
 
-    public function user(){
-    	return $this->belongsTo(User::class);
+    protected $casts = [
+        'user_id' => 'integer',
+        'status' => 'boolean',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

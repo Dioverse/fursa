@@ -2,219 +2,116 @@
 
 namespace App\Notify;
 
-use App\Constants\Status;
-use App\Models\AdminNotification;
-use App\Models\NotificationLog;
+use App\Models\User;
 use App\Models\NotificationTemplate;
+use App\Models\NotificationLog;
+use App\Models\AdminNotification;
+use App\Constants\Status;
 
-class NotifyProcess{
-
-    /*
-    |--------------------------------------------------------------------------
-    | Notification Process
-    |--------------------------------------------------------------------------
-    |
-    | This is the core processor to send a notification to receiver. In this
-    | class, find the notification template from database and build the final
-    | message replacing the short codes and provide this to the method to send
-    | the notification. Also notification log and error is creating here.
-    |
-    */
-
-
-    /**
-    * Template name, which contain the short codes and messages
-    *
-    * @var string
-    */
-	public $templateName;
-
-
-    /**
-    * Short Codes, which will be replaced
-    *
-    * @var array
-    */
-    public $shortCodes;
-
-
-    /**
-    * Instance of user, who will get the notification
-    *
-    * @var object
-    */
+abstract class NotifyProcess
+{
+    public $templateName;
+    public $shortCodes = [];
     public $user;
-
-
-    /**
-    * Status field name in database of notification template
-    *
-    * @var string
-    */
-	protected $statusField;
-
-
-    /**
-    * Global template field name in database of notification method
-    *
-    * @var string
-    */
-	protected $globalTemplate;
-
-
-    /**
-    * Message body field name in database of notification
-    *
-    * @var string
-    */
-	protected $body;
-
-
-    /**
-    * Notification template instance
-    *
-    * @var object
-    */
-	public $template;
-
-
-    /**
-    * Message, if the email template doesn't exists
-    *
-    * @var string|null
-    */
-	public $message;
-
-
-    /**
-    * Notification log will be created or not
-    *
-    * @var bool
-    */
-	public $createLog;
-
-
-    /**
-    * Method configuration field name in database
-    *
-    * @var string
-    */
-	public $notifyConfig;
-
-
-    /**
-    * Subject of notification
-    *
-    * @var string
-    */
+    public $template;
+    public $message;
+    public $createLog = true;
+    public $userColumn = 'user_id';
     public $subject;
+    public $receiverName;
+    public $toAddress;
+    public $pushImage;
 
-
-    /**
-    * Name of receiver
-    *
-    * @var string
-    */
-	public $receiverName;
-
-
-    /**
-    * The relational field name like user_id, agent_id
-    *
-    * @var string
-    */
-	public $userColumn;
-
-
-    /**
-    * Address of receiver, like email, mobile number etc
-    *
-    * @var string
-    */
-    protected $toAddress;
-
-    /**
-    * Final message of notification
-    *
-    * @var string
-    */
+    protected $statusField;
+    protected $globalTemplate;
+    protected $body;
+    protected $notifyConfig;
     protected $finalMessage;
-
-    /**
-    * Notification sent from
-    *
-    * @var string
-    */
     protected $sentFrom = null;
 
+    abstract public function send();
+    abstract protected function prevConfiguration();
+
     /**
-    * Get the final message after replacing the short code.
-    *
-    * Also custom message will be return from here if notification template doesn't exist.
-    *
-    * @return string
-    */
-	protected function getMessage(){
+     * If $this->user is numeric, resolve to actual User instance
+     */
+    protected function resolveUser()
+    {
+        if (is_numeric($this->user)) {
+            $this->user = User::find($this->user);
+        }
+
+        if ($this->user) {
+            $this->receiverName = $this->user->name ?? $this->user->first_name ?? 'User';
+            $this->toAddress = $this->user->email ?? $this->user->phone ?? null;
+        }
+    }
+
+    /**
+     * Main entry for preparing the notification message
+     */
+    protected function getMessage()
+    {
+        $this->resolveUser();
         $this->prevConfiguration();
 
-		$body = $this->body;
-		$user = $this->user;
-		$globalTemplate = $this->globalTemplate;
+        $template = NotificationTemplate::where('act', $this->templateName)
+            ->where($this->statusField, Status::ENABLE)
+            ->first();
 
-        //finding the notification template
-		$template = NotificationTemplate::where('act', $this->templateName)->where($this->statusField, Status::ENABLE)->first();
-		$this->template = $template;
+        $this->template = $template;
 
-        //Getting the notification message from database if use and template exist
-        //If not exist, get the message which have sent via method
-		if ($user && $template) {
-		    $message = $this->replaceShortCode($user->fullname,$user->username,gs($globalTemplate),$template->$body);
-		    if (empty($message)) {
-		        $message = $template->$body;
-		    }
-		}else{
-			$message = $this->replaceShortCode($this->receiverName,$this->toAddress,gs($globalTemplate),$this->message);
-		}
+        if (!$template && $this->templateName) {
+            return false;
+        }
 
-        //replace the all short code of template
-	    if ($this->shortCodes) {
-            $message = $this->replaceTemplateShortCode($message);
-	    }
-
-        //Check email enable
-        if (!$this->template && $this->templateName) return false;
-
-        //set subject to property
+        // Get subject first
         $this->getSubject();
 
+        // Pick correct body field (email_body, sms_body, push_body, etc)
+        $body = $template ? $template->{$this->body} : $this->message;
+
+        // Wrap inside global template
+        $message = $this->replaceShortCode(
+            gs($this->globalTemplate),
+            $body
+        );
+
+        // Replace template shortcodes like {{user_name}}, {{test_message}}, etc.
+        if ($this->shortCodes) {
+            $message = $this->replaceTemplateShortCode($message);
+        }
 
         $this->finalMessage = $message;
-
-        //return the final message
-	    return $message;
-	}
+        return $message;
+    }
 
     /**
-    * Replace the short code of global template
-    *
-    * @return string
-    */
-	protected function replaceShortCode($name,$username,$template,$body){
-	    if(is_array($username)){
-	        $username = implode(',',$username);
-	    }
-		$message = str_replace("{{fullname}}", $name, $template);
-	    $message = str_replace("{{username}}", $username, $message);
-	    $message = str_replace("{{message}}", $body, $message);
-	    return $message;
-	}
+     * Replace placeholders in the global template
+     */
+    protected function replaceShortCode($template, $body)
+    {
+        $message = $template;
+
+        // Global placeholders
+        $message = str_replace("{{body}}", $body, $message);
+        $message = str_replace("{{subject}}", $this->subject ?? '', $message);
+        $message = str_replace("{{logo}}", asset('images/logo.png'), $message);
+        $message = str_replace("{{app_name}}", config('app.name'), $message);
+        $message = str_replace("{{year}}", date('Y'), $message);
+
+        // User-related placeholders
+        $message = str_replace("{{name}}", $this->receiverName ?? '', $message);
+        $message = str_replace("{{toAddress}}", $this->toAddress ?? '', $message);
+
+        return $message;
+    }
 
     /**
-    * Replace the short code of the template
-    *
-    * @return string
-    */
-    protected function replaceTemplateShortCode($content){
+     * Replace custom template shortcodes
+     */
+    protected function replaceTemplateShortCode($content)
+    {
         foreach ($this->shortCodes as $code => $value) {
             $content = str_replace('{{' . $code . '}}', $value, $content);
         }
@@ -222,59 +119,55 @@ class NotifyProcess{
     }
 
     /**
-    * Set the subject with replaced the short codes
-    *
-    * @return void
-    */
-	protected function getSubject(){
-		if ($this->template) {
-			$subject = $this->template->subject;
-			if ($this->shortCodes) {
-			    foreach ($this->shortCodes as $code => $value) {
-			        $subject = str_replace('{{' . $code . '}}', $value, $subject);
-			    }
-		    }
-			$this->subject = $subject;
-		}
-	}
+     * Build subject with shortcodes replaced
+     */
+    protected function getSubject()
+    {
+        if ($this->template) {
+            $subject = $this->template->subject ?? '';
 
-    /**
-    * Create the notification log
-    *
-    * @return void
-    */
-	public function createErrorLog($message){
-		$adminNotification = new AdminNotification();
-        $adminNotification->user_id = 0;
-        $adminNotification->title = $message;
-        $adminNotification->click_url = '#';
-        $adminNotification->save();
-	}
-
-
-    /**
-    * Create the error log
-    *
-    * @return void
-    */
-	public function createLog($type){
-        $userColumn = $this->userColumn;
-		if ($this->user && $this->createLog) {
-			$notifyConfig = $this->notifyConfig;
-			$config = gs($notifyConfig);
-			$notificationLog = new NotificationLog();
-            if (@$this->user->id) {
-                $notificationLog->$userColumn = $this->user->id;
+            if ($this->shortCodes) {
+                foreach ($this->shortCodes as $code => $value) {
+                    $subject = str_replace('{{' . $code . '}}', $value, $subject);
+                }
             }
-		    $notificationLog->notification_type = $type;
-		    $notificationLog->sender = @$config->name ?? 'firebase';
-		    $notificationLog->sent_from = $this->sentFrom;
-		    $notificationLog->sent_to = $type == 'push' ? 'Firebase Token' : $this->toAddress;
-		    $notificationLog->subject = $this->subject;
-		    $notificationLog->image = @$this->pushImage ?? null;
-		    $notificationLog->message = $type == 'email' ? $this->finalMessage : strip_tags($this->finalMessage);
-		    $notificationLog->save();
-		}
-	}
 
+            $this->subject = $subject;
+        }
+    }
+
+    /**
+     * Create admin error log
+     */
+    public function createErrorLog($message)
+    {
+        AdminNotification::create([
+            'user_id' => 0,
+            'title' => $message,
+            'click_url' => '#'
+        ]);
+    }
+
+    /**
+     * Create notification log entry
+     */
+    public function createLog($type, $status = true, $errorMessage = null)
+    {
+        if ($this->user && $this->createLog) {
+            $config = gs($this->notifyConfig);
+
+            NotificationLog::create([
+                $this->userColumn => $this->user->id ?? null,
+                'notification_type' => $type,
+                'sender' => $config['name'] ?? 'system',
+                'sent_from' => $this->sentFrom,
+                'sent_to' => $type === 'push' ? 'Firebase Token' : $this->toAddress,
+                'subject' => $this->subject,
+                'image' => $this->pushImage ?? null,
+                'message' => $type === 'email' ? $this->finalMessage : strip_tags($this->finalMessage),
+                'status' => $status,
+                'error_message' => $errorMessage
+            ]);
+        }
+    }
 }

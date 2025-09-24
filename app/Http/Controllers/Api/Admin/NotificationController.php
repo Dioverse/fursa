@@ -1,12 +1,13 @@
 <?php
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Notify\Sms;
 use App\Constants\Status;
+use Illuminate\Http\Request;
+use App\Rules\FileTypeValidate;
 use App\Http\Controllers\Controller;
 use App\Models\NotificationTemplate;
-use App\Notify\Sms;
-use App\Rules\FileTypeValidate;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class NotificationController extends Controller
 {
@@ -23,6 +24,7 @@ class NotificationController extends Controller
         $general->email_from_name = $request->email_from_name;
         $general->email_template  = $request->email_template;
         $general->save();
+        Cache::forget('GeneralSetting');
 
         return response()->json([
             'status'  => 'success',
@@ -42,6 +44,7 @@ class NotificationController extends Controller
         $general->sms_from     = $request->sms_from;
         $general->sms_template = $request->sms_template;
         $general->save();
+        Cache::forget('GeneralSetting');
 
         return response()->json([
             'status'  => 'success',
@@ -61,6 +64,7 @@ class NotificationController extends Controller
         $general->push_template = $request->push_template;
         $general->push_title    = $request->push_title;
         $general->save();
+        Cache::forget('GeneralSetting');
 
         return response()->json([
             'status'  => 'success',
@@ -181,6 +185,7 @@ class NotificationController extends Controller
         $general              = gs();
         $general->mail_config = $data;
         $general->save();
+        Cache::forget('GeneralSetting');
 
         return response()->json([
             'status'  => 'success',
@@ -203,11 +208,10 @@ class NotificationController extends Controller
         
         if (gs('en')) {
             $user = [
-                'username' => $request->email,
                 'email'    => $request->email,
-                'fullname' => $receiverName,
+                'name'     => $receiverName,
             ];
-            $ntfy = notify($user, 'DEFAULT', [
+            notify($user, 'DEFAULT', [
                 'subject' => $subject,
                 'message' => $message,
             ], ['email'], false);
@@ -290,6 +294,7 @@ class NotificationController extends Controller
         $general             = gs();
         $general->sms_config = $data;
         $general->save();
+        Cache::forget('GeneralSetting');
 
         return response()->json([
             'status'  => 'success',
@@ -303,7 +308,7 @@ class NotificationController extends Controller
      */
     public function smsTest(Request $request)
     {
-        $request->validate(['mobile' => 'required']);
+        $request->validate(['phone' => 'required']);
 
         if (! gs('sn')) {
             return response()->json([
@@ -314,7 +319,7 @@ class NotificationController extends Controller
 
         try {
             $sendSms               = new Sms;
-            $sendSms->mobile       = $request->mobile;
+            $sendSms->phone       = $request->phone;
             $sendSms->receiverName = ' ';
             $sendSms->message      = 'Your SMS notification setting is configured successfully for ' . gs('site_name');
             $sendSms->subject      = ' ';
@@ -380,6 +385,7 @@ class NotificationController extends Controller
         $general                  = gs();
         $general->firebase_config = $data;
         $general->save();
+        Cache::forget('GeneralSetting');
 
         try {
             $jsPath = 'assets/firebase/configs.js';

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
+use App\Services\OrderService;
 use App\Mail\OrderStatusChange;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -88,7 +90,7 @@ class OrderController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $order = Order::with(['user:id,first_name,last_name,email,role','shippingAddress'])->find($id);
+        $order = Order::with(['user:id,first_name,last_name,email,role','statusHstry:id,order_id,status,changed_by,created_at'])->find($id);
 
         if (!$order) {
             return response()->json(['message' => "Order not found."], 404);
@@ -103,29 +105,72 @@ class OrderController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function updateStatus(Request $request, string $id)
-    {
-        $order = Order::find($id);
+    // public function updateStatus(Request $request, string $id)
+    // {
+    //     $order = Order::find($id);
 
-        if (!$order) {
-            return response()->json(['message' => 'Order not found.'], 404);
-        }
+    //     if (!$order) {
+    //         return response()->json(['message' => 'Order not found.'], 404);
+    //     }
 
-        $request->validate([
-            'status' => ['required', 'string', "in:shipped,out for delivery,delivered"]
-        ]);
+    //     $request->validate([
+    //         'status' => ['required', 'string', "in:shipped,out for delivery,delivered"]
+    //     ]);
 
-        $status = $request->status;
+    //     $status = $request->status;
 
-        $order->fill(['status'=>$status]);
+    //     $order->fill(['status'=>$status]);
         
-        Mail::to($order->user->email)->queue(new OrderStatusChange($order, $status));   
-        $order->save();
-        return response()->json([
-            'message' => 'Order updated successfully.',
-            'data' => $order,
-        ]);
-    }
+    //     Mail::to($order->user->email)->queue(new OrderStatusChange($order, $status));   
+    //     $order->save();
+    //     return response()->json([
+    //         'message' => 'Order updated successfully.',
+    //         'data' => $order,
+    //     ]);
+    // }
+
+        public function updateStatus(Request $request, string $id, OrderService $orderService)
+        {
+            $order = Order::find($id);
+
+            if (!$order) {
+                return response()->json(['message' => 'Order not found.'], 404);
+            }
+
+            // Only allow these statuses from admin side
+            $request->validate([
+                'status' => ['required','string',"in:processing,shipping,shipped,out for delivery,delivered,cancelled,failed"],
+                'notify' => ['required','boolean']
+            ]);
+
+            $status = $request->status;
+            try {
+                DB::beginTransaction();
+
+                $result = $orderService->updateStatus($order, $status, $request->notify);
+
+                if ($result['error']) {
+                    DB::rollBack();
+                    return response()->json($result, 422);
+                }
+
+                DB::commit();
+
+                return response()->json([
+                    'message' => $result['message'],
+                    'data'    => $order->fresh(), // return updated order
+                ]);
+
+            } catch (\Throwable $e) {
+                DB::rollBack();
+
+                return response()->json([
+                    'error'   => true,
+                    'message' => 'Failed to update order status.',
+                    'debug'   => app()->environment('local') ? $e->getMessage() : null,
+                ], 500);
+            }
+        }
 
     /**
      * Remove the specified resource from storage.

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('phone');
+            $table->string('phone')->unique();
             $table->string('password');
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->enum('role', ['admin', 'distributor', 'customer'])->default('customer');

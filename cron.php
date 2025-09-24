@@ -7,6 +7,6 @@ require 'vendor/autoload.php';
 $app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 
-$kernel->call('queue:restart');
+// $kernel->call('queue:restart');
 $kernel->call('cache:clear');
-// print($kernel->call('storage:link'));
+print($kernel->call('storage:link'));

@@ -43,26 +43,30 @@ class CartController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity'   => 'required|integer|min:1',
+            'cart' => 'required|array',
+            'cart.*.product_id' => 'required|exists:products,id',
+            'cart.*.quantity'   => 'required|integer|min:1',
         ]);
 
         $user = Auth::user();
+
         // Ensure the user has a cart (or create it)
         $cart = $user->cart()->firstOrCreate([
             'user_id' => $user->id,
         ]);
 
-        // Add item (or update if product already exists in cart)
-        $cartItem = $cart->cartItems()->updateOrCreate(
-            ['product_id' => $validated['product_id']],
-            ['quantity' => DB::raw("quantity + {$validated['quantity']}")]
-        );
+        foreach ($validated['cart'] as $item) {
+            $cart->cartItems()->updateOrCreate(
+                ['product_id' => $item['product_id']],
+                ['quantity'   => DB::raw("quantity + {$item['quantity']}")]
+            );
+        }
 
         return response()->json([
-            'message'   => 'Item added to cart successfully',
+            'message' => 'Items added to cart successfully',
         ], 201);
     }
+
 
     public function unSetItem(Request $request)
     {

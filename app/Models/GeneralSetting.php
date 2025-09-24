@@ -8,29 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class GeneralSetting extends Model
 {
     protected $table = 'general_settings';
-    public $timestamps = false;
 
-    protected $casts = [
-        'mail_config' => 'object',
-        'sms_config'            => 'object',
-        'global_shortcodes'     => 'object',
-        'socialite_credentials' => 'object',
-        'firebase_config'       => 'object',
+    protected $fillable = [
+        'site_name', 'email_from', 'email_from_name', 'email_template',
+        'sms_template', 'sms_from', 'push_title', 'push_template',
+        'mail_config', 'sms_config', 'firebase_config', 'en', 'sn', 'pn'
     ];
 
-    protected $hidden = ['email_template', 'mail_config', 'sms_config', 'system_info'];
-
-    public function scopeSiteName($query, $pageTitle)
-    {
-        $pageTitle = empty($pageTitle) ? '' : ' - ' . $pageTitle;
-        return $this->site_name . $pageTitle;
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-        static::saved(function () {
-            Cache::forget('GeneralSetting');
-        });
-    }
+    protected $casts = [
+        'mail_config' => 'array',
+        'sms_config' => 'array',
+        'firebase_config' => 'array',
+        'en' => 'boolean',
+        'sn' => 'boolean',
+        'pn' => 'boolean',
+    ];
 }

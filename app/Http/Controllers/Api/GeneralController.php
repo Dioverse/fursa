@@ -42,23 +42,44 @@ class GeneralController extends Controller
 
     protected function personalizedRecommendations($user)
     {
+        // 1. Get purchased subcategories
         $purchasedProductIds = DB::table('order_items')
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
             ->where('orders.user_id', $user->id)
             ->pluck('order_items.product_id');
 
         if ($purchasedProductIds->isEmpty()) {
-            // fallback: random recommendations
-            $recommendations = Product::class;
-        } else {
-            // 2. Find categories of purchased products
-            $categoryIds = Product::whereIn('id', $purchasedProductIds)->pluck('category_id');
-
-            $recommendations = Product::whereIn('category_id', $categoryIds);
+            // fallback: random products
+            return Product::with(['category:id,name,slug','images:id,product_id,path'])
+                ->inRandomOrder()
+                ->take(5)
+                ->get(['id','name','category_id','sku','slug','short_description',
+                    'stock_quantity','low_stock_threshold','is_featured',
+                    'distributor_price','base_price']);
         }
 
-        return $recommendations->with(['category:id,name,slug','images:id,product_id,path'])
-            ->inRandomOrder()->take(5)
-            ->get(['id','name','category_id','slug','short_description','stock_quantity','low_stock_threshold','is_featured','distributor_price','base_price']);
+        $subCategoryIds = Product::whereIn('id', $purchasedProductIds)
+            ->pluck('category_id');
+
+        // 2. Get parent categories of those subcategories
+        $parentCategoryIds = DB::table('categories')
+            ->whereIn('id', $subCategoryIds)
+            ->pluck('parent_id')
+            ->filter(); // removes nulls just in case
+
+        // 3. Get all subcategories under those parent categories
+        $relatedSubCategories = DB::table('categories')
+            ->whereIn('parent_id', $parentCategoryIds)
+            ->pluck('id');
+
+        // 4. Recommend products from those related subcategories
+        return Product::whereIn('category_id', $relatedSubCategories)
+            ->with(['category:id,name,slug','images:id,product_id,path'])
+            ->inRandomOrder()
+            ->take(5)
+            ->get(['id','name','category_id','sku','slug','short_description',
+                'stock_quantity','low_stock_threshold','is_featured',
+                'distributor_price','base_price']);
     }
+
 }

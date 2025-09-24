@@ -26,7 +26,7 @@ class PaystackGateway implements PaymentGateway
 
             return [
                 'success'   => ($response['status'] ?? false),
-                'status' => match($response['data']['status'] ?? null) {
+                'status'    => match($response['data']['status'] ?? null) {
                     'success'   => 'successful',
                     'failed'    => 'failed',
                     'abandoned' => 'cancelled',
@@ -34,7 +34,7 @@ class PaystackGateway implements PaymentGateway
                 },
                 'message'   => $response['message'] ?? 'Unknown status',
                 'reference' => $response['data']['reference'] ?? null,
-                'amount'    => $response['data']['amount'] ?? null,
+                'amount'    => ($response['data']['amount'] / 100) ?? null,
                 'currency'  => $response['data']['currency'] ?? null,
                 'gateway'   => 'paystack',
                 'method'    => $response['data']['channel'],

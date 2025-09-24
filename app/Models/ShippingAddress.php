@@ -20,6 +20,7 @@ class ShippingAddress extends Model implements AuditableContract
         'phone',
         'address_line_one',
         'address_line_two',
+        'province',
         'city',
         'state',
         'postal_code',

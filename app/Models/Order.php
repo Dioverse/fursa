@@ -18,8 +18,11 @@ class Order extends Model implements AuditableContract
         'user_id',
         'shipping_address',
         'order_id',
+        'trans_ref',
         'total_amount',
-        'status'
+        'status',
+        'shipping_cost',
+        'delivery_days',
     ];
 
     protected $casts = [
@@ -30,10 +33,14 @@ class Order extends Model implements AuditableContract
         return $this->hasMany(OrderItem::class);
     }
 
-    public function shippingAddress()
-    {
-        return $this->belongsTo(ShippingAddress::class, 'shipping_address_id');
+    public function statusHstry() {
+        return $this->hasMany(OrderStatusHistory::class);
     }
+
+    // public function shippingAddress()
+    // {
+    //     return $this->belongsTo(ShippingAddress::class, 'shipping_address_id');
+    // }
     
     public function user() {
         return $this->belongsTo(User::class);

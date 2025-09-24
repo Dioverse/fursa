@@ -1,51 +1,24 @@
 <?php
 
-use App\Notify\Notify;
 use App\Lib\FileManager;
 use App\Models\GeneralSetting;
+use App\Jobs\ProcessNotificationJob;
 use Illuminate\Support\Facades\Cache;
 
 
-function gs($key = null)
-{
-    $general = Cache::get('GeneralSetting');
-    if (!$general) {
-        $general = GeneralSetting::first();
-        Cache::put('GeneralSetting', $general);
+if (!function_exists('gs')) {
+    function gs($key = null)
+    {
+        $general = Cache::remember('GeneralSetting', 3600, function () {
+            return GeneralSetting::first();
+        });
+
+        if ($key) {
+            return $general->$key ?? null;
+        }
+
+        return $general;
     }
-    if ($key) {
-        return @$general->$key;
-    }
-
-    return $general;
-}
-
-function notify($user, $templateName, $shortCodes = null, $sendVia = null, $createLog = true, $pushImage = null)
-{
-    $globalShortCodes = [
-        'site_name'       => gs('site_name'),
-        'site_currency'   => gs('cur_text'),
-        'currency_symbol' => gs('cur_sym'),
-    ];
-
-    if (gettype($user) == 'array') {
-        $user = (object) $user;
-    }
-
-    $shortCodes = array_merge($shortCodes ?? [], $globalShortCodes);
-
-    $notify               = new Notify($sendVia);
-    $notify->templateName = $templateName;
-    $notify->shortCodes   = $shortCodes;
-    $notify->user         = $user;
-    $notify->createLog    = $createLog;
-    $notify->pushImage    = $pushImage;
-    $notify->userColumn   = isset($user->id) ? $user->getForeignKey() : 'user_id';
-    print("FROM HELPERS\n");
-    print_r($notify->send());
-    print("\nEND FROM HELPERS\n");
-    
-    // return $notify->send();
 }
 
 function getFilePath($key)
@@ -73,4 +46,29 @@ function fileUploader($file, $location, $size = null, $old = null, $thumb = null
 function siteFavicon()
 {
     return '';
+}
+
+
+if (!function_exists('notify')) {
+    function notify($templateName, $user = null, $shortCodes = [], $sendVia = null, $queue = true)
+    {
+        $notificationData = [
+            'templateName' => $templateName,
+            'user' => $user,
+            'shortCodes' => $shortCodes,
+            'sendVia' => $sendVia,
+            'createLog' => true
+        ];
+
+        if ($queue) {
+            ProcessNotificationJob::dispatch($notificationData);
+        } else {
+            $notify = app('notifier');
+            $notify->templateName = $templateName;
+            $notify->user = $user;
+            $notify->shortCodes = $shortCodes;
+            $notify->sendVia = $sendVia;
+            $notify->send();
+        }
+    }
 }

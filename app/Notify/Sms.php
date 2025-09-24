@@ -1,79 +1,102 @@
 <?php
-
 namespace App\Notify;
 
-use App\Notify\NotifyProcess;
-use App\Notify\SmsGateway;
-use App\Notify\Notifiable;
+use Twilio\Rest\Client as TwilioClient;
+use Vonage\Client as VonageClient;
+use Vonage\Client\Credentials\Basic as VonageCredentials;
+use Vonage\SMS\Message\SMS as VSMS;
 
+class Sms extends NotifyProcess
+{
+    protected function prevConfiguration()
+    {
+        $this->body = 'sms_body';
+        $this->statusField = 'sms_status';
+        $this->globalTemplate = 'sms_template';
+        $this->notifyConfig = 'sms_config';
+        $this->sentFrom = gs('sms_from');
+        $this->toAddress = $this->user->phone ?? $this->toAddress;
+    }
 
-class Sms extends NotifyProcess implements Notifiable{
+    public function send()
+    {
+        $message = $this->getMessage();
+        
+        if (!$message) {
+            return false;
+        }
 
-    /**
-    * Mobile number of receiver
-    *
-    * @var string
-    */
-	public $mobile;
+        $config = gs('sms_config');
+        
+        try {
+            switch ($config['name']) {
+                case 'twilio':
+                    return $this->sendViaTwilio();
+                case 'nexmo':
+                case 'vonage':
+                    return $this->sendViaVonage();
+                default:
+                    return false;
+            }
+        } catch (\Exception $e) {
+            $this->createErrorLog('SMS sending failed: ' . $e->getMessage());
+            $this->createLog('sms', false, $e->getMessage());
+            return false;
+        }
+    }
 
-    /**
-    * Assign value to properties
-    *
-    * @return void
-    */
-	public function __construct(){
-		$this->statusField = 'sms_status';
-		$this->body = 'sms_body';
-		$this->globalTemplate = 'sms_template';
-		$this->notifyConfig = 'sms_config';
-	}
+    public function sendBulk(array $notifications)
+    {
+        foreach ($notifications as $notification) {
+            $this->configureFromArray($notification);
+            $this->send();
+        }
+    }
 
+    private function sendViaTwilio()
+    {
+        $config = gs('sms_config');
+        $twilio = $config['twilio'];
+        
+        $client = new TwilioClient($twilio['account_sid'], $twilio['auth_token']);
+        
+        $message = $client->messages->create(
+            $this->toAddress,
+            [
+                'from' => $twilio['from'],
+                'body' => strip_tags($this->finalMessage)
+            ]
+        );
 
-    /**
-    * Send notification
-    *
-    * @return void|array|bool
-    */
-	public function send(){
+        $success = $message->sid !== null;
+        $this->createLog('sms', $success);
+        
+        return $success;
+    }
 
-		//get message from parent
-		$message = $this->getMessage();
-		if (gs('sn') && $message) {
-			try {
-				$gateway = gs('sms_config')->name;
-                if($this->mobile){
-                    $sendSms = new SmsGateway();
-                    $sendSms->to = $this->mobile;
-                    $sendSms->from = $this->getSmsFrom();
-                    $sendSms->message = strip_tags($message);
-                    $sendSms->config = gs('sms_config');
-                    $sendSms->$gateway();
-                    $this->createLog('sms');
-                }
-			} catch (\Exception $e) {
-				$this->createErrorLog('SMS Error: '.$e->getMessage());
-                return ['sms_error'=>'API Error: '.$e->getMessage()];
-			}
-		}
+    private function sendViaVonage()
+    {
+        $config = gs('sms_config');
+        
+        $basic = new VonageCredentials($config['api_key'], $config['api_secret']);
+        $client = new VonageClient($basic);
+        
+        $message = new VSMS($this->toAddress, $config['from'], strip_tags($this->finalMessage));
+        $response = $client->sms()->send($message);
+        
+        $success = $response->current()->getStatus() == 0;
+        $this->createLog('sms', $success);
+        
+        return $success;
+    }
 
-	}
-
-    /**
-    * Configure some properties
-    *
-    * @return void
-    */
-	public function prevConfiguration(){
-		//Check If User
-		if ($this->user) {
-			$this->mobile = $this->user->mobileNumber;
-			$this->receiverName = $this->user->fullname;
-		}
-		$this->toAddress = $this->mobile;
-	}
-
-    private function getSmsFrom(){
-        $this->sentFrom = $this->replaceTemplateShortCode($this->template->sms_sent_from ?? gs('sms_from'));
-        return $this->sentFrom;
+    private function configureFromArray(array $data)
+    {
+        $this->templateName = $data['templateName'];
+        $this->shortCodes = $data['shortCodes'] ?? [];
+        $this->user = $data['user'] ?? null;
+        $this->toAddress = $data['toAddress'];
+        $this->receiverName = $data['receiverName'] ?? null;
+        $this->message = $data['message'] ?? null;
     }
 }

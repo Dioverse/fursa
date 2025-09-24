@@ -19,7 +19,7 @@ class ProductController extends Controller
     public function index(Request $request): JsonResponse
     {
         // Start building the query with eager loading for the category
-        $query = Product::with(['category:id,name,slug', 'images:id,product_id,path'])->where("status", true);
+        $query = Product::with(['category:id,name,slug', 'images:id,product_id,path']);
 
         // --- Filtering Options ---
         // Filter by category
@@ -79,7 +79,6 @@ class ProductController extends Controller
             'categories.slug',DB::raw('COUNT(products.id) as active_products_count')
         )
         ->join('products', 'products.category_id', '=', 'categories.id')
-        ->where('products.status', 1)
         ->groupBy('categories.id', 'categories.name', 'categories.slug')
         ->get();
 
@@ -103,7 +102,7 @@ class ProductController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $product = Product::where("status", true)->with(['category:id,name,slug','images:id,product_id,path'])->find($id);
+        $product = Product::with(['category:id,name,slug','images:id,product_id,path'])->find($id);
 
         if (!$product) {
             return response()->json(['message' => 'Product not found.'], 404);
@@ -112,9 +111,9 @@ class ProductController extends Controller
         $related = Product::where(function ($q) use ($product) {
             $q->where('category_id', $product->category_id)
             ->orWhere('name', 'like', '%' . $product->name . '%');
-        })->where('id', '!=', $product->id)->where('status', true)
+        })->where('id', '!=', $product->id)
         ->inRandomOrder()->take(3)->with(['category:id,name,slug', 'images:id,product_id,path'])
-        ->get(['id','name','category_id','slug','short_description','stock_quantity','low_stock_threshold','is_featured','distributor_price','base_price']);
+        ->get(['id','name','sku','category_id','slug','short_description','stock_quantity','low_stock_threshold','is_featured','distributor_price','base_price']);
 
         return response()->json([
             'message' => 'Product retrieved successfully.',

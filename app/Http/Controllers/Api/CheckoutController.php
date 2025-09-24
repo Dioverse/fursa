@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Cart;
+use App\Models\Shipping;
+use App\Constants\Status;
 use Illuminate\Support\Arr;
 use App\Models\AdminSetting;
 use Illuminate\Http\Request;
@@ -40,19 +42,41 @@ class CheckoutController extends Controller
             return Arr::except($gateway, ['secret_key','encryption_key']);
         })->toArray();
 
-        $shippingAddys = $user->shippingAddress()->orderByDesc("is_default")->first(['id','full_name','phone','address_line_one','city','state','postal_code','country']);
 
         return response()->json([
             "message" => "Checkout",
             "data" => [
                 "gateways"              => $gateways,
-                "user_cart"             => $cartSummary,
-                "shipping_addresses"    => $shippingAddys
+                "user_cart"             => $cartSummary
             ]
         ]);
     }
 
-    public function getCartSummary($user)
+    protected function getShippingAddress($user)
+    {
+        $ushipAdd = $user->shippingAddress()->orderByDesc("is_default")->first(['id','full_name','province','phone','address_line_one','city','state','postal_code','country']);
+        return $ushipAdd;
+    }
+
+    protected function getShippingCost($country, $state, $province)
+    {
+        $shipping = Shipping::where('country', $country)
+                ->where('state', $state)
+                ->where('province', $province)
+                ->first(['cost','min_days','max_days']);
+        return $shipping ?? "unserviceable";
+    }
+
+    protected function shippingCostLogic($user)
+    {
+        $sA = $this->getShippingAddress($user);
+        return [
+            'userAddress' => $sA,
+            'shipCost' => $this->getShippingCost($sA->country, $sA->state, $sA->province)
+        ];
+    }
+
+    protected function getCartSummary($user)
     {
         $cart = Cart::with('cartItems')->where('user_id', $user->id)->first();
 
@@ -86,7 +110,8 @@ class CheckoutController extends Controller
         }
 
         // Build cart summary with discount consideration
-        $cartItems = $cart->cartItems()->with(['product.category'])->get()
+        $cartItems = $cart->cartItems()->with(['product'])->get()
+        // $cartItems = $cart->cartItems()->with(['product.category'])->get()
             ->map(function ($item) use ($user) {
                 $product  = $item->product;
 
@@ -104,10 +129,13 @@ class CheckoutController extends Controller
                     'subtotal'        => (float) ($discountedPrice * $item->quantity),
                     'originalSubtotal'=> (float) ($originalPrice * $item->quantity),
                     'stock_quantity'  => $product->stock_quantity,
-                    'category_name'   => $product->category?->name,
-                    'category_slug'   => $product->category?->slug,
+                    // 'category_name'   => $product->category?->name,
+                    // 'category_slug'   => $product->category?->slug,
                 ];
             });
+
+        $ship = $this->shippingCostLogic($user);
+        $shipCost = $ship['shipCost'];
 
         return [
             'error'             => false,
@@ -118,56 +146,76 @@ class CheckoutController extends Controller
             'amount'            => $cartItems->sum('subtotal'), // sum of discounted subtotals
             'originalAmount'    => $cartItems->sum('originalSubtotal'), // sum of original subtotals
             'cart_items'        => $cartItems,
+            'shippingAddress'   => $ship['userAddress'],
+            'shippingCost'      => $shipCost
         ];
     }
 
-    public function checkout(Request $request, $gateway, $transId, PaymentManager $manager)
+    public function checkout(Request $request, $gateway, $transRef, PaymentManager $manager)
     {
         $user = $request->user();
 
         $gateCheck = $manager->gateway($gateway);
         if ($gateCheck['error']) {
-            return response()->json($gateCheck);
+            return response()->json($gateCheck, 422);
         }
 
+        // 1. Validate cart & stock
+        $cartSummary = $this->getCartSummary($user);
+        if ($cartSummary['error']) {
+            return response()->json($cartSummary, 422);
+        }
+
+        $orderCreate = $this->orders->createOrder($user, $transRef, $cartSummary['amount'], $cartSummary['shippingCost'], $gateway); 
+        if ($orderCreate['error']) {
+            // DB::rollBack();
+            return response()->json($orderCreate, 422);
+        }
+        $order = $orderCreate['order'];
+        
         try {
             DB::beginTransaction();
 
-            $cartSummary = $this->getCartSummary($user);
-            if ($cartSummary['error']) {
-                return response()->json($cartSummary, 422);
-            }
-
-            $orderCreate = $this->orders->createOrder($user, $cartSummary['amount']);
-            if ($orderCreate['error']) {
-                DB::rollBack();
-                return response()->json($orderCreate, 422);
-            }
-
-            $order = $orderCreate['order'];
-
-            $paymentResult = $this->payments->verifyAndSave($gateCheck['gate'], $transId, $order, $cartSummary['amount']);
-
+            // 3. Verify payment with gateway
+            $paymentResult = $this->payments->verifyAndSave($gateCheck['gate'], $transRef, $order->id, $order->user_id, ($cartSummary['amount'] + $cartSummary['shippingCost']->cost));
             if ($paymentResult['error']) {
                 DB::rollBack();
                 return response()->json($paymentResult, 422);
             }
 
-            if ($paymentResult['status'] === 'failed') {
-                $this->orders->markFailed($order, $user);
+            $payment = $order->payment; // since created in createOrder()
+            if (in_array($paymentResult['status'], ['failed', 'cancelled'])) {
+                $order->update(['status' => 'cancelled']);
+                $payment->update(['status' => 'failed']); // keep sync
                 DB::rollBack();
                 return response()->json([
                     'error'   => true,
-                    'message' => 'Payment failed. Order cancelled.'
+                    'message' => 'Order cancelled. Payment failed.'
                 ], 422);
             }
 
+            // 4. Deduct stock
+            foreach ($order->orderItem as $item) {
+                $product = $item->product;
+                if ($product->stock_quantity < $item->quantity) {
+                    DB::rollBack();
+                    return response()->json([
+                        'error'   => true,
+                        'message' => "Insufficient stock for {$product->name}"
+                    ], 422);
+                }
+                $product->decrement('stock_quantity', $item->quantity);
+            }
+
+            // 5. Confirm order + clear cart
+            $user->cart->cartItems()->delete();
+
+            $this->orders->updateStatus($order, Status::O_CONFIRM, true);
             DB::commit();
 
             return response()->json([
-                'error'   => false,
                 'message' => 'Order placed successfully',
-                'order'   => $order->load(['payment']),
+                'order'   => $order->load('payment:id,order_id,status,transaction_reference,payment_gateway,paid_at'),
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -179,161 +227,8 @@ class CheckoutController extends Controller
         }
     }
 
-    // public function checkout(Request $request, $gateway, $transId, PaymentManager $manager)
-    // {
-    //     $user = $request->user();
+    public function retryCheckout(Request $request, $transRef, PaymentManager $manager)
+    {
 
-    //     // verify payment with gateway
-    //     $gateCheck = $manager->gateway($gateway);
-    //     if ($gateCheck['error']) {
-    //         return response()->json($gateCheck);
-    //     }
-
-        
-    //     try {
-    //         DB::beginTransaction();
-
-    //         // cart validation
-    //         $cartSummary = $this->getCartSummary($user);
-    //         if ($cartSummary['error'] === true) {
-    //             return response()->json($cartSummary, 422);
-    //         }
-    //         $cartTotal = $cartSummary['amount'];
-    
-    //         $orderCreate = $this->createOrder($user, $cartTotal);
-    //         if ($orderCreate['error'] === true) {
-    //             DB::rollBack();
-    //             return response()->json($orderCreate, 422);
-    //         }
-    
-    //         // $existingPayment = Payment::where('user_id', $user->id)
-    //         //         ->where('transaction_reference', $transId)
-    //         //         ->first();
-    
-    //         // if ($existingPayment) {
-    //         //     if ($existingPayment->status === 'successful') {
-    //         //         $err = ['error'=>true,'message'=>'Payment is already successful','payment'=>$existingPayment->transaction_reference];
-    //         //     } elseif ($existingPayment->status === 'refunded' || $existingPayment->status === 'reversed') {
-    //         //         $err = ['error'=>true,'message'=>'Payment was refunded/reversed','payment'=>$existingPayment->transaction_reference];
-    //         //     }
-    //         //     return response()->json($err, 422);
-    //         // }
-    
-            
-    
-    //         $payment = $gateCheck['gate']->verifyPayment($transId);
-    //         if (!$payment['success']) {
-    //             return response()->json([
-    //                 'error'   => true,
-    //                 'message' => 'Payment verification failed',
-    //                 $payment
-    //             ], 422);
-    //         }
-
-    //         $order = $orderCreate['order'];
-    //         if ($payment['status']=='failed') {
-    //             $order->update(['status' => 'cancelled']);
-    //             // restore cart
-    //             $user->cart()->restoreItems($order->id); // You’ll need a restore method
-    //             return response()->json([
-    //                 'error'   => true,
-    //                 'message' => 'Payment failed, order failed'
-    //             ], 422);
-    //         }
-
-    //         $processes = $this->runProcesses($payment, $order, $cartTotal);
-    //         if ($processes['error'] === true) {
-    //             DB::rollBack();
-    //             //Then update 
-    //             return response()->json($processes, 422);
-    //         }
-
-
-    //         // if ((float) $payment['amount'] !== (float) $cartSummary['amount']) {
-    //         //     return response()->json(['refund']);
-    //         // }
-
-    //         DB::commit();
-
-    //         return response()->json([
-    //             'error'   => false,
-    //             'message' => 'Order placed successfully',
-    //             'order'   => $order->load(['payment']),
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-
-    //         return response()->json([
-    //             'error'   => true,
-    //             'message' => 'Checkout failed',
-    //         ], 500);
-    //     }
-    // }
-
-    // public function createOrder($user, $total)
-    // {
-    //     try {
-    //         $shipping_address = $user->shippingAddress()->orderByDesc("is_default")->first(['id','full_name','phone','address_line_one','city','state','postal_code','country']);
-    //         if (!$shipping_address) {
-    //             return ["error"=>true,"message"=>"No shipping address attached to order."];
-    //         }
-    //         // Generate a unique order ID
-    //         $lastOrder = Order::latest('id')->first();
-    //         $nextId = $lastOrder ? $lastOrder->id + 1 : 1;
-    //         $orderId = 'ORD-' . $nextId . strtoupper(Str::random(8));
-            
-    //         // Create the order
-    //         $order = Order::create([
-    //             'user_id'             => $user->id,
-    //             'shipping_address'    => $shipping_address,
-    //             'order_id'            => $orderId,
-    //             'total_amount'        => $total,
-    //             'status'              => 'pending',
-    //         ]);
-
-    //         // clear cart
-    //         $user->cart->cartItems()->delete();
-
-    //         return [
-    //             'error' => false,
-    //             'order' => $order,
-    //         ];
-    //     } catch (\Exception $e) {
-    //         return [
-    //             'error'   => true,
-    //             'message' => 'Order processing failed',
-    //         ];
-    //     }
-    // }
-
-    // public function runProcesses($payment, $order, $cartTotal) {
-    //     try {
-    //         $amount = $payment['amount']/100;
-    //         if (bccomp((string)$amount, (string)$cartTotal, 2) !== 0) {
-    //             return ['error' => true, 'message' => 'Invalid transaction amount'];
-    //         }
-
-    //         Payment::updateOrCreate(
-    // ['transaction_reference' => $payment['reference']],
-    //     [
-    //                 'user_id'   => $order->user_id,
-    //                 'order_id'  => $order->id,
-    //                 'status'    => $payment['status'],
-    //                 'amount'    => $payment['amount'],
-    //                 'currency'  => $payment['currency'],
-    //                 'method'    => $payment['method'],
-    //                 'gateway'   => $payment['gateway'],
-    //                 'raw'       => json_encode($payment['raw']),
-    //             ]
-    //         );
-
-    //         return ["error"=>false];
-
-    //     } catch (\Exception $e) {
-    //         return [
-    //             'error'   => true,
-    //             'message' => 'Payment processing failed',
-    //         ];
-    //     }
-    // }
+    }
 }

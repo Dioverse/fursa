@@ -76,7 +76,7 @@ class Notify
     /**
     * Assign value to sendVia and setting property
     *
-    * @param $sendVia
+    * @param null $sendVia
     * @return void
     */
 	public function __construct($sendVia = null)
@@ -89,38 +89,46 @@ class Notify
     *
     * This method is creating instances of notifications to send the notification.
     *
-    * @return array
+    * @return void
     */
-	public function send(){
-		$methods = [];
+    public function send(){
+        $methods = [];
 
-        //get the notification method classes which are selected
-		if($this->sendVia){
-			foreach ($this->sendVia as $sendVia) {
-				$methods[$sendVia] = $this->notifyMethods($sendVia);
-			}
-		}else{
-			$methods = $this->notifyMethods();
-		}
+        // resolve available methods from config map
+        $available = $this->notifyMethods();
 
-        $err = [];
-        //send the notification via methods one by one
-		foreach($methods as $method){
-			$notify = new $method;
-			$notify->templateName = $this->templateName;
-			$notify->shortCodes = $this->shortCodes;
-			$notify->user = $this->user;
-			$notify->createLog = $this->createLog;
-			$notify->userColumn = $this->userColumn;
-			$notify->pushImage = $this->pushImage;
-			$err[$method] = $notify->send();
-		}
+        if ($this->sendVia) {
+            foreach ($this->sendVia as $sendVia) {
+                if (! isset($available[$sendVia])) continue;
+                // add per-method global enable checks:
+                if ($sendVia === 'email' && ! gs('en')) continue;
+                if ($sendVia === 'push' && ! gs('pn')) continue;
+                if ($sendVia === 'sms' && ! gs('sn')) continue;
+                $methods[$sendVia] = $available[$sendVia];
+            }
+        } else {
+            // filter by global flags
+            foreach ($available as $key => $class) {
+                if ($key === 'email' && ! gs('en')) continue;
+                if ($key === 'push' && ! gs('pn')) continue;
+                if ($key === 'sms' && ! gs('sn')) continue;
+                $methods[$key] = $class;
+            }
+        }
 
-        print("FROM NOTIFY\n");
-        print_r($err);
-        print("\nEND FROM NOTIFY\n");
-        return $err;
-	}
+        // send the notification via methods one by one
+        foreach($methods as $method){
+            $notify = new $method;
+            $notify->templateName = $this->templateName;
+            $notify->shortCodes = $this->shortCodes;
+            $notify->user = $this->user;
+            $notify->createLog = $this->createLog;
+            $notify->userColumn = $this->userColumn;
+            $notify->pushImage = $this->pushImage;
+            $notify->send();
+        }
+    }
+
 
     /**
     * Get the notification method classes.

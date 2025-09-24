@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         ResetPassword::createUrlUsing(function ($notifiable, string $token) {
-            $frontendUrl = config('app.frontend_url', 'https://fursaenergy.com');
+            $frontendUrl = config('app.frontend_url');
 
             return "{$frontendUrl}/reset-password?token={$token}&email=" . urlencode($notifiable->getEmailForPasswordReset());
         });

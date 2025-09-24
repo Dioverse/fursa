@@ -14,11 +14,25 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->json('shipping_address')->nullable();
+            $table->json('shipping_address');
 
-            $table->string('order_id');
+            $table->string('order_id')->unique();
             $table->decimal('total_amount', 12, 2);
-            $table->enum('status', ['pending', 'out for delivery', 'delivered', 'cancelled', 'failed'])->default('pending');
+            $table->string('trans_ref')->unique();
+            $table->decimal('shipping_cost', 8, 2);
+            $table->string('delivery_days');
+
+            $table->enum('status', [
+                'pending',
+                'confirmed',
+                'processing',
+                'shipping',
+                'shipped',
+                'out for delivery',
+                'delivered',
+                'cancelled',
+                'failed'
+            ])->default('pending');
             $table->timestamps();
         });
     }

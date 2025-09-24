@@ -19,7 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
         
         $middleware->alias([
-            'verified.api' => EnsureEmailIsVerifiedApi::class,
+            'verifiedcustom' => EnsureEmailIsVerifiedApi::class,
             'role' => RoleMiddleware::class,
             'ban' => BanCheck::class,
         ]);
@@ -27,4 +27,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         // You can customize global exception handling here
     })
+    ->withCommands([
+        // Register console commands here
+        \App\Console\Commands\WorkNotificationQueue::class,
+        \App\Console\Commands\RestartQueue::class,
+        \App\Console\Commands\QueueStatus::class,
+        // \App\Console\Commands\CreateNotificationTemplate::class,
+        // \App\Console\Commands\ClearNotificationLogs::class,
+    ])
     ->create();
