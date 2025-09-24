@@ -75,12 +75,11 @@ class ProductController extends Controller
 
         
         $products = $query->paginate($perPage);
-        $categories = Category::select('categories.id','categories.name',
-            'categories.slug',DB::raw('COUNT(products.id) as active_products_count')
-        )
-        ->join('products', 'products.category_id', '=', 'categories.id')
-        ->groupBy('categories.id', 'categories.name', 'categories.slug')
-        ->get();
+        $categories = Category::with(['subcategories' => function ($query) {
+            $query->select(['id', 'image', 'name', 'slug', 'parent_id'])->withCount('products');
+        }])
+        ->whereNull('parent_id')
+        ->get(['id', 'image', 'name', 'slug']);
 
         return response()->json([
             'message' => 'Products retrieved successfully.',
