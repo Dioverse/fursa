@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\GeneralController;
 use App\Http\Controllers\Api\CheckoutController;
+use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\Api\Admin\PostController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Admin\AdminController;
@@ -14,19 +15,19 @@ use App\Http\Controllers\Api\Admin\ContentController;
 use App\Http\Controllers\Api\Admin\PaymentController;
 use App\Http\Controllers\Api\Admin\ProductController;
 use App\Http\Controllers\Api\Admin\CategoryController;
-use App\Http\Controllers\Api\Admin\LanguageController;
-use App\Http\Controllers\Api\Admin\SettingsController;
+// use App\Http\Controllers\Api\Admin\LanguageController;
+// use App\Http\Controllers\Api\Admin\SettingsController;
 use App\Http\Controllers\Api\Admin\ShippingController;
 use App\Http\Controllers\Api\Admin\InventoryController;
+
 use App\Http\Controllers\Api\ShippingAddressController;
 use App\Http\Controllers\Api\Admin\DistributorController;
 use App\Http\Controllers\Api\Admin\NotificationController;
 use App\Http\Controllers\Api\Admin\PostCategoryController;
 use App\Http\Controllers\Api\Distributor\ProfileController;
 use App\Http\Controllers\Api\PostController as DistCustPostController;
-
 use App\Http\Controllers\Api\OrderController as DistCustOrderController;
-use App\Http\Controllers\PaymentController as DistCustPaymentController;
+// use App\Http\Controllers\PaymentController as DistCustPaymentController;
 use App\Http\Controllers\Api\ProductController as GeneralProductController;
 use App\Http\Controllers\Api\LanguageController as DistCustLanguageController;
 
@@ -163,6 +164,9 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
     Route::post('checkout/init', [CheckoutController::class, 'initialize']);
     Route::post('checkout/{gateway}/{transId}', [CheckoutController::class, 'checkout']);
 
+    Route::apiResource('wishlists', WishlistController::class)->only(['index','store']);
+    Route::delete('wishlists/rm', [WishlistController::class, 'unSetItem']);
+
 });
 
 Route::get('products', [GeneralProductController::class, 'index']);
@@ -182,55 +186,46 @@ Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])-
 
 
 
+// Route::get('/test-queue-setup', function () {
+//     return response()->json([
+//         'laravel_version' => app()->version(),
+//         'queue_connection' => config('queue.default'),
+//         'database_connection' => config('database.default'),
+//         'jobs_table_exists' => Schema::hasTable('jobs'),
+//         'failed_jobs_table_exists' => Schema::hasTable('failed_jobs'),
+//         'notification_service_bound' => app()->bound('notify'),
+//         'pending_jobs' => DB::table('jobs')->count(),
+//         'failed_jobs' => DB::table('failed_jobs')->count(),
+//     ]);
+// });
 
+// Route::get('/test-notification/{email}', function ($email) {
+//     Cache::forget("GeneralSetting");
 
+//     $user = new User();
+//     $user->first_name = 'ark';
+//     $user->last_name = "lar";
+//     $user->id = 1;
+//     $user->email = $email;
+//     $user->phone = "08152397199";
 
-use App\Models\User;
-use Illuminate\Support\Facades\DB;
-use App\Jobs\ProcessNotificationJob;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Cache;
+//     // $user = 1;
+//     notify(
+//         templateName: 'TEST_TEMPLATE',
+//         user: $user,
+//         shortCodes: [
+//             'subject' => 'System Update',
+//             'test_message' => 'Hello World',
+//             'user_name' => 'Quadri'
+//         ],
+//         sendVia: ['email'],
+//         queue: false
+//     );
 
-Route::get('/test-queue-setup', function () {
-    return response()->json([
-        'laravel_version' => app()->version(),
-        'queue_connection' => config('queue.default'),
-        'database_connection' => config('database.default'),
-        'jobs_table_exists' => Schema::hasTable('jobs'),
-        'failed_jobs_table_exists' => Schema::hasTable('failed_jobs'),
-        'notification_service_bound' => app()->bound('notify'),
-        'pending_jobs' => DB::table('jobs')->count(),
-        'failed_jobs' => DB::table('failed_jobs')->count(),
-    ]);
-});
-
-Route::get('/test-notification/{email}', function ($email) {
-    Cache::forget("GeneralSetting");
-
-    $user = new User();
-    $user->first_name = 'ark';
-    $user->last_name = "lar";
-    $user->id = 1;
-    $user->email = $email;
-    $user->phone = "08152397199";
-
-    // $user = 1;
-    notify(
-        templateName: 'TEST_TEMPLATE',
-        user: $user,
-        shortCodes: [
-            'subject' => 'System Update',
-            'test_message' => 'Hello World',
-            'user_name' => 'Quadri'
-        ],
-        sendVia: ['email'],
-        queue: false
-    );
-
-    return response()->json([
-        'message' => 'Test notification queued successfully',
-        'queue_connection' => config('queue.default'),
-        'email' => $email
-    ]);
-});
+//     return response()->json([
+//         'message' => 'Test notification queued successfully',
+//         'queue_connection' => config('queue.default'),
+//         'email' => $email
+//     ]);
+// });
 

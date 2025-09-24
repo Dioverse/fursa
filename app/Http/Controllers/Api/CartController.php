@@ -55,7 +55,9 @@ class CartController extends Controller
             'user_id' => $user->id,
         ]);
 
+        $nm = 0;
         foreach ($validated['cart'] as $item) {
+            $nm += 1;
             $cart->cartItems()->updateOrCreate(
                 ['product_id' => $item['product_id']],
                 ['quantity'   => DB::raw("quantity + {$item['quantity']}")]
@@ -63,7 +65,7 @@ class CartController extends Controller
         }
 
         return response()->json([
-            'message' => 'Items added to cart successfully',
+            'message' => ($nm > 1 ? 'Items': 'Item') . ' added to cart successfully',
         ], 201);
     }
 
