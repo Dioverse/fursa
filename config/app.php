@@ -62,6 +62,8 @@ return [
 
     "frontend_forgot_pass" => env('FRONTEND_FORGOT_PASS', "reset-password"),
 
+    "storage_url" => env('STORAGE_URL', "https://back.fursaenergy.com/public/storage"),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

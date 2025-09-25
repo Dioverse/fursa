@@ -245,9 +245,7 @@ class CheckoutController extends Controller
                 // Build products + history arrays
                 $products = $order->orderItem->map(function ($item, $index) {
                     $imagePath = optional($item->product->images->first())->path;
-                    $image = $imagePath
-                        ? Storage::disk('public')->url($imagePath)
-                        : asset('images/placeholder.png');
+                    $image = config("storage_url") . '/' . $imagePath;
                     return [
                         'sno'      => $index + 1,
                         'image'    => $image,
