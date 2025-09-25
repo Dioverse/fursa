@@ -9,7 +9,6 @@ class PaymentService
     public function verifyAndSave($gateway, $transRef, $orderId, $userId, $cartTotal)
     {
         $payment = $gateway->verifyPayment($transRef);
-        print_r($payment);
         if (!$payment['success']) {
             return ['error' => true, 'message' => 'Payment verification failed'];
         }
@@ -17,10 +16,6 @@ class PaymentService
         $amount = $payment['amount'];
 
         if (bccomp((string)$amount, (string)$cartTotal, 2) !== 0) {
-            print_r($amount);
-            print_r($cartTotal);
-            print_r(bccomp((string)$amount, (string)$cartTotal, 2));
-
             return ['error' => true, 'message' => 'Invalid transaction amount'];
         }
 
