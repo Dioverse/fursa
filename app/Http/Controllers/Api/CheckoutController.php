@@ -265,7 +265,10 @@ class CheckoutController extends Controller
                 })->toArray();
                 notify(
                     "ORDER_CONFIRMED", $user,
-                    ["order_number"  => $order->order_id,"order_date" => $order->created_at,"total_amount" => $order->total_amount],
+                    [
+                        "order_number" => $order->order_id,"order_date" => $order->created_at,"total_amount" => $order->total_amount,
+                        'shipping_cost'=>$order->shipping_cost,'delivery_date'=>$order->delivery_days,
+                    ],
                     ["email"], false, ["products" => $products,"status_history" => $statushistory]
                 );
             });
