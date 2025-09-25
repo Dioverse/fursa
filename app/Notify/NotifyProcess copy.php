@@ -12,7 +12,6 @@ abstract class NotifyProcess
 {
     public $templateName;
     public $shortCodes = [];
-    public $loopItems = []; // New property for loop data
     public $user;
     public $template;
     public $message;
@@ -72,9 +71,6 @@ abstract class NotifyProcess
         // Pick correct body field (email_body, sms_body, push_body, etc)
         $body = $template ? $template->{$this->body} : $this->message;
 
-        // Process loop items first
-        $body = $this->processLoopItems($body);
-
         // Wrap inside global template
         $message = $this->replaceShortCode(
             gs($this->globalTemplate),
@@ -88,50 +84,6 @@ abstract class NotifyProcess
 
         $this->finalMessage = $message;
         return $message;
-    }
-
-    /**
-     * Process loop items in the template
-     * Supports syntax like:
-     * {{#each products}}
-     *   <tr>
-     *     <td>{{name}}</td>
-     *     <td>{{price}}</td>
-     *     <td>{{quantity}}</td>
-     *   </tr>
-     * {{/each}}
-     */
-    protected function processLoopItems($content)
-    {
-        if (empty($this->loopItems)) {
-            return $content;
-        }
-
-        // Match loop blocks with regex
-        $pattern = '/\{\{#each\s+(\w+)\}\}(.*?)\{\{\/each\}\}/s';
-        
-        return preg_replace_callback($pattern, function ($matches) {
-            $loopName = $matches[1];
-            $loopTemplate = $matches[2];
-            
-            if (!isset($this->loopItems[$loopName])) {
-                return ''; // Remove the loop block if no data
-            }
-            
-            $output = '';
-            foreach ($this->loopItems[$loopName] as $item) {
-                $itemOutput = $loopTemplate;
-                
-                // Replace placeholders in loop template
-                foreach ($item as $key => $value) {
-                    $itemOutput = str_replace('{{' . $key . '}}', $value, $itemOutput);
-                }
-                
-                $output .= $itemOutput;
-            }
-            
-            return $output;
-        }, $content);
     }
 
     /**

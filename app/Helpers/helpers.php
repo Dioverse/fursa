@@ -49,13 +49,39 @@ function siteFavicon()
 }
 
 
+// if (!function_exists('notify')) {
+//     function notify($templateName, $user = null, $shortCodes = [], $sendVia = null, $queue = true)
+//     {
+//         $notificationData = [
+//             'templateName' => $templateName,
+//             'user' => $user,
+//             'shortCodes' => $shortCodes,
+//             'sendVia' => $sendVia,
+//             'createLog' => true
+//         ];
+
+//         if ($queue) {
+//             ProcessNotificationJob::dispatch($notificationData);
+//         } else {
+//             $notify = app('notifier');
+//             $notify->templateName = $templateName;
+//             $notify->user = $user;
+//             $notify->shortCodes = $shortCodes;
+//             $notify->sendVia = $sendVia;
+//             $notify->send();
+//         }
+//     }
+// }
+
+// Updated helper function to support loop items
 if (!function_exists('notify')) {
-    function notify($templateName, $user = null, $shortCodes = [], $sendVia = null, $queue = true)
+    function notify($templateName, $user = null, $shortCodes = [], $sendVia = null, $queue = true, $loopItems = [])
     {
         $notificationData = [
             'templateName' => $templateName,
             'user' => $user,
             'shortCodes' => $shortCodes,
+            'loopItems' => $loopItems, // Add loop items
             'sendVia' => $sendVia,
             'createLog' => true
         ];
@@ -67,6 +93,7 @@ if (!function_exists('notify')) {
             $notify->templateName = $templateName;
             $notify->user = $user;
             $notify->shortCodes = $shortCodes;
+            $notify->loopItems = $loopItems; // Set loop items
             $notify->sendVia = $sendVia;
             $notify->send();
         }

@@ -35,9 +35,9 @@ class ShippingAddressController extends Controller
             'address_line_two' => 'nullable|string|max:255',
             'city'             => 'required|string|max:100',
             'province'         => ['required', Rule::exists('shippings', 'province')->where('is_active', true)],
-            'state'       => 'required|string|max:100',
+            'state'       => ['required', Rule::exists('shippings', 'state')->where('is_active', true)],
             'postal_code' => 'nullable|string|max:20',
-            'country'     => 'nullable|string|max:100',
+            'country'     => ['required', Rule::exists('shippings', 'country')->where('is_active', true)],
             'is_default'  => 'boolean',
         ]);
 
@@ -105,9 +105,9 @@ class ShippingAddressController extends Controller
             'city'             => 'sometimes|string|max:100',
             // 'province'         => 'sometimes|string|exists:shippings,province',
             'province'         => ['required', Rule::exists('shippings', 'province')->where('is_active', true)],
-            'state'            => 'sometimes|string|max:100',
-            'postal_code'      => 'nullable|string|max:20',
-            'country'          => 'nullable|string|max:100',
+            'state'       => ['required', Rule::exists('shippings', 'state')->where('is_active', true)],
+            'postal_code' => 'nullable|string|max:20',
+            'country'     => ['required', Rule::exists('shippings', 'country')->where('is_active', true)],
             'is_default'       => 'boolean',
         ]);
 

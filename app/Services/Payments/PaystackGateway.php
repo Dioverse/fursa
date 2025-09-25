@@ -24,8 +24,9 @@ class PaystackGateway implements PaymentGateway
                 ->throw()
                 ->json();
 
+            $resStat = $response['status'] ?? false;
             return [
-                'success'   => ($response['status'] ?? false),
+                'success'   => $resStat,
                 'status'    => match($response['data']['status'] ?? null) {
                     'success'   => 'successful',
                     'failed'    => 'failed',

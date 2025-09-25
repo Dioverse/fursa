@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('sms_body')->nullable();
             $table->text('push_body')->nullable();
             $table->text('shortcodes')->nullable();
+            $table->text('loop_items')->nullable();
             $table->boolean('email_status')->default(1);
             $table->string('email_sent_from_name', 40)->nullable();
             $table->string('email_sent_from_address', 40)->nullable();

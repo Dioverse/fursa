@@ -173,7 +173,6 @@ class OrderService
                         'updated_at'  => $now,
                     ];
                 }
-
                 OrderStatusHistory::insert($insertData);
             }
 
@@ -182,9 +181,20 @@ class OrderService
 
             // Notify order owner
             if ($notify && $newStatus !== $currentStatus) {
+                $statusHistories = OrderStatusHistory::where('order_id', $order->id)
+                    ->orderBy('created_at', 'asc')
+                    ->get(['status', 'created_at']);
+                $loopItems = [
+                    'status_history' => $statusHistories->map(function ($history) {
+                        return [
+                            'status' => ucfirst($history->status),
+                            'date'   => $history->created_at->format('M d, Y H:i'),
+                        ];
+                    })->toArray(),
+                ];
                 notify($order->user,'ORDER_STATUS',
                 ['order_id' => $order->id,'status_date' => $now,'status' => ucfirst($newStatus)],
-                ['email'],true,null, true
+                ['email'],true,$loopItems,
                 );
             }
 

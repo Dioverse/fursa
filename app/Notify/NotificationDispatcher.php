@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Notify;
 
 use App\Models\AdminNotification;
@@ -10,6 +11,7 @@ class NotificationDispatcher
 {
     public $templateName;
     public $shortCodes;
+    public $loopItems; // New property
     public $sendVia;
     public $user;
     public $createLog;
@@ -22,6 +24,7 @@ class NotificationDispatcher
     public function __construct($sendVia = null)
     {
         $this->sendVia = $sendVia;
+        $this->loopItems = []; // Initialize
     }
 
     public function send()
@@ -86,6 +89,7 @@ class NotificationDispatcher
     {
         $notify->templateName = $this->templateName;
         $notify->shortCodes = $this->shortCodes;
+        $notify->loopItems = $this->loopItems; // Pass loop items
         $notify->user = $this->user;
         $notify->createLog = $this->createLog;
         $notify->userColumn = $this->userColumn;

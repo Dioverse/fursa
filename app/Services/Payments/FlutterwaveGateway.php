@@ -64,8 +64,9 @@ class FlutterwaveGateway implements PaymentGateway
                 ->throw()
                 ->json();
 
+            $resStat = $response['status'] === 'success' ? true : false;
             return [
-                'success'   => ($response['status'] ?? '') === 'success',
+                'success'   => $resStat,
                 'message'   => $response['message'] ?? 'Refund request failed',
                 'transaction_id' => $transactionId,
                 'refund_id' => $response['data']['id'] ?? null,
