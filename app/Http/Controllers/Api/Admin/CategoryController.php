@@ -21,11 +21,21 @@ class CategoryController extends Controller
         $parentId = $request->query('category_id');
 
         if ($sub && $parentId) {
-            // Fetch only subcategories under a specific parent
             $categories = Category::withCount('products')
                 ->where('parent_id', $parentId)
                 ->get(['id', 'name', 'slug', 'parent_id']);
 
+        } elseif ($sub) {
+            // Fetch specific parent with subcategories + product count
+            $categories = Category::with([
+                    'subcategories' => function ($query) {
+                        $query->select('id', 'name', 'parent_id', 'image')
+                            ->withCount('products');
+                    }
+                ])
+                ->withCount('subcategories')
+                ->whereNull('parent_id')
+                ->get(['id', 'name', 'slug']);
         } elseif ($parentId) {
             // Fetch specific parent with subcategories + product count
             $categories = Category::where("id", $parentId)->with([
@@ -39,13 +49,8 @@ class CategoryController extends Controller
                 ->get(['id', 'name', 'slug']);
 
         } else {
-            $categories = Category::with([
-                    'subcategories' => function ($query) {
-                        $query->select('id', 'name', 'parent_id', 'image')
-                            ->withCount('products');
-                    }
-                ])
-                ->withCount('subcategories')
+            // Fetch parent categories with subcategories + product count
+            $categories = Category::withCount('subcategories')
                 ->whereNull('parent_id')
                 ->get(['id', 'name', 'slug']);
         }

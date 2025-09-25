@@ -98,6 +98,17 @@ class ProductController extends Controller
                 ->where('parent_id', $parentId)
                 ->get(['id', 'name', 'description', 'image', 'slug', 'parent_id']);
 
+        } elseif ($sub) {
+            // Fetch specific parent with subcategories + product count
+            $categories = Category::with([
+                    'subcategories' => function ($query) {
+                        $query->select('id', 'name', 'description', 'image', 'slug', 'parent_id')
+                            ->withCount('products');
+                    }
+                ])
+                ->withCount('subcategories')
+                ->whereNull('parent_id')
+                ->get(['id', 'name', 'description', 'image', 'slug']);
         } elseif ($parentId) {
             // Fetch specific parent with subcategories + product count
             $categories = Category::where("id", $parentId)->with([
@@ -112,13 +123,7 @@ class ProductController extends Controller
 
         } else {
             // Fetch parent categories with subcategories + product count
-            $categories = Category::with([
-                    'subcategories' => function ($query) {
-                        $query->select('id', 'name', 'parent_id', 'image')
-                            ->withCount('products');
-                    }
-                ])
-                ->withCount('subcategories')
+            $categories = Category::withCount('subcategories')
                 ->whereNull('parent_id')
                 ->get(['id', 'name', 'description', 'image', 'slug']);
         }

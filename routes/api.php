@@ -105,11 +105,11 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
         Route::get('admin/settings/notifications/statistics', [NotificationController::class, 'statistics']);
         Route::get('admin/settings/notifications/queue-status', [NotificationController::class, 'queueStatus']);
 
-        // Logs Management
-        Route::get('admin/settings/notifications/logs', [NotificationController::class, 'logs']);
-        Route::delete('admin/settings/notifications/logs', [NotificationController::class, 'clearLogs']);
-        Route::get('admin/settings/notifications/logs/export', [NotificationController::class, 'exportLogs']);
-        Route::post('admin/settings/notifications/logs/retry', [NotificationController::class, 'retryFailed']);
+        // // Logs Management
+        // Route::get('admin/settings/notifications/logs', [NotificationController::class, 'logs']);
+        // Route::delete('admin/settings/notifications/logs', [NotificationController::class, 'clearLogs']);
+        // Route::get('admin/settings/notifications/logs/export', [NotificationController::class, 'exportLogs']);
+        // Route::post('admin/settings/notifications/logs/retry', [NotificationController::class, 'retryFailed']);
 
         // Templates
         Route::get('admin/settings/notifications/templates', [NotificationController::class, 'templates']);
@@ -119,9 +119,9 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
         Route::delete('admin/settings/notifications/templates/{id}', [NotificationController::class, 'templateDelete']);
         Route::post('admin/settings/notifications/templates/validate', [NotificationController::class, 'validateTemplate']);
 
-        // Testing & Sending
-        Route::post('admin/settings/notifications/test', [NotificationController::class, 'sendTest']);
-        Route::post('admin/settings/notifications/bulk', [NotificationController::class, 'sendBulk']);
+        // // Testing & Sending
+        // Route::post('admin/settings/notifications/test', [NotificationController::class, 'sendTest']);
+        // Route::post('admin/settings/notifications/bulk', [NotificationController::class, 'sendBulk']);
 
         // Configuration
         Route::get('admin/settings/notifications/email', [NotificationController::class, 'emailSetting']);
@@ -129,16 +129,16 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
         Route::post('admin/settings/notifications/email/test', [NotificationController::class, 'emailTest']);
         Route::put('admin/settings/notifications/email/global', [NotificationController::class, 'globalEmailUpdate']);
 
-        Route::get('admin/settings/notifications/sms', [NotificationController::class, 'smsSetting']);
-        Route::put('admin/settings/notifications/sms', [NotificationController::class, 'smsSettingUpdate']);
-        Route::post('admin/settings/notifications/sms/test', [NotificationController::class, 'smsTest']);
-        Route::put('admin/settings/notifications/sms/global', [NotificationController::class, 'globalSmsUpdate']);
+        // Route::get('admin/settings/notifications/sms', [NotificationController::class, 'smsSetting']);
+        // Route::put('admin/settings/notifications/sms', [NotificationController::class, 'smsSettingUpdate']);
+        // Route::post('admin/settings/notifications/sms/test', [NotificationController::class, 'smsTest']);
+        // Route::put('admin/settings/notifications/sms/global', [NotificationController::class, 'globalSmsUpdate']);
 
-        Route::get('admin/settings/notifications/push', [NotificationController::class, 'pushSetting']);
-        Route::put('admin/settings/notifications/push', [NotificationController::class, 'pushSettingUpdate']);
-        Route::put('admin/settings/notifications/push/global', [NotificationController::class, 'globalPushUpdate']);
-        Route::post('admin/settings/notifications/push/config', [NotificationController::class, 'pushConfigUpload']);
-        Route::get('admin/settings/notifications/push/config', [NotificationController::class, 'pushConfigDownload']);
+        // Route::get('admin/settings/notifications/push', [NotificationController::class, 'pushSetting']);
+        // Route::put('admin/settings/notifications/push', [NotificationController::class, 'pushSettingUpdate']);
+        // Route::put('admin/settings/notifications/push/global', [NotificationController::class, 'globalPushUpdate']);
+        // Route::post('admin/settings/notifications/push/config', [NotificationController::class, 'pushConfigUpload']);
+        // Route::get('admin/settings/notifications/push/config', [NotificationController::class, 'pushConfigDownload']);
     });
 
     // Distributor-only routes
@@ -170,7 +170,7 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
 
 Route::get('products', [GeneralProductController::class, 'index']);
 Route::get('products/{id}', [GeneralProductController::class, 'show']);
-Route::get('categories/{id?}', [GeneralProductController::class, 'cats']);
+Route::get('cats', [GeneralProductController::class, 'cats']);
 
 Route::post('apply-coupon', [GeneralProductController::class, 'apply']);
 
