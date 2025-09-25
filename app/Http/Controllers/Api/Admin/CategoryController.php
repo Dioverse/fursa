@@ -17,22 +17,35 @@ class CategoryController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        if ($request->query('sub') === 'true' && $request->query('category_id')) {
-            // Only subcategories (parent_id not null)
+        $sub      = $request->boolean('sub'); // auto-cast "true"/"false"
+        $parentId = $request->query('category_id');
+
+        if ($sub && $parentId) {
+            // Fetch only subcategories under a specific parent
             $categories = Category::withCount('products')
-                ->where('parent_id', $request->query('category_id'))
-                ->whereNotNull('parent_id')
+                ->where('parent_id', $parentId)
                 ->get(['id', 'name', 'slug', 'parent_id']);
-        } elseif ($request->query('sub') === 'true') {
-            $categories = Category::withCount('products')
-                ->whereNotNull('parent_id')
-                ->get(['id', 'name', 'slug', 'parent_id']);
+
+        } elseif ($parentId) {
+            // Fetch specific parent with subcategories + product count
+            $categories = Category::where("id", $parentId)->with([
+                    'subcategories' => function ($query) {
+                        $query->select('id', 'name', 'parent_id', 'image')
+                            ->withCount('products');
+                    }
+                ])
+                ->withCount('subcategories')
+                ->whereNull('parent_id')
+                ->get(['id', 'name', 'slug']);
+
         } else {
-            // Only parent categories with their subcategories
-            $categories = Category::with(['subcategories' => function ($query) {
-                    $query->select('id', 'name', 'parent_id','image');
-                    $query->withCount('products');
-                }])->withCount('subcategories')
+            $categories = Category::with([
+                    'subcategories' => function ($query) {
+                        $query->select('id', 'name', 'parent_id', 'image')
+                            ->withCount('products');
+                    }
+                ])
+                ->withCount('subcategories')
                 ->whereNull('parent_id')
                 ->get(['id', 'name', 'slug']);
         }

@@ -71,7 +71,6 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
         Route::apiResource('admin', AdminController::class);
         Route::get('admin-dashboard', [AdminController::class, 'dashboard']);
         Route::apiResource('categories', CategoryController::class);
-        Route::apiResource('categories', CategoryController::class);
         Route::apiResource('admin-products', ProductController::class);
         Route::post('admin-products/{id}/images', [ProductController::class, 'addImages']);
         Route::delete('admin-products/{id}/images', [ProductController::class, 'deleteImages']);
@@ -171,6 +170,8 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
 
 Route::get('products', [GeneralProductController::class, 'index']);
 Route::get('products/{id}', [GeneralProductController::class, 'show']);
+Route::get('categories/{id?}', [GeneralProductController::class, 'cats']);
+
 Route::post('apply-coupon', [GeneralProductController::class, 'apply']);
 
 Route::get('posts', [DistCustPostController::class, 'index']);

@@ -25,8 +25,9 @@ class FlutterwaveGateway implements PaymentGateway
                 ->throw()
                 ->json();
 
+            $resStat = ($response['status'] === 'success' || $response['status'] === true);
             return [
-                'success'     => $response['status'] === 'success',
+                'success'     => $resStat,
                 'status'      => match($response['data']['status'] ?? null) {
                     'successful' => 'successful',
                     'failed'     => 'failed',
@@ -46,9 +47,10 @@ class FlutterwaveGateway implements PaymentGateway
             ];
         } catch (RequestException $e) {
             // This catches HTTP errors like 404 Not Found, 500 Server Error, etc.
-            return ['success' => false];
+            return ['success' => false,"kkm"=>$e->getMessage()];
         } catch (\Exception $e) {
             // This catches any other unexpected errors, such as network issues.
+            // return ['success' => false,"kkm"=>12];
             return ['success' => false];
         }
     }
@@ -64,9 +66,8 @@ class FlutterwaveGateway implements PaymentGateway
                 ->throw()
                 ->json();
 
-            $resStat = $response['status'] === 'success' ? true : false;
             return [
-                'success'   => $resStat,
+                'success'   => $response['status'] === 'success',
                 'message'   => $response['message'] ?? 'Refund request failed',
                 'transaction_id' => $transactionId,
                 'refund_id' => $response['data']['id'] ?? null,

@@ -88,13 +88,47 @@ class ProductController extends Controller
     }
 
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function cats(Request $request)
     {
-        //
+        $sub      = $request->boolean('sub'); // auto-cast "true"/"false"
+        $parentId = $request->query('category_id');
+
+        if ($sub && $parentId) {
+            $categories = Category::withCount('products')
+                ->where('parent_id', $parentId)
+                ->get(['id', 'name', 'description', 'image', 'slug', 'parent_id']);
+
+        } elseif ($parentId) {
+            // Fetch specific parent with subcategories + product count
+            $categories = Category::where("id", $parentId)->with([
+                    'subcategories' => function ($query) {
+                        $query->select('id', 'name', 'parent_id', 'image')
+                            ->withCount('products');
+                    }
+                ])
+                ->withCount('subcategories')
+                ->whereNull('parent_id')
+                ->get(['id', 'name', 'description', 'image', 'slug']);
+
+        } else {
+            // Fetch parent categories with subcategories + product count
+            $categories = Category::with([
+                    'subcategories' => function ($query) {
+                        $query->select('id', 'name', 'parent_id', 'image')
+                            ->withCount('products');
+                    }
+                ])
+                ->withCount('subcategories')
+                ->whereNull('parent_id')
+                ->get(['id', 'name', 'description', 'image', 'slug']);
+        }
+
+        return response()->json([
+            'message' => 'Categories retrieved successfully.',
+            'data'    => $categories,
+        ]);
     }
+
 
     /**
      * Display the specified resource.
