@@ -199,7 +199,6 @@ Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])-
 //         'failed_jobs' => DB::table('failed_jobs')->count(),
 //     ]);
 // });
-
 Route::get('/test-notification/{email}/{queue?}', function ($email, $queue) {
     Illuminate\Support\Facades\Cache::forget("GeneralSetting");
 
