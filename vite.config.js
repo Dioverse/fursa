@@ -12,7 +12,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://fursa.jarustraining.com.ng',
+        target: 'https://back.fursaenergy.com/public/api',
+        // 'https://fursa.jarustraining.com.ng',
         changeOrigin: true,
         secure: false,
       },

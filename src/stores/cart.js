@@ -3,7 +3,8 @@ import { ref, computed } from 'vue'
 import { useToast } from 'vue-toastification'
 
 // 🔑 API helper
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://fursa.jarustraining.com.ng/api'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://back.fursaenergy.com/public/api'
+// 'https://fursa.jarustraining.com.ng/api'
 
 export const useCartStore = defineStore('cart', () => {
   const toast = useToast()
