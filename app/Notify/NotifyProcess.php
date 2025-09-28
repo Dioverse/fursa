@@ -1,22 +1,25 @@
 <?php
-
 namespace App\Notify;
 
-use App\Models\User;
-use App\Models\NotificationTemplate;
-use App\Models\NotificationLog;
-use App\Models\AdminNotification;
 use App\Constants\Status;
+use App\Models\AdminNotification;
+use App\Models\NotificationLog;
+use App\Models\NotificationTemplate;
+use App\Models\User;
+use Illuminate\Support\Facades\Cache; // Added missing import for Cache
+use Illuminate\Support\Facades\Log;
+// Added missing import for Log
 
 abstract class NotifyProcess
 {
+    public $gs;
     public $templateName;
     public $shortCodes = [];
-    public $loopItems = []; // New property for loop data
+    public $loopItems  = []; // New property for loop data
     public $user;
     public $template;
     public $message;
-    public $createLog = true;
+    public $createLog  = true;
     public $userColumn = 'user_id';
     public $subject;
     public $receiverName;
@@ -44,8 +47,15 @@ abstract class NotifyProcess
 
         if ($this->user) {
             $this->receiverName = $this->user->name ?? $this->user->first_name ?? 'User';
-            $this->toAddress = $this->user->email ?? $this->user->phone ?? null;
+            $this->toAddress    = $this->user->email ?? $this->user->phone ?? null;
         }
+    }
+
+    public function __construct()
+    {
+        // Setting the configuration (gs) must be done in getMessage() after
+        // prevConfiguration() runs, as $this->globalTemplate and $this->notifyConfig
+        // are not yet set by the child class here.
     }
 
     /**
@@ -56,13 +66,22 @@ abstract class NotifyProcess
         $this->resolveUser();
         $this->prevConfiguration();
 
+        // 1. Fetch all necessary General Settings in one cached call
+        $this->gs = gs([
+            'site_name',
+            'site_logo',
+            $this->globalTemplate, // e.g., 'email_template'
+            $this->notifyConfig,   // e.g., 'mail_config'
+        ]);
+        // Log::info("General Settings Fetched for Notification", $this->gs);
+
         $template = NotificationTemplate::where('act', $this->templateName)
             ->where($this->statusField, Status::ENABLE)
             ->first();
 
         $this->template = $template;
 
-        if (!$template && $this->templateName) {
+        if (! $template && $this->templateName) {
             return false;
         }
 
@@ -77,7 +96,7 @@ abstract class NotifyProcess
 
         // Wrap inside global template
         $message = $this->replaceShortCode(
-            gs($this->globalTemplate),
+            $this->gs[$this->globalTemplate],
             $body
         );
 
@@ -109,27 +128,27 @@ abstract class NotifyProcess
 
         // Match loop blocks with regex
         $pattern = '/\{\{#each\s+(\w+)\}\}(.*?)\{\{\/each\}\}/s';
-        
+
         return preg_replace_callback($pattern, function ($matches) {
-            $loopName = $matches[1];
+            $loopName     = $matches[1];
             $loopTemplate = $matches[2];
-            
-            if (!isset($this->loopItems[$loopName])) {
+
+            if (! isset($this->loopItems[$loopName])) {
                 return ''; // Remove the loop block if no data
             }
-            
+
             $output = '';
             foreach ($this->loopItems[$loopName] as $item) {
                 $itemOutput = $loopTemplate;
-                
+
                 // Replace placeholders in loop template
                 foreach ($item as $key => $value) {
                     $itemOutput = str_replace('{{' . $key . '}}', $value, $itemOutput);
                 }
-                
+
                 $output .= $itemOutput;
             }
-            
+
             return $output;
         }, $content);
     }
@@ -144,8 +163,8 @@ abstract class NotifyProcess
         // Global placeholders
         $message = str_replace("{{body}}", $body, $message);
         $message = str_replace("{{subject}}", $this->subject ?? '', $message);
-        $message = str_replace("{{logo}}", asset('images/logo.png'), $message);
-        $message = str_replace("{{app_name}}", config('app.name'), $message);
+        $message = str_replace("{{logo}}", $this->gs['site_logo'], $message);
+        $message = str_replace("{{app_name}}", $this->gs['site_name'], $message);
         $message = str_replace("{{year}}", date('Y'), $message);
 
         // User-related placeholders
@@ -190,9 +209,9 @@ abstract class NotifyProcess
     public function createErrorLog($message)
     {
         AdminNotification::create([
-            'user_id' => 0,
-            'title' => $message,
-            'click_url' => '#'
+            'user_id'   => 0,
+            'title'     => $message,
+            'click_url' => '#',
         ]);
     }
 
@@ -202,19 +221,19 @@ abstract class NotifyProcess
     public function createLog($type, $status = true, $errorMessage = null)
     {
         if ($this->user && $this->createLog) {
-            $config = gs($this->notifyConfig);
+            $config = $this->gs[$this->notifyConfig];
 
             NotificationLog::create([
-                $this->userColumn => $this->user->id ?? null,
+                $this->userColumn   => $this->user->id ?? null,
                 'notification_type' => $type,
-                'sender' => $config['name'] ?? 'system',
-                'sent_from' => $this->sentFrom,
-                'sent_to' => $type === 'push' ? 'Firebase Token' : $this->toAddress,
-                'subject' => $this->subject,
-                'image' => $this->pushImage ?? null,
-                'message' => $type === 'email' ? $this->finalMessage : strip_tags($this->finalMessage),
-                'status' => $status,
-                'error_message' => $errorMessage
+                'sender'            => $config['name'] ?? 'system',
+                'sent_from'         => $this->sentFrom,
+                'sent_to'           => $type === 'push' ? 'Firebase Token' : $this->toAddress,
+                'subject'           => $this->subject,
+                'image'             => $this->pushImage ?? null,
+                'message'           => $type === 'email' ? $this->finalMessage : strip_tags($this->finalMessage),
+                'status'            => $status,
+                'error_message'     => $errorMessage,
             ]);
         }
     }
