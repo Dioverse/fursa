@@ -12,11 +12,8 @@ use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
-    public function createOrder($user, $transRef, $total, $shipCost, $gateway)
+    public function createOrder($user, $total, $shipCost, $gateway)
     {
-        if (Order::where('trans_ref', $transRef)->exists() || Payment::where('transaction_reference', $transRef)->exists()) {
-            return ['error'   => true, 'message' => 'Invalid transaction, contact support.'];
-        }
         try {
             $shippingAddress = $user->shippingAddress()->orderByDesc("is_default")->first(['id','full_name','phone','address_line_one','city','state','postal_code','country']);
 
@@ -24,14 +21,16 @@ class OrderService
 
             $lastOrder = Order::latest('id')->first();
             $nextId = $lastOrder ? $lastOrder->id + 1 : 1;
-            $orderId = 'ORD-' . $nextId . strtoupper(Str::random(8));
+            $orderId = 'ORD-' . $nextId . strtoupper(Str::random(9));
             $now = Carbon::now();
+            $transRef = Str::random(9) . $now->format("Ymd");
+            $total_amount = $total + $shipCost->cost;
             $order = Order::create([
                 'user_id'          => $user->id,
                 'shipping_address' => $shippingAddress->toJson(), // serialize address
                 'order_id'         => $orderId,
                 'trans_ref'        => $transRef,
-                'total_amount'     => $total + $shipCost->cost,
+                'total_amount'     => $total_amount,
                 'status'           => 'pending',
                 'shipping_cost'    => $shipCost->cost,
                 'delivery_days'    => $now->add('days', $shipCost->min_day)->format('Y-m-d') . ' - ' . $now->add('days', $shipCost->max_day)->format('Y-m-d'),
@@ -56,19 +55,21 @@ class OrderService
             if (!empty($orderItems)) { OrderItem::insert($orderItems); }
 
             // 3. Create pending payment
-            Payment::create([
-                'order_id'             => $order->id,
-                'user_id'              => $user->id,
-                'status'               => 'pending',
-                'refund_status'        => null,
-                'payment_gateway'      => $gateway,
-                'transaction_reference'=> $transRef,
-                'amount'               => $total + $shipCost->cost,
-            ]);
+            // Payment::create([
+            //     'order_id'             => $order->id,
+            //     'user_id'              => $user->id,
+            //     'status'               => 'pending',
+            //     'refund_status'        => null,
+            //     'payment_gateway'      => $gateway,
+            //     'transaction_reference'=> $transRef,
+            //     'amount'               => $total + $shipCost->cost,
+            // ]);
 
             return [
-                'error'   => false,
-                'order'   => $order,
+                'error'     => false,
+                'orderId'   => $orderId,
+                'trans_ref' => $transRef,
+                'amount'    => $total_amount
             ];
         } catch (\Exception $e) {
             return [

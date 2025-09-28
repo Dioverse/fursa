@@ -98,12 +98,12 @@ class Product extends Model implements AuditableContract
 
         if ($user && $user->isDistributorApprov()) { $price = $this->distributor_price; }
 
-        if (!$discount) { return $price; }
+        if (!$discount) { return (float)$price; }
 
-        if ($discount->type === 'percentage') { return round($price * (1 - ($discount->value / 100)), 2); }
+        if ($discount->type === 'percentage') { return (float)round($price * (1 - ($discount->value / 100)), 2); }
 
         // fixed discount
-        return max($price - $discount->value, 0);
+        return (float)max($price - $discount->value, 0);
     }
 
     public function getPriceAttribute()
@@ -116,7 +116,7 @@ class Product extends Model implements AuditableContract
         }
 
         // Otherwise → base price
-        return $this->base_price;
+        return (float)$this->base_price;
     }
 
     protected static function booted()

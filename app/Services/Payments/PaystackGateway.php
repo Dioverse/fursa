@@ -2,6 +2,7 @@
 
 namespace App\Services\Payments;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\RequestException;
 use App\Services\Payments\Contracts\PaymentGateway;
@@ -21,7 +22,6 @@ class PaystackGateway implements PaymentGateway
         try {
             $response = Http::withToken($this->secretKey)
                 ->get("{$this->baseUrl}/transaction/verify/{$reference}")
-                ->throw()
                 ->json();
 
             $resStat = $response['status'] ?? false;
@@ -33,19 +33,16 @@ class PaystackGateway implements PaymentGateway
                     'abandoned' => 'cancelled',
                     default     => 'pending',
                 },
-                'message'   => $response['message'] ?? 'Unknown status',
+                'message'   => $response['data']['gateway_response'] ?? 'Unknown status',
                 'reference' => $response['data']['reference'] ?? null,
-                'amount'    => ($response['data']['amount'] / 100) ?? null,
+                'amount'    => data_get($response, 'data.amount') / 100,
                 'currency'  => $response['data']['currency'] ?? null,
                 'gateway'   => 'paystack',
-                'method'    => $response['data']['channel'],
-                'customer'  => $response['data']['customer'] ?? [],
+                'method'    => $response['data']['channel'] ?? "",
+                // 'customer'  => $response['data']['customer'] ?? [],
                 'raw'       => $response,
             ];
 
-        } catch (RequestException $e) {
-            // This catches HTTP errors like 404 Not Found, 500 Server Error, etc.
-            return ['success' => false];
         } catch (\Exception $e) {
             // This catches any other unexpected errors, such as network issues.
             return ['success' => false];

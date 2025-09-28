@@ -22,7 +22,6 @@ class FlutterwaveGateway implements PaymentGateway
         try {
             $response = Http::withToken($this->secretKey)
                 ->get("{$this->baseUrl}/transactions/{$reference}/verify")
-                ->throw()
                 ->json();
 
             $resStat = ($response['status'] === 'success' || $response['status'] === true);
@@ -41,16 +40,15 @@ class FlutterwaveGateway implements PaymentGateway
                 'amount'      => $response['data']['amount'] ?? null,
                 'currency'    => $response['data']['currency'] ?? null,
                 'gateway'     => 'flutterwave',
-                'method'      => $response['data']['payment_type'],
-                'customer'    => $response['data']['customer'] ?? [],
+                'method'      => $response['data']['payment_type'] ?? null,
+                // 'customer'    => $response['data']['customer'] ?? [],
                 'raw'         => $response,
             ];
-        } catch (RequestException $e) {
-            // This catches HTTP errors like 404 Not Found, 500 Server Error, etc.
-            return ['success' => false,"kkm"=>$e->getMessage()];
+        // } catch (RequestException $e) {
+        //     // This catches HTTP errors like 404 Not Found, 500 Server Error, etc.
+        //     return ['success' => false,"kkm"=>$e->getMessage()];
         } catch (\Exception $e) {
             // This catches any other unexpected errors, such as network issues.
-            // return ['success' => false,"kkm"=>12];
             return ['success' => false];
         }
     }

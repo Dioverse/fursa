@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Cart;
+use App\Models\Order;
 use App\Models\CartItem;
 use App\Models\Shipping;
 use App\Constants\Status;
@@ -41,7 +42,7 @@ class CheckoutController extends Controller
         // get gateways (hide secret_key)
         $gateways = AdminSetting::get("gateways");
         $gateways = collect($gateways)->map(function ($gateway) {
-            return Arr::except($gateway, ['secret_key','encryption_key']);
+            return Arr::only($gateway, ['status','currency','image']);
         })->toArray();
 
 
@@ -81,7 +82,7 @@ class CheckoutController extends Controller
 
     protected function getCartSummary($user)
     {
-        $cart = Cart::with('cartItems')->where('user_id', $user->id)->first();
+        $cart = $user->cart;
 
         if (!$cart || $cart->cartItems->isEmpty()) {
             return [
@@ -115,30 +116,29 @@ class CheckoutController extends Controller
         // Build cart summary with discount consideration
         $cartItems = $cart->cartItems()->with(['product'])->get()
         // $cartItems = $cart->cartItems()->with(['product.category'])->get()
-            ->map(function ($item) use ($user) {
-                $product  = $item->product;
+        ->map(function ($item) use ($user) {
+            $product  = $item->product;
 
-                $originalPrice   = $product->price;              // base/distributor depending on user
-                $discountedPrice = $product->discounted_price;   // dynamic calculation
+            $originalPrice   = $product->price;              // base/distributor depending on user
+            $discountedPrice = $product->discounted_price;   // dynamic calculation
+            $quantity = $item->quantity;
 
-                return [
-                    'id'              => $item->id,
-                    'product_id'      => $product->id,
-                    'product_name'    => $product->name,
-                    'product_slug'    => $product->slug,
-                    'quantity'        => $item->quantity,
-                    'price'           => $originalPrice,       // keep original
-                    'discounted_price'=> $discountedPrice,     // if no discount, same as price
-                    'subtotal'        => (float) ($discountedPrice * $item->quantity),
-                    'originalSubtotal'=> (float) ($originalPrice * $item->quantity),
-                    'stock_quantity'  => $product->stock_quantity,
-                    // 'category_name'   => $product->category?->name,
-                    // 'category_slug'   => $product->category?->slug,
-                ];
-            });
+            return [
+                'id'              => $item->id,
+                'product_id'      => $product->id,
+                'product_name'    => $product->name,
+                'product_slug'    => $product->slug,
+                'quantity'        => $quantity,
+                'price'           => $originalPrice,       // keep original
+                'discounted_price'=> $discountedPrice,     // if no discount, same as price
+                'subtotal'        => (float)bcmul($discountedPrice, $quantity, 2),
+                'originalSubtotal'=> (float)bcmul($originalPrice, $quantity, 2),
+                'stock_quantity'  => $product->stock_quantity,
+            ];
+        });
 
         $ship = $this->shippingCostLogic($user);
-        if(empty($ship)) { return ['error'=>true, 'message'=>"No shipping address found, create some"]; }
+        if(empty($ship)) { return ['error'=>true, 'message'=>"No shipping address found."]; }
         $shipCost = $ship['shipCost'];
 
         $amt = $cartItems->sum('subtotal');
@@ -148,7 +148,7 @@ class CheckoutController extends Controller
             'first_name'        => $user->first_name,
             'last_name'         => $user->last_name,
             'email'             => $user->email,
-            'payable'           => $amt + $shipCost->cost, // Payable (amount + shipping cost)
+            'payable'           => (float)bcadd($amt, $shipCost->cost, 2), // Payable (amount + shipping cost)
             'amount'            => $amt, // sum of discounted subtotals
             'originalAmount'    => $cartItems->sum('originalSubtotal'), // sum of original subtotals
             'cart_items'        => $cartItems,
@@ -157,7 +157,7 @@ class CheckoutController extends Controller
         ];
     }
 
-    public function checkout(Request $request, $gateway, $transRef, PaymentManager $manager)
+    public function makeOrder(Request $request, $gateway, PaymentManager $manager)
     {
         $user = $request->user();
 
@@ -172,32 +172,94 @@ class CheckoutController extends Controller
             return response()->json($cartSummary, 422);
         }
 
-        $orderCreate = $this->orders->createOrder($user,$transRef,$cartSummary['amount'],$cartSummary['shippingCost'],$gateway);
-        if ($orderCreate['error']) {
-            return response()->json($orderCreate, 422);
+        try {
+            DB::beginTransaction();
+
+            // 🔥 Clean up abandoned pending orders with no payment
+            $user->order()->where('status', 'pending')
+                ->whereDoesntHave('payment')->delete();
+
+            // 2. Create fresh order
+            $orderCreate = $this->orders->createOrder(
+                $user,
+                $cartSummary['amount'],
+                $cartSummary['shippingCost'],
+                $gateway
+            );
+
+            if ($orderCreate['error']) {
+                DB::rollBack();
+                return response()->json($orderCreate, 422);
+            }
+
+            // 3. Get gateway config without secret_key
+            $gatewayConfig = AdminSetting::getNested("gateways.$gateway");
+            $pubKey = Arr::except($gatewayConfig, ['secret_key']);
+
+            DB::commit();
+
+            return response()->json([
+                "message" => "Order Created Successfully",
+                "data"    => [
+                    "orderId"       => $orderCreate['orderId'],
+                    "trans_ref"     => $orderCreate['trans_ref'],
+                    "total_amount"  => $orderCreate['amount'],
+                    "gws"           => $pubKey
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Checkout error: " . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json([
+                'error'   => true,
+                'message' => 'Failed to place order',
+            ], 500);
         }
-        $order = $orderCreate['order'];
+    }
+
+
+    public function checkout(Request $request, $gateway, $transRef, $orderId, PaymentManager $manager)
+    {
+        $user = $request->user();
+
+        $gateCheck = $manager->gateway($gateway);
+        if ($gateCheck['error']) {
+            return response()->json($gateCheck, 422);
+        }
+
+        $order = $user->order()->where("order_id", $orderId)->where("trans_ref", $transRef)
+            ->whereDoesntHave('payment', function ($q) {
+                $q->where("status","!=","pending");
+            })->first();
+        if (!$order) {
+            return response()->json(["message"=>"Order not found."], 404);
+        }
 
         try {
             DB::beginTransaction();
 
-            // 3. Verify payment with gateway (external API, may be slow)
-            $paymentResult = $this->payments->verifyAndSave($gateCheck['gate'],$transRef,$order->id,$order->user_id,($cartSummary['amount'] + $cartSummary['shippingCost']->cost));
+            $paymentResult = $this->payments->verifyAndSave($gateCheck['gate'],$transRef,$order->id,$order->user_id,$order->total_amount);
             if ($paymentResult['error']) {
                 DB::rollBack();
                 return response()->json($paymentResult, 422);
             }
 
             $payment = $order->payment;
+
             if (in_array($paymentResult['status'], ['failed', 'cancelled'])) {
-                $order->update(['status' => 'cancelled']);
-                $payment->update(['status' => 'failed']);
-                DB::rollBack();
-                return response()->json(['error'   => true,'message' => 'Order cancelled. Payment failed.'], 422);
+                $order->update(['status' => 'failed']);
+                $msg = 'Order cancelled. Payment failed';
+                $msg .= !empty($paymentResult['reason']) ? " - " . $paymentResult['reason'] : '';
+                $msg .= '.';
+                DB::commit();
+                return response()->json(['error' => true,'message' => $msg], 422);
             }
 
-            // Eager load items + products + images before use
-            $order->loadMissing(['orderItem.product.images', 'statusHstry']);
+            // Eager load items + products before use
+            $order->loadMissing(['orderItem.product']);
 
             // 4. Deduct stock (bulk + safe update)
             $productUpdates = [];
@@ -245,7 +307,7 @@ class CheckoutController extends Controller
                 // Build products + history arrays
                 $products = $order->orderItem->map(function ($item, $index) {
                     $imagePath = optional($item->product->images->first())->path;
-                    $image = config("storage_url") . '/' . $imagePath;
+                    $image = config("app.storage_url") . '/' . $imagePath;
                     return [
                         'sno'      => $index + 1,
                         'image'    => $image,
@@ -275,7 +337,7 @@ class CheckoutController extends Controller
 
             return response()->json([
                 'message' => 'Order placed successfully',
-                'order'   => $order->load('payment:id,order_id,status,transaction_reference,payment_gateway,paid_at'),
+                // 'order'   => $order->load('payment:id,order_id,status,transaction_reference,payment_gateway,paid_at'),
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -304,35 +366,35 @@ class CheckoutController extends Controller
     //         return response()->json($cartSummary, 422);
     //     }
 
-    //     $orderCreate = $this->orders->createOrder($user, $transRef, $cartSummary['amount'], $cartSummary['shippingCost'], $gateway); 
+    //     $orderCreate = $this->orders->createOrder($user,$transRef,$cartSummary['amount'],$cartSummary['shippingCost'],$gateway);
     //     if ($orderCreate['error']) {
-    //         // DB::rollBack();
     //         return response()->json($orderCreate, 422);
     //     }
     //     $order = $orderCreate['order'];
-        
+
     //     try {
     //         DB::beginTransaction();
 
-    //         // 3. Verify payment with gateway
-    //         $paymentResult = $this->payments->verifyAndSave($gateCheck['gate'], $transRef, $order->id, $order->user_id, ($cartSummary['amount'] + $cartSummary['shippingCost']->cost));
+    //         // 3. Verify payment with gateway (external API, may be slow)
+    //         $paymentResult = $this->payments->verifyAndSave($gateCheck['gate'],$transRef,$order->id,$order->user_id,($cartSummary['amount'] + $cartSummary['shippingCost']->cost));
     //         if ($paymentResult['error']) {
     //             DB::rollBack();
     //             return response()->json($paymentResult, 422);
     //         }
 
-    //         $payment = $order->payment; // since created in createOrder()
+    //         $payment = $order->payment;
     //         if (in_array($paymentResult['status'], ['failed', 'cancelled'])) {
     //             $order->update(['status' => 'cancelled']);
-    //             $payment->update(['status' => 'failed']); // keep sync
+    //             $payment->update(['status' => 'failed']);
     //             DB::rollBack();
-    //             return response()->json([
-    //                 'error'   => true,
-    //                 'message' => 'Order cancelled. Payment failed.'
-    //             ], 422);
+    //             return response()->json(['error'   => true,'message' => 'Order cancelled. Payment failed.'], 422);
     //         }
 
-    //         // 4. Deduct stock
+    //         // Eager load items + products + images before use
+    //         $order->loadMissing(['orderItem.product.images', 'statusHstry']);
+
+    //         // 4. Deduct stock (bulk + safe update)
+    //         $productUpdates = [];
     //         foreach ($order->orderItem as $item) {
     //             $product = $item->product;
     //             if ($product->stock_quantity < $item->quantity) {
@@ -342,41 +404,68 @@ class CheckoutController extends Controller
     //                     'message' => "Insufficient stock for {$product->name}"
     //                 ], 422);
     //             }
-    //             $product->decrement('stock_quantity', $item->quantity);
+    //             $productUpdates[$product->id] = $item->quantity;
     //         }
 
-    //         // 5. Confirm order + clear cart
-    //         $user->cart->cartItems()->delete();
+    //         if (!empty($productUpdates)) {
+    //             $ids = implode(',', array_keys($productUpdates));
 
+    //             $cases = '';
+    //             foreach ($productUpdates as $id => $qty) {
+    //                 $cases .= " WHEN id = {$id} AND stock_quantity >= {$qty} THEN stock_quantity - {$qty}";
+    //             }
+
+    //             $query = "UPDATE products SET stock_quantity = CASE{$cases} ELSE stock_quantity END
+    //                 WHERE id IN ({$ids})";
+
+    //             DB::statement($query);
+    //             $failed = DB::table('products')->whereIn('id', array_keys($productUpdates))
+    //                 ->whereRaw("stock_quantity < 0")->exists();
+
+    //             if ($failed) {
+    //                 DB::rollBack();
+    //                 //refund account
+    //                 return response()->json(['error' => true,'message' => 'Stock update failed — some products ran out of stock.',], 422);
+    //             }
+    //         }
+
+    //         // 5. Confirm order + clear cart (single query delete)
+    //         CartItem::where('cart_id', $user->cart->id)->delete();
     //         $this->orders->updateStatus($order, Status::O_CONFIRM, false);
+
     //         DB::commit();
 
-            
-    //         $products = $order->orderItems->map(function ($item, $index) {
-    //             $imagePath = optional($item->product->images->first())->path;
-    //             $image = $imagePath ? Storage::disk('public')->url($imagePath) : asset('images/placeholder.png');
-    //             return [
-    //                 'sno'      => $index + 1,
-    //                 'image'    => $image,
-    //                 'name'     => $item->product->name,
-    //                 'price'    => number_format($item->price, 2),
-    //                 'quantity' => $item->quantity,
-    //                 'total'    => number_format($item->price * $item->quantity, 2),
-    //             ];
-    //         })->toArray();
-    //         $statushistory = $order->statusHstry->map(function ($history, $index) {
-    //             return [
-    //                 'sno'    => $index + 1,
-    //                 'status' => ucfirst($history->status),
-    //                 'date'   => $history->created_at->format('Y-m-d H:i:s'),
-    //             ];
-    //         })->toArray();
-    //         notify("ORDER_CONFIRMED", $user, [
-    //             "order_number"=>$order->order_id, "order_date"=>$order->created_at, "total_amount" => $order->total_amount
-    //         ],["email"], false, [
-    //             "products" => $products,
-    //             "status_history" => $statushistory,
-    //         ]);
+    //         dispatch(function () use ($user, $order) {
+    //             // Build products + history arrays
+    //             $products = $order->orderItem->map(function ($item, $index) {
+    //                 $imagePath = optional($item->product->images->first())->path;
+    //                 $image = config("app.storage_url") . '/' . $imagePath;
+    //                 return [
+    //                     'sno'      => $index + 1,
+    //                     'image'    => $image,
+    //                     'name'     => $item->product->name,
+    //                     'price'    => number_format($item->unit_price, 2),
+    //                     'quantity' => $item->quantity,
+    //                     'total'    => number_format($item->unit_price * $item->quantity, 2),
+    //                 ];
+    //             })->toArray();
+
+    //             $statushistory = $order->statusHstry->map(function ($history, $index) {
+    //                 return [
+    //                     'sno'    => $index + 1,
+    //                     'status' => ucfirst($history->status),
+    //                     'date'   => $history->created_at->format('Y-m-d H:i:s'),
+    //                 ];
+    //             })->toArray();
+    //             notify(
+    //                 "ORDER_CONFIRMED", $user,
+    //                 [
+    //                     "order_number" => $order->order_id,"order_date" => $order->created_at,"total_amount" => $order->total_amount,
+    //                     'shipping_cost'=>$order->shipping_cost,'delivery_date'=>$order->delivery_days,
+    //                 ],
+    //                 ["email"], false, ["products" => $products,"status_history" => $statushistory]
+    //             );
+    //         });
 
     //         return response()->json([
     //             'message' => 'Order placed successfully',
@@ -384,13 +473,16 @@ class CheckoutController extends Controller
     //         ]);
     //     } catch (\Exception $e) {
     //         DB::rollBack();
-    //         Log::error("Checkout error: ".$e->getMessage(), ['trace' => $e->getTraceAsString()]);
+    //         Log::error("Checkout error: " . $e->getMessage(), [
+    //             'trace' => $e->getTraceAsString(),
+    //         ]);
     //         return response()->json([
     //             'error'   => true,
     //             'message' => 'Checkout failed',
     //         ], 500);
     //     }
     // }
+    
 
     public function retryCheckout(Request $request, $transRef, PaymentManager $manager)
     {

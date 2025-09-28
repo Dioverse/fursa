@@ -75,7 +75,7 @@ class User extends Authenticatable implements MustVerifyEmail, AuditableContract
         return $this->hasOne(Distributor::class);
     }
 
-public function shippingAddress()
+    public function shippingAddress()
     {
         return $this->hasMany(ShippingAddress::class);
     }

@@ -31,7 +31,8 @@ return new class extends Migration
                 'out for delivery',
                 'delivered',
                 'cancelled',
-                'failed'
+                'failed',
+                'expired'
             ])->default('pending');
             $table->timestamps();
         });

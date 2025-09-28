@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->enum('status', ['pending', 'successful', 'failed', 'reversed'])->default('pending');
             $table->enum('refund_status', ['pending', 'successful', 'failed'])->nullable();
+            $table->string('reason')->nullable();
             $table->string('payment_gateway'); // e.g., Paystack, Flutterwave
             $table->string('payment_method')->nullable(); // e.g., card, transfer
             $table->string('transaction_reference')->unique();

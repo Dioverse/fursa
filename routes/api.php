@@ -161,7 +161,8 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
     Route::delete('carts/rm', [CartController::class, 'unSetItem']);
     Route::patch('carts/update', [CartController::class, 'updateItemQuantity']);
     Route::post('checkout/init', [CheckoutController::class, 'initialize']);
-    Route::post('checkout/{gateway}/{transId}', [CheckoutController::class, 'checkout']);
+    Route::post('place-order/{gateway}', [CheckoutController::class, 'makeOrder']);
+    Route::post('checkout/{gateway}/{transId}/{orderId}', [CheckoutController::class, 'checkout']);
 
     Route::apiResource('wishlists', WishlistController::class)->only(['index','store']);
     Route::delete('wishlists/rm', [WishlistController::class, 'unSetItem']);

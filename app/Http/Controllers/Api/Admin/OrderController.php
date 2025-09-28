@@ -37,7 +37,7 @@ class OrderController extends Controller
         }
 
         // Filter by status
-        $allowedStatuses = ['pending', 'out for delivery', 'delivered', 'cancelled', 'failed'];
+        $allowedStatuses = ['pending','confirmed','processing','shipping','shipped','out for delivery','delivered','cancelled','failed','expired'];
         if ($request->filled('status') && in_array($request->input('status'), $allowedStatuses)) {
             $query->where('status', $request->input('status'));
         }

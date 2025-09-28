@@ -18,6 +18,7 @@ class Payment extends Model implements AuditableContract
         'order_id',
         'user_id',
         'status',
+        'reason',
         'payment_gateway',
         'payment_method',
         'transaction_reference',
