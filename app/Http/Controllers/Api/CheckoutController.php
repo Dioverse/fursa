@@ -175,7 +175,7 @@ class CheckoutController extends Controller
         try {
             DB::beginTransaction();
 
-            // 🔥 Clean up abandoned pending orders with no payment
+            // Clean up abandoned pending orders with no payment
             $user->order()->where('status', 'pending')
                 ->whereDoesntHave('payment')->delete();
 
