@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureDistributorIsApproved
+class IsRejected
 {
     /**
      * Handle an incoming request.
@@ -16,7 +16,7 @@ class EnsureDistributorIsApproved
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (User::isApproved()) {
+        if (User::isDistributorReject() || User::isCustomer()) {
             return $next($request);
         }
 

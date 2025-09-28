@@ -1,12 +1,13 @@
 <?php
 
 use App\Http\Middleware\BanCheck;
+use App\Http\Middleware\IsApproved;
 use Illuminate\Foundation\Application;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\EnsureEmailIsVerifiedApi;
+use App\Http\Middleware\IsRejected;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -20,6 +21,8 @@ return Application::configure(basePath: dirname(__DIR__))
         
         $middleware->alias([
             'verifiedcustom' => EnsureEmailIsVerifiedApi::class,
+            'ensureapproved' => IsApproved::class,
+            'ensurerejected' => IsRejected::class,
             'role' => RoleMiddleware::class,
             'ban' => BanCheck::class,
         ]);

@@ -43,28 +43,35 @@ class DistributorController extends Controller
 
 
         // Prevent re-approval
-        if ($request->status === 'approved' && $user->status === 'approved') {
+        $stat = $request->status;
+        $reason = $request->reason ?? "";
+        if ($stat === 'approved' && $user->status === 'approved') {
             return response()->json(['message' => 'Distributor already approved.'], 422);
         }
 
         // Update user status
-        $user->status = $request->status;
+        $user->status = $stat;
         $user->save();
 
         // Update distributor table if approved
-        if ($request->status === 'approved') {
+        if ($stat === 'approved') {
             if (!$user->distributor) {
                 return response()->json(['message' => 'Distributor record not found for this user.'], 404);
             }
             $user->distributor->approved_at = Carbon::now();
             $user->distributor->save();
-        } elseif ($request->status === 'rejected') {
+        } elseif ($stat === 'rejected') {
             if ($user->distributor) {
                 $user->distributor->approved_at = null;
-                $user->distributor->reason = $request->reason;
+                $user->distributor->reason = $reason;
                 $user->distributor->save();
             }
         }
+
+        notify($user,$stat == "approved" ? 'DISTRIBUTOR_APPROVE' : 'DISTRIBUTOR_REJECT',
+        ['reason'=>$reason],
+        ['email'],true
+        );
 
         return response()->json([
             'message' => 'Distributor status updated successfully.',

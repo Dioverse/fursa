@@ -142,15 +142,15 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
     });
 
     // Distributor-only routes
-    Route::middleware('role:distributor')->prefix('distributor')->group(function () {
+    Route::prefix('distributor')->group(function () {
+        Route::get('profile-details', [ProfileController::class, 'show']);
+        Route::post('profile-update', [ProfileController::class, 'update'])->middleware('ensurerejected');
+        Route::post('profile-document-upload', [ProfileController::class, 'updateDocuments'])->middleware('ensurerejected');
     });
 
     // Customer & Distributor routes
     Route::middleware('role:customer,distributor')->group(function () {
         Route::get('dashboard', [GeneralController::class, 'dashboard']);
-        Route::get('profile-details', [ProfileController::class, 'show']);
-        Route::post('profile-update', [ProfileController::class, 'update']);
-        Route::post('profile-document-upload', [ProfileController::class, 'updateDocuments']);
         Route::apiResource('orders', DistCustOrderController::class)->only(['index', 'show', 'update']);
         Route::apiResource('shipping-address', ShippingAddressController::class);
         Route::post('set-default-address/{id}', [ShippingAddressController::class, 'setDefaultAddress']);
