@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Shipping;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -179,5 +180,47 @@ class ShippingAddressController extends Controller
             'message' => 'Default shipping address updated successfully.',
             'data' => $address
         ]);
+    }
+
+    public function getCountries(Request $request)
+    {
+        $countries = Shipping::select('country')->distinct()->orderBy('country')->get();
+        
+        return response()->json([
+            'countries' => $countries,
+        ]);
+    }
+
+    public function getStatesWithProvinces(string $country)
+    {
+        // 1. Get a distinct list of states for the given country
+        $uniqueStates = Shipping::where('country', $country)
+            ->select('state')->distinct()->orderBy('state')->get();
+
+        $statesWithProvinces = [];
+
+        // 2. Loop through each unique state to fetch its provinces
+        foreach ($uniqueStates as $state) {
+            $provinces = Shipping::where('country', $country)
+                                ->where('state', $state->state)
+                                ->select('province')
+                                ->orderBy('province')->get();
+
+            $statesWithProvinces[] = [
+                'state' => $state->state,
+                'provinces' => $provinces
+            ];
+        }
+
+        // 3. Return the nested data structure as a JSON response
+        return response()->json([
+            'country' => $country,
+            'data' => $statesWithProvinces
+        ]);
+    }
+
+    public function getProvinces($state)
+    {
+        
     }
 }

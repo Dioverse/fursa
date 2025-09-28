@@ -103,35 +103,18 @@ class ShippingController extends Controller
 
 
     // // Checkout logic only applies active rules
-    // public function getShippingInfo(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'country' => 'required|string',
-    //         'state'   => 'required|string',
-    //         'province'     => 'required|string',
-    //     ]);
+    public function show(string $id)
+    {
+        $rule = Shipping::find($id);
+        if (!$rule) {
+            return response()->json(['message' => 'Shipping rule not found.'], 404);
+        }
 
-    //     $rule = Shipping::where('country', $validated['country'])
-    //         ->where('state', $validated['state'])
-    //         ->where('province', $validated['province'])
-    //         ->where('is_active', true)
-    //         ->first();
-
-    //     if (! $rule) {
-    //         return response()->json([
-    //             'message' => 'This location is not serviceable right now.'
-    //         ], 404);
-    //     }
-
-    //     return response()->json([
-    //         'country'   => $rule->country,
-    //         'state'     => $rule->state,
-    //         'province'       => $rule->province,
-    //         'delivery'  => $rule->min_days . '-' . $rule->max_days . ' days',
-    //         'cost'      => $rule->cost,
-    //         'provider'  => $rule->provider,
-    //     ]);
-    // }
+        return response()->json([
+            "message" => "Shipping rule details",
+            "data"=> $rule
+        ]);
+    }
 
     public function store(Request $request)
     {
@@ -193,6 +176,9 @@ class ShippingController extends Controller
         // 5. Add timestamps and prepare for bulk insert
         $now = now();
         $rulesToInsert = array_map(function ($rule) use ($now) {
+            $rule['country'] = uc_first($rule['country']);
+            $rule['state'] = uc_first($rule['state']);
+            $rule['province'] = uc_first($rule['province']);
             $rule['created_at'] = $now;
             $rule['updated_at'] = $now;
             return $rule;
@@ -203,7 +189,6 @@ class ShippingController extends Controller
 
         return response()->json(['message' => 'Shipping rules added successfully.'], 201);
     }
-
 
     public function update(Request $request, $id)
     {
