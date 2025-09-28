@@ -200,22 +200,19 @@ class ProductController extends Controller
         }
 
         $request->validate([
-
             'name'                => 'sometimes|string|max:255',
             'category_id'         => ['nullable', Rule::exists('categories', 'id')->where('id', '!=',$request->category_id)->whereNotNull('parent_id')],
             'short_description'   => 'nullable|string',
             'description'         => 'nullable|string',
             'base_price'          => 'sometimes|numeric|min:0',
             'distributor_price'   => 'sometimes|numeric|min:0',
-            'stock_quantity'      => 'sometimes|integer|min:0',
             'low_stock_threshold' => 'nullable|integer|min:0',
             'sku'                 => 'required|unique:products,sku'
         ]);
 
         $data = $request->only([
             'name', 'category_id', 'short_description', 'description',
-            'base_price', 'distributor_price', 'stock_quantity',
-            'low_stock_threshold', 'tags',
+            'base_price', 'distributor_price','low_stock_threshold', 'tags',
         ]);
         $data['slug'] = Str::slug($request->name);
         $data['sku'] = strtoupper(Str::slug($request->sku));
