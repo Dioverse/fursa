@@ -69,7 +69,7 @@ class DistributorController extends Controller
             }
         }
 
-        notify($user,$stat == "approved" ? 'DISTRIBUTOR_APPROVE' : 'DISTRIBUTOR_REJECT',
+        notify(($stat == "approved" ? 'DISTRIBUTOR_APPROVE' : 'DISTRIBUTOR_REJECT'), $user,
         ['reason'=>$reason],
         ['email'],true
         );
