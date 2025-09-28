@@ -215,7 +215,7 @@ class ProductController extends Controller
             'base_price', 'distributor_price','low_stock_threshold', 'tags',
         ]);
         $data['slug'] = Str::slug($request->name);
-        $data['sku'] = strtoupper(Str::slug($request->sku));
+        $data['sku'] = strtoupper($request->sku);
 
         $product->update($data);
 
