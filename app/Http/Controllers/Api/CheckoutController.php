@@ -235,7 +235,7 @@ class CheckoutController extends Controller
                 $q->where("status","!=","pending");
             })->first();
         if (!$order) {
-            return response()->json(["message"=>"Order not found."], 404);
+            return response()->json(["message"=>"Order not found/has been resolved."], 404);
         }
 
         try {
