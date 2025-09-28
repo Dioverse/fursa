@@ -247,8 +247,6 @@ class CheckoutController extends Controller
                 return response()->json($paymentResult, 422);
             }
 
-            $payment = $order->payment;
-
             if (in_array($paymentResult['status'], ['failed', 'cancelled'])) {
                 $order->update(['status' => 'failed']);
                 $msg = 'Order cancelled. Payment failed';
