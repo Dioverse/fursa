@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
 class DistributorController extends Controller
@@ -70,7 +71,7 @@ class DistributorController extends Controller
 
         notify($user,$stat == "approved" ? 'DISTRIBUTOR_APPROVE' : 'DISTRIBUTOR_REJECT',
         ['reason'=>$reason],
-        ['email'],true
+        ['email'],false
         );
 
         return response()->json([
