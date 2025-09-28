@@ -177,7 +177,7 @@ abstract class NotifyProcess
     /**
      * Replace custom template shortcodes
      */
-    protected function replaceTemplateShortCode($content)
+    protected function replaceTemplateShortCode($content): mixed
     {
         foreach ($this->shortCodes as $code => $value) {
             $content = str_replace('{{' . $code . '}}', $value, $content);
