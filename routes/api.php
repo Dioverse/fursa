@@ -211,8 +211,6 @@ Route::get('/test-notification/{email}/{queue?}', function ($email, $queue) {
     $user->id = 1;
     $user->email = $email;
     $user->phone = "08152397199";
-
-    // $user = 1;
     notify(
         templateName: 'TEST_TEMPLATE',
         user: $user,
@@ -226,7 +224,7 @@ Route::get('/test-notification/{email}/{queue?}', function ($email, $queue) {
     );
 
     return response()->json([
-        'message' => 'Test notification queued successfully',
+        'message' => 'Test notification sent/queued successfully',
         'queue_connection' => config('queue.default'),
         'email' => $email,
         'queue' => $queue

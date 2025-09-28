@@ -7,16 +7,38 @@ use Illuminate\Support\Facades\Cache;
 
 
 if (!function_exists('gs')) {
+    /**
+     * Retrieves application general settings, cached for performance.
+     *
+     * @param string|array|null $key The key(s) of the setting(s) to retrieve.
+     * @return mixed|\App\Models\GeneralSetting|null
+     */
     function gs($key = null)
     {
+        // 1. Retrieve or cache the entire GeneralSetting record
         $general = Cache::remember('GeneralSetting', 3600, function () {
+            // Ensure the correct GeneralSetting model is imported and used
             return GeneralSetting::first();
         });
 
+        // If the entire object could not be retrieved, return null early.
+        if (!$general) {
+            return null;
+        }
+
+        // 2. Handle key retrieval based on input type
+        if (is_array($key)) {
+            // If an array of keys is requested, return an array with only those keys.
+            // We use the collect helper to easily filter the object properties.
+            return collect($general)->only($key)->toArray();
+        }
+
         if ($key) {
+            // If a single key (string) is requested, return its value or null.
             return $general->$key ?? null;
         }
 
+        // 3. If no key is provided, return the entire GeneralSetting object.
         return $general;
     }
 }
