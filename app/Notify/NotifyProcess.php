@@ -25,6 +25,7 @@ abstract class NotifyProcess
     public $receiverName;
     public $toAddress;
     public $pushImage;
+    public $email_from_name;
 
     protected $statusField;
     protected $globalTemplate;
@@ -78,12 +79,13 @@ abstract class NotifyProcess
         $template = NotificationTemplate::where('act', $this->templateName)
             ->where($this->statusField, Status::ENABLE)
             ->first();
-
+            
         $this->template = $template;
-
+        
         if (! $template && $this->templateName) {
             return false;
         }
+        $this->email_from_name = $template->email_sent_from_name;
 
         // Get subject first
         $this->getSubject();

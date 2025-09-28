@@ -13,13 +13,17 @@ use Mailjet\Resources as MailjetResources;
 
 class Email extends NotifyProcess
 {
+    public $metGS;
+    public $email_from_name;
+
     protected function prevConfiguration()
     {
+        $this->metGS = gs(['email_from','mail_config','email_from_name']);
         $this->body = 'email_body';
         $this->statusField = 'email_status';
         $this->globalTemplate = 'email_template';
         $this->notifyConfig = 'mail_config';
-        $this->sentFrom = gs('email_from');
+        $this->sentFrom = $this->metGS['email_from'];
         $this->toAddress = $this->user->email ?? $this->toAddress;
         $this->receiverName = $this->user->name ?? $this->user->first_name ?? $this->receiverName;
     }
@@ -31,7 +35,7 @@ class Email extends NotifyProcess
             return false;
         }
 
-        $config = gs('mail_config');
+        $config = $this->metGS['mail_config'];
         
         try {
             switch ($config['name']) {
@@ -40,7 +44,7 @@ class Email extends NotifyProcess
                 case 'sendgrid':
                     return $this->sendViaSendGrid();
                 case 'smtp':
-                    return $this->sendViaSMTP();
+                    return $this->sendViaSMTP   ();
                 default:
                     return $this->sendViaPhpMail();
             }
@@ -53,7 +57,7 @@ class Email extends NotifyProcess
 
     public function sendBulk(array $notifications)
     {
-        $config = gs('mail_config');
+        $config = $this->metGS['mail_config'];
         
         switch ($config['name']) {
             case 'mailjet':
@@ -72,8 +76,8 @@ class Email extends NotifyProcess
     private function sendViaPhpMail()
     {
         $headers = [
-            'From' => gs('email_from_name') . ' <' . gs('email_from') . '>',
-            'Reply-To' => gs('email_from'),
+            'From' => ($this->email_from_name ?? $this->metGS['email_from_name']) . ' <' . $this->metGS['email_from'] . '>',
+            'Reply-To' => $this->metGS['email_from'],
             'MIME-Version' => '1.0',
             'Content-Type' => 'text/html; charset=UTF-8',
             'X-Mailer' => 'PHP/' . phpversion()
@@ -92,7 +96,7 @@ class Email extends NotifyProcess
 
     private function sendViaSMTP()
     {
-        $config = gs('mail_config');
+        $config = $this->metGS['mail_config'];
         
         $mail = new PHPMailer(true);
         $mail->isSMTP();
@@ -104,7 +108,7 @@ class Email extends NotifyProcess
         $mail->Port = $config['port'];
         $mail->CharSet = 'UTF-8';
 
-        $mail->setFrom(gs('email_from'), gs('email_from_name'));
+        $mail->setFrom($this->metGS['email_from'], ($this->email_from_name ?? $this->metGS['email_from_name']));
         $mail->addAddress($this->toAddress, $this->receiverName ?? '');
         
         $mail->isHTML(true);
@@ -119,7 +123,7 @@ class Email extends NotifyProcess
 
     private function sendViaMailjet()
     {
-        $config = gs('mail_config');
+        $config = $this->metGS['mail_config'];
         
         $mj = new MailjetClient($config['api_key'], $config['api_secret'], true, ['version' => 'v3.1']);
         
@@ -127,8 +131,8 @@ class Email extends NotifyProcess
             'Messages' => [
                 [
                     'From' => [
-                        'Email' => gs('email_from'),
-                        'Name' => gs('email_from_name')
+                        'Email' => $this->metGS['email_from'],
+                        'Name' => ($this->email_from_name ?? $this->metGS['email_from_name'])
                     ],
                     'To' => [
                         [
@@ -151,10 +155,10 @@ class Email extends NotifyProcess
 
     private function sendViaSendGrid()
     {
-        $config = gs('mail_config');
+        $config = $this->metGS['mail_config'];
         
         $email = new SendGridMail();
-        $email->setFrom(gs('email_from'), gs('email_from_name'));
+        $email->setFrom($this->metGS['email_from'], ($this->email_from_name ?? $this->metGS['email_from_name']));
         $email->setSubject($this->subject);
         $email->addTo($this->toAddress, $this->receiverName ?? '');
         $email->addContent("text/html", $this->finalMessage);
@@ -175,15 +179,15 @@ class Email extends NotifyProcess
 
     private function sendBulkViaMailjet(array $notifications)
     {
-        $config = gs('mail_config');
+        $config = $this->metGS['mail_config'];
         $mj = new MailjetClient($config['api_key'], $config['api_secret'], true, ['version' => 'v3.1']);
         
         $messages = [];
         foreach ($notifications as $notification) {
             $messages[] = [
                 'From' => [
-                    'Email' => gs('email_from'),
-                    'Name' => gs('email_from_name')
+                    'Email' => $this->metGS['email_from'],
+                    'Name' => ($this->email_from_name ?? $this->metGS['email_from_name'])
                 ],
                 'To' => [
                     [
@@ -204,7 +208,7 @@ class Email extends NotifyProcess
 
     private function sendBulkViaSendGrid(array $notifications)
     {
-        $config = gs('mail_config');
+        $config = $this->metGS['mail_config'];
         $sendgrid = new SendGrid($config['api_key']);
         
         foreach (array_chunk($notifications, 1000) as $chunk) {
@@ -212,7 +216,7 @@ class Email extends NotifyProcess
             
             foreach ($chunk as $notification) {
                 $email = new SendGridMail();
-                $email->setFrom(gs('email_from'), gs('email_from_name'));
+                $email->setFrom($this->metGS['email_from'], ($this->email_from_name ?? $this->metGS['email_from_name']));
                 $email->setSubject($notification['subject']);
                 $email->addTo($notification['toAddress'], $notification['receiverName'] ?? '');
                 $email->addContent("text/html", $notification['message']);
