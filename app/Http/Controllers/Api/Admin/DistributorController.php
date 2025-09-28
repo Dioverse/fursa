@@ -71,7 +71,7 @@ class DistributorController extends Controller
 
         notify($user,$stat == "approved" ? 'DISTRIBUTOR_APPROVE' : 'DISTRIBUTOR_REJECT',
         ['reason'=>$reason],
-        ['email'],false
+        ['email'],true
         );
 
         return response()->json([
