@@ -193,7 +193,6 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id): JsonResponse
     {
-        return response()->json([$request]);
         $product = Product::find($id);
 
         if (!$product) {
