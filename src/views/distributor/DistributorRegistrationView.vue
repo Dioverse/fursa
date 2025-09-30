@@ -32,7 +32,7 @@
 
                         <!-- Step 5: Review & Submit -->
                         <div v-show="currentStep === 5">
-                            <ReviewSubmit :form-data="formData" />
+                            <ReviewSubmit ref="reviewSubmitRef" :form-data="formData" />
                         </div>
 
                         <!-- Navigation Buttons -->
@@ -68,6 +68,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
+import { useAuthStore } from '@/stores/auth'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import StepIndicator from '@/components/distributor/StepIndicator.vue'
 import BusinessInfo from '@/components/distributor/FormSections/BusinessInfo.vue'
@@ -78,9 +79,11 @@ import ReviewSubmit from '@/components/distributor/FormSections/ReviewSubmit.vue
 
 const router = useRouter()
 const toast = useToast()
+const authStore = useAuthStore()
 
 const currentStep = ref(1)
 const submitting = ref(false)
+const reviewSubmitRef = ref(null)
 
 const steps = [
     { number: 1, label: 'Business Info' },
@@ -138,18 +141,41 @@ const previousStep = () => {
 }
 
 const handleSubmit = async () => {
-    submitting.value = true
+  submitting.value = true
 
-    try {
-        // Submit form data to API
-        await new Promise(resolve => setTimeout(resolve, 2000)) // Simulate API call
+  try {
+    const payload = {
+      first_name: authStore.user?.first_name,
+      last_name: authStore.user?.last_name,
+      email: authStore.user?.email,
+      phone: authStore.user?.phone,
+      user_id: authStore.user?.id,
 
-        toast.success('Your distributor application has been submitted successfully!')
-        router.push('/dashboard')
-    } catch (error) {
-        toast.error('Failed to submit application. Please try again.')
-    } finally {
-        submitting.value = false
+      // distributor form data
+      ...formData.businessInfo,
+      ...formData.contactPerson,
+      ...formData.distributionCapacity,
+      ...formData.productFocus,
+
+      // ✅ use values from ReviewSubmit child
+      password: reviewSubmitRef.value.password,
+      password_confirmation: reviewSubmitRef.value.passwordConfirmation,
+      notes: reviewSubmitRef.value.additionalNotes
     }
+
+    await authStore.register(payload)
+    toast.success('Your distributor application has been submitted successfully!')
+    router.push('/dashboard')
+  } catch (error) {
+    if (error.response?.status === 422) {
+      const errors = error.response.data.errors
+      const firstError = Object.values(errors)[0][0]
+      toast.error(firstError)
+    } else {
+      toast.error(error.response?.data?.message || "Failed to submit application. Please try again.")
+    }
+  } finally {
+    submitting.value = false
+  }
 }
 </script>

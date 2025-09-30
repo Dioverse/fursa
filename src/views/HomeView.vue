@@ -444,16 +444,17 @@ const categories = [
 
 
 
-const partners = [
-    {
-        icon: '../../public/images/mrslogo.png',//'globe-africa' 
-        title: "MRS",
-    },
-    {
-        icon: '../../public/images/bestaflogo.png',
-        title: 'Bestaf',
-    }
+const partners = [ 
+  {
+    icon: '/images/mrslogo.png',
+    title: "MRS",
+  },
+  {
+    icon: '/images/bestaflogo.png',
+    title: 'Bestaf',
+  }
 ]
+
 
 const goToCategory = (slug) => {
     router.push(`/shop?category=${slug}`)
@@ -468,7 +469,7 @@ onMounted(async () => {
         popularProducts.value = products.slice(0, 4).map(p => ({
             id: p.id,
             name: p.name,
-            price: parseFloat(p.base_price), // ensure number
+            price: Number(p.base_price ?? p.price ?? p.distributor_price ?? 0),//parseFloat(p.base_price), // ensure number
             category: p.category?.name || "Uncategorized",
             image: p.images.length ? p.images[0].url : "../../public/images/mrs_motor_oil.png"
         }))
@@ -487,27 +488,27 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-@keyframes fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    .animate-fade-in {
+        animation: fade-in 0.8s ease-out;
     }
-}
 
-.animate-fade-in {
-    animation: fade-in 0.8s ease-out;
-}
+    .animate-fade-in-delay {
+        animation: fade-in 0.8s ease-out 0.3s both;
+    }
 
-.animate-fade-in-delay {
-    animation: fade-in 0.8s ease-out 0.3s both;
-}
-
-.animate-fade-in-delay-2 {
-    animation: fade-in 0.8s ease-out 0.6s both;
-}
+    .animate-fade-in-delay-2 {
+        animation: fade-in 0.8s ease-out 0.6s both;
+    }
 </style>

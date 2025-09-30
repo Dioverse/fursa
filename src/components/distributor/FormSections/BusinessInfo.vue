@@ -1,8 +1,14 @@
 <template>
     <div class="space-y-6">
         <h3 class="text-xl font-semibold text-primary mb-4">Section 1: Business Information</h3>
-
+            <div>
+                <input type="hidden" v-name="firstName" v-model="form.firstName"></input>
+                <input type="hidden" v-name="lastName" v-model="form.lastName"></input>
+                <input type="hidden" v-name="email" v-model="form.email"></input>
+                <input type="hidden" v-name="phone" v-model="form.phone"></input>
+            </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+             
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Company Name <span class="text-red-500">*</span>
@@ -87,9 +93,17 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
+const user = computed(() => authStore.user)
 
 const form = reactive({
+    firstName: user.value.first_name,
+    lastName: user.value.last_name,
+    email: user.value.email,
+    phone: user.value.phone,
     companyName: '',
     registeredName: '',
     rcNumber: '',

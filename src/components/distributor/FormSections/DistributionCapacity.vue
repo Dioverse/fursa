@@ -3,11 +3,12 @@
         <h3 class="text-xl font-semibold text-primary mb-4">Section 3: Distribution Capacity</h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+           
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Company Name
+                    Prefered Region
                 </label>
-                <input v-model="form.companyName" type="text"
+                <input v-model="form.preferedRegion" type="text"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
             </div>
 
@@ -49,7 +50,7 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Website (if any)
+                    Vehicle Details
                 </label>
                 <input v-model="form.website" type="url" placeholder="https://example.com"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
@@ -101,8 +102,9 @@
 <script setup>
 import { reactive } from 'vue'
 
+
 const form = reactive({
-    companyName: '',
+    preferedRegion: '',
     currentProducts: '',
     monthlyCapacity: '',
     regions: '',

@@ -280,6 +280,27 @@
         </label>
       </div>
 
+      <!-- CHoose a strong password -->
+      
+
+      <!-- CHoose a strong password -->
+    <div class="border border-gray-200 rounded-lg p-4">
+      <h4 class="font-semibold mb-3 flex items-center gap-2">
+        <font-awesome-icon icon="lock" class="text-primary" />
+        Choose a Strong Password
+      </h4>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Password</label>
+        <input v-model="password" type="password" class="border p-2 rounded w-full" required />
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Confirm Password</label>
+        <input v-model="passwordConfirmation" type="password" class="border p-2 rounded w-full" required />
+      </div>
+    </div>
+    
+
+
       <!-- Additional Notes -->
       <div class="border border-gray-200 rounded-lg p-4">
         <h4 class="font-semibold mb-3 flex items-center gap-2">
@@ -324,6 +345,8 @@ const props = defineProps({
 
 const agreed = ref(false)
 const additionalNotes = ref('')
+const password = ref('')
+const passwordConfirmation = ref('')
 
 // Document list for checking
 const documentsList = [
@@ -338,7 +361,10 @@ const documentsList = [
 const isFormValid = computed(() => {
   return agreed.value &&
     props.formData.businessInfo?.companyName &&
-    props.formData.contactPerson?.fullName
+    props.formData.contactPerson?.fullName &&
+    password.value &&
+    passwordConfirmation.value &&
+    password.value === passwordConfirmation.value
 })
 
 // Helper functions for labels
@@ -385,6 +411,8 @@ const formatDate = (dateString) => {
 defineExpose({
   agreed,
   additionalNotes,
+  password,
+  passwordConfirmation,
   isFormValid
 })
 </script>

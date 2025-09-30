@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useToast } from 'vue-toastification'
 
 
 // Lazy load views
@@ -21,6 +22,8 @@ const CheckoutView = () => import('@/views/cart/CheckoutView.vue')
 const DistributorRegistrationView = () =>
   import('@/views/distributor/DistributorRegistrationView.vue')
 const VerifyView = () => import('@/views/auth/VerifyView.vue')
+const VerifyEmailView = () => import('@/views/auth/VerifyEmailView.vue')
+
 // Additional views
 const AboutView = () => import('@/views/AboutView.vue')
 const ContactView = () => import('@/views/ContactView.vue')
@@ -53,10 +56,17 @@ const router = createRouter({
       meta: { title: 'Register', guest: true },
     },
     {
-      path: '/verify',
-      name: 'verify',
+      path: '/verify-email',
+      name: 'verify-email',
       component: VerifyView,
-      meta: { title: 'Verify', guest: true },
+      meta: { title: 'Email Verification', guest: true },
+    },
+    {
+      // path: '/email/verify/{id}/{hash}?expires={expired}&signature={signature}',
+      path: '/email/verify/:id/:hash',
+      name: 'verify-email',
+      component: VerifyEmailView,
+      meta: { title: 'Verify Email', guest: true },
     },
     {
       path: '/shop',
@@ -76,6 +86,7 @@ const router = createRouter({
       component: ProductDetailView,
       meta: { title: 'Product Details' },
     },
+
     {
       path: '/cart',
       name: 'cart',
@@ -202,21 +213,53 @@ const router = createRouter({
   },
 })
 
+
+
 // Navigation guards
+
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
+  const toast = useToast()
 
   // Set page title
   document.title = to.meta.title ? `${to.meta.title} - Fursa Energy` : 'Fursa Energy'
 
-  // Check authentication
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+  const isAuthenticated = authStore.isAuthenticated
+  const isVerified = authStore.user?.email_verified_at !== null
+
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    // Not logged in → redirect to login
     next({ name: 'login', query: { redirect: to.fullPath } })
-  } else if (to.meta.guest && authStore.isAuthenticated) {
+  } 
+  else if (to.meta.requiresAuth && isAuthenticated && !isVerified && to.name !== 'verify-email') {
+    // Logged in but not verified → redirect to verify page
+    toast.warning("Please verify your account to continue.")
+    next({ name: 'verify-email' })
+  } 
+  else if (to.meta.guest && isAuthenticated) {
+    // Logged in user trying to access guest-only routes
     next({ name: 'dashboard' })
-  } else {
+  } 
+  else {
     next()
   }
 })
+
+
+// router.beforeEach((to, from, next) => {
+//   const authStore = useAuthStore()
+
+//   // Set page title
+//   document.title = to.meta.title ? `${to.meta.title} - Fursa Energy` : 'Fursa Energy'
+
+//   // Check authentication
+//   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+//     next({ name: 'login', query: { redirect: to.fullPath } })
+//   } else if (to.meta.guest && authStore.isAuthenticated) {
+//     next({ name: 'dashboard' })
+//   } else {
+//     next()
+//   }
+// })
 
 export default router
