@@ -76,7 +76,8 @@ class Product extends Model implements AuditableContract
         }
 
         // Append discounted_price if product has active discount
-        if ($this->discount()->exists() && ($user && $user->role !== 'admin')) {
+        if ($this->discount()->exists()) {
+            print('dfkmkmdk');
             $array['discounted_price'] = $this->discounted_price;
         }
 
