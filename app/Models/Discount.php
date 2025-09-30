@@ -11,6 +11,14 @@ class Discount extends Model implements AuditableContract
 {
     use Auditable;
 
+    public $fillable = [
+        'product_id',
+        'type',
+        'value',
+        'start_date',
+        'end_date'
+    ];
+
     public function product()
     {
         return $this->belongsTo(Product::class);
