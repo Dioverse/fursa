@@ -20,7 +20,7 @@ class ProductController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Product::with(['category:id,name,slug', 'activeDiscount:product_id,type,value,start_date,end_date']);
+        $query = Product::with(['category:id,name,slug', 'discount:product_id,type,value,start_date,end_date']);
 
         // --- Filtering Options ---
         if ($request->filled('category_id')) {
@@ -175,7 +175,7 @@ class ProductController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $product = Product::with(['category:id,name,slug', 'activeDiscount:product_id,type,value,start_date,start_date'])->find($id);
+        $product = Product::with(['category:id,name,slug', 'discount:product_id,type,value,start_date,start_date'])->find($id);
 
         if (! $product) {
             return response()->json(['message' => 'Product not found.'], 404);

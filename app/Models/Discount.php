@@ -24,7 +24,7 @@ class Discount extends Model implements AuditableContract
         return $this->belongsTo(Product::class);
     }
 
-    public function activeDiscount()
+    public function discount()
     {
         return $this->hasOne(Discount::class)
             ->where('start_date', '<=', now())

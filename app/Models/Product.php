@@ -76,14 +76,14 @@ class Product extends Model implements AuditableContract
         }
 
         // Append discounted_price if product has active discount
-        if ($this->activeDiscount()->exists() && ($user && $user->role !== 'admin')) {
+        if ($this->discount()->exists() && ($user && $user->role !== 'admin')) {
             $array['discounted_price'] = $this->discounted_price;
         }
 
         return $array;
     }
 
-    public function activeDiscount()
+    public function discount()
     {
         return $this->hasOne(Discount::class)
             ->where('start_date', '<=', now())
@@ -92,7 +92,7 @@ class Product extends Model implements AuditableContract
 
     public function getDiscountedPriceAttribute()
     {
-        $discount = $this->activeDiscount()->first();
+        $discount = $this->discount()->first();
         $price = $this->base_price;
         $user = auth('sanctum')->user();
 
