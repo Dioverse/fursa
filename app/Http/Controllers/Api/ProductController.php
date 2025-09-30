@@ -19,7 +19,7 @@ class ProductController extends Controller
     public function index(Request $request): JsonResponse
     {
         // Start building the query with eager loading for the category
-        $query = Product::with(['category:id,name,slug', 'images:id,product_id,path']);
+        $query = Product::with(['category:id,name,slug', 'images:id,product_id,path', 'activeDiscount:value,type']);
 
         // --- Filtering Options ---
         // Filter by category
