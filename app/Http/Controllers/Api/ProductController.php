@@ -99,9 +99,10 @@ class ProductController extends Controller
     public function shop(Request $request): JsonResponse
     {
         // --- Query params with defaults ---
-        $featuredLimit = (int) $request->query('featured_limit', 6);
-        $productLimit  = (int) $request->query('product_limit', 24);
-        $taggedLimit   = (int) $request->query('tagged_limit', 6);
+        $featuredLimit   = (int) $request->query('featured_limit', 6);
+        $categoryLimit   = (int) $request->query('category_limit', 5);
+        $productsPerCat  = (int) $request->query('products_per_category', 7);
+        $taggedLimit     = (int) $request->query('tagged_limit', 6);
 
         // --- Featured Products ---
         $featuredProducts = Product::with([
@@ -110,30 +111,38 @@ class ProductController extends Controller
             'discount:product_id,value,type'
         ])
         ->where('is_featured', true)
+        ->inRandomOrder()
         ->take($featuredLimit)
         ->get();
 
-        // --- Regular Products ---
-        $products = Product::with([
-            'category:id,name,slug',
-            'images:id,product_id,path',
-            'discount:product_id,value,type'
-        ])
-        ->take($productLimit)
-        ->get();
+        // --- Random Categories with Products ---
+        $categoriesWithProducts = Category::inRandomOrder()
+            ->take($categoryLimit)
+            ->with([
+                'products' => function ($query) use ($productsPerCat) {
+                    $query->with([
+                        'category:id,name,slug',
+                        'images:id,product_id,path',
+                        'discount:product_id,value,type'
+                    ])
+                    ->inRandomOrder()
+                    ->take($productsPerCat);
+                }
+            ])
+            ->get(['id', 'name', 'slug', 'image']);
 
         // --- Products with distinct tags ---
-        // Step 1: Get products that actually have tags
         $taggedProducts = Product::with([
             'category:id,name,slug',
             'images:id,product_id,path',
             'discount:product_id,value,type'
         ])
         ->whereNotNull('tags')
+        ->inRandomOrder()
         ->get();
 
-        // Step 2: Flatten all tags into unique values
         $uniqueTags = collect();
+
         $taggedProducts->each(function ($product) use ($uniqueTags) {
             foreach ($product->tags as $tag) {
                 if (!$uniqueTags->has($tag)) {
@@ -142,18 +151,19 @@ class ProductController extends Controller
             }
         });
 
-        // Step 3: Limit to requested number of distinct tags
         $distinctTaggedProducts = $uniqueTags->values()->take($taggedLimit);
 
+        // --- Response ---
         return response()->json([
             'message' => 'Shop data retrieved successfully.',
             'data' => [
                 'featured_products' => $featuredProducts,
-                'products' => $products,
+                'categories_with_products' => $categoriesWithProducts,
                 'tagged_products' => $distinctTaggedProducts,
             ],
         ]);
     }
+
 
 
     public function cats(Request $request)
