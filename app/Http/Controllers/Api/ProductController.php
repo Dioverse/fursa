@@ -97,17 +97,23 @@ class ProductController extends Controller
     }
 
     public function shop(Request $request): JsonResponse
-    {
-        // --- Query params with defaults ---
-        $featuredLimit   = (int) $request->query('featured_limit', 6);
-        $categoryLimit   = (int) $request->query('category_limit', 5);
-        $productsPerCat  = (int) $request->query('products_per_category', 7);
-        $taggedLimit     = (int) $request->query('tagged_limit', 6);
+{
+    // --- Query params with defaults ---
+    $featuredLimit   = (int) $request->query('featured_limit', 6);
+    $categoryLimit   = (int) $request->query('category_limit', 5);
+    $productsPerCat  = (int) $request->query('products_per_category', 7);
+    $taggedLimit     = (int) $request->query('tagged_limit', 6);
 
-        // --- Featured Products ---
-        $featuredProducts = Product::with([
+    // Helper: select only required product fields
+    $productFields = ['id', 'category_id', 'name', 'slug', 'short_description', 'base_price', 'distributor_price'];
+
+    // --- Featured Products ---
+    $featuredProducts = Product::select($productFields)
+        ->with([
             'category:id,name,slug',
-            'images:id,product_id,path',
+            'images' => function ($query) {
+                $query->select(['id','product_id','path'])->limit(1);
+            },
             'discount:product_id,value,type'
         ])
         ->where('is_featured', true)
@@ -115,54 +121,62 @@ class ProductController extends Controller
         ->take($featuredLimit)
         ->get();
 
-        // --- Random Categories with Products ---
-        $categoriesWithProducts = Category::inRandomOrder()
-            ->take($categoryLimit)
-            ->with([
-                'products' => function ($query) use ($productsPerCat) {
-                    $query->with([
+    // --- Random Categories with Products ---
+    $categoriesWithProducts = Category::has('products') // only categories that actually have products
+        ->inRandomOrder()
+        ->take($categoryLimit)
+        ->with([
+            'products' => function ($query) use ($productsPerCat, $productFields) {
+                $query->select($productFields)
+                    ->with([
                         'category:id,name,slug',
-                        'images:id,product_id,path',
+                        'images' => function ($q) {
+                            $q->select(['id','product_id','path'])->limit(1);
+                        },
                         'discount:product_id,value,type'
                     ])
                     ->inRandomOrder()
                     ->take($productsPerCat);
-                }
-            ])
-            ->get(['id', 'name', 'slug', 'image']);
+            }
+        ])
+        ->get(['id', 'name', 'slug', 'image']); // minimal category fields
 
-        // --- Products with distinct tags ---
-        $taggedProducts = Product::with([
+    // --- Products with distinct tags ---
+    $taggedProducts = Product::select(array_merge($productFields, ['tags']))
+        ->with([
             'category:id,name,slug',
-            'images:id,product_id,path',
+            'images' => function ($query) {
+                $query->select(['id','product_id','path'])->limit(1);
+            },
             'discount:product_id,value,type'
         ])
         ->whereNotNull('tags')
         ->inRandomOrder()
         ->get();
 
-        $uniqueTags = collect();
+    $uniqueTags = collect();
 
-        $taggedProducts->each(function ($product) use ($uniqueTags) {
-            foreach ($product->tags as $tag) {
+    $taggedProducts->each(function ($product) use ($uniqueTags) {
+        $tags = $product->tags;
+            foreach ($tags as $tag) {
                 if (!$uniqueTags->has($tag)) {
                     $uniqueTags->put($tag, $product);
                 }
             }
-        });
+    });
 
-        $distinctTaggedProducts = $uniqueTags->values()->take($taggedLimit);
+    $distinctTaggedProducts = $uniqueTags->values()->take($taggedLimit);
 
-        // --- Response ---
-        return response()->json([
-            'message' => 'Shop data retrieved successfully.',
-            'data' => [
-                'featured_products' => $featuredProducts,
-                'categories_with_products' => $categoriesWithProducts,
-                'tagged_products' => $distinctTaggedProducts,
-            ],
-        ]);
-    }
+    return response()->json([
+        'message' => 'Shop data retrieved successfully.',
+        'data' => [
+            'featured_products'       => $featuredProducts,
+            'categories_with_products'=> $categoriesWithProducts,
+            'tagged_products'         => $distinctTaggedProducts,
+        ],
+    ]);
+}
+
 
 
 
