@@ -122,7 +122,9 @@ class ProductController extends Controller
 
     // --- Random Categories with Products ---
     $categoriesWithProducts = Category::whereNull('parent_id')
-    ->with([
+        ->select(['products.id', 'products.category_id','products.name','products.slug',
+                'products.short_description','products.base_price','products.distributor_price'])
+        ->with([
         'productsbySubcats' => function ($query) use ($productsPerCat, $productFields) {
             $query->select($productFields)
             ->with([
