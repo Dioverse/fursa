@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
-    public function createOrder($user, $total, $shipCost, $gateway)
+    public function createOrder($user, $total, $shipCost)
     {
         try {
             $shippingAddress = $user->shippingAddress()->orderByDesc("is_default")->first(['id','full_name','phone','address_line_one','city','state','postal_code','country']);

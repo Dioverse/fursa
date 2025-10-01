@@ -183,8 +183,7 @@ class CheckoutController extends Controller
             $orderCreate = $this->orders->createOrder(
                 $user,
                 $cartSummary['amount'],
-                $cartSummary['shippingCost'],
-                $gateway
+                $cartSummary['shippingCost']
             );
 
             if ($orderCreate['error']) {

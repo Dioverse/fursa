@@ -52,20 +52,7 @@ class ProductController extends Controller
         if ($request->has('max_price') && is_numeric($request->input('max_price'))) {
             $query->where($price_field, '<=', $request->input('max_price'));
         }
-
-        // // --- Filter by Tags ---
-        // // Expects a comma-separated string of tags, e.g., ?tags=electronics,smart-home
-        // if ($request->has('tags') && is_string($request->input('tags'))) {
-        //     $requestedTags = explode(',', $request->input('tags'));
-
-        //     // We'll use a nested 'where' clause with 'orWhereJsonContains'
-        //     // to find products that have ANY of the requested tags.
-        //     $query->where(function ($q) use ($requestedTags) {
-        //         foreach ($requestedTags as $tag) {
-        //             $q->orWhereJsonContains('tags', trim($tag)); // trim to remove any whitespace around tags
-        //         }
-        //     });
-        // }
+        
         if ($request->has('sort_by')) {
             switch ($request->input('sort_by')) {
                 case 'lp':
@@ -82,11 +69,10 @@ class ProductController extends Controller
 
         // --- Pagination ---
         // Get the number of items per page from the request, default to 10 if not provided
-        $perPage = $request->query('per_page', 10);
+        $perPage = $request->query('per_page', 30);
         // Ensure per_page is a positive integer
         $perPage = max(1, (int) $perPage);
 
-        
         $products = $query->paginate($perPage);
         $categories = Category::with(['subcategories' => function ($query) {
             $query->select(['id', 'image', 'name', 'slug', 'parent_id'])->withCount('products');
