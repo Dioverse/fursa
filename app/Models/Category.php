@@ -26,6 +26,18 @@ class Category extends Model implements AuditableContract
         return $this->hasMany(Product::class);
     }
 
+    public function productsbySubcats()
+    {
+        return $this->hasManyThrough(
+            Product::class,   // Final model we want
+            Category::class,  // Intermediate model (subcategories)
+            'parent_id',      // Foreign key on subcategories table (linking to parent category id)
+            'category_id',    // Foreign key on products table
+            'id',             // Local key on parent categories
+            'id'              // Local key on subcategories
+        );
+    }
+
     public function subcategories()
     {
         return $this->hasMany(Category::class, 'parent_id');

@@ -100,7 +100,6 @@ class ProductController extends Controller
 {
     // --- Query params with defaults ---
     $featuredLimit   = (int) $request->query('featured_limit', 6);
-    $categoryLimit   = (int) $request->query('category_limit', 5);
     $productsPerCat  = (int) $request->query('products_per_category', 7);
     $taggedLimit     = (int) $request->query('tagged_limit', 6);
 
@@ -122,24 +121,21 @@ class ProductController extends Controller
         ->get();
 
     // --- Random Categories with Products ---
-    $categoriesWithProducts = Category::whereNotNull('parent_id')->has('products') // only categories that actually have products
-        ->inRandomOrder()
-        ->take($categoryLimit)
-        ->with([
-            'products' => function ($query) use ($productsPerCat, $productFields) {
-                $query->select($productFields)
-                    ->with([
-                        'category:id,name,slug',
-                        'images' => function ($q) {
-                            $q->select(['id','product_id','path'])->limit(1);
-                        },
-                        'discount:product_id,value,type'
-                    ])
-                    ->inRandomOrder()
-                    ->take($productsPerCat);
-            }
-        ])
-        ->get(['id', 'name', 'slug', 'image']); // minimal category fields
+    $categoriesWithProducts = Category::whereNull('parent_id')
+    ->with([
+        'productsbySubcats' => function ($query) use ($productsPerCat, $productFields) {
+            $query->select($productFields)
+            ->with([
+                'category:id,name,slug',
+                'images' => function ($q) {
+                    $q->select(['id','product_id','path'])->limit(1);
+                },'discount:product_id,value,type'
+            ])
+            ->inRandomOrder()->take($productsPerCat);
+        }
+    ])
+    ->get(['id', 'name', 'slug', 'image']);
+
 
     // --- Products with distinct tags ---
     $taggedProducts = Product::select(array_merge($productFields, ['tags']))
