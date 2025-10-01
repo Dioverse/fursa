@@ -135,8 +135,7 @@ class ProductController extends Controller
         // Step 2: Flatten all tags into unique values
         $uniqueTags = collect();
         $taggedProducts->each(function ($product) use ($uniqueTags) {
-            $tags = json_decode($product->tags, true) ?? [];
-            foreach ($tags as $tag) {
+            foreach ($product->tags as $tag) {
                 if (!$uniqueTags->has($tag)) {
                     $uniqueTags->put($tag, $product);
                 }
