@@ -53,18 +53,31 @@ class ProductController extends Controller
             $query->where($price_field, '<=', $request->input('max_price'));
         }
 
-        // --- Filter by Tags ---
-        // Expects a comma-separated string of tags, e.g., ?tags=electronics,smart-home
-        if ($request->has('tags') && is_string($request->input('tags'))) {
-            $requestedTags = explode(',', $request->input('tags'));
+        // // --- Filter by Tags ---
+        // // Expects a comma-separated string of tags, e.g., ?tags=electronics,smart-home
+        // if ($request->has('tags') && is_string($request->input('tags'))) {
+        //     $requestedTags = explode(',', $request->input('tags'));
 
-            // We'll use a nested 'where' clause with 'orWhereJsonContains'
-            // to find products that have ANY of the requested tags.
-            $query->where(function ($q) use ($requestedTags) {
-                foreach ($requestedTags as $tag) {
-                    $q->orWhereJsonContains('tags', trim($tag)); // trim to remove any whitespace around tags
-                }
-            });
+        //     // We'll use a nested 'where' clause with 'orWhereJsonContains'
+        //     // to find products that have ANY of the requested tags.
+        //     $query->where(function ($q) use ($requestedTags) {
+        //         foreach ($requestedTags as $tag) {
+        //             $q->orWhereJsonContains('tags', trim($tag)); // trim to remove any whitespace around tags
+        //         }
+        //     });
+        // }
+        if ($request->has('sort_by')) {
+            switch ($request->input('sort_by')) {
+                case 'lp':
+                    $query->orderBy($price_field, 'asc');
+                    break;
+                case 'hp':
+                    $query->orderBy($price_field, 'desc');
+                    break;
+                case 'if':
+                    $query->orderBy('is_featured', 'desc');
+                    break;
+            }
         }
 
         // --- Pagination ---
@@ -83,7 +96,17 @@ class ProductController extends Controller
 
         return response()->json([
             'message' => 'Products retrieved successfully.',
-            'data' => ['products'=>$products, 'categories'=>$categories],
+            'data' => [
+                'products'=>$products,
+                'categories'=>$categories,
+                'filters'=>[
+                    'sort_by' => [
+                        "Highest Price" => "hp",
+                        "Lowest Price" => "lp",
+                        "Featured" => "if",
+                    ]
+                ]
+            ],
         ]);
     }
 
