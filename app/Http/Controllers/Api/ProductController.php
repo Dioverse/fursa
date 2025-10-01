@@ -120,23 +120,24 @@ class ProductController extends Controller
         ->take($featuredLimit)
         ->get();
 
-    // --- Random Categories with Products ---
-    $categoriesWithProducts = Category::whereNull('parent_id')
-        ->select(['products.id', 'products.category_id','products.name','products.slug',
-                'products.short_description','products.base_price','products.distributor_price'])
-        ->with([
-        'productsbySubcats' => function ($query) use ($productsPerCat, $productFields) {
-            $query->select($productFields)
-            ->with([
-                'category:id,name,slug',
-                'images' => function ($q) {
-                    $q->select(['id','product_id','path'])->limit(1);
-                },'discount:product_id,value,type'
-            ])
-            ->inRandomOrder()->take($productsPerCat);
+// --- Random Categories with Products ---
+$categoriesWithProducts = Category::whereNull('parent_id')
+    ->with([
+        'productsBySubcats' => function ($query) use ($productsPerCat, $productFields) {
+            $query->select($productFields) // this applies to products table
+                ->with([
+                    'category:id,name,slug',
+                    'images' => function ($q) {
+                        $q->select(['id','product_id','path'])->limit(1);
+                    },
+                    'discount:product_id,value,type'
+                ])
+                ->where('status', 1)
+                ->inRandomOrder()
+                ->take($productsPerCat);
         }
     ])
-    ->get(['id', 'name', 'slug', 'image']);
+    ->get(['id', 'name', 'slug', 'image']); // only category fields
 
 
     // --- Products with distinct tags ---
