@@ -52,7 +52,7 @@ class ProductController extends Controller
         if ($request->has('max_price') && is_numeric($request->input('max_price'))) {
             $query->where($price_field, '<=', $request->input('max_price'));
         }
-        
+
         if ($request->has('sort_by')) {
             switch ($request->input('sort_by')) {
                 case 'lp':
@@ -92,6 +92,66 @@ class ProductController extends Controller
                         "Featured" => "if",
                     ]
                 ]
+            ],
+        ]);
+    }
+
+    public function shop(Request $request): JsonResponse
+    {
+        // --- Query params with defaults ---
+        $featuredLimit = (int) $request->query('featured_limit', 6);
+        $productLimit  = (int) $request->query('product_limit', 24);
+        $taggedLimit   = (int) $request->query('tagged_limit', 6);
+
+        // --- Featured Products ---
+        $featuredProducts = Product::with([
+            'category:id,name,slug',
+            'images:id,product_id,path',
+            'discount:product_id,value,type'
+        ])
+        ->where('is_featured', true)
+        ->take($featuredLimit)
+        ->get();
+
+        // --- Regular Products ---
+        $products = Product::with([
+            'category:id,name,slug',
+            'images:id,product_id,path',
+            'discount:product_id,value,type'
+        ])
+        ->take($productLimit)
+        ->get();
+
+        // --- Products with distinct tags ---
+        // Step 1: Get products that actually have tags
+        $taggedProducts = Product::with([
+            'category:id,name,slug',
+            'images:id,product_id,path',
+            'discount:product_id,value,type'
+        ])
+        ->whereNotNull('tags')
+        ->get();
+
+        // Step 2: Flatten all tags into unique values
+        $uniqueTags = collect();
+        $taggedProducts->each(function ($product) use ($uniqueTags) {
+            $tags = json_decode($product->tags, true) ?? [];
+            foreach ($tags as $tag) {
+                if (!$uniqueTags->has($tag)) {
+                    $uniqueTags->put($tag, $product);
+                }
+            }
+        });
+
+        // Step 3: Limit to requested number of distinct tags
+        $distinctTaggedProducts = $uniqueTags->values()->take($taggedLimit);
+
+        return response()->json([
+            'message' => 'Shop data retrieved successfully.',
+            'data' => [
+                'featured_products' => $featuredProducts,
+                'products' => $products,
+                'tagged_products' => $distinctTaggedProducts,
             ],
         ]);
     }

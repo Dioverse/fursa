@@ -173,6 +173,7 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
 
 Route::get('products', [GeneralProductController::class, 'index']);
 Route::get('products/{id}', [GeneralProductController::class, 'show']);
+Route::get('shop', [GeneralProductController::class, 'shop']);
 Route::get('cats', [GeneralProductController::class, 'cats']);
 
 Route::post('apply-coupon', [GeneralProductController::class, 'apply']);
