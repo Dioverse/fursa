@@ -122,7 +122,7 @@ class ProductController extends Controller
         ->get();
 
     // --- Random Categories with Products ---
-    $categoriesWithProducts = Category::has('products') // only categories that actually have products
+    $categoriesWithProducts = Category::whereNotNull('parent_id')->has('products') // only categories that actually have products
         ->inRandomOrder()
         ->take($categoryLimit)
         ->with([
