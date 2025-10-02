@@ -16,6 +16,7 @@ const AddressesView = () => import('@/views/dashboard/AddressesView.vue')
 const WishlistView = () => import('@/views/dashboard/WishlistView.vue')
 const ShopView = () => import('@/views/shop/ShopView.vue')
 const ProductDetailView = () => import('@/views/shop/ProductDetailView.vue')
+const Categories = () => import('@/views/shop/Categories.vue')
 const CategoryView = () => import('@/views/shop/CategoryView.vue')
 const CartView = () => import('@/views/cart/CartView.vue')
 const CheckoutView = () => import('@/views/cart/CheckoutView.vue')
@@ -73,6 +74,12 @@ const router = createRouter({
       name: 'shop',
       component: ShopView,
       meta: { title: 'Shop' },
+    },
+    {
+      path: '/categories',
+      name: 'categories',
+      component: Categories,
+      meta: { title: 'Categories'},
     },
     {
       path: '/shop/category/:slug',
