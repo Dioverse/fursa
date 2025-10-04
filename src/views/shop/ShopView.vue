@@ -3,19 +3,45 @@
     <div class="min-h-screen bg-gray-50">
       <!-- Main Content -->
       <div class="flex-1 p-6">
-        <div class="max-w-7xl mx-auto space-y-6">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6">
           <!-- Sidebar -->
-          <div class="w-56 bg-white shadow-md">
-            <div class="p-4 space-y-2">
-              <div v-for="(category, index) in categories" :key="index"
-                class="flex items-center gap-3 p-2 hover:bg-gray-100 rounded cursor-pointer transition-colors">
+          <div class="w-full lg:w-56 bg-white shadow-md flex-shrink-0">
+            <div class="flex items-center font-bold gap-3 p-2 hover:bg-gray-100 rounded cursor-pointer transition-colors">
+              Categories
+            </div><hr>
+            <div v-for="(category, index) in shopData.categories" :key="index" class="relative group"
+              @mouseenter="hovered = index" @mouseleave="hovered = null">
+              <!-- Category Item -->
+              <div
+                class="flex items-center font-semibold gap-3 p-2 hover:bg-gray-100 rounded cursor-pointer transition-colors">
                 <span class="text-xl">{{ category.icon }}</span>
-                <span class="text-sm text-gray-700">{{ category.name }}</span>
+                <span class="text-sm text-gray-700 flex-1">{{ category.name }}</span>
+
+                <!-- Caret Icon (rotates on hover) -->
+                <svg class="w-4 h-4 text-gray-500 transition-transform" :class="{ 'rotate-90': hovered === index }"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+
+              <!-- Subcategories Popup -->
+              <div v-if="hovered === index"
+                class="absolute top-0 left-full ml-1 w-48 bg-white shadow-lg rounded p-2 z-50 transition-all duration-300 ease-in-out">
+                <div v-for="sub in category.subcategories" :key="sub.id"
+                  class="p-2 text-sm text-gray-600 hover:bg-gray-100 rounded cursor-pointer">
+                  {{ sub.name }}
+                  <span v-if="sub.products_count > 0" class="ml-2 text-xs text-gray-400">
+                    ({{ sub.products_count }})
+                  </span>
+                </div>
               </div>
             </div>
           </div>
+
+
           <!-- Hero Section -->
-          <div class="relative bg-gradient-to-r from-orange-500 to-orange-400 rounded-xl overflow-hidden shadow-xl">
+          <div
+            class="flex-1 relative bg-gradient-to-r from-orange-500 to-orange-400 rounded-xl overflow-hidden shadow-xl">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center p-12">
               <!-- Left Content -->
               <div class="text-white space-y-6 z-10">
@@ -29,9 +55,7 @@
                 <div class="text-4xl font-bold">DELIVERY</div>
 
                 <div class="space-y-3">
-                  <h1 class="text-5xl font-bold leading-tight">
-                    Send. Track. Collect.
-                  </h1>
+                  <h1 class="text-5xl font-bold leading-tight">Send. Track. Collect.</h1>
                   <p class="text-2xl font-light leading-relaxed">
                     Send your packages<br />
                     securely anywhere<br />
@@ -75,7 +99,7 @@
                     </div>
                   </div>
 
-                  <!-- FURSA Delivery Badge on Truck -->
+                  <!-- FURSA Delivery Badge -->
                   <div
                     class="absolute top-8 right-8 bg-red-500 text-white px-4 py-2 rounded shadow-lg transform rotate-3">
                     <div class="text-xs font-bold">FURSA</div>
@@ -83,20 +107,6 @@
                   </div>
                 </div>
               </div>
-            </div>
-
-            <!-- Slider Dots -->
-            <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2">
-              <div v-for="(slide, index) in slides" :key="index" :class="[
-                'h-2 rounded-full transition-all',
-                index === currentSlide ? 'w-8 bg-white' : 'w-2 bg-white/50'
-              ]" />
-            </div>
-
-            <!-- Discover Button -->
-            <div
-              class="absolute bottom-6 right-6 bg-white text-gray-900 px-6 py-3 rounded font-bold cursor-pointer hover:bg-gray-100 transition-colors">
-              DISCOVER
             </div>
           </div>
         </div>
@@ -112,7 +122,7 @@
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           <div v-for="product in shopData.featured_products" :key="product.id"
-            class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer">
+            class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer relative">
             <div class="aspect-square bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
               <img :src="getImageUrl(product.images[0]?.path)" :alt="product.name" class="w-full h-full object-cover"
                 @error="handleImageError">
@@ -125,7 +135,7 @@
                 ₦ {{ product.price.toLocaleString() }}
               </span>
             </div>
-            <div v-if="product.discount" class="mt-1">
+            <div v-if="product.discount" class="mt-1 absolute top-1 right-2">
               <span class="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded">
                 -{{ product.discount.value }}%
               </span>
@@ -141,8 +151,8 @@
           <a href="#" class="text-orange-500 hover:underline">See All ></a>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          <div v-for="product in category.products" :key="product.id"
-            class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer">
+          <div v-for="product in category.products_by_subcats" :key="product.id"
+            class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer relative">
             <div class="aspect-square bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
               <img :src="getImageUrl(product.images[0]?.path)" :alt="product.name" class="w-full h-full object-cover"
                 @error="handleImageError">
@@ -155,7 +165,7 @@
                 ₦ {{ product.price.toLocaleString() }}
               </span>
             </div>
-            <div v-if="product.discount" class="mt-1">
+            <div v-if="product.discount" class="mt-1 absolute top-1 right-2">
               <span class="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded">
                 -{{ product.discount.value }}%
               </span>
@@ -192,17 +202,6 @@ const shopData = ref({
 
 const loading = ref(true);
 const error = ref(null);
-
-const categoryIcons = [
-  { name: 'Appliances', icon: '🏠' },
-  { name: 'Phones & Tablets', icon: '📱' },
-  { name: 'Health & Beauty', icon: '💄' },
-  { name: 'Home & Office', icon: '🪑' },
-  { name: 'Fashion', icon: '👔' },
-  { name: 'Computing', icon: '💻' },
-  { name: 'Baby Products', icon: '👶' },
-  { name: 'Gaming', icon: '🎮' }
-];
 
 const fetchShopData = async () => {
   loading.value = true;
@@ -242,6 +241,10 @@ const getAllProducts = () => {
   });
   return allProducts;
 };
+
+
+
+const hovered = ref(null);   // stores index on hover
 
 onMounted(() => {
   fetchShopData();
