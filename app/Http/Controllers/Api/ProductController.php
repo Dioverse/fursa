@@ -120,7 +120,7 @@ class ProductController extends Controller
                 'productsBySubcats' => function ($query) use ($productsPerCat, $productFields) {
                     $query->select($productFields) // this applies to products table
                         ->with([
-                            'category:id,name,slug',
+                            'category:id,slug',
                             'images' => function ($q) {
                                 $q->select(['id', 'product_id', 'path'])->limit(1);
                             },
