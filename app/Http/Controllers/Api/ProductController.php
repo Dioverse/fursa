@@ -159,9 +159,16 @@ class ProductController extends Controller
 
         $distinctTaggedProducts = $uniqueTags->values()->take($taggedLimit);
 
+        $categories = Category::with(['subcategories' => function ($query) {
+            $query->select(['id', 'image', 'name', 'slug', 'parent_id'])->withCount('products');
+        }])
+            ->whereNull('parent_id')
+            ->get(['id', 'image', 'name', 'slug']);
+
         return response()->json([
             'message' => 'Shop data retrieved successfully.',
             'data'    => [
+                'categories'               => $categories,
                 'featured_products'        => $featuredProducts,
                 'categories_with_products' => $categoriesWithProducts,
                 'tagged_products'          => $distinctTaggedProducts,
