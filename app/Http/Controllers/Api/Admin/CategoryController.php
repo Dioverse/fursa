@@ -71,6 +71,7 @@ class CategoryController extends Controller
             'description' => 'nullable|string',
             'parent_id'   => 'nullable|exists:categories,id',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // 2MB max
+            'icon'        => 'string|max:255',
         ]);
 
         $slug = Str::slug($request->name);
@@ -135,6 +136,7 @@ class CategoryController extends Controller
             'description' => 'nullable|string',
             'parent_id'   => 'nullable|exists:categories,id',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'icon'        => 'string|max:255',
         ]);
 
         if ($request->filled('name')) {

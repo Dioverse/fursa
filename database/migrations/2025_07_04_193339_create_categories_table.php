@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->string('image')->nullable();
+            $table->string('icon')->nullable();
 
             // Use unsignedBigInteger for foreign key
             $table->unsignedBigInteger('parent_id')->nullable();

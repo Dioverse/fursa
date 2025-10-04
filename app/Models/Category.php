@@ -19,6 +19,7 @@ class Category extends Model implements AuditableContract
         'slug',
         'description',
         'image',
+        'icon',
         'parent_id'
     ];
     
