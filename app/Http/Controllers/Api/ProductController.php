@@ -1,15 +1,12 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
-use App\Models\Product;
-use App\Models\Category;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -42,10 +39,10 @@ class ProductController extends Controller
         // Filter by base_price range
         // Determine price field based on user role (if authenticated)
         $price_field = 'base_price';
-        $user = auth('sanctum')->user();
+        $user        = auth('sanctum')->user();
 
-        if ($user && $user->isDistributorApprov()) { $price_field = 'distributor_price'; }
-        
+        if ($user && $user->isDistributorApprov()) {$price_field = 'distributor_price';}
+
         if ($request->has('min_price') && is_numeric($request->input('min_price'))) {
             $query->where($price_field, '>=', $request->input('min_price'));
         }
@@ -73,111 +70,107 @@ class ProductController extends Controller
         // Ensure per_page is a positive integer
         $perPage = max(1, (int) $perPage);
 
-        $products = $query->paginate($perPage);
+        $products   = $query->paginate($perPage);
         $categories = Category::with(['subcategories' => function ($query) {
             $query->select(['id', 'image', 'name', 'slug', 'parent_id'])->withCount('products');
         }])
-        ->whereNull('parent_id')
-        ->get(['id', 'image', 'name', 'slug']);
+            ->whereNull('parent_id')
+            ->get(['id', 'image', 'name', 'slug']);
 
         return response()->json([
             'message' => 'Products retrieved successfully.',
-            'data' => [
-                'products'=>$products,
-                'categories'=>$categories,
-                'filters'=>[
+            'data'    => [
+                'products'   => $products,
+                'categories' => $categories,
+                'filters'    => [
                     'sort_by' => [
                         "Highest Price" => "hp",
-                        "Lowest Price" => "lp",
-                        "Featured" => "if",
-                    ]
-                ]
+                        "Lowest Price"  => "lp",
+                        "Featured"      => "if",
+                    ],
+                ],
             ],
         ]);
     }
 
     public function shop(Request $request): JsonResponse
-{
-    // --- Query params with defaults ---
-    $featuredLimit   = (int) $request->query('featured_limit', 6);
-    $productsPerCat  = (int) $request->query('products_per_category', 7);
-    $taggedLimit     = (int) $request->query('tagged_limit', 6);
+    {
+        // --- Query params with defaults ---
+        $featuredLimit  = (int) $request->query('featured_limit', 6);
+        $productsPerCat = (int) $request->query('products_per_category', 7);
+        $taggedLimit    = (int) $request->query('tagged_limit', 6);
 
-    // Helper: select only required product fields
-    $productFields = ['id', 'category_id', 'name', 'slug', 'short_description', 'base_price', 'distributor_price'];
+        // Helper: select only required product fields
+        $productFields = ['products.id', 'category_id', 'products.name', 'products.slug', 'short_description', 'base_price', 'distributor_price'];
 
-    // --- Featured Products ---
-    $featuredProducts = Product::select($productFields)
-        ->with([
-            'category:id,name,slug',
-            'images' => function ($query) {
-                $query->select(['id','product_id','path'])->limit(1);
-            },
-            'discount:product_id,value,type'
-        ])
-        ->where('is_featured', true)
-        ->inRandomOrder()
-        ->take($featuredLimit)
-        ->get();
+        // --- Featured Products ---
+        $featuredProducts = Product::select($productFields)
+            ->with([
+                'category:id,name,slug',
+                'images' => function ($query) {
+                    $query->select(['id', 'product_id', 'path'])->limit(1);
+                },
+                'discount:product_id,value,type',
+            ])
+            ->where('is_featured', true)
+            ->inRandomOrder()
+            ->take($featuredLimit)
+            ->get();
 
-// --- Random Categories with Products ---
-$categoriesWithProducts = Category::whereNull('parent_id')
-    ->with([
-        'productsBySubcats' => function ($query) use ($productsPerCat, $productFields) {
-            $query->select($productFields) // this applies to products table
-                ->with([
-                    'category:id,name,slug',
-                    'images' => function ($q) {
-                        $q->select(['id','product_id','path'])->limit(1);
-                    },
-                    'discount:product_id,value,type'
-                ])
-                ->where('status', 1)
-                ->inRandomOrder()
-                ->take($productsPerCat);
-        }
-    ])
-    ->get(['id', 'name', 'slug', 'image']); // only category fields
+        // --- Random Categories with Products ---
+        $categoriesWithProducts = Category::whereNull('parent_id')
+            ->with([
+                'productsBySubcats' => function ($query) use ($productsPerCat, $productFields) {
+                    $query->select($productFields) // this applies to products table
+                        ->with([
+                            'category:id,name,slug',
+                            'images' => function ($q) {
+                                $q->select(['id', 'product_id', 'path'])->limit(1);
+                            },
+                            'discount:product_id,value,type',
+                        ])
+                        ->where('status', 1)
+                        ->inRandomOrder()
+                        ->take($productsPerCat);
+                },
+            ])
+            ->get(['id', 'name', 'slug', 'image']); // only category fields
 
+        // --- Products with distinct tags ---
+        $taggedProducts = Product::select(array_merge($productFields, ['tags']))
+            ->with([
+                'category:id,name,slug',
+                'images' => function ($query) {
+                    $query->select(['id', 'product_id', 'path'])->limit(1);
+                },
+                'discount:product_id,value,type',
+            ])
+            ->whereNotNull('tags')
+            ->inRandomOrder()
+            ->get();
 
-    // --- Products with distinct tags ---
-    $taggedProducts = Product::select(array_merge($productFields, ['tags']))
-        ->with([
-            'category:id,name,slug',
-            'images' => function ($query) {
-                $query->select(['id','product_id','path'])->limit(1);
-            },
-            'discount:product_id,value,type'
-        ])
-        ->whereNotNull('tags')
-        ->inRandomOrder()
-        ->get();
+        $uniqueTags = collect();
 
-    $uniqueTags = collect();
-
-    $taggedProducts->each(function ($product) use ($uniqueTags) {
-        $tags = $product->tags;
+        $taggedProducts->each(function ($product) use ($uniqueTags) {
+            $tags = $product->tags;
             foreach ($tags as $tag) {
-                if (!$uniqueTags->has($tag)) {
+                if (! $uniqueTags->has($tag)) {
                     $uniqueTags->put($tag, $product);
                 }
             }
-    });
+        });
 
-    $distinctTaggedProducts = $uniqueTags->values()->take($taggedLimit);
+        $distinctTaggedProducts = $uniqueTags->values()->take($taggedLimit);
 
-    return response()->json([
-        'message' => 'Shop data retrieved successfully.',
-        'data' => [
-            'featured_products'       => $featuredProducts,
-            'categories_with_products'=> $categoriesWithProducts,
-            'tagged_products'         => $distinctTaggedProducts,
-        ],
-    ]);
-}
-
-
-
+        return response()->json([
+            'message' => 'Shop data retrieved successfully.',
+            'data'    => [
+                'featured_products'        => $featuredProducts,
+                'categories_with_products' => $categoriesWithProducts,
+                'tagged_products'          => $distinctTaggedProducts,
+            ],
+        ]);
+    }
 
     public function cats(Request $request)
     {
@@ -192,22 +185,22 @@ $categoriesWithProducts = Category::whereNull('parent_id')
         } elseif ($sub) {
             // Fetch specific parent with subcategories + product count
             $categories = Category::with([
-                    'subcategories' => function ($query) {
-                        $query->select('id', 'name', 'description', 'image', 'slug', 'parent_id')
-                            ->withCount('products');
-                    }
-                ])
+                'subcategories' => function ($query) {
+                    $query->select('id', 'name', 'description', 'image', 'slug', 'parent_id')
+                        ->withCount('products');
+                },
+            ])
                 ->withCount('subcategories')
                 ->whereNull('parent_id')
                 ->get(['id', 'name', 'description', 'image', 'slug']);
         } elseif ($parentId) {
             // Fetch specific parent with subcategories + product count
             $categories = Category::where("id", $parentId)->with([
-                    'subcategories' => function ($query) {
-                        $query->select('id', 'name', 'parent_id', 'image')
-                            ->withCount('products');
-                    }
-                ])
+                'subcategories' => function ($query) {
+                    $query->select('id', 'name', 'parent_id', 'image')
+                        ->withCount('products');
+                },
+            ])
                 ->withCount('subcategories')
                 ->whereNull('parent_id')
                 ->get(['id', 'name', 'description', 'image', 'slug']);
@@ -225,29 +218,28 @@ $categoriesWithProducts = Category::whereNull('parent_id')
         ]);
     }
 
-
     /**
      * Display the specified resource.
      */
     public function show(string $id): JsonResponse
     {
-        $product = Product::with(['category:id,name,slug','images:id,product_id,path'])->find($id);
+        $product = Product::with(['category:id,name,slug', 'images:id,product_id,path'])->find($id);
 
-        if (!$product) {
+        if (! $product) {
             return response()->json(['message' => 'Product not found.'], 404);
         }
 
         $related = Product::where(function ($q) use ($product) {
             $q->where('category_id', $product->category_id)
-            ->orWhere('name', 'like', '%' . $product->name . '%');
+                ->orWhere('name', 'like', '%' . $product->name . '%');
         })->where('id', '!=', $product->id)
-        ->inRandomOrder()->take(3)->with(['category:id,name,slug', 'images:id,product_id,path'])
-        ->get(['id','name','sku','category_id','slug','short_description','stock_quantity','low_stock_threshold','is_featured','distributor_price','base_price']);
+            ->inRandomOrder()->take(3)->with(['category:id,name,slug', 'images:id,product_id,path'])
+            ->get(['id', 'name', 'sku', 'category_id', 'slug', 'short_description', 'stock_quantity', 'low_stock_threshold', 'is_featured', 'distributor_price', 'base_price']);
 
         return response()->json([
             'message' => 'Product retrieved successfully.',
-            'data' => $product,
-            'related' => $related
+            'data'    => $product,
+            'related' => $related,
         ]);
     }
 
