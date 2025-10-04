@@ -112,10 +112,7 @@ class ProductController extends Controller
                 },
                 'discount:product_id,value,type',
             ])
-            ->where('is_featured', true)
-            ->inRandomOrder()
-            ->take($featuredLimit)
-            ->get();
+            ->where('is_featured', true)->inRandomOrder()->take($featuredLimit)->get();
 
         // --- Random Categories with Products ---
         $categoriesWithProducts = Category::whereNull('parent_id')
@@ -134,7 +131,7 @@ class ProductController extends Controller
                         ->take($productsPerCat);
                 },
             ])
-            ->get(['id', 'name', 'slug', 'image']); // only category fields
+            ->get(['id', 'name', 'slug', 'image']);
 
         // --- Products with distinct tags ---
         $taggedProducts = Product::select(array_merge($productFields, ['tags']))
