@@ -76,17 +76,17 @@ const router = createRouter({
       meta: { title: 'Shop' },
     },
     {
-      path: '/categories',
-      name: 'categories',
+      path: '/shop/:slug',
+      name: 'category',
       component: Categories,
       meta: { title: 'Categories'},
     },
-    {
-      path: '/shop/category/:slug',
-      name: 'category',
-      component: CategoryView,
-      meta: { title: 'Category' },
-    },
+    // {
+    //   path: '/shop/category/:slug',
+    //   name: 'category',
+    //   component: CategoryView,
+    //   meta: { title: 'Category' },
+    // },
     {
       path: '/product/:id',
       name: 'product-detail',
