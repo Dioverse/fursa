@@ -1,231 +1,472 @@
 <template>
-  <DefaultLayout>
-    <!-- Hero -->
-    <section class="relative bg-gray-900">
-      <div class="relative">
-        <img src="/images/oil-splash.png" alt="Lubricants" class="w-full h-72 object-cover rounded-b-2xl">
-        <div class="absolute inset-0 bg-black bg-opacity-50 rounded-b-2xl flex flex-col items-center justify-center text-center text-white px-6">
-          <h1 class="text-2xl md:text-4xl font-bold">Premium Lubricants. Trusted Performance.</h1>
-          <p class="mt-3 max-w-2xl text-sm md:text-base">
-            Shop high-quality engine oils and lubricants designed to protect, power, and perform every mile, every machine.
-          </p>
+  <ShopLayout>
+    <div class="min-h-screen mx-auto bg-gray-50 container lg:px-20 bg-transparent">
+      <!-- Loading State -->
+      <div v-if="loading" class="space-y-8 p-4">
+        <!-- Hero Skeleton -->
+        <div class="flex-1">
+          <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6">
+            <!-- Sidebar Skeleton -->
+            <div class="w-full lg:w-56 bg-white shadow-md p-4 space-y-2 rounded">
+              <div class="h-8 bg-gray-200 rounded animate-pulse"></div>
+              <div v-for="n in 6" :key="n" class="h-10 bg-gray-100 rounded animate-pulse"></div>
+            </div>
+
+            <!-- Hero Skeleton -->
+            <div class="flex-1 bg-gray-200 rounded-xl h-96 animate-pulse"></div>
+          </div>
+        </div>
+
+        <!-- Category Grid Skeleton -->
+        <section class="max-w-7xl mx-auto px-4">
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div v-for="n in cat_grid" :key="n" class="aspect-[4/3] bg-gray-200 rounded-lg animate-pulse"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Featured Products Skeleton -->
+        <section class="max-w-7xl mx-auto px-4">
+          <div class="h-10 bg-orange-200 rounded mb-4 animate-pulse"></div>
+          <div class="flex gap-4 overflow-hidden">
+            <div v-for="n in 6" :key="n" class="flex-shrink-0 w-40">
+              <div class="bg-white rounded-lg shadow p-4">
+                <div class="aspect-square bg-gray-200 rounded mb-2 animate-pulse"></div>
+                <div class="h-4 bg-gray-200 rounded mb-2 animate-pulse"></div>
+                <div class="h-4 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Category Products Skeleton -->
+        <div v-for="n in 3" :key="n" class="max-w-7xl mx-auto px-4">
+          <div class="h-10 bg-orange-200 rounded mb-4 animate-pulse"></div>
+          <div class="flex gap-4 overflow-hidden">
+            <div v-for="i in 6" :key="i" class="flex-shrink-0 w-40">
+              <div class="bg-white rounded-lg shadow p-4">
+                <div class="aspect-square bg-gray-200 rounded mb-2 animate-pulse"></div>
+                <div class="h-4 bg-gray-200 rounded mb-2 animate-pulse"></div>
+                <div class="h-4 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </section>
 
-    <section class="py-16 px-6">
-      <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <!-- Main Content -->
+      <div v-else>
+        <!-- Hero Section -->
+        <div class="flex-1 py-4 h-[384px]">
+          <div class="max-w-7xl max-h-full mx-auto flex flex-col lg:flex-row gap-6">
+            <!-- Sidebar -->
+            <div class="w-full lg:w-56 bg-white shadow-md flex-shrink-0 rounded">
+              <div class="flex items-center font-bold gap-3 p-2 bg-gray-100 rounded cursor-pointer transition-colors">
+                Categories
+              </div>
+              <hr>
+              <div v-for="(category, index) in shopData.categories" :key="index" class="relative group"
+                @mouseenter="hovered = index" @mouseleave="hovered = null">
+                <!-- Category Item -->
+                <div class="flex items-center font-semibold gap-3 p-2 hover:bg-gray-100 rounded cursor-pointer transition-colors">
+                  <RouterLink :to="`/shop/${category.slug}`" :key="category.id" :class="{ '': hovered === index }">
+                    <span class="text-xl">{{ category.icon }}</span>
+                    <span class="text-sm text-gray-700 flex-1">{{ category.name }}</span>
+                  </RouterLink>
 
-          <!-- Sidebar -->
-          <aside class="lg:col-span-1">
-            <!-- CategoryFilter fetches categories itself and emits update -->
-            <CategoryFilter @update="handleFilterUpdate" />
-          </aside>
-
-          <!-- Products area -->
-          <main class="lg:col-span-3">
-            <div class="bg-white rounded-lg shadow-md p-4 mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
-              <h1 class="text-2xl font-bold mb-4 md:mb-0">Motor Oil</h1>
-
-              <div class="flex items-center gap-4">
-                <div class="flex gap-2">
-                  <button @click="viewMode = 'grid'" class="p-2 rounded" :class="viewMode === 'grid' ? 'bg-primary text-white' : 'bg-gray-100'">
-                    <font-awesome-icon icon="th" />
-                  </button>
-                  <button @click="viewMode = 'list'" class="p-2 rounded" :class="viewMode === 'list' ? 'bg-primary text-white' : 'bg-gray-100'">
-                    <font-awesome-icon icon="list" />
-                  </button>
+                  <!-- Caret Icon -->
+                  <!-- <svg class="w-4 h-4 text-gray-500 transition-transform" :class="{ 'rotate-90': hovered === index }"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg> -->
                 </div>
 
-                <select v-model="sortBy" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                  <option value="featured">Featured</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="name">Name: A to Z</option>
-                  <option value="rating">Best Rating</option>
-                </select>
+                <!-- Subcategories Popup -->
+                <div v-if="hovered === index" class="absolute top-0 left-full ml-1 w-48 bg-white shadow-lg rounded p-2 z-50 transition-all duration-300 ease-in-out">
+                  <div v-for="sub in category.subcategories" :key="sub.id" class="p-2 text-sm text-gray-600 hover:bg-gray-100 rounded cursor-pointer">
+                    <RouterLink :to="`/shop/${category.slug}--${sub.slug}`">
+                      {{ sub.name }}
+                      <span v-if="sub.products_count > 0" class="ml-2 text-xs text-gray-400">
+                        ({{ sub.products_count }})
+                      </span>
+                    </RouterLink>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- Loading skeleton -->
-            <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div v-for="i in 6" :key="i" class="animate-pulse">
-                <div class="bg-gray-300 h-48 rounded-t-lg"></div>
-                <div class="bg-white p-4 rounded-b-lg">
-                  <div class="h-4 bg-gray-300 rounded mb-2"></div>
-                  <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+            <!-- Hero Banner -->
+            <div
+              class="flex-1 relative bg-gradient-to-r from-orange-500 to-orange-400 rounded-xl overflow-hidden shadow-xl">
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center py-6 px-12">
+                <!-- Left Content -->
+                <div class="text-white space-y-6 z-10">
+                  <div class="flex items-center gap-2">
+                    <div class="text-white text-3xl font-bold">
+                      FURSA
+                      <span
+                        class="inline-flex items-center justify-center w-8 h-8 bg-white text-primary rounded-full text-xl ml-1">⭐</span>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <h1 class="text-3xl font-bold leading-tight">Send. Track. Collect.</h1>
+                    <p class="text-2xl font-light leading-relaxed">
+                      Send your packages securely anywhere in Nigeria.
+                    </p>
+                  </div>
+                  <p class="text-sm opacity-90">**T&Cs Apply**</p>
+                </div>
+
+                <!-- Right Content - Truck Image -->
+                <div class="relative h-96 lg:h-full flex items-center justify-center">
+                  <div class="relative">
+                    <!-- Nigeria Map Background -->
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <svg viewBox="0 0 300 350" class="w-full h-full opacity-30">
+                        <path d="M150,20 L280,80 L270,200 L220,260 L140,250 L80,210 L60,120 L100,50 Z" fill="#0d9488"
+                          stroke="#0f766e" stroke-width="2" />
+                      </svg>
+                    </div>
+
+                    <!-- Truck -->
+                    <div class="relative z-10 flex items-center justify-center">
+                      <svg class="w-72 h-72 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.5">
+                        <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
+                        <path d="M15 18H9" />
+                        <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" />
+                        <circle cx="17" cy="18" r="2" />
+                        <circle cx="7" cy="18" r="2" />
+                      </svg>
+                    </div>
+
+                    <!-- Play Button -->
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                      <div
+                        class="bg-pink-500 rounded-full p-4 shadow-lg cursor-pointer hover:bg-pink-600 transition-colors flex items-center justify-center w-16 h-16">
+                        <svg class="w-6 h-6 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
+                    </div>
+
+                    <!-- FURSA Delivery Badge -->
+                    <div
+                      class="absolute top-8 right-8 bg-red-500 text-white px-4 py-2 rounded shadow-lg transform rotate-3">
+                      <div class="text-xs font-bold">FURSA</div>
+                      <div class="text-xs">DELIVERY</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category Grid Section -->
+        <section class="max-w-7xl mx-auto mb-8">
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <RouterLink :to="`/shop/${cat.parent.slug}--${cat.slug}`" v-for="cat in shopData.categoryGrid" :key="cat.name"
+                class="relative group cursor-pointer overflow-hidden rounded-lg">
+                <div class="aspect-[4/3] overflow-hidden">
+                  <img :src="cat.image" :alt="cat.name" loading="lazy" @error="handleImageError"
+                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-3">
+                  <h3 class="text-white font-medium text-sm text-center">{{ cat.name }}</h3>
+                </div>
+              </RouterLink :to="`/shop/${cat.parent.slug}--${cat.slug}`">
+            </div>
+          </div>
+        </section>
+
+        <!-- Featured Products Section -->
+        <section class="max-w-7xl mx-auto mb-8 bg-white">
+          <div class="flex justify-between items-center mb-4 bg-primary py-1 px-3 rounded">
+            <h2 class="text-2xl font-bold flex items-center">
+              <span class="text-white">Featured Products</span>
+            </h2>
+            <a href="#" class="text-white hover:underline inline-flex items-center">
+              More
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </a>
+          </div>
+
+          <!-- Slider Container -->
+          <div class="relative group/slider">
+            <!-- Previous Button -->
+            <button @click="scrollSlider(featuredSlider, -1)"
+              class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 opacity-0 group-hover/slider:opacity-100 transition-opacity disabled:opacity-30"
+              :disabled="!canScrollLeft(featuredSlider)">
+              <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+
+            <!-- Scrollable Products -->
+            <div ref="featuredSlider" class="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-1 py-2">
+              <div :to="`/p/${product.slug}`" v-for="product in shopData.featured_products" :key="product.id"
+                class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer relative flex-shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)]">
+                <div class="aspect-square bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
+                  <img :src="getImageUrl(product.images[0]?.path)" :alt="product.name" loading="lazy"
+                    class="w-full h-full object-cover" @error="handleImageError">
+                </div>
+                <h3 class="text-sm font-medium mb-1 truncate">{{ product.name }}</h3>
+                <div class="flex flex-col">
+                  <span v-if="product.discount" class="text-primary font-bold">₦ {{
+                    product.discounted_price.toLocaleString() }}</span>
+                  <span :class="product.discount ? 'text-gray-400 line-through text-xs' : 'text-primary font-bold'">
+                    ₦ {{ product.price.toLocaleString() }}
+                  </span>
+                </div>
+                <div v-if="product.discount" class="mt-1 absolute top-1 right-2">
+                  <span class="bg-orange-100 text-primary text-xs px-2 py-1 rounded">
+                    -{{ product.discount.value }}%
+                  </span>
                 </div>
               </div>
             </div>
 
-            <!-- No results -->
-            <div v-else-if="filteredProducts.length === 0" class="text-center py-12 bg-white rounded-lg shadow-md">
-              <font-awesome-icon icon="box" size="3x" class="text-gray-400 mb-4" />
-              <p class="text-gray-600">No products found matching your criteria</p>
-              <button @click="clearFilters" class="mt-4 text-primary hover:underline">Clear all filters</button>
+            <!-- Next Button -->
+            <button @click="scrollSlider(featuredSlider, 1)"
+              class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 opacity-0 group-hover/slider:opacity-100 transition-opacity disabled:opacity-30"
+              :disabled="!canScrollRight(featuredSlider)">
+              <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+        </section>
+
+        <!-- Categories with Products -->
+        <div v-for="(category, idx) in shopData.categories_with_products" :key="category.id"
+          class="max-w-7xl mx-auto mb-8">
+          <div class="flex justify-between items-center mb-4 bg-primary py-1 px-3 rounded">
+            <h2 class="text-2xl font-bold flex items-center">
+              <span class="text-white">{{ category.name }}</span>
+            </h2>
+            <RouterLink :to="`/shop/${category.slug}`" class="text-white hover:underline inline-flex items-center">
+              More
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </RouterLink>
+          </div>
+
+          <!-- Slider Container -->
+          <div class="relative group/slider">
+            <!-- Previous Button -->
+            <button @click="scrollCategorySlider(idx, -1)"
+              class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 opacity-0 group-hover/slider:opacity-100 transition-opacity">
+              <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+
+            <!-- Scrollable Products -->
+            <div :ref="el => categorySliders[idx] = el" class="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-1 py-2">
+              <RouterLink :to="`/p/${product.slug}`" v-for="product in category.products_by_subcats"
+                :key="product.id"
+                class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer relative flex-shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)]">
+                <div class="aspect-square bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
+                  <img :src="getImageUrl(product.images[0]?.path)" :alt="product.name" loading="lazy"
+                    class="w-full h-full object-cover" @error="handleImageError">
+                </div>
+                <h3 class="text-sm font-medium mb-1 truncate">{{ product.name }}</h3>
+                <div class="flex flex-col">
+                  <span v-if="product.discount" class="text-primary font-bold">₦ {{
+                    product.discounted_price.toLocaleString() }}</span>
+                  <span :class="product.discount ? 'text-gray-400 line-through text-xs' : 'text-primary font-bold'">
+                    ₦ {{ product.price.toLocaleString() }}
+                  </span>
+                </div>
+                <div v-if="product.discount" class="mt-1 absolute top-1 right-2">
+                  <span class="bg-orange-100 text-primary text-xs px-2 py-1 rounded">
+                    -{{ product.discount.value }}%
+                  </span>
+                </div>
+              </RouterLink>
             </div>
 
-            <!-- Product grid -->
-            <div v-else class="grid gap-6" :class="viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'">
-              <ProductCard v-for="product in paginatedProducts" :key="product.id" :product="product" :view-mode="viewMode" />
-            </div>
-
-            <!-- Pagination -->
-            <div v-if="totalPages > 1" class="mt-8 flex justify-center">
-              <nav class="flex items-center gap-2">
-                <button @click="currentPage--" :disabled="currentPage === 1"
-                  class="px-3 py-2 rounded border hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
-                  <font-awesome-icon icon="chevron-left" />
-                </button>
-
-                <button v-for="page in displayedPages" :key="page" @click="currentPage = page"
-                  class="px-3 py-2 rounded border min-w-[40px]" :class="currentPage === page ? 'bg-primary text-white' : 'hover:bg-gray-100'">
-                  {{ page }}
-                </button>
-
-                <button @click="currentPage++" :disabled="currentPage === totalPages"
-                  class="px-3 py-2 rounded border hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
-                  <font-awesome-icon icon="chevron-right" />
-                </button>
-              </nav>
-            </div>
-          </main>
+            <!-- Next Button -->
+            <button @click="scrollCategorySlider(idx, 1)"
+              class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 opacity-0 group-hover/slider:opacity-100 transition-opacity">
+              <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
-    </section>
 
-    <CTA />
-    <Brochure />
-  </DefaultLayout>
+      <!-- Error State -->
+      <div v-if="error" class="max-w-7xl mx-auto px-4 py-20 text-center">
+        <div class="text-red-500 text-xl mb-4">{{ error }}</div>
+        <button @click="fetchShopData" class="bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-600">
+          Retry
+        </button>
+      </div>
+    </div>
+  </ShopLayout>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
-import axios from 'axios'
-import DefaultLayout from '@/layouts/DefaultLayout.vue'
-import ProductCard from '@/components/products/ProductCard.vue'
-import CategoryFilter from '@/components/products/CategoryFilter.vue'
-import CTA from '@/components/common/CTA.vue'
-import Brochure from '@/components/common/Brochure.vue'
+import { ref, onMounted } from 'vue';
+import ShopLayout from '@/layouts/ShopLayout.vue';
 
-const products = ref([])
-const loading = ref(false)
+const categoryGrid = [
+  {
+    name: 'Phones & Tablets',
+    image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=300&fit=crop'
+  },
+  {
+    name: 'TV & Audio',
+    image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=300&fit=crop'
+  },
+  {
+    name: 'Beauty Must Have',
+    image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop'
+  },
+  {
+    name: 'Appliances',
+    image: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop'
+  },
+  {
+    name: 'Generators & Inverters',
+    image: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=300&fit=crop'
+  },
+  {
+    name: 'Fashion',
+    image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&h=300&fit=crop'
+  },
+  {
+    name: 'Home & Office',
+    image: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&h=300&fit=crop'
+  },
+  {
+    name: 'Computing',
+    image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop'
+  },
+  {
+    name: 'Wristwatches',
+    image: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400&h=300&fit=crop'
+  },
+  {
+    name: 'Mobile Accessories',
+    image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=300&fit=crop'
+  },
+  {
+    name: 'Sneakers',
+    image: 'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=300&fit=crop'
+  },
+  {
+    name: 'Automobile',
+    image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop'
+  }
+];
 
-const viewMode = ref('grid')
-const sortBy = ref('featured')
-const currentPage = ref(1)
-const perPage = ref(12)
+const shopData = ref({
+  featured_products: [],
+  categories_with_products: [],
+  categories: [],
+  categoryGrid: []
+});
 
-// filters will be populated by CategoryFilter emit
-const filters = ref({
-  categories: [],         // array of subcategory ids (numbers)
-  priceRange: { min: null, max: null }
-})
+const loading = ref(true);
+const error = ref(null);
+const hovered = ref(null);
+const featuredSlider = ref(null);
+const categorySliders = ref([]);
 
-// fetch products
-onMounted(async () => {
-  loading.value = true
+// Default grid (desktop)
+  let cat_grid = 12;
+  if (window.innerWidth <= 1024) {
+    cat_grid = 6;
+  }
+const fetchShopData = async () => {
+  loading.value = true;
+  error.value = null;
+
   try {
-    const resp = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/products`)
-    const apiProducts = resp.data?.data?.products?.data ?? []
+    const apiUrl = import.meta.env.VITE_API_BASE_URL;
+    const res = await fetch(`${apiUrl}/shop?featured_limit=12&products_per_category=12`);
 
-    // Map API product -> UI product (normalize price & category_id)
-    const hostBase = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/api.*$/i, '')
-    products.value = apiProducts.map(p => {
-      // robust price extraction
-      const price = Number(p.base_price ?? p.price ?? p.distributor_price ?? 0)
-
-      // image handling: prefer url, then path -> storage
-      let image = null
-      if (p.images && p.images.length > 0) {
-        const firstImg = p.images[0]
-        image = firstImg.url || (firstImg.path ? `${hostBase}/storage/${firstImg.path}` : null)
-      }
-
-      return {
-        id: Number(p.id),
-        name: p.name,
-        price: Number.isFinite(price) ? price : 0,
-        sku: p.sku ?? String(p.id).padStart(6, '0'),
-        rating: p.rating ?? Math.floor(Math.random() * 2) + 4,
-        image: image ?? '/images/mrs_motor_oil.png',
-        volume: p.short_description ?? 'N/A',
-        // product.category_id refers to subcategory.id (as you noted)
-        category_id: Number(p.category_id ?? p.category?.id ?? NaN)
-      }
-    })
-  } catch (err) {
-    console.error('Failed to load products:', err)
-  } finally {
-    loading.value = false
-  }
-})
-
-// compute filtered products
-const filteredProducts = computed(() => {
-  let result = [...products.value]
-
-  // category filter: subcategory IDs
-  if (filters.value.categories && filters.value.categories.length > 0) {
-    const selected = new Set(filters.value.categories.map(Number))
-    result = result.filter(p => selected.has(Number(p.category_id)))
-  }
-
-  // price filter: only if min/max are finite numbers
-  const { min, max } = filters.value.priceRange || { min: null, max: null }
-  if (min !== null && min !== '' && Number.isFinite(Number(min))) {
-    result = result.filter(p => p.price >= Number(min))
-  }
-  if (max !== null && max !== '' && Number.isFinite(Number(max))) {
-    result = result.filter(p => p.price <= Number(max))
-  }
-
-  // sorting
-  switch (sortBy.value) {
-    case 'price-low': result.sort((a, b) => a.price - b.price); break
-    case 'price-high': result.sort((a, b) => b.price - a.price); break
-    case 'name': result.sort((a, b) => a.name.localeCompare(b.name)); break
-    case 'rating': result.sort((a, b) => b.rating - a.rating); break
-  }
-
-  return result
-})
-
-// pagination & helpers
-const totalPages = computed(() => Math.ceil(filteredProducts.value.length / perPage.value))
-const paginatedProducts = computed(() => {
-  const start = (currentPage.value - 1) * perPage.value
-  return filteredProducts.value.slice(start, start + perPage.value)
-})
-
-const displayedPages = computed(() => {
-  const pages = []
-  const maxPages = 5
-  let start = Math.max(1, currentPage.value - 2)
-  let end = Math.min(totalPages.value, start + maxPages - 1)
-  if (end - start < maxPages - 1) start = Math.max(1, end - maxPages + 1)
-  for (let i = start; i <= end; i++) pages.push(i)
-  return pages
-})
-
-// handle category filter updates (CategoryFilter emits { categories, priceRange })
-function handleFilterUpdate(newFilters) {
-  // ensure arrays and numeric values are normalized
-  filters.value = {
-    categories: Array.isArray(newFilters.categories) ? newFilters.categories.map(Number) : [],
-    priceRange: {
-      min: newFilters.priceRange?.min ?? null,
-      max: newFilters.priceRange?.max ?? null
+    if (!res.ok) {
+      throw new Error('Failed to fetch shop data');
     }
+
+    const response = await res.json();
+
+    shopData.value = {
+      ...response.data,
+      cat_grid
+    };
+  } catch (err) {
+    error.value = err.message;
+  } finally {
+    loading.value = false;
   }
-  currentPage.value = 1
-}
 
-function clearFilters() {
-  filters.value = { categories: [], priceRange: { min: null, max: null } }
-}
+};
 
-// reset page when filters change
-watch(filters, () => { currentPage.value = 1 }, { deep: true })
+const getImageUrl = (path) => {
+  if (!path) return '/images/oil-droplet.jpg';
+  const apiUrl = import.meta.env.VITE_STORAGE_URL;
+  return `${apiUrl}${path}`;
+};
+
+const handleImageError = (e) => {
+  e.target.src = '/images/oil-droplet.jpg';
+};
+
+const canScrollLeft = (slider) => {
+  if (!slider) return false;
+  return slider.scrollLeft > 0;
+};
+
+const canScrollRight = (slider) => {
+  if (!slider) return false;
+  return slider.scrollLeft < (slider.scrollWidth - slider.clientWidth);
+};
+
+const scrollSlider = (slider, direction) => {
+  if (slider) {
+    const scrollAmount = slider.offsetWidth * 0.8;
+    slider.scrollBy({
+      left: direction * scrollAmount,
+      behavior: 'smooth'
+    });
+  }
+};
+
+const scrollCategorySlider = (index, direction) => {
+  const slider = categorySliders.value[index];
+  if (slider) {
+    const scrollAmount = slider.offsetWidth * 0.8;
+    slider.scrollBy({
+      left: direction * scrollAmount,
+      behavior: 'smooth'
+    });
+  }
+};
+
+onMounted(() => {
+  fetchShopData();
+});
 </script>
+
+<style scoped>
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+</style>
