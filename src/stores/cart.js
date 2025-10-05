@@ -182,7 +182,7 @@ export const useCartStore = defineStore('cart', () => {
         const newItem = {
           id: product.id,
           name: product.name,
-          price: Number(product.price),
+          price: Number(product.discountedPrice || product.price),
           sku: product.sku ?? '',
           image: product.image ?? null,
           volume: product.volume || '5 Litres',

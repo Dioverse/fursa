@@ -142,7 +142,7 @@ const loading = ref(true)
 const error = ref(false)
 
 // Cart values
-const subtotal = computed(() => cartStore.subtotal)
+const subtotal = computed(() => cartStore.total)
 const shipping = computed(() => cartStore.shipping)
 const tax = computed(() => cartStore.tax)
 const cartTotal = computed(() => cartStore.totalPrice)

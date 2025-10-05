@@ -46,7 +46,7 @@
                     </div>
 
                     <div class="text-3xl font-bold text-primary mb-6">
-                        ₦{{ product?.price?.toLocaleString() }}
+                        ₦{{ product?.discountedPrice?.toLocaleString() }}
                     </div>
 
                     <div class="space-y-4 mb-6">
