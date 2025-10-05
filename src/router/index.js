@@ -17,6 +17,7 @@ const WishlistView = () => import('@/views/dashboard/WishlistView.vue')
 const ShopView = () => import('@/views/shop/ShopView.vue')
 const ProductDetailView = () => import('@/views/shop/ProductDetailView.vue')
 const CategoryView = () => import('@/views/shop/CategoryView.vue')
+const Categories = () => import('@/views/shop/Categories.vue')
 const CartView = () => import('@/views/cart/CartView.vue')
 const CheckoutView = () => import('@/views/cart/CheckoutView.vue')
 const DistributorRegistrationView = () =>
