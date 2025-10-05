@@ -69,8 +69,7 @@
               <div v-for="(category, index) in shopData.categories" :key="index" class="relative group"
                 @mouseenter="hovered = index" @mouseleave="hovered = null">
                 <!-- Category Item -->
-                <div
-                  class="flex items-center font-semibold gap-3 p-2 hover:bg-gray-100 rounded cursor-pointer transition-colors">
+                <div class="flex items-center font-semibold gap-3 p-2 hover:bg-gray-100 rounded cursor-pointer transition-colors">
                   <span class="text-xl">{{ category.icon }}</span>
                   <span class="text-sm text-gray-700 flex-1">{{ category.name }}</span>
 
