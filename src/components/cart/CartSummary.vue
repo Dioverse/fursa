@@ -79,10 +79,10 @@ const toast = useToast()
 const couponCode = ref('')
 const discount = ref(0)
 
-const subtotal = computed(() => cartStore.totalPrice)
-const shipping = computed(() => subtotal.value > 50000 ? 0 : 2500)
-const tax = computed(() => subtotal.value * 0.075) // 7.5% VAT
-const total = computed(() => subtotal.value + shipping.value + tax.value - discount.value)
+const subtotal = computed(() => cartStore.subtotal)
+const shipping = computed(() => cartStore.shipping)
+const tax = computed(() => cartStore.tax)
+const total = computed(() => cartStore.totalPrice)
 
 const applyCoupon = () => {
     if (couponCode.value === 'SAVE10') {

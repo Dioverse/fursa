@@ -22,23 +22,23 @@ const authService = {
   },
 
   async changePassword(data) {
-    return api.post('/auth/change-password', data)
+    return api.post('/change-password', data)
   },
 
   async forgotPassword(email) {
-    return api.post('/auth/forgot-password', { email })
+    return api.post('/forgot-password', { email })
   },
 
   async resetPassword(token, password) {
-    return api.post('/auth/reset-password', { token, password })
+    return api.post('/reset-password', { token, password })
   },
 
   async verifyEmail(token) {
-    return api.post('/auth/verify-email', { token })
+    return api.post('/verify-email', { token })
   },
 
   async resendVerification(email) {
-    return api.post('/auth/resend-verification', { email })
+    return api.post('/resend-verification', { email })
   },
 }
 

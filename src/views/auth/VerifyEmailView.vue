@@ -1,12 +1,3 @@
-<template>
-  <div class="flex flex-col items-center justify-center h-screen">
-    <h1 class="text-2xl font-bold mb-4">Verifying your email...</h1>
-    <p v-if="loading">Please wait...</p>
-    <p v-if="error" class="text-red-600">{{ error }}</p>
-    <p v-if="success" class="text-green-600">Email verified successfully! Redirecting...</p>
-  </div>
-</template>
-
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -23,14 +14,13 @@ const error = ref(null)
 
 onMounted(async () => {
   try {
-    const { id, hash } = route.params
-    const { expires, signature } = route.query
+    const { id, hash, expires, signature } = route.query
 
     await axios.get(`${import.meta.env.VITE_API_BASE_URL}/email/verify/${id}/${hash}`, {
       params: { expires, signature },
-      headers: { Authorization: `Bearer ${authStore.token}` }
+      headers: { Authorization: `Bearer ${authStore.token}`, 'Accept': 'application/json', 'Content-Type': 'application/json' }
     })
-
+ 
     success.value = true
     setTimeout(() => {
       router.push('/dashboard')
@@ -41,4 +31,5 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
 </script>

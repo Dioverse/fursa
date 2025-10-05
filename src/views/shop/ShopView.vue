@@ -198,6 +198,7 @@ const paginatedProducts = computed(() => {
   const start = (currentPage.value - 1) * perPage.value
   return filteredProducts.value.slice(start, start + perPage.value)
 })
+
 const displayedPages = computed(() => {
   const pages = []
   const maxPages = 5
