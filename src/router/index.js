@@ -89,7 +89,6 @@ const router = createRouter({
       meta: { title: 'Shop' },
     },
     {
-<<<<<<< HEAD
       path: '/shop/:slug',
       name: 'category',
       component: Categories,
@@ -101,13 +100,6 @@ const router = createRouter({
     //   component: CategoryView,
     //   meta: { title: 'Category' },
     // },
-=======
-      path: '/shop/category/:slug',
-      name: 'category',
-      component: CategoryView,
-      meta: { title: 'Category' },
-    },
->>>>>>> f3c3c8fea06caa7dca95447b3540595d9c669a6a
     {
       path: '/product/:id',
       name: 'product-detail',
