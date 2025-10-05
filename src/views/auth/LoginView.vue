@@ -55,43 +55,8 @@ const handleLogin = async (credentials) => {
         const redirectTo = router.currentRoute.value.query.redirect || '/dashboard'
         router.push(redirectTo)
     } catch (error) {
-        // console.error('Login error:', error.response?.data?.errors?.user[0] || error.message)
         toast.error(error.response?.data?.errors?.user[0] || 'Invalid login credentials. Please try again.')
     }
-}
-
-
-async function syncCart() {
-  try {
-    // Only sync if local cart exists
-    if (items.value.length > 0) {
-      for (const item of items.value) {
-        await api.post('/carts', {
-          product_id: item.id,
-          quantity: item.quantity,
-        })
-      }
-      toast.success('Cart synchronized with server')
-    }
-
-    // Optional: fetch fresh cart from server to overwrite local copy
-    const res = await api.get('/carts')
-    if (res.data && res.data.data) {
-      items.value = res.data.data.map((item) => ({
-        id: item.product_id,
-        name: item.product?.name,
-        price: item.product?.price,
-        sku: item.product?.sku,
-        image: item.product?.image,
-        volume: item.product?.volume || '5 Litres',
-        quantity: item.quantity,
-      }))
-      saveCart()
-    }
-  } catch (error) {
-    console.error('Cart sync failed:', error)
-    toast.error('Failed to synchronize cart')
-  }
 }
 
 </script>

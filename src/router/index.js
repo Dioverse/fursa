@@ -16,7 +16,6 @@ const AddressesView = () => import('@/views/dashboard/AddressesView.vue')
 const WishlistView = () => import('@/views/dashboard/WishlistView.vue')
 const ShopView = () => import('@/views/shop/ShopView.vue')
 const ProductDetailView = () => import('@/views/shop/ProductDetailView.vue')
-const Categories = () => import('@/views/shop/Categories.vue')
 const CategoryView = () => import('@/views/shop/CategoryView.vue')
 const CartView = () => import('@/views/cart/CartView.vue')
 const CheckoutView = () => import('@/views/cart/CheckoutView.vue')
@@ -24,6 +23,8 @@ const DistributorRegistrationView = () =>
   import('@/views/distributor/DistributorRegistrationView.vue')
 const VerifyView = () => import('@/views/auth/VerifyView.vue')
 const VerifyEmailView = () => import('@/views/auth/VerifyEmailView.vue')
+const ForgotPasswordView = () => import('@/views/auth/ForgotPasswordView.vue')
+const ResetPassword = () => import('@/views/auth/ResetPassword.vue')
 
 // Additional views
 const AboutView = () => import('@/views/AboutView.vue')
@@ -57,17 +58,29 @@ const router = createRouter({
       meta: { title: 'Register', guest: true },
     },
     {
-      path: '/verify-email',
-      name: 'verify-email',
+      path: '/verify',
+      name: 'verify',
       component: VerifyView,
       meta: { title: 'Email Verification', guest: true },
     },
     {
       // path: '/email/verify/{id}/{hash}?expires={expired}&signature={signature}',
-      path: '/email/verify/:id/:hash',
-      name: 'verify-email',
+      path: '/verify-email',
+      name: 'email.verify',
       component: VerifyEmailView,
       meta: { title: 'Verify Email', guest: true },
+    },
+    {
+      path: '/forgot-password',
+      name: 'forgot.password',
+      component: ForgotPasswordView,
+      meta: { title: 'Forgot Password', guest: true },
+    },
+    {
+      path: '/reset-password',
+      name: 'reset.password',
+      component: ResetPassword,
+      meta: { title: 'Reset Password', guest: true },
     },
     {
       path: '/shop',
@@ -76,6 +89,7 @@ const router = createRouter({
       meta: { title: 'Shop' },
     },
     {
+<<<<<<< HEAD
       path: '/shop/:slug',
       name: 'category',
       component: Categories,
@@ -87,6 +101,13 @@ const router = createRouter({
     //   component: CategoryView,
     //   meta: { title: 'Category' },
     // },
+=======
+      path: '/shop/category/:slug',
+      name: 'category',
+      component: CategoryView,
+      meta: { title: 'Category' },
+    },
+>>>>>>> f3c3c8fea06caa7dca95447b3540595d9c669a6a
     {
       path: '/product/:id',
       name: 'product-detail',
@@ -228,29 +249,64 @@ router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   const toast = useToast()
 
-  // Set page title
-  document.title = to.meta.title ? `${to.meta.title} - Fursa Energy` : 'Fursa Energy'
+  document.title = to.meta.title
+    ? `${to.meta.title} - Fursa Energy`
+    : 'Fursa Energy'
 
   const isAuthenticated = authStore.isAuthenticated
   const isVerified = authStore.user?.email_verified_at !== null
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    // Not logged in → redirect to login
-    next({ name: 'login', query: { redirect: to.fullPath } })
-  } 
-  else if (to.meta.requiresAuth && isAuthenticated && !isVerified && to.name !== 'verify-email') {
-    // Logged in but not verified → redirect to verify page
-    toast.warning("Please verify your account to continue.")
-    next({ name: 'verify-email' })
-  } 
-  else if (to.meta.guest && isAuthenticated) {
-    // Logged in user trying to access guest-only routes
-    next({ name: 'dashboard' })
-  } 
-  else {
-    next()
+  // Always allow verification routes
+  if (to.name === 'verify' || to.name === 'email.verify') {
+    return next()
   }
+
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    // Not logged in, redirect to login
+    return next({ name: 'login', query: { redirect: to.fullPath } })
+  }
+
+  if (to.meta.requiresAuth && isAuthenticated && !isVerified) {
+    // Logged in but not verified, block access to other pages
+    toast.warning('Please verify your account to continue.')
+    return next({ name: 'verify' })
+  }
+
+  if (to.meta.guest && isAuthenticated) {
+    // Logged-in user trying to access guest-only routes (login, register, etc.)
+    return next({ name: 'dashboard' })
+  }
+
+  next()
 })
+
+// router.beforeEach((to, from, next) => {
+//   const authStore = useAuthStore()
+//   const toast = useToast()
+
+//   document.title = to.meta.title ? `${to.meta.title} - Fursa Energy` : 'Fursa Energy'
+
+//   const isAuthenticated = authStore.isAuthenticated
+//   const isVerified = authStore.user?.email_verified_at !== null
+
+//   if (to.meta.requiresAuth && !isAuthenticated) {
+ 
+//     next({ name: 'login', query: { redirect: to.fullPath } })
+//   } 
+//   else if (to.meta.requiresAuth && isAuthenticated && !isVerified && to.name !== 'verify') {
+ 
+//     toast.warning("Please verify your account to continue.")
+//     router.push('/verify')
+//     // next({ name: 'verify-email' })
+//   } 
+//   else if (to.meta.guest && isAuthenticated) {
+//     // Logged in user trying to access guest-only routes
+//     next({ name: 'dashboard' })
+//   } 
+//   else {
+//     next()
+//   }
+// })
 
 
 // router.beforeEach((to, from, next) => {

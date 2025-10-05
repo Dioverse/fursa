@@ -89,9 +89,7 @@
       v-if="showAddForm"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
-      <div
-        class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative"
-      >
+      <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
         <button
           @click="showAddForm = false"
           class="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
@@ -103,53 +101,16 @@
 
         <form @submit.prevent="addAddress">
           <div class="grid grid-cols-1 gap-4">
-            <input
-              v-model="form.full_name"
-              placeholder="Full Name"
-              required
-              class="input"
-            />
-            <input
-              v-model="form.phone"
-              placeholder="Phone Number"
-              required
-              class="input"
-            />
-            <input
-              v-model="form.address_line_one"
-              placeholder="Address Line 1"
-              required
-              class="input"
-            />
-            <input
-              v-model="form.address_line_two"
-              placeholder="Address Line 2"
-              class="input"
-            />
-            <input
-              v-model="form.city"
-              placeholder="City"
-              required
-              class="input"
-            />
-            <input
-              v-model="form.state"
-              placeholder="State"
-              required
-              class="input"
-            />
-            <input
-              v-model="form.postal_code"
-              placeholder="Postal Code"
-              required
-              class="input"
-            />
-            <input
-              v-model="form.country"
-              placeholder="Country"
-              required
-              class="input"
-            />
+            <input v-model="form.full_name" placeholder="Full Name" required class="input" />
+            <input v-model="form.phone" placeholder="Phone Number" required class="input" />
+            <input v-model="form.address_line_one" placeholder="Address Line 1" required class="input" />
+            <input v-model="form.address_line_two" placeholder="Address Line 2" class="input" />
+            <input v-model="form.city" placeholder="City" required class="input" />
+            <input v-model="form.province" placeholder="Province" required class="input" />
+            <input v-model="form.state" placeholder="State" required class="input" />
+            <input v-model="form.postal_code" placeholder="Postal Code" required class="input" />
+            <input v-model="form.country" placeholder="Country" required class="input" />
+
             <label class="flex items-center gap-2">
               <input type="checkbox" v-model="form.is_default" />
               Set as default
@@ -174,11 +135,15 @@
 import { ref, onMounted } from 'vue'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import { useToast } from 'vue-toastification'
+import axios from 'axios'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
+const toast = useToast()
 
 const addresses = ref([])
 const showAddForm = ref(false)
 const loading = ref(false)
-const toast = useToast()
 
 const form = ref({
   full_name: '',
@@ -186,55 +151,56 @@ const form = ref({
   address_line_one: '',
   address_line_two: '',
   city: '',
+  province: '',
   state: '',
   postal_code: '',
   country: '',
   is_default: false
 })
 
+const resetForm = () => {
+  form.value = {
+    full_name: '',
+    phone: '',
+    address_line_one: '',
+    address_line_two: '',
+    city: '',
+    state: '',
+    postal_code: '',
+    country: '',
+    is_default: false
+  }
+}
+
 const fetchAddresses = async () => {
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/shipping-address`,
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-    )
-    const data = await response.json()
+    const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/shipping-address`, {
+      headers: { Authorization: `Bearer ${authStore.token}` }
+    })
     addresses.value = data.data || data || []
   } catch (err) {
-    console.error('Error fetching addresses:', err)
+    console.error(err)
+    toast.error('Failed to fetch addresses!')
   }
 }
 
 const addAddress = async () => {
   loading.value = true
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch(
+    const { data } = await axios.post(
       `${import.meta.env.VITE_API_BASE_URL}/shipping-address`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(form.value)
-      }
+      { ...form.value, is_default: form.value.is_default ? 1 : 0 },
+      { headers: { Authorization: `Bearer ${authStore.token}`, 'Content-Type': 'application/json' } }
     )
+    console.log(form.value)
 
-    if (!response.ok) throw new Error('Failed to save address')
-
-    const newAddress = await response.json()
-    addresses.value.push(newAddress)
+    addresses.value.push(data)
     toast.success('Address added successfully!')
     showAddForm.value = false
-    Object.keys(form.value).forEach((k) => (form.value[k] = '')) // reset form
-    form.value.is_default = false
+    resetForm()
   } catch (err) {
-    console.error('Error saving address:', err)
-    toast.error('Failed to save address!')
+    console.error(err)
+    toast.error(err.response?.data?.message || 'Failed to save address!')
   } finally {
     loading.value = false
   }
@@ -244,47 +210,32 @@ const deleteAddress = async (id) => {
   if (!confirm('Are you sure you want to delete this address?')) return
 
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/shipping-address/${id}`,
-      {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      }
-    )
-
-    if (!response.ok) throw new Error('Failed to delete address')
-
+    await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/shipping-address/${id}`, {
+      headers: { Authorization: `Bearer ${authStore.token}` }
+    })
     addresses.value = addresses.value.filter((a) => a.id !== id)
     toast.success('Address deleted successfully!')
   } catch (err) {
-    console.error('Error deleting address:', err)
+    console.error(err)
     toast.error('Failed to delete address!')
   }
 }
 
 const setDefaultAddress = async (id) => {
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch(
+    await axios.post(
       `${import.meta.env.VITE_API_BASE_URL}/set-default-address/${id}`,
-      {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
-      }
+      {},
+      { headers: { Authorization: `Bearer ${authStore.token}` } }
     )
 
-    if (!response.ok) throw new Error('Failed to set default address')
-
-    // update local state
     addresses.value = addresses.value.map((a) => ({
       ...a,
       is_default: a.id === id ? 1 : 0
     }))
-
     toast.success('Default address updated!')
   } catch (err) {
-    console.error('Error setting default address:', err)
+    console.error(err)
     toast.error('Failed to update default address!')
   }
 }
@@ -307,11 +258,7 @@ onMounted(fetchAddresses)
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>
