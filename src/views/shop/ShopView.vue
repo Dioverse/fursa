@@ -70,25 +70,27 @@
                 @mouseenter="hovered = index" @mouseleave="hovered = null">
                 <!-- Category Item -->
                 <div class="flex items-center font-semibold gap-3 p-2 hover:bg-gray-100 rounded cursor-pointer transition-colors">
-                  <span class="text-xl">{{ category.icon }}</span>
-                  <span class="text-sm text-gray-700 flex-1">{{ category.name }}</span>
+                  <RouterLink :to="`/shop/${category.slug}`" :key="category.id" :class="{ '': hovered === index }">
+                    <span class="text-xl">{{ category.icon }}</span>
+                    <span class="text-sm text-gray-700 flex-1">{{ category.name }}</span>
+                  </RouterLink>
 
                   <!-- Caret Icon -->
-                  <svg class="w-4 h-4 text-gray-500 transition-transform" :class="{ 'rotate-90': hovered === index }"
+                  <!-- <svg class="w-4 h-4 text-gray-500 transition-transform" :class="{ 'rotate-90': hovered === index }"
                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
+                  </svg> -->
                 </div>
 
                 <!-- Subcategories Popup -->
-                <div v-if="hovered === index"
-                  class="absolute top-0 left-full ml-1 w-48 bg-white shadow-lg rounded p-2 z-50 transition-all duration-300 ease-in-out">
-                  <div v-for="sub in category.subcategories" :key="sub.id"
-                    class="p-2 text-sm text-gray-600 hover:bg-gray-100 rounded cursor-pointer">
-                    {{ sub.name }}
-                    <span v-if="sub.products_count > 0" class="ml-2 text-xs text-gray-400">
-                      ({{ sub.products_count }})
-                    </span>
+                <div v-if="hovered === index" class="absolute top-0 left-full ml-1 w-48 bg-white shadow-lg rounded p-2 z-50 transition-all duration-300 ease-in-out">
+                  <div v-for="sub in category.subcategories" :key="sub.id" class="p-2 text-sm text-gray-600 hover:bg-gray-100 rounded cursor-pointer">
+                    <RouterLink :to="`/shop/${category.slug}--${sub.slug}`">
+                      {{ sub.name }}
+                      <span v-if="sub.products_count > 0" class="ml-2 text-xs text-gray-400">
+                        ({{ sub.products_count }})
+                      </span>
+                    </RouterLink>
                   </div>
                 </div>
               </div>
@@ -166,7 +168,7 @@
         <section class="max-w-7xl mx-auto mb-8">
           <div class="bg-white rounded-lg shadow-md p-6">
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              <div v-for="cat in shopData.categoryGrid" :key="cat.name"
+              <RouterLink :to="`/shop/${cat.parent.slug}--${cat.slug}`" v-for="cat in shopData.categoryGrid" :key="cat.name"
                 class="relative group cursor-pointer overflow-hidden rounded-lg">
                 <div class="aspect-[4/3] overflow-hidden">
                   <img :src="cat.image" :alt="cat.name" loading="lazy" @error="handleImageError"
@@ -176,7 +178,7 @@
                 <div class="absolute bottom-0 left-0 right-0 p-3">
                   <h3 class="text-white font-medium text-sm text-center">{{ cat.name }}</h3>
                 </div>
-              </div>
+              </RouterLink :to="`/shop/${cat.parent.slug}--${cat.slug}`">
             </div>
           </div>
         </section>
@@ -208,7 +210,7 @@
 
             <!-- Scrollable Products -->
             <div ref="featuredSlider" class="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-1 py-2">
-              <div v-for="product in shopData.featured_products" :key="product.id"
+              <div :to="`/p/${product.slug}`" v-for="product in shopData.featured_products" :key="product.id"
                 class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer relative flex-shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)]">
                 <div class="aspect-square bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
                   <img :src="getImageUrl(product.images[0]?.path)" :alt="product.name" loading="lazy"
@@ -248,12 +250,12 @@
             <h2 class="text-2xl font-bold flex items-center">
               <span class="text-white">{{ category.name }}</span>
             </h2>
-            <a href="#" class="text-white hover:underline inline-flex items-center">
+            <RouterLink :to="`/shop/${category.slug}`" class="text-white hover:underline inline-flex items-center">
               More
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
               </svg>
-            </a>
+            </RouterLink>
           </div>
 
           <!-- Slider Container -->
@@ -267,9 +269,8 @@
             </button>
 
             <!-- Scrollable Products -->
-            <div :ref="el => categorySliders[idx] = el"
-              class="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-1 py-2">
-              <RouterLink :to="`/p/${product.categories}`" v-for="product in category.products_by_subcats"
+            <div :ref="el => categorySliders[idx] = el" class="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-1 py-2">
+              <RouterLink :to="`/p/${product.slug}`" v-for="product in category.products_by_subcats"
                 :key="product.id"
                 class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer relative flex-shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)]">
                 <div class="aspect-square bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
