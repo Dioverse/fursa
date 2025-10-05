@@ -154,16 +154,28 @@ class ProductController extends Controller
 
     public function cats(Request $request)
     {
-        $sub      = $request->boolean('sub'); // auto-cast "true"/"false"
-        $parentId = $request->query('category_id');
+        $sub       = $request->boolean('sub'); // auto-cast "true"/"false"
+        $slug      = $request->query('category_slug'); // <-- use slug instead of id
+        $parentCat = null;
 
-        if ($sub && $parentId) {
+        if ($slug) {
+            $parentCat = Category::where('slug', $slug)->first();
+            if (! $parentCat) {
+                return response()->json([
+                    'message' => 'Category not found',
+                    'data'    => [],
+                ], 404);
+            }
+        }
+
+        if ($sub && $parentCat) {
+            // Fetch subcategories of this parent by id
             $categories = Category::withCount('products')
-                ->where('parent_id', $parentId)
+                ->where('parent_id', $parentCat->id)
                 ->get(['id', 'name', 'description', 'image', 'slug', 'parent_id']);
 
         } elseif ($sub) {
-            // Fetch specific parent with subcategories + product count
+            // Fetch ALL parents with their subcategories + product count
             $categories = Category::with([
                 'subcategories' => function ($query) {
                     $query->select('id', 'name', 'description', 'image', 'slug', 'parent_id')
@@ -173,20 +185,21 @@ class ProductController extends Controller
                 ->withCount('subcategories')
                 ->whereNull('parent_id')
                 ->get(['id', 'name', 'description', 'image', 'slug']);
-        } elseif ($parentId) {
-            // Fetch specific parent with subcategories + product count
-            $categories = Category::where("id", $parentId)->with([
-                'subcategories' => function ($query) {
-                    $query->select('id', 'name', 'parent_id', 'image')
-                        ->withCount('products');
-                },
-            ])
+
+        } elseif ($parentCat) {
+            // Fetch specific parent with subcategories
+            $categories = Category::where('id', $parentCat->id)
+                ->with([
+                    'subcategories' => function ($query) {
+                        $query->select('id', 'name', 'description', 'image', 'slug', 'parent_id')
+                            ->withCount('products');
+                    },
+                ])
                 ->withCount('subcategories')
-                ->whereNull('parent_id')
-                ->get(['id', 'name', 'description', 'image', 'slug']);
+                ->first(['id', 'name', 'description', 'image', 'slug']); // use first() here for single
 
         } else {
-            // Fetch parent categories with subcategories + product count
+            // Fetch all parent categories
             $categories = Category::withCount('subcategories')
                 ->whereNull('parent_id')
                 ->get(['id', 'name', 'description', 'image', 'slug']);
@@ -197,6 +210,7 @@ class ProductController extends Controller
             'data'    => $categories,
         ]);
     }
+
 
     /**
      * Display the specified resource.
