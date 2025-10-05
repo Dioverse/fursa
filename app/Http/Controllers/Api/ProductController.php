@@ -98,7 +98,7 @@ class ProductController extends Controller
         // --- Query params with defaults ---
         $featuredLimit  = (int) $request->query('featured_limit', 6);
         $productsPerCat = (int) $request->query('products_per_category', 7);
-        $taggedLimit    = (int) $request->query('tagged_limit', 6);
+        $catGridLimit    = (int) $request->query('cat_grid_limit', 12);
 
         // Helper: select only required product fields
         $productFields = ['products.id', 'category_id', 'products.name', 'products.slug', 'short_description', 'base_price', 'distributor_price'];
@@ -133,31 +133,7 @@ class ProductController extends Controller
             ])
             ->get(['id', 'name', 'slug', 'image']);
 
-        // --- Products with distinct tags ---
-        $taggedProducts = Product::select(array_merge($productFields, ['tags']))
-            ->with([
-                'category:id,name,slug',
-                'images' => function ($query) {
-                    $query->select(['id', 'product_id', 'path'])->limit(1);
-                },
-                'discount:product_id,value,type',
-            ])
-            ->whereNotNull('tags')
-            ->inRandomOrder()
-            ->get();
-
-        $uniqueTags = collect();
-
-        $taggedProducts->each(function ($product) use ($uniqueTags) {
-            $tags = $product->tags;
-            foreach ($tags as $tag) {
-                if (! $uniqueTags->has($tag)) {
-                    $uniqueTags->put($tag, $product);
-                }
-            }
-        });
-
-        $distinctTaggedProducts = $uniqueTags->values()->take($taggedLimit);
+        $categoryGrid = Category::select('name','slug','image','parent_id')->with('parent:id,slug')->whereNotNull('parent_id')->inRandomOrder()->take($catGridLimit)->get();
 
         $categories = Category::with(['subcategories' => function ($query) {
             $query->select(['id', 'image', 'name', 'slug', 'parent_id'])->withCount('products');
@@ -171,7 +147,7 @@ class ProductController extends Controller
                 'categories'               => $categories,
                 'featured_products'        => $featuredProducts,
                 'categories_with_products' => $categoriesWithProducts,
-                'tagged_products'          => $distinctTaggedProducts,
+                'categoryGrid'             => $categoryGrid,
             ],
         ]);
     }
