@@ -473,12 +473,6 @@ onMounted(async () => {
             category: p.category?.name || "Uncategorized",
             image: p.images.length ? p.images[0].url : "../../public/images/mrs_motor_oil.png"
         }))
-        // popularProducts.value = [
-        //     { id: 1, name: 'MRS 5L Motorcycle engine oil', price: 145000, sku: 'A23WERT5', rating: 4, image: '../../public/images/mrs_motor_oil.png' },
-        //     { id: 2, name: 'MRS Premium Motor Oil 20W-50', price: 125000, sku: 'B45TYUI8', rating: 5, image: '../../public/images/mrs_motor_oil.png' },
-        //     { id: 3, name: 'MRS Diesel Engine Oil', price: 165000, sku: 'C67HJKL2', rating: 4, image: '../../public/images/mrs_motor_oil.png' },
-        //     { id: 4, name: 'MRS Hydraulic Oil ISO 68', price: 155000, sku: 'D89MNOP4', rating: 5, image: '../../public/images/mrs_motor_oil.png' }
-        // ]
     } catch (error) {
         console.error('Failed to load products:', error)
     } finally {

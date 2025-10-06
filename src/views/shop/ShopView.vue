@@ -70,7 +70,8 @@
                 @mouseenter="hovered = index" @mouseleave="hovered = null">
                 <!-- Category Item -->
                 <div class="flex items-center font-semibold gap-3 p-2 hover:bg-gray-100 rounded cursor-pointer transition-colors">
-                  <RouterLink :to="`/shop/${category.slug}`" :key="category.id" :class="{ '': hovered === index }">
+                   <!-- :class="{ '': hovered === index }" -->
+                  <RouterLink :to="`/shop/${category.slug}`" :key="category.id">
                     <span class="text-xl">{{ category.icon }}</span>
                     <span class="text-sm text-gray-700 flex-1">{{ category.name }}</span>
                   </RouterLink>
@@ -178,7 +179,7 @@
                 <div class="absolute bottom-0 left-0 right-0 p-3">
                   <h3 class="text-white font-medium text-sm text-center">{{ cat.name }}</h3>
                 </div>
-              </RouterLink :to="`/shop/${cat.parent.slug}--${cat.slug}`">
+              </RouterLink>
             </div>
           </div>
         </section>
@@ -210,7 +211,7 @@
 
             <!-- Scrollable Products -->
             <div ref="featuredSlider" class="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-1 py-2">
-              <div :to="`/p/${product.slug}`" v-for="product in shopData.featured_products" :key="product.id"
+              <div :to="`/product/${product.id}`" v-for="product in shopData.featured_products" :key="product.id"
                 class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer relative flex-shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)]">
                 <div class="aspect-square bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
                   <img :src="getImageUrl(product.images[0]?.path)" :alt="product.name" loading="lazy"
@@ -270,7 +271,7 @@
 
             <!-- Scrollable Products -->
             <div :ref="el => categorySliders[idx] = el" class="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-1 py-2">
-              <RouterLink :to="`/p/${product.slug}`" v-for="product in category.products_by_subcats"
+              <RouterLink :to="`/product/${product.id}`" v-for="product in category.products_by_subcats"
                 :key="product.id"
                 class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer relative flex-shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)]">
                 <div class="aspect-square bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
