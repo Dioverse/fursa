@@ -142,7 +142,7 @@ class CheckoutController extends Controller
         if(empty($ship)) { return ['error'=>true, 'message'=>"No shipping address found."]; }
         $shipCost = $ship['shipCost'];
 
-        $amt = $cartItems->sum('subtotal');
+        $amt = (float)number_format($cartItems->sum('subtotal'), 2);
         $payable = (float)bcadd($amt, $shipCost->cost, 2); // Payable (amount + shipping cost)
         $tax = (float)bcmul($payable, $taxVal, 2);
         $payable = (float)bcadd($payable, $tax, 2);
@@ -154,7 +154,7 @@ class CheckoutController extends Controller
             'email'             => $user->email,
             'payable'           => $payable, // Payable (amount + shipping cost + tax)
             'amount'            => $amt, // sum of discounted subtotals
-            'originalAmount'    => $cartItems->sum('originalSubtotal'), // sum of original subtotals
+            'originalAmount'    => (float)number_format($cartItems->sum('originalSubtotal'), 2), // sum of original subtotals
             'cart_items'        => $cartItems,
             'shippingAddress'   => $ship['userAddress'],
             'shippingCost'      => $shipCost,
