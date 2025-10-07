@@ -10,9 +10,9 @@ export const useCartStore = defineStore('cart', () => {
   const items = ref([])
   const couponCode = ref('')
   const discount = ref(0)
-  const shippingRate = ref(2500)
-  const taxRate = ref(0.075)
-  const freeShippingThreshold = ref(50000)
+  const shippingRate = ref(9.50)
+  const taxRate = ref(0) //0.075
+  const freeShippingThreshold = ref(5000)
   const loading = ref(false)
 
   const token = () => localStorage.getItem('token')
@@ -32,7 +32,7 @@ export const useCartStore = defineStore('cart', () => {
     items.value.reduce((sum, i) => sum + (toNumber(i.price) * toNumber(i.quantity)), 0)
   )
 
-  const shipping = computed(() => (subtotal.value >= freeShippingThreshold.value ? 0 : shippingRate.value))
+  const shipping = computed(() => (shippingRate.value))
   const tax = computed(() => Number(((subtotal.value + shipping.value) * taxRate.value).toFixed(2)))
   const totalPrice = computed(() => Number((subtotal.value + shipping.value + tax.value - toNumber(discount.value)).toFixed(2)))
 

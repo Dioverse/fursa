@@ -71,7 +71,7 @@
                 <!-- Category Item -->
                 <div class="flex items-center font-semibold gap-3 p-2 hover:bg-gray-100 rounded cursor-pointer transition-colors">
                    <!-- :class="{ '': hovered === index }" -->
-                  <RouterLink :to="`/shop/${category.slug}`" :key="category.id">
+                  <RouterLink :to="`/product/${category.slug}`" :key="category.id">
                     <span class="text-xl">{{ category.icon }}</span>
                     <span class="text-sm text-gray-700 flex-1">{{ category.name }}</span>
                   </RouterLink>
@@ -86,7 +86,7 @@
                 <!-- Subcategories Popup -->
                 <div v-if="hovered === index" class="absolute top-0 left-full ml-1 w-48 bg-white shadow-lg rounded p-2 z-50 transition-all duration-300 ease-in-out">
                   <div v-for="sub in category.subcategories" :key="sub.id" class="p-2 text-sm text-gray-600 hover:bg-gray-100 rounded cursor-pointer">
-                    <RouterLink :to="`/shop/${category.slug}--${sub.slug}`">
+                    <RouterLink :to="`/product/${category.slug}--${sub.slug}`">
                       {{ sub.name }}
                       <span v-if="sub.products_count > 0" class="ml-2 text-xs text-gray-400">
                         ({{ sub.products_count }})
@@ -169,7 +169,7 @@
         <section class="max-w-7xl mx-auto mb-8">
           <div class="bg-white rounded-lg shadow-md p-6">
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              <RouterLink :to="`/shop/${cat.parent.slug}--${cat.slug}`" v-for="cat in shopData.categoryGrid" :key="cat.name"
+              <RouterLink :to="`/product/${cat.parent.slug}--${cat.slug}`" v-for="cat in shopData.categoryGrid" :key="cat.name"
                 class="relative group cursor-pointer overflow-hidden rounded-lg">
                 <div class="aspect-[4/3] overflow-hidden">
                   <img :src="cat.image" :alt="cat.name" loading="lazy" @error="handleImageError"
@@ -211,26 +211,28 @@
 
             <!-- Scrollable Products -->
             <div ref="featuredSlider" class="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-1 py-2">
-              <div :to="`/product/${product.id}`" v-for="product in shopData.featured_products" :key="product.id"
-                class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer relative flex-shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)]">
-                <div class="aspect-square bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
-                  <img :src="getImageUrl(product.images[0]?.path)" :alt="product.name" loading="lazy"
-                    class="w-full h-full object-cover" @error="handleImageError">
+                <div :to="`/product/${product.slug}`" v-for="product in shopData.featured_products" :key="product.id"
+                  class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer relative flex-shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)]">
+                  <RouterLink :to="`/product/${product.slug}`">
+                    <div class="aspect-square bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
+                      <img :src="getImageUrl(product.images[0]?.path)" :alt="product.name" loading="lazy"
+                        class="w-full h-full object-cover" @error="handleImageError">
+                    </div>
+                    <h3 class="text-sm font-medium mb-1 truncate">{{ product.name }}</h3>
+                    <div class="flex flex-col">
+                      <span v-if="product.discount" class="text-primary font-bold">₦ {{
+                        product.discounted_price.toLocaleString() }}</span>
+                      <span :class="product.discount ? 'text-gray-400 line-through text-xs' : 'text-primary font-bold'">
+                        ₦ {{ product.price.toLocaleString() }}
+                      </span>
+                    </div>
+                    <div v-if="product.discount" class="mt-1 absolute top-1 right-2">
+                      <span class="bg-orange-100 text-primary text-xs px-2 py-1 rounded">
+                        -{{ product.discount.value }}%
+                      </span>
+                    </div>
+                  </RouterLink>
                 </div>
-                <h3 class="text-sm font-medium mb-1 truncate">{{ product.name }}</h3>
-                <div class="flex flex-col">
-                  <span v-if="product.discount" class="text-primary font-bold">₦ {{
-                    product.discounted_price.toLocaleString() }}</span>
-                  <span :class="product.discount ? 'text-gray-400 line-through text-xs' : 'text-primary font-bold'">
-                    ₦ {{ product.price.toLocaleString() }}
-                  </span>
-                </div>
-                <div v-if="product.discount" class="mt-1 absolute top-1 right-2">
-                  <span class="bg-orange-100 text-primary text-xs px-2 py-1 rounded">
-                    -{{ product.discount.value }}%
-                  </span>
-                </div>
-              </div>
             </div>
 
             <!-- Next Button -->
@@ -251,7 +253,7 @@
             <h2 class="text-2xl font-bold flex items-center">
               <span class="text-white">{{ category.name }}</span>
             </h2>
-            <RouterLink :to="`/shop/${category.slug}`" class="text-white hover:underline inline-flex items-center">
+            <RouterLink :to="`/product/${category.slug}`" class="text-white hover:underline inline-flex items-center">
               More
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -271,7 +273,7 @@
 
             <!-- Scrollable Products -->
             <div :ref="el => categorySliders[idx] = el" class="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-1 py-2">
-              <RouterLink :to="`/product/${product.id}`" v-for="product in category.products_by_subcats"
+              <RouterLink :to="`/product/${category.slug}`" v-for="product in category.products_by_subcats"
                 :key="product.id"
                 class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer relative flex-shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)]">
                 <div class="aspect-square bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">

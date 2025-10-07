@@ -48,7 +48,7 @@
 
     <div class="p-4">
       <h3 class="font-semibold text-lg mb-1 line-clamp-2">
-        <a :href="`/product/${product.id}`">{{ product.name }}</a>
+        <a :href="`/product/${product.slug}`">{{ product.name }}</a>
       </h3>
       <p class="text-gray-600 text-sm mb-2">
         {{ product.volume || '5 Litres' }}
@@ -117,7 +117,7 @@ const toggleWishlist = () => {
   let wishlist = loadWishlist();
 
   if (isInWishlist.value) {
-    wishlist = wishlist.filter((item) => item.id !== props.product.id);
+    wishlist = wishlist.filter((item) => item.id !== props.product.slug);
     toast.success("Removed from wishlist");
   } else {
     wishlist.push(props.product);
@@ -132,7 +132,7 @@ const toggleWishlist = () => {
 onMounted(() => {
   const wishlist = loadWishlist();
   isInWishlist.value = wishlist.some(
-    (item) => item.id === props.product.id
+    (item) => item.id === props.product.slug
   );
 });
 

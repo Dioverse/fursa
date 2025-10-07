@@ -469,6 +469,7 @@ onMounted(async () => {
         popularProducts.value = products.slice(0, 4).map(p => ({
             id: p.id,
             name: p.name,
+            slug: p.slug,
             price: Number(p.base_price ?? p.price ?? p.distributor_price ?? 0),//parseFloat(p.base_price), // ensure number
             category: p.category?.name || "Uncategorized",
             image: p.images.length ? p.images[0].url : "../../public/images/mrs_motor_oil.png"
