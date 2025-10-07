@@ -215,9 +215,9 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $slug): JsonResponse
     {
-        $product = Product::with(['category:id,name,slug', 'images:id,product_id,path'])->find($id);
+        $product = Product::with(['category:id,name,slug', 'images:id,product_id,path'])->where("slug",$slug);
 
         if (! $product) {
             return response()->json(['message' => 'Product not found.'], 404);
