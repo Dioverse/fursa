@@ -82,7 +82,8 @@ class CheckoutController extends Controller
     protected function getCartSummary($user)
     {
         $taxVal = (float)(gs("tax"));
-        $taxVal = (float)($taxVal > 0 ? bcdiv($taxVal, 100, 2) : 0);
+        $taxVal = (float)($taxVal > 0 ? $taxVal/ 100 : 0);
+
         $cart = $user->cart;
 
         if (!$cart || $cart->cartItems->isEmpty()) {
