@@ -239,7 +239,7 @@ class CheckoutController extends Controller
 
         try {
             DB::beginTransaction();
-            
+
             $paymentResult = $this->payments->verifyAndSave($gateCheck['gate'],$transRef,$order->id,$order->user_id,$order->total_amount);
             if ($paymentResult['error']) {
                 DB::rollBack();
