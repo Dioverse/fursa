@@ -45,7 +45,6 @@ class CheckoutController extends Controller
             return Arr::only($gateway, ['status','currency','image']);
         })->toArray();
 
-
         return response()->json([
             "message" => "Checkout",
             "data" => [
@@ -82,6 +81,8 @@ class CheckoutController extends Controller
 
     protected function getCartSummary($user)
     {
+        $taxVal = (float)(gs("tax"));
+        $taxVal = (float)($taxVal > 0 ? bcdiv($taxVal, 100, 2) : 0);
         $cart = $user->cart;
 
         if (!$cart || $cart->cartItems->isEmpty()) {
@@ -142,18 +143,23 @@ class CheckoutController extends Controller
         $shipCost = $ship['shipCost'];
 
         $amt = $cartItems->sum('subtotal');
+        $payable = (float)bcadd($amt, $shipCost->cost, 2); // Payable (amount + shipping cost)
+        $tax = (float)bcmul($payable, $taxVal, 2);
+        $payable = (float)bcadd($payable, $tax, 2);
         return [
             'error'             => false,
             'id'                => $user->id,
             'first_name'        => $user->first_name,
             'last_name'         => $user->last_name,
             'email'             => $user->email,
-            'payable'           => (float)bcadd($amt, $shipCost->cost, 2), // Payable (amount + shipping cost)
+            'payable'           => $payable, // Payable (amount + shipping cost + tax)
             'amount'            => $amt, // sum of discounted subtotals
             'originalAmount'    => $cartItems->sum('originalSubtotal'), // sum of original subtotals
             'cart_items'        => $cartItems,
             'shippingAddress'   => $ship['userAddress'],
-            'shippingCost'      => $shipCost
+            'shippingCost'      => $shipCost,
+            'tax'               => $tax,
+            'tax_value'         => $taxVal
         ];
     }
 
