@@ -73,7 +73,7 @@ import StatsCard from '@/components/dashboard/StatsCard.vue'
 import RecentOrders from '@/components/dashboard/RecentOrders.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
-import api from '@/services/api' // ✅ import your api helper
+import api from '@/services/api'
 import axios from 'axios'
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL
@@ -106,10 +106,10 @@ const fetchDashboard = async () => {
     })
 
     stats.value = {
-      ongoingOrders: data.data.orders_summary.pending ?? 0,
-      cartItems: cartStore.itemCount,
-      wishlistItems: data.data.wishlistItems ?? 0,
-      totalOrders: data.data.orders_summary.total ?? 0
+      ongoingOrders: Number(data.data.orders_summary.pending ?? 0),
+      cartItems: Number(cartStore.itemCount),
+      wishlistItems: Number(data.data.wishlistItems ?? 0),
+      totalOrders: Number(data.data.orders_summary.total ?? 0)
     }
 
     recentOrders.value = data.data.recent_orders || []
@@ -141,7 +141,7 @@ async function syncCart() {
       cartStore.items = res.data.data.map((item) => ({
         id: item.product_id,
         name: item.product?.name,
-        price: item.product?.price,
+        price: item.product?.discounted_price,
         sku: item.product?.sku,
         image: item.product?.image,
         volume: item.product?.volume || '5 Litres',
