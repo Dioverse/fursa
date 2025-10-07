@@ -121,8 +121,8 @@ class CheckoutController extends Controller
         ->map(function ($item) use ($user) {
             $product  = $item->product;
 
-            $originalPrice   = $product->price;              // base/distributor depending on user
-            $discountedPrice = $product->discounted_price;   // dynamic calculation
+            $originalPrice   = (float)$product->price;              // base/distributor depending on user
+            $discountedPrice = (float)$product->discounted_price;   // dynamic calculation
             $quantity = $item->quantity;
 
             return [
@@ -143,7 +143,7 @@ class CheckoutController extends Controller
         if(empty($ship)) { return ['error'=>true, 'message'=>"No shipping address found."]; }
         $shipCost = $ship['shipCost'];
 
-        $amt = (float)number_format($cartItems->sum('subtotal'), 2);
+        $amt = (float)round($cartItems->sum('subtotal'), 2);
         $payable = (float)bcadd($amt, $shipCost->cost, 2); // Payable (amount + shipping cost)
         $tax = (float)bcmul($payable, $taxVal, 2);
         $payable = (float)bcadd($payable, $tax, 2);
@@ -153,9 +153,9 @@ class CheckoutController extends Controller
             'first_name'        => $user->first_name,
             'last_name'         => $user->last_name,
             'email'             => $user->email,
-            'payable'           => $payable, // Payable (amount + shipping cost + tax)
+            'payable'           => $payable, // Payable (amount + shipping_cost + tax)
             'amount'            => $amt, // sum of discounted subtotals
-            'originalAmount'    => (float)number_format($cartItems->sum('originalSubtotal'), 2), // sum of original subtotals
+            'originalAmount'    => (float)round($cartItems->sum('originalSubtotal'), 2), // sum of original subtotals
             'cart_items'        => $cartItems,
             'shippingAddress'   => $ship['userAddress'],
             'shippingCost'      => $shipCost,
@@ -189,7 +189,7 @@ class CheckoutController extends Controller
             // 2. Create fresh order
             $orderCreate = $this->orders->createOrder(
                 $user,
-                $cartSummary['amount'],
+                $cartSummary['payable'],
                 $cartSummary['shippingCost']
             );
 
@@ -209,7 +209,7 @@ class CheckoutController extends Controller
                 "data"    => [
                     "orderId"       => $orderCreate['orderId'],
                     "trans_ref"     => $orderCreate['trans_ref'],
-                    "total_amount"  => $orderCreate['amount'],
+                    "total_amount"  => $orderCreate['payable'],
                     "gws"           => $pubKey
                 ]
             ], 200);
