@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
-    public function createOrder($user, $total, $shipCost)
+    public function createOrder($user, $total, $shipCost, $tax)
     {
         try {
             $shippingAddress = $user->shippingAddress()->orderByDesc("is_default")->first(['id','full_name','phone','address_line_one','city','state','postal_code','country']);
@@ -31,6 +31,7 @@ class OrderService
                 'order_id'         => $orderId,
                 'trans_ref'        => $transRef,
                 'total_amount'     => $total_amount,
+                'tax'              => $tax,
                 'status'           => 'pending',
                 'shipping_cost'    => $shipCost->cost,
                 'delivery_days'    => $now->add('days', $shipCost->min_day)->format('Y-m-d') . ' - ' . $now->add('days', $shipCost->max_day)->format('Y-m-d'),

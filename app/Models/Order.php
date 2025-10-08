@@ -22,6 +22,7 @@ class Order extends Model implements AuditableContract
         'total_amount',
         'status',
         'shipping_cost',
+        'tax',
         'delivery_days',
     ];
 

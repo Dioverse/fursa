@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('total_amount', 12, 2);
             $table->string('trans_ref')->unique();
             $table->decimal('shipping_cost', 8, 2);
+            $table->decimal('tax', 3, 2)->unsigned()->default(0);
             $table->string('delivery_days');
 
             $table->enum('status', [

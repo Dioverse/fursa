@@ -190,7 +190,8 @@ class CheckoutController extends Controller
             $orderCreate = $this->orders->createOrder(
                 $user,
                 $cartSummary['payable'],
-                $cartSummary['shippingCost']
+                $cartSummary['shippingCost'],
+                $cartSummary['tax']
             );
 
             if ($orderCreate['error']) {
