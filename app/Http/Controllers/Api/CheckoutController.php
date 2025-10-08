@@ -133,8 +133,8 @@ class CheckoutController extends Controller
                 'quantity'        => $quantity,
                 'price'           => $originalPrice,       // keep original
                 'discounted_price'=> $discountedPrice,     // if no discount, same as price
-                'subtotal'        => (float)bcmul($discountedPrice, $quantity, 2),
-                'originalSubtotal'=> (float)bcmul($originalPrice, $quantity, 2),
+                'subtotal'        => bcmul($discountedPrice, $quantity, 2),
+                'originalSubtotal'=> bcmul($originalPrice, $quantity, 2),
                 'stock_quantity'  => $product->stock_quantity,
             ];
         });
@@ -144,9 +144,9 @@ class CheckoutController extends Controller
         $shipCost = $ship['shipCost'];
 
         $amt = (float)round($cartItems->sum('subtotal'), 2);
-        $payable = (float)bcadd($amt, $shipCost->cost, 2); // Payable (amount + shipping cost)
-        $tax = (float)bcmul($payable, $taxVal, 2);
-        $payable = (float)bcadd($payable, $tax, 2);
+        $payable = bcadd($amt, (float)$shipCost->cost, 2); // Payable (amount + shipping cost)
+        $tax = bcmul($payable, $taxVal, 2);
+        $payable = bcadd($payable, $tax, 2);
         return [
             'error'             => false,
             'id'                => $user->id,
