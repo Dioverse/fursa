@@ -7,7 +7,8 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Full Name <span class="text-red-500">*</span>
                 </label>
-                <input v-model="form.contact_full_name" type="text"
+                
+                <input v-model="form.fullName" type="text"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required>
             </div>
@@ -16,7 +17,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Position/Title <span class="text-red-500">*</span>
                 </label>
-                <input v-model="form.contact_position" type="text" placeholder="e.g., Sales Manager"
+                <input v-model="form.position" type="text" placeholder="e.g., Sales Manager"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required>
             </div>
@@ -27,7 +28,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Mobile Number <span class="text-red-500">*</span>
                 </label>
-                <input v-model="form.contact_mobile" type="tel" placeholder="+234 XXX XXX XXXX"
+                <input v-model="form.mobile" type="tel" placeholder="+234 XXX XXX XXXX"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required>
             </div>
@@ -36,14 +37,14 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Means of ID <span class="text-red-500">*</span>
                 </label>
-                <select v-model="form.means_of_id"
+                <select v-model="form.idType"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required>
                     <option value="">Select ID Type</option>
-                    <option value="National ID (NIN)">National ID (NIN)</option>
-                    <option value="Driver's License">Driver's License</option>
-                    <option value="International Passport">International Passport</option>
-                    <option value="Voter's Card">Voter's Card</option>
+                    <option value="nin">National ID (NIN)</option>
+                    <option value="drivers">Driver's License</option>
+                    <option value="passport">International Passport</option>
+                    <option value="voters">Voter's Card</option>
                 </select>
             </div>
         </div>
@@ -53,7 +54,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     ID Number <span class="text-red-500">*</span>
                 </label>
-                <input v-model="form.id_number" type="text" placeholder="Enter your ID number"
+                <input v-model="form.idNumber" type="text" placeholder="Enter your ID number"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required>
             </div>
@@ -61,24 +62,26 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Year(s) in Business <span class="text-red-500">*</span>
                 </label>
-                <input v-model="form.years_in_business" type="number" placeholder="1" min="0"
+                <input v-model="form.businessYear" type="number" placeholder="1"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required>
             </div>
         </div>
+
     </div>
 </template>
 
 <script setup>
 import { reactive } from 'vue'
 
+
 const form = reactive({
-    contact_full_name: '',
-    contact_position: '',
-    contact_mobile: '',
-    means_of_id: '',
-    id_number: '',
-    years_in_business: ''
+    fullName: '',
+    position: '',
+    mobile: '',
+    idType: '',
+    idNumber: '',
+    businessYear: ''
 })
 
 defineExpose({ form })

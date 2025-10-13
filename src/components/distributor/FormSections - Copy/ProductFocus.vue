@@ -4,12 +4,12 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-3">
-                Which category of Fursa/MRS Lubricants are you most interested in? (Please tick all that apply) <span class="text-red-500">*</span>
+                Which category of Fursa/MRS Lubricants are you most interested in? (Please tick all that apply)
             </label>
             <div class="grid grid-cols-2 gap-3">
                 <label v-for="category in productCategories" :key="category"
                     class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                    <input v-model="form.product_categories" type="checkbox" :value="category"
+                    <input v-model="form.categories" type="checkbox" :value="category"
                         class="rounded border-gray-300 text-primary focus:ring-primary">
                     <span>{{ category }}</span>
                 </label>
@@ -18,16 +18,16 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-3">
-                Do You Have Technical Knowledge About Lubricants or a Team That Does? <span class="text-red-500">*</span>
+                Do You Have Technical Knowledge About Lubricants or a Team That Does?
             </label>
             <div class="flex gap-6">
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input v-model="form.has_technical_knowledge" type="radio" :value="1"
+                    <input v-model="form.technicalKnowledge" type="radio" value="yes"
                         class="text-primary focus:ring-primary">
                     <span>Yes</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input v-model="form.has_technical_knowledge" type="radio" :value="0"
+                    <input v-model="form.technicalKnowledge" type="radio" value="no"
                         class="text-primary focus:ring-primary">
                     <span>No</span>
                 </label>
@@ -36,47 +36,53 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-3">
-                Are You Willing to Take Product Training from Fursa? <span class="text-red-500">*</span>
+                Are You Willing to Take Product Training from Fursa?
             </label>
             <div class="flex gap-6">
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input v-model="form.willing_to_train" type="radio" :value="1" class="text-primary focus:ring-primary">
+                    <input v-model="form.training" type="radio" value="yes" class="text-primary focus:ring-primary">
                     <span>Yes</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input v-model="form.willing_to_train" type="radio" :value="0" class="text-primary focus:ring-primary">
+                    <input v-model="form.training" type="radio" value="no" class="text-primary focus:ring-primary">
                     <span>No</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input v-model="form.willing_to_train" type="radio" value="depends" class="text-primary focus:ring-primary">
+                    <input v-model="form.training" type="radio" value="depends" class="text-primary focus:ring-primary">
                     <span>Depends on Arrangement</span>
                 </label>
             </div>
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-                How Soon Can You Commence Distribution Post-Onboarding? <span class="text-red-500">*</span>
-            </label>
-            <input v-model="form.distribution_start_time" type="date"
-                class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                required>
-        </div>
-
-        <div>
             <label class="block text-sm font-medium text-gray-700 mb-3">
-                Would you like to participate in promotional activities?
+                How Soon Can You Commence Distribution Post-Onboarding?
             </label>
             <div class="flex gap-6">
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input v-model="form.promo_participation" type="radio" value="Yes" class="text-primary focus:ring-primary">
-                    <span>Yes</span>
+                    <input v-model="form.commenceTime" type="radio" value="immediately"
+                        class="text-primary focus:ring-primary">
+                    <span>Immediately</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input v-model="form.promo_participation" type="radio" value="No" class="text-primary focus:ring-primary">
-                    <span>No</span>
+                    <input v-model="form.commenceTime" type="radio" value="2weeks"
+                        class="text-primary focus:ring-primary">
+                    <span>Within 2 Weeks</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input v-model="form.commenceTime" type="radio" value="month"
+                        class="text-primary focus:ring-primary">
+                    <span>Within a Month</span>
                 </label>
             </div>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                Preferred States You Would Like to Cover:
+            </label>
+            <textarea v-model="form.preferredStates" rows="3" placeholder="List the states you plan to distribute in..."
+                class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
         </div>
 
         <div>
@@ -119,18 +125,23 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Declarant Name:
+                        Signature (Upload Image or Draw):
                     </label>
-                    <input v-model="form.declarant_name" type="text" placeholder="Your full name"
-                        class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                        required>
+                    <div class="border-2 border-dashed rounded-lg p-4 text-center">
+                        <input type="file" accept="image/*" @change="handleSignature" class="hidden"
+                            id="signature-upload">
+                        <label for="signature-upload" class="cursor-pointer">
+                            <font-awesome-icon icon="upload" size="2x" class="text-gray-400 mb-2" />
+                            <p class="text-sm text-gray-600">Click to upload signature</p>
+                        </label>
+                    </div>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Declaration Date:
+                        Date:
                     </label>
-                    <input v-model="form.declaration_date" type="date"
+                    <input v-model="form.date" type="date"
                         class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                         required>
                 </div>
@@ -178,20 +189,27 @@ const documents = [
 ]
 
 const form = reactive({
-    product_categories: [],
-    has_technical_knowledge: null,
-    willing_to_train: null,
-    distribution_start_time: '',
-    promo_participation: '',
+    categories: [],
+    technicalKnowledge: '',
+    training: '',
+    commenceTime: '',
+    preferredStates: '',
     documents: {},
-    declarant_name: '',
-    declaration_date: new Date().toISOString().split('T')[0]
+    signature: null,
+    date: new Date().toISOString().split('T')[0]
 })
 
 const handleFileUpload = (event, docName) => {
     const file = event.target.files[0]
     if (file) {
         form.documents[docName] = file
+    }
+}
+
+const handleSignature = (event) => {
+    const file = event.target.files[0]
+    if (file) {
+        form.signature = file
     }
 }
 

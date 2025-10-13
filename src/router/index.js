@@ -254,24 +254,62 @@ router.beforeEach((to, from, next) => {
     return next()
   }
 
+  // Check if route requires authentication
   if (to.meta.requiresAuth && !isAuthenticated) {
     // Not logged in, redirect to login
     return next({ name: 'login', query: { redirect: to.fullPath } })
   }
 
+  // Only check verification for authenticated users
   if (to.meta.requiresAuth && isAuthenticated && !isVerified) {
-    // Logged in but not verified, block access to other pages
+    // Logged in but not verified
     toast.warning('Please verify your account to continue.')
     return next({ name: 'verify' })
   }
 
+  // Prevent authenticated users from accessing guest-only pages
   if (to.meta.guest && isAuthenticated) {
-    // Logged-in user trying to access guest-only routes (login, register, etc.)
     return next({ name: 'dashboard' })
   }
 
+  // All checks passed
   next()
 })
+
+// router.beforeEach((to, from, next) => {
+//   const authStore = useAuthStore()
+//   const toast = useToast()
+
+//   document.title = to.meta.title
+//     ? `${to.meta.title} - Fursa Energy`
+//     : 'Fursa Energy'
+
+//   const isAuthenticated = authStore.isAuthenticated
+//   const isVerified = authStore.user?.email_verified_at !== null
+
+//   // Always allow verification routes
+//   if (to.name === 'verify' || to.name === 'email.verify') {
+//     return next()
+//   }
+
+//   if (to.meta.requiresAuth && !isAuthenticated) {
+//     // Not logged in, redirect to login
+//     return next({ name: 'login', query: { redirect: to.fullPath } })
+//   }
+
+//   if (to.meta.requiresAuth && isAuthenticated && !isVerified) {
+//     // Logged in but not verified, block access to other pages
+//     toast.warning('Please verify your account to continue.')
+//     return next({ name: 'verify' })
+//   }
+
+//   if (to.meta.guest && isAuthenticated) {
+//     // Logged-in user trying to access guest-only routes (login, register, etc.)
+//     return next({ name: 'dashboard' })
+//   }
+
+//   next()
+// })
 
 // router.beforeEach((to, from, next) => {
 //   const authStore = useAuthStore()

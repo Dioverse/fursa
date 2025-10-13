@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-6">
-    <h3 class="text-xl font-semibold text-primary mb-4">Section 6: Review & Submit</h3>
+    <h3 class="text-xl font-semibold text-primary mb-4">Section 5: Review & Submit</h3>
 
     <!-- Info Alert -->
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
@@ -26,22 +26,24 @@
         <dl class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
           <div>
             <dt class="text-gray-600">Company Name:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.company_name || 'N/A' }}</dd>
+            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.companyName || 'N/A' }}</dd>
           </div>
 
           <div>
             <dt class="text-gray-600">Registered Business Name:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.registered_name || 'Same as company name' }}</dd>
+            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.registeredName || 'Same as company name' }}
+            </dd>
           </div>
 
           <div>
             <dt class="text-gray-600">RC Number:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.rc_number || 'N/A' }}</dd>
+            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.rcNumber || 'N/A' }}</dd>
           </div>
 
           <div>
             <dt class="text-gray-600">Company Type:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.company_type || 'N/A' }}</dd>
+            <dd class="font-medium text-gray-900">{{ getCompanyTypeLabel(formData.businessInfo?.companyType) || 'N/A' }}
+            </dd>
           </div>
 
           <div>
@@ -50,8 +52,8 @@
           </div>
 
           <div>
-            <dt class="text-gray-600">Office Phone:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.office_phone || 'N/A' }}</dd>
+            <dt class="text-gray-600">Phone:</dt>
+            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.phone || 'N/A' }}</dd>
           </div>
 
           <div>
@@ -61,7 +63,7 @@
 
           <div class="md:col-span-2">
             <dt class="text-gray-600">Business Address:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.business_address || 'N/A' }}</dd>
+            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.address || 'N/A' }}</dd>
           </div>
         </dl>
       </div>
@@ -75,32 +77,27 @@
         <dl class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
           <div>
             <dt class="text-gray-600">Full Name:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.contact_full_name || 'N/A' }}</dd>
+            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.fullName || 'N/A' }}</dd>
           </div>
 
           <div>
             <dt class="text-gray-600">Position/Title:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.contact_position || 'N/A' }}</dd>
+            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.position || 'N/A' }}</dd>
           </div>
 
           <div>
             <dt class="text-gray-600">Mobile Number:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.contact_mobile || 'N/A' }}</dd>
-          </div>
-
-          <div>
-            <dt class="text-gray-600">Years in Business:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.years_in_business || 'N/A' }} year(s)</dd>
+            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.mobile || 'N/A' }}</dd>
           </div>
 
           <div>
             <dt class="text-gray-600">ID Type:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.means_of_id || 'N/A' }}</dd>
+            <dd class="font-medium text-gray-900">{{ getIdTypeLabel(formData.contactPerson?.idType) || 'N/A' }}</dd>
           </div>
 
           <div>
             <dt class="text-gray-600">ID Number:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.id_number || 'N/A' }}</dd>
+            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.idNumber || 'N/A' }}</dd>
           </div>
         </dl>
       </div>
@@ -113,34 +110,29 @@
         </h4>
         <dl class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
           <div>
-            <dt class="text-gray-600">Current Product Lines:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.current_product_lines || 'None' }}</dd>
+            <dt class="text-gray-600">Current Products Distributed:</dt>
+            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.currentProducts || 'None' }}</dd>
           </div>
 
           <div>
             <dt class="text-gray-600">Monthly Capacity:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.monthly_capacity || 'N/A' }}</dd>
+            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.monthlyCapacity || 'N/A' }}</dd>
           </div>
 
           <div>
             <dt class="text-gray-600">Regions Covered:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.regions_covered || 'N/A' }}</dd>
+            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.regions || 'N/A' }}</dd>
           </div>
 
           <div>
             <dt class="text-gray-600">Number of Sales Staff:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.number_of_sales_staff || '0' }}</dd>
-          </div>
-
-          <div>
-            <dt class="text-gray-600">Preferred Region:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.preferred_region || 'N/A' }}</dd>
+            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.salesStaff || '0' }}</dd>
           </div>
 
           <div>
             <dt class="text-gray-600">Has Warehouse:</dt>
             <dd class="font-medium text-gray-900">
-              <span v-if="formData.distributionCapacity?.has_warehouse === 1" class="text-green-600">
+              <span v-if="formData.distributionCapacity?.hasWarehouse === 'yes'" class="text-green-600">
                 <font-awesome-icon icon="check-circle" /> Yes
               </span>
               <span v-else class="text-red-600">
@@ -152,7 +144,7 @@
           <div>
             <dt class="text-gray-600">Has Distribution Vehicles:</dt>
             <dd class="font-medium text-gray-900">
-              <span v-if="formData.distributionCapacity?.has_vehicles === 1" class="text-green-600">
+              <span v-if="formData.distributionCapacity?.hasVehicles === 'yes'" class="text-green-600">
                 <font-awesome-icon icon="check-circle" /> Yes
               </span>
               <span v-else class="text-red-600">
@@ -161,22 +153,9 @@
             </dd>
           </div>
 
-          <div v-if="formData.distributionCapacity?.vehicle_details" class="md:col-span-2">
+          <div v-if="formData.distributionCapacity?.vehicleDetails" class="md:col-span-2">
             <dt class="text-gray-600">Vehicle Details:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.vehicle_details }}</dd>
-          </div>
-
-          <div class="md:col-span-2">
-            <dt class="text-gray-600 mb-2">Preferred States to Cover:</dt>
-            <dd class="font-medium text-gray-900">
-              <div v-if="formData.distributionCapacity?.preferred_states?.length > 0" class="flex flex-wrap gap-2">
-                <span v-for="state in formData.distributionCapacity.preferred_states" :key="state"
-                  class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs">
-                  {{ state }}
-                </span>
-              </div>
-              <span v-else>None selected</span>
-            </dd>
+            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity.vehicleDetails }}</dd>
           </div>
         </dl>
       </div>
@@ -191,8 +170,8 @@
           <div>
             <dt class="text-gray-600 mb-1">Product Categories Interested In:</dt>
             <dd class="font-medium text-gray-900">
-              <div v-if="formData.productFocus?.product_categories?.length > 0" class="flex flex-wrap gap-2">
-                <span v-for="category in formData.productFocus.product_categories" :key="category"
+              <div v-if="formData.productFocus?.categories?.length > 0" class="flex flex-wrap gap-2">
+                <span v-for="category in formData.productFocus.categories" :key="category"
                   class="px-3 py-1 bg-primary bg-opacity-10 text-primary rounded-full text-xs">
                   {{ category }}
                 </span>
@@ -205,7 +184,7 @@
             <div>
               <dt class="text-gray-600">Technical Knowledge:</dt>
               <dd class="font-medium text-gray-900">
-                <span v-if="formData.productFocus?.has_technical_knowledge === 1" class="text-green-600">
+                <span v-if="formData.productFocus?.technicalKnowledge === 'yes'" class="text-green-600">
                   <font-awesome-icon icon="check-circle" /> Yes
                 </span>
                 <span v-else class="text-red-600">
@@ -217,10 +196,10 @@
             <div>
               <dt class="text-gray-600">Willing to Take Training:</dt>
               <dd class="font-medium text-gray-900">
-                <span v-if="formData.productFocus?.willing_to_train === 1" class="text-green-600">
+                <span v-if="formData.productFocus?.training === 'yes'" class="text-green-600">
                   <font-awesome-icon icon="check-circle" /> Yes
                 </span>
-                <span v-else-if="formData.productFocus?.willing_to_train === 0" class="text-red-600">
+                <span v-else-if="formData.productFocus?.training === 'no'" class="text-red-600">
                   <font-awesome-icon icon="times-circle" /> No
                 </span>
                 <span v-else class="text-yellow-600">
@@ -230,63 +209,16 @@
             </div>
 
             <div>
-              <dt class="text-gray-600">Distribution Start Date:</dt>
+              <dt class="text-gray-600">Can Commence Distribution:</dt>
               <dd class="font-medium text-gray-900">
-                {{ formatDate(formData.productFocus?.distribution_start_time) }}
-              </dd>
-            </div>
-
-            <div>
-              <dt class="text-gray-600">Promo Participation:</dt>
-              <dd class="font-medium text-gray-900">
-                {{ formData.productFocus?.promo_participation || 'N/A' }}
+                {{ getCommenceTimeLabel(formData.productFocus?.commenceTime) || 'N/A' }}
               </dd>
             </div>
           </div>
 
-          <div v-if="formData.productFocus?.declarant_name" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <dt class="text-gray-600">Declarant Name:</dt>
-              <dd class="font-medium text-gray-900">{{ formData.productFocus?.declarant_name }}</dd>
-            </div>
-            <div>
-              <dt class="text-gray-600">Declaration Date:</dt>
-              <dd class="font-medium text-gray-900">{{ formatDate(formData.productFocus?.declaration_date) }}</dd>
-            </div>
-          </div>
-        </dl>
-      </div>
-
-      <!-- Banking & KYC Summary -->
-      <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
-        <h4 class="font-semibold mb-3 flex items-center gap-2">
-          <font-awesome-icon icon="university" class="text-primary" />
-          Banking & KYC Information
-        </h4>
-        <dl class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
           <div>
-            <dt class="text-gray-600">Bank Name:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.bankingKYC?.bank_name || 'N/A' }}</dd>
-          </div>
-
-          <div>
-            <dt class="text-gray-600">Account Number:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.bankingKYC?.account_number || 'N/A' }}</dd>
-          </div>
-
-          <div>
-            <dt class="text-gray-600">Account Name:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.bankingKYC?.account_name || 'N/A' }}</dd>
-          </div>
-
-          <div>
-            <dt class="text-gray-600">BVN:</dt>
-            <dd class="font-medium text-gray-900">{{ maskBVN(formData.bankingKYC?.bvn) }}</dd>
-          </div>
-
-          <div v-if="formData.bankingKYC?.partnerships" class="md:col-span-2">
-            <dt class="text-gray-600">Oil & Gas Partnerships:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.bankingKYC?.partnerships }}</dd>
+            <dt class="text-gray-600">Preferred States to Cover:</dt>
+            <dd class="font-medium text-gray-900">{{ formData.productFocus?.preferredStates || 'N/A' }}</dd>
           </div>
         </dl>
       </div>
@@ -309,49 +241,20 @@
             </span>
           </div>
         </div>
-      </div>
 
-      <!-- Choose a strong password -->
-      <div class="border border-gray-200 rounded-lg p-4">
-        <h4 class="font-semibold mb-3 flex items-center gap-2">
-          <font-awesome-icon icon="lock" class="text-primary" />
-          Choose a Strong Password <span class="text-red-500">*</span>
-        </h4>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-            <input v-model="password" type="password" 
-              class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" 
-              placeholder="Minimum 8 characters"
-              required />
-            <p class="text-xs text-gray-500 mt-1">Must be at least 8 characters long</p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
-            <input v-model="passwordConfirmation" type="password" 
-              class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" 
-              placeholder="Re-enter password"
-              required />
-            <p v-if="password && passwordConfirmation && password !== passwordConfirmation" 
-              class="text-xs text-red-500 mt-1">
-              Passwords do not match
-            </p>
-            <p v-else-if="password && passwordConfirmation && password === passwordConfirmation" 
-              class="text-xs text-green-600 mt-1">
-              <font-awesome-icon icon="check-circle" /> Passwords match
-            </p>
-          </div>
+        <div v-if="formData.productFocus?.signature" class="mt-3 flex items-center gap-2 text-sm">
+          <font-awesome-icon icon="signature" class="text-primary" />
+          <span class="text-gray-700">Digital Signature:</span>
+          <span class="text-green-600">
+            <font-awesome-icon icon="check-circle" /> Provided
+          </span>
         </div>
-      </div>
 
-      <!-- Additional Notes -->
-      <div class="border border-gray-200 rounded-lg p-4">
-        <h4 class="font-semibold mb-3 flex items-center gap-2">
-          <font-awesome-icon icon="comment-alt" class="text-primary" />
-          Additional Notes (Optional)
-        </h4>
-        <textarea v-model="additionalNotes" rows="3" placeholder="Any additional information you'd like to provide..."
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
+        <div v-if="formData.productFocus?.date" class="mt-2 flex items-center gap-2 text-sm">
+          <font-awesome-icon icon="calendar" class="text-primary" />
+          <span class="text-gray-700">Date:</span>
+          <span class="font-medium">{{ formatDate(formData.productFocus.date) }}</span>
+        </div>
       </div>
 
       <!-- Terms and Conditions -->
@@ -361,7 +264,7 @@
           <div class="text-sm">
             <p class="font-semibold mb-2 text-gray-900">
               <font-awesome-icon icon="file-contract" class="text-primary mr-2" />
-              Terms and Conditions Agreement <span class="text-red-500">*</span>
+              Terms and Conditions Agreement
             </p>
             <p class="text-gray-700 leading-relaxed">
               I hereby confirm that all information provided in this application is true and accurate
@@ -376,6 +279,37 @@
           </div>
         </label>
       </div>
+
+      <!-- CHoose a strong password -->
+      
+
+      <!-- CHoose a strong password -->
+    <div class="border border-gray-200 rounded-lg p-4">
+      <h4 class="font-semibold mb-3 flex items-center gap-2">
+        <font-awesome-icon icon="lock" class="text-primary" />
+        Choose a Strong Password
+      </h4>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Password</label>
+        <input v-model="password" type="password" class="border p-2 rounded w-full" required />
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Confirm Password</label>
+        <input v-model="passwordConfirmation" type="password" class="border p-2 rounded w-full" required />
+      </div>
+    </div>
+    
+
+
+      <!-- Additional Notes -->
+      <div class="border border-gray-200 rounded-lg p-4">
+        <h4 class="font-semibold mb-3 flex items-center gap-2">
+          <font-awesome-icon icon="comment-alt" class="text-primary" />
+          Additional Notes (Optional)
+        </h4>
+        <textarea v-model="additionalNotes" rows="3" placeholder="Any additional information you'd like to provide..."
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
+      </div>
     </div>
 
     <!-- Error Message -->
@@ -385,7 +319,7 @@
         <div>
           <p class="font-semibold text-red-800">Missing Information</p>
           <p class="text-red-700 text-sm mt-1">
-            Please ensure all required fields are filled, passwords match (minimum 8 characters), and you have agreed to the terms and conditions.
+            Please ensure all required fields are filled and you have agreed to the terms and conditions.
           </p>
         </div>
       </div>
@@ -404,8 +338,7 @@ const props = defineProps({
       businessInfo: {},
       contactPerson: {},
       distributionCapacity: {},
-      productFocus: {},
-      bankingKYC: {}
+      productFocus: {}
     })
   }
 })
@@ -427,19 +360,41 @@ const documentsList = [
 // Computed property to check if form is valid
 const isFormValid = computed(() => {
   return agreed.value &&
-    props.formData.businessInfo?.company_name &&
-    props.formData.contactPerson?.contact_full_name &&
-    props.formData.bankingKYC?.bank_name &&
+    props.formData.businessInfo?.companyName &&
+    props.formData.contactPerson?.fullName &&
     password.value &&
-    password.value.length >= 8 &&
     passwordConfirmation.value &&
     password.value === passwordConfirmation.value
 })
 
-// Helper function to mask BVN
-const maskBVN = (bvn) => {
-  if (!bvn) return 'N/A'
-  return `*******${bvn.slice(-4)}`
+// Helper functions for labels
+const getCompanyTypeLabel = (type) => {
+  const types = {
+    'limited': 'Limited Liability Company',
+    'plc': 'Public Limited Company',
+    'partnership': 'Partnership',
+    'sole': 'Sole Proprietorship'
+  }
+  return types[type] || type
+}
+
+const getIdTypeLabel = (type) => {
+  const types = {
+    'nin': 'National ID (NIN)',
+    'drivers': "Driver's License",
+    'passport': 'International Passport',
+    'voters': "Voter's Card"
+  }
+  return types[type] || type
+}
+
+const getCommenceTimeLabel = (time) => {
+  const times = {
+    'immediately': 'Immediately',
+    '2weeks': 'Within 2 Weeks',
+    'month': 'Within a Month'
+  }
+  return times[time] || time
 }
 
 const formatDate = (dateString) => {
