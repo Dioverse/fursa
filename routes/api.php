@@ -112,33 +112,29 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
         // Route::post('admin/settings/notifications/logs/retry', [NotificationController::class, 'retryFailed']);
 
         // Templates
-        Route::get('admin/settings/notifications/templates', [NotificationController::class, 'templates']);
-        Route::post('admin/settings/notifications/templates', [NotificationController::class, 'templateCreate']);
-        Route::get('admin/settings/notifications/templates/{id}', [NotificationController::class, 'templateEdit']);
-        Route::put('admin/settings/notifications/templates/{id}', [NotificationController::class, 'templateUpdate']);
-        Route::delete('admin/settings/notifications/templates/{id}', [NotificationController::class, 'templateDelete']);
-        Route::post('admin/settings/notifications/templates/validate', [NotificationController::class, 'validateTemplate']);
+        // Route::get('admin/settings/notifications/templates', [NotificationController::class, 'templates']);
+        // Route::post('admin/settings/notifications/templates', [NotificationController::class, 'templateCreate']);
+        // Route::get('admin/settings/notifications/templates/{id}', [NotificationController::class, 'templateEdit']);
+        // Route::put('admin/settings/notifications/templates/{id}', [NotificationController::class, 'templateUpdate']);
+        // Route::delete('admin/settings/notifications/templates/{id}', [NotificationController::class, 'templateDelete']);
+        // Route::post('admin/settings/notifications/templates/validate', [NotificationController::class, 'validateTemplate']);
 
         // // Testing & Sending
         // Route::post('admin/settings/notifications/test', [NotificationController::class, 'sendTest']);
         // Route::post('admin/settings/notifications/bulk', [NotificationController::class, 'sendBulk']);
 
         // Configuration
-        Route::get('admin/settings/notifications/email', [NotificationController::class, 'emailSetting']);
-        Route::put('admin/settings/notifications/email', [NotificationController::class, 'emailSettingUpdate']);
-        Route::post('admin/settings/notifications/email/test', [NotificationController::class, 'emailTest']);
-        Route::put('admin/settings/notifications/email/global', [NotificationController::class, 'globalEmailUpdate']);
+        // Route::get('admin/settings/notifications/email', [NotificationController::class, 'emailSetting']);
+        // Route::put('admin/settings/notifications/email', [NotificationController::class, 'emailSettingUpdate']);
+        // Route::post('admin/settings/notifications/email/test', [NotificationController::class, 'emailTest']);
+        // Route::put('admin/settings/notifications/email/global', [NotificationController::class, 'globalEmailUpdate']);
 
-        // Route::get('admin/settings/notifications/sms', [NotificationController::class, 'smsSetting']);
-        // Route::put('admin/settings/notifications/sms', [NotificationController::class, 'smsSettingUpdate']);
-        // Route::post('admin/settings/notifications/sms/test', [NotificationController::class, 'smsTest']);
-        // Route::put('admin/settings/notifications/sms/global', [NotificationController::class, 'globalSmsUpdate']);
 
-        // Route::get('admin/settings/notifications/push', [NotificationController::class, 'pushSetting']);
-        // Route::put('admin/settings/notifications/push', [NotificationController::class, 'pushSettingUpdate']);
-        // Route::put('admin/settings/notifications/push/global', [NotificationController::class, 'globalPushUpdate']);
-        // Route::post('admin/settings/notifications/push/config', [NotificationController::class, 'pushConfigUpload']);
-        // Route::get('admin/settings/notifications/push/config', [NotificationController::class, 'pushConfigDownload']);
+        Route::post('admin/email/global-update', [NotificationController::class, 'globalEmailUpdate']);
+        Route::get('admin/email/templates', [NotificationController::class, 'templates']);
+        Route::post('admin/email/template-update/{id}', [NotificationController::class, 'templateUpdate']);
+        Route::get('admin/email/setting', [NotificationController::class, 'emailSetting']);
+        Route::post('admin/email/setting-update', [NotificationController::class, 'emailSettingUpdate']);
     });
 
     // Distributor-only routes
