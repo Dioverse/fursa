@@ -90,17 +90,17 @@ const router = createRouter({
       meta: { title: 'Shop' },
     },
     {
-      path: '/shop/:slug',
-      name: 'category',
+      path: '/shop/categories',
+      name: 'categories& subcategories',
       component: Categories,
       meta: { title: 'Categories'},
     },
-    // {
-    //   path: '/shop/category/:slug',
-    //   name: 'category',
-    //   component: CategoryView,
-    //   meta: { title: 'Category' },
-    // },
+    {
+      path: '/shop/c/:slug',
+      name: 'category',
+      component: CategoryView,
+      meta: { title: 'Category' },
+    },
     {
       path: '/product/:id',
       name: 'product-detail',
