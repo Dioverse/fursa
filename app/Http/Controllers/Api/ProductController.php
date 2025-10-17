@@ -13,70 +13,170 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // public function index(Request $request): JsonResponse
+    // {
+    //     // Start building the query with eager loading for the category
+    //     $query = Product::with(['category:id,name,slug', 'images:id,product_id,path', 'discount:product_id,value,type']);
+
+    //     // --- Filtering Options ---
+    //     // Filter by category
+    //     if ($request->filled('category')) {
+    //         $categoryIds = $request->input('category');
+
+    //         // Handle both comma-separated string and array
+    //         if (is_string($categoryIds)) {
+    //             $categoryIds = explode(',', $categoryIds);
+    //         }
+
+    //         $query->whereInRelation('category', 'id', $categoryIds);
+    //     }
+
+    //     // Filter by product name (partial match)
+    //     if ($request->has('name') && is_string($request->input('name'))) {
+    //         $query->where('name', 'like', '%' . $request->input('name') . '%');
+    //     }
+
+    //     // Filter by base_price range
+    //     // Determine price field based on user role (if authenticated)
+    //     $price_field = 'base_price';
+    //     $user        = auth('sanctum')->user();
+
+    //     if ($user && $user->isDistributorApprov()) {$price_field = 'distributor_price';}
+
+    //     if ($request->has('min_price') && is_numeric($request->input('min_price'))) {
+    //         $query->where($price_field, '>=', $request->input('min_price'));
+    //     }
+    //     if ($request->has('max_price') && is_numeric($request->input('max_price'))) {
+    //         $query->where($price_field, '<=', $request->input('max_price'));
+    //     }
+
+    //     if ($request->has('sort_by')) {
+    //         switch ($request->input('sort_by')) {
+    //             case 'lp':
+    //                 $query->orderBy($price_field, 'asc');
+    //                 break;
+    //             case 'hp':
+    //                 $query->orderBy($price_field, 'desc');
+    //                 break;
+    //             case 'if':
+    //                 $query->orderBy('is_featured', 'desc');
+    //                 break;
+    //         }
+    //     }
+
+    //     // --- Pagination ---
+    //     // Get the number of items per page from the request, default to 10 if not provided
+    //     $perPage = $request->query('per_page', 30);
+    //     // Ensure per_page is a positive integer
+    //     $perPage = max(1, (int) $perPage);
+
+    //     $products   = $query->paginate($perPage);
+    //     $categories = Category::with(['subcategories' => function ($query) {
+    //         $query->select(['id', 'image', 'name', 'slug', 'parent_id'])->withCount('products');
+    //     }])
+    //         ->whereNull('parent_id')
+    //         ->get(['id', 'image', 'name', 'slug']);
+
+    //     return response()->json([
+    //         'message' => 'Products retrieved successfully.',
+    //         'data'    => [
+    //             'products'   => $products,
+    //             'categories' => $categories,
+    //             'filters'    => [
+    //                 'sort_by' => [
+    //                     "Highest Price" => "hp",
+    //                     "Lowest Price"  => "lp",
+    //                     "Featured"      => "if",
+    //                 ],
+    //             ],
+    //         ],
+    //     ]);
+    // }
+
     public function index(Request $request): JsonResponse
     {
-        // Start building the query with eager loading for the category
-        $query = Product::with(['category:id,name,slug', 'images:id,product_id,path', 'discount:product_id,value,type']);
+        // Base query
+        $query = Product::with([
+            'category:id,name,slug,parent_id',
+            'discount:product_id,value,type',
+            'images' => function ($q) {
+                $q->select('id', 'product_id', 'path')->limit(1);
+            },
+        ]);
 
-        // --- Filtering Options ---
-        // Filter by category
+        // --- CATEGORY FILTER ---
         if ($request->filled('category')) {
-            $categoryIds = $request->input('category');
+            $categoryId = (int) $request->input('category');
+            $category   = Category::with('subcategories:id,parent_id')->find($categoryId);
 
-            // Handle both comma-separated string and array
-            if (is_string($categoryIds)) {
-                $categoryIds = explode(',', $categoryIds);
+            if ($category) {
+                // Parent category → include its subcategories’ products
+                if (is_null($category->parent_id)) {
+                    $subcategoryIds = $category->subcategories->pluck('id')->toArray();
+
+                    $query->where(function ($q) use ($categoryId, $subcategoryIds) {
+                        $q->where('category_id', $categoryId)
+                            ->orWhereIn('category_id', $subcategoryIds);
+                    });
+                }
+                // Subcategory → only its own products
+                else {
+                    $query->where('category_id', $categoryId);
+                }
             }
-
-            $query->whereInRelation('category', 'id', $categoryIds);
         }
 
-        // Filter by product name (partial match)
-        if ($request->has('name') && is_string($request->input('name'))) {
+        // --- NAME FILTER ---
+        if ($request->filled('name')) {
             $query->where('name', 'like', '%' . $request->input('name') . '%');
         }
 
-        // Filter by base_price range
-        // Determine price field based on user role (if authenticated)
-        $price_field = 'base_price';
-        $user        = auth('sanctum')->user();
-
-        if ($user && $user->isDistributorApprov()) {$price_field = 'distributor_price';}
-
-        if ($request->has('min_price') && is_numeric($request->input('min_price'))) {
-            $query->where($price_field, '>=', $request->input('min_price'));
-        }
-        if ($request->has('max_price') && is_numeric($request->input('max_price'))) {
-            $query->where($price_field, '<=', $request->input('max_price'));
+        // --- PRICE FILTERS ---
+        $priceField = 'base_price';
+        $user       = auth('sanctum')->user();
+        if ($user && $user->isDistributorApprov()) {
+            $priceField = 'distributor_price';
         }
 
-        if ($request->has('sort_by')) {
-            switch ($request->input('sort_by')) {
-                case 'lp':
-                    $query->orderBy($price_field, 'asc');
+        if ($request->filled('min_price') && is_numeric($request->min_price)) {
+            $query->where($priceField, '>=', $request->min_price);
+        }
+        if ($request->filled('max_price') && is_numeric($request->max_price)) {
+            $query->where($priceField, '<=', $request->max_price);
+        }
+
+        // --- SORTING ---
+        if ($request->filled('sort_by')) {
+            switch ($request->sort_by) {
+                case 'lp':$query->orderBy($priceField, 'asc');
                     break;
-                case 'hp':
-                    $query->orderBy($price_field, 'desc');
+                case 'hp':$query->orderBy($priceField, 'desc');
                     break;
-                case 'if':
-                    $query->orderBy('is_featured', 'desc');
+                case 'if':$query->orderBy('is_featured', 'desc');
                     break;
             }
         }
 
-        // --- Pagination ---
-        // Get the number of items per page from the request, default to 10 if not provided
-        $perPage = $request->query('per_page', 30);
-        // Ensure per_page is a positive integer
-        $perPage = max(1, (int) $perPage);
+        // --- PAGINATION ---
+        $perPage  = max(1, (int) $request->query('per_page', 30));
+        $products = $query->paginate($perPage, ['id','category_id','name','slug','sku','short_description','stock_quantity','low_stock_threshold','is_featured','distributor_price','base_price']);
 
-        $products   = $query->paginate($perPage);
+        // --- CATEGORY LIST (with subcategories) ---
         $categories = Category::with(['subcategories' => function ($query) {
-            $query->select(['id', 'image', 'name', 'slug', 'parent_id'])->withCount('products');
+            $query->select(['id', 'image', 'name', 'slug', 'parent_id'])
+                ->withCount('products');
         }])
             ->whereNull('parent_id')
             ->get(['id', 'image', 'name', 'slug']);
 
+        // --- PLACEHOLDER RATING / REVIEW ---
+        // $products->getCollection()->transform(function ($product) {
+        //     $product->rating       = null; // placeholder for rating
+        //     $product->review_count = 0;    // placeholder for review count
+        //     return $product;
+        // });
+
+        // --- RESPONSE ---
         return response()->json([
             'message' => 'Products retrieved successfully.',
             'data'    => [
@@ -98,7 +198,7 @@ class ProductController extends Controller
         // --- Query params with defaults ---
         $featuredLimit  = (int) $request->query('featured_limit', 6);
         $productsPerCat = (int) $request->query('products_per_category', 7);
-        $catGridLimit    = (int) $request->query('cat_grid_limit', 12);
+        $catGridLimit   = (int) $request->query('cat_grid_limit', 12);
 
         // Helper: select only required product fields
         $productFields = ['products.id', 'category_id', 'products.name', 'products.slug', 'short_description', 'base_price', 'distributor_price'];
@@ -133,7 +233,7 @@ class ProductController extends Controller
             ])
             ->get(['id', 'name', 'slug', 'image']);
 
-        $categoryGrid = Category::select('name','slug','image','parent_id')->with('parent:id,slug')->whereNotNull('parent_id')->inRandomOrder()->take($catGridLimit)->get();
+        $categoryGrid = Category::select('name', 'slug', 'image', 'parent_id')->with('parent:id,slug')->whereNotNull('parent_id')->inRandomOrder()->take($catGridLimit)->get();
 
         $categories = Category::with(['subcategories' => function ($query) {
             $query->select(['id', 'image', 'name', 'slug', 'parent_id'])->withCount('products');
@@ -154,7 +254,7 @@ class ProductController extends Controller
 
     public function cats(Request $request)
     {
-        $sub       = $request->boolean('sub'); // auto-cast "true"/"false"
+        $sub       = $request->boolean('sub');         // auto-cast "true"/"false"
         $slug      = $request->query('category_slug'); // <-- use slug instead of id
         $parentCat = null;
 
@@ -211,15 +311,14 @@ class ProductController extends Controller
         ]);
     }
 
-
     /**
      * Display the specified resource.
      */
     public function show(string $slug): JsonResponse
     {
-        $product = Product::with(['category:id,name,slug', 'images:id,product_id,path'])->where("slug",$slug)->first();
+        $product = Product::with(['category:id,name,slug', 'images:id,product_id,path'])->where("slug", $slug)->first();
 
-        if (!$product) {
+        if (! $product) {
             return response()->json(['message' => 'Product not found.'], 404);
         }
 

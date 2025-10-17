@@ -135,6 +135,19 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
         Route::post('admin/email/template-update/{id}', [NotificationController::class, 'templateUpdate']);
         Route::get('admin/email/setting', [NotificationController::class, 'emailSetting']);
         Route::post('admin/email/setting-update', [NotificationController::class, 'emailSettingUpdate']);
+
+
+
+        Route::get('admin/site', [AdminController::class, 'siteSettings']);
+        Route::put('admin/site/name', [AdminController::class, 'siteNameUpdate']);
+        Route::put('admin/site/logo', [AdminController::class, 'siteLogoUpdate']);
+        Route::put('admin/site/tax', [AdminController::class, 'taxUpdate']);
+
+        // Payment settings
+        Route::get('admin/gateways', [AdminController::class, 'paymentSettings']);
+        Route::put('admin/gateways', [AdminController::class, 'paymentSettingsUpdate']);
+
+
     });
 
     // Distributor-only routes

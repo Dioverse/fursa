@@ -8,7 +8,7 @@ use App\Models\CartItem;
 use App\Models\Shipping;
 use App\Constants\Status;
 use Illuminate\Support\Arr;
-use App\Models\AdminSetting;
+use App\Models\GeneralSetting;
 use Illuminate\Http\Request;
 use App\Services\OrderService;
 use App\Services\PaymentService;
@@ -40,7 +40,7 @@ class CheckoutController extends Controller
         }
 
         // get gateways (hide secret_key)
-        $gateways = AdminSetting::get("gateways");
+        $gateways = GeneralSetting::get("gateways");
         $gateways = collect($gateways)->map(function ($gateway) {
             return Arr::only($gateway, ['status','currency','image']);
         })->toArray();
@@ -200,7 +200,7 @@ class CheckoutController extends Controller
             }
 
             // 3. Get gateway config without secret_key
-            $gatewayConfig = AdminSetting::getNested("gateways.$gateway");
+            $gatewayConfig = GeneralSetting::getNested("gateways.$gateway");
             $pubKey = Arr::except($gatewayConfig, ['secret_key']);
 
             DB::commit();

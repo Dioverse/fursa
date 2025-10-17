@@ -78,7 +78,7 @@ class ProductController extends Controller
 
         // Pagination
         $perPage  = max(1, (int) $request->query('per_page', 10));
-        $products = $query->paginate($perPage);
+        $products = $query->paginate($perPage, []);
 
         // Stats
         $stats = Product::selectRaw('
@@ -117,7 +117,8 @@ class ProductController extends Controller
     {
         $request->validate([
             'name'                => 'required|string|max:255|unique:products,name',
-            'category_id'         => ['nullable', Rule::exists('categories', 'id')->whereNotNull('parent_id')],
+            'category_id'         => ['nullable', Rule::exists('categories', 'id')],
+            // 'category_id'         => ['nullable', Rule::exists('categories', 'id')->whereNotNull('parent_id')],
             'short_description'   => 'nullable|string',
             'description'         => 'nullable|string',
             'base_price'          => 'required|numeric|min:0',
@@ -200,7 +201,8 @@ class ProductController extends Controller
 
         $request->validate([
             'name'                => 'sometimes|string|max:255',
-            'category_id'         => ['nullable', Rule::exists('categories', 'id')->where('id', '!=',$request->category_id)->whereNotNull('parent_id')],
+            'category_id'         => ['nullable', Rule::exists('categories', 'id')->where('id', '!=',$request->category_id)],
+            // 'category_id'         => ['nullable', Rule::exists('categories', 'id')->where('id', '!=',$request->category_id)->whereNotNull('parent_id')],
             'short_description'   => 'nullable|string',
             'description'         => 'nullable|string',
             'base_price'          => 'sometimes|numeric|min:0',
