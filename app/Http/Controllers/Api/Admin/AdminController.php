@@ -281,14 +281,21 @@ class AdminController extends Controller
     public function siteLogoUpdate(Request $request)
     {
         $request->validate([
-            'site_logo' => 'required|url',
+            'site_logo' => 'required|image|mimes:jpg,jpeg,png|max:204',
         ]);
 
         $settings = GeneralSetting::firstOrFail();
-        $settings->update(['site_logo' => $request->site_logo]);
+
+        // Upload logo
+        $filename = 'site_logo_' . time() . '.' . $request->site_logo->extension();
+        $request->site_logo->move(public_path('assets/images'), $filename);
+        $logoPath = url('public/assets/images/' . $filename);
+
+        $settings->update(['site_logo' => $logoPath]);
 
         return response()->json(['message' => 'Site logo updated successfully']);
     }
+
 
     /**
      * Update tax only
@@ -324,15 +331,82 @@ class AdminController extends Controller
     /**
      * Update payment gateway settings
      */
-    public function paymentSettingsUpdate(Request $request)
+    public function updatePaystack(Request $request)
     {
         $request->validate([
-            'gateways' => 'required|array',
+            'status' => 'required|in:active,inactive',
+            'currency' => 'required|string|size:3',
+            'public_key' => 'required|string',
+            'secret_key' => 'required|string',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:102', // optional upload
         ]);
 
         $settings = GeneralSetting::firstOrFail();
-        $settings->update(['gateways' => $request->gateways]);
+        $gateways = is_array($settings->gateways)
+                    ? $settings->gateways
+                    : json_decode($settings->gateways, true);
 
-        return response()->json(['message' => 'Payment settings updated successfully']);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $filename = 'paystack_' . time() . '.' . $request->image->extension();
+            $request->image->move(public_path('assets/images'), $filename);
+            $imagePath = url('public/assets/images/' . $filename);
+        } else {
+            $imagePath = $gateways['paystack']['image'] ?? null;
+        }
+
+        $gateways['paystack'] = [
+            'image' => $imagePath,
+            'status' => $request->status,
+            'currency' => strtoupper($request->currency),
+            'public_key' => $request->public_key,
+            'secret_key' => $request->secret_key,
+        ];
+
+        $settings->update(['gateways' => json_encode($gateways)]);
+
+        return response()->json(['message' => 'Paystack configuration updated successfully']);
     }
+
+    public function updateFlutterwave(Request $request)
+    {
+        $request->validate([
+            'status' => 'required|in:active,inactive',
+            'currency' => 'required|string|size:3',
+            'public_key' => 'required|string',
+            'secret_key' => 'required|string',
+            'encryption_key' => 'required|string',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:102', // optional upload
+        ]);
+        print_r(GeneralSetting::getNested('gateways.paystack'));
+
+        $settings = GeneralSetting::firstOrFail();
+        $gateways = is_array($settings->gateways)
+                    ? $settings->gateways
+                    : json_decode($settings->gateways, true);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $filename = 'flutterwave_' . time() . '.' . $request->image->extension();
+            $request->image->move(public_path('assets/images'), $filename);
+            $imagePath = url('public/assets/images/' . $filename);
+        } else {
+            $imagePath = $gateways['flutterwave']['image'] ?? null;
+        }
+
+        $gateways['flutterwave'] = [
+            'image' => $imagePath,
+            'status' => $request->status,
+            'currency' => strtoupper($request->currency),
+            'public_key' => $request->public_key,
+            'secret_key' => $request->secret_key,
+            'encryption_key' => $request->encryption_key,
+        ];
+
+        $settings->update(['gateways' => json_encode($gateways)]);
+
+        return response()->json(['message' => 'Flutterwave configuration updated successfully']);
+    }
+
 }

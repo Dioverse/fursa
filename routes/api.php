@@ -138,14 +138,16 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
 
 
 
-        Route::get('admin/site', [AdminController::class, 'siteSettings']);
+        Route::get('admin/site/info', [AdminController::class, 'siteSettings']);
         Route::put('admin/site/name', [AdminController::class, 'siteNameUpdate']);
         Route::put('admin/site/logo', [AdminController::class, 'siteLogoUpdate']);
         Route::put('admin/site/tax', [AdminController::class, 'taxUpdate']);
 
         // Payment settings
-        Route::get('admin/gateways', [AdminController::class, 'paymentSettings']);
-        Route::put('admin/gateways', [AdminController::class, 'paymentSettingsUpdate']);
+        Route::get('admin/site/gateways', [AdminController::class, 'paymentSettings']);
+        Route::post('admin/site/gateway/paystack', [AdminController::class, 'updatePaystack']);
+        Route::post('admin/site/gateway/flutterwave', [AdminController::class, 'updateFlutterwave']);
+        
 
 
     });
