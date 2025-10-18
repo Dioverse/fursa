@@ -20,7 +20,11 @@ class ProductController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Product::with(['category:id,name,slug', 'discount:product_id,type,value,start_date,end_date']);
+        $query = Product::with([
+            'category:id,name,slug', 
+            'discount:product_id,type,value,start_date,end_date',
+            'images' => fn($q) => $q->select('id', 'product_id', 'path')->limit(1)
+        ]);
 
         // --- Filtering Options ---
         if ($request->filled('category_id')) {
