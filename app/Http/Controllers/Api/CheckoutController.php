@@ -140,7 +140,7 @@ class CheckoutController extends Controller
         });
 
         $ship = $this->shippingCostLogic($user);
-        if(empty($ship)) { return ['error'=>true, 'message'=>"No shipping address found."]; }
+        if(empty($ship)) { return ['error'=>false, 'sp'=>true, 'message'=>"No shipping address found."]; }
         $shipCost = $ship['shipCost'];
 
         $amt = (float)round($cartItems->sum('subtotal'), 2);
@@ -177,6 +177,8 @@ class CheckoutController extends Controller
         $cartSummary = $this->getCartSummary($user);
         if ($cartSummary['error']) {
             return response()->json($cartSummary, 422);
+        } elseif ($cartSummary['sp']) {
+            return response()->json(['response'=>'no-shipping','message'=>'No shipping address found'], 422);
         }
 
         try {
