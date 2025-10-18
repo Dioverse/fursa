@@ -79,7 +79,7 @@ class CheckoutController extends Controller
         ];
     }
 
-    protected function getCartSummary($user)
+    protected function getCartSummary($user, $make=false)
     {
         $taxVal = (float)(gs("tax"));
         $taxVal = (float)($taxVal > 0 ? $taxVal/ 100 : 0);
@@ -140,7 +140,7 @@ class CheckoutController extends Controller
         });
 
         $ship = $this->shippingCostLogic($user);
-        if(empty($ship)) { return ['error'=>false, 'sp'=>true, 'message'=>"No shipping address found."]; }
+        if($make && empty($ship)) { return ['error'=>false, 'sp'=>true, 'message'=>"No shipping address found."]; }
         $shipCost = $ship['shipCost'];
 
         $amt = (float)round($cartItems->sum('subtotal'), 2);
@@ -174,7 +174,7 @@ class CheckoutController extends Controller
         }
 
         // 1. Validate cart & stock
-        $cartSummary = $this->getCartSummary($user);
+        $cartSummary = $this->getCartSummary($user,true);
         if ($cartSummary['error']) {
             return response()->json($cartSummary, 422);
         } elseif ($cartSummary['sp']) {
