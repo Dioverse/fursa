@@ -335,7 +335,7 @@ class AuthController extends Controller
             // Mail::to($user->email)->queue(new UserLoggedInNotification($user, $ipAddress, $loginTime));
             notify("LOGIN_ALERT", $user, [
                 "name" => $user->first_name, "ipAddress" => $ipAddress, "loginTime" => $loginTime
-            ], ["email"],false);
+            ], ["email"],true);
 
             // 8. Return success response with user data and the token
             return response()->json([
