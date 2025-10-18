@@ -87,7 +87,7 @@ class Product extends Model implements AuditableContract
 
     public function discount()
     {
-        $now = now()->format('Y-m-d');
+        $now = now()->format('Y-m-d H:i:s');
         return $this->hasOne(Discount::class)
             ->where('start_date', '<=', $now)
             ->where('end_date', '>=', $now);
