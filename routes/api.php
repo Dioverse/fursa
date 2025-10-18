@@ -69,6 +69,10 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
 
 
         Route::apiResource('admin', AdminController::class);
+        Route::get('admin-profile', function (Request $request) {
+            return $request->user();
+        });
+
         Route::get('admin-dashboard', [AdminController::class, 'dashboard']);
         Route::apiResource('categories', CategoryController::class);
         Route::apiResource('admin-products', ProductController::class);
