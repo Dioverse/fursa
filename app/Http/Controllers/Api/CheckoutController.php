@@ -144,6 +144,8 @@ class CheckoutController extends Controller
         elseif (!(empty($ship['userAddress']??"") || empty($ship['shipCost']??""))) { $shipCost = $ship['shipCost'];print_r('elseif'); }
         else { $shipCost = collect(['cost'=>0,'min_days'=>0,'max_days'=>0]); print_r('else');}
 
+        print_r($shipCost);
+
         $amt = (float)round($cartItems->sum('subtotal'), 2);
         $payable = bcadd($amt, (float)$shipCost->cost, 2); // Payable (amount + shipping cost)
         $tax = bcmul($payable, $taxVal, 2);
