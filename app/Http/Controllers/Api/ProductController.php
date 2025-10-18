@@ -100,6 +100,7 @@ class ProductController extends Controller
         'discount:id,product_id,value,type',
         'images' => fn($q) => $q->select('id', 'product_id', 'path')->limit(1),
     ]);
+    return response()->json($query->limit(7)->get());
 
     // --- CATEGORY FILTER (using slug) ---
     if ($request->filled('category')) {

@@ -35,7 +35,9 @@ class Product extends Model implements AuditableContract
     ];
 
     protected $casts = [
-        'tags'    => 'array',
+        'tags'          => 'array',
+        'is_featured'   =>'boolean',
+        'status'   =>'boolean'
     ];
     
     public function category() {
