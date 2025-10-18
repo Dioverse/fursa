@@ -78,7 +78,12 @@ class ProductController extends Controller
 
         // Pagination
         $perPage  = max(1, (int) $request->query('per_page', 10));
-        $products = $query->paginate($perPage, []);
+        $products = $query->paginate($perPage, [
+            'id','category_id','name','slug','sku',
+            'short_description','stock_quantity',
+            'low_stock_threshold','is_featured',
+            'distributor_price','base_price',
+        ]);
 
         // Stats
         $stats = Product::selectRaw('
