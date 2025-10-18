@@ -165,7 +165,7 @@
                     <!-- Discount Badge -->
                     <span v-if="product.discount"
                       class="absolute top-2 right-2 bg-mprimary-500 text-white px-2 py-1 text-xs rounded font-semibold">
-                      -{{ discountLabel(product) }}
+                      {{ discountLabel(product) }}
                     </span>
                   </div>
 
@@ -200,24 +200,23 @@
                   <div class="flex w-full space-x-2 px-4 pb-4">
 
                     <!-- Add To Cart -->
-                    <button v-if="!isInCart(product.id)" @click="addToCart(product)"
+                    <button v-if="!isInCart(product.id)" @click="addToCart(product)" :disabled="loadingStates[product.id]"
                       class="flex-1 bg-gold-500 text-white py-2 disabled:opacity-50 disabled:cursor-not-allowed rounded hover:bg-gold-100 hover:text-black text-sm font-semibold">
-                      Add to cart
+                      {{ loadingStates[product.id] ? 'Adding...' : 'Add to cart' }}
                     </button>
 
                     <!-- Quantity Control -->
                     <div v-else class="flex items-center rounded overflow-hidden flex-1 justify-between">
                       <!-- Decrement -->
-                      <button :disabled="getCartQuantity(product.id) <= 1"
+                      <button :disabled="getCartQuantity(product.id) <= 1 || loadingStates[product.id]"
                         @click="updateQuantity(product, getCartQuantity(product.id) - 1)"
                         class="px-3 py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
                         -
                       </button>
                         
-                      <!-- Input / Loader -->
-                      <div
-                        class="w-12 text-center border-x border-gold-300 text-sm flex justify-center items-center h-[38px]">
-                        <div v-if="loadingStates[product.id]">
+                      <!-- Quantity Display / Loader -->
+                      <div class="w-12 text-center border-x border-gold-300 text-sm flex justify-center items-center h-[38px]">
+                        <div v-if="loadingStates[product.id]" class="flex justify-center items-center">
                           <svg class="animate-spin h-4 w-4 text-gold-500" xmlns="http://www.w3.org/2000/svg" fill="none"
                             viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
@@ -225,21 +224,20 @@
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                           </svg>
                         </div>
-                        <div v-else>
-                          <div
-                            contenteditable="true"
-                            class="w-12 text-center border-x border-gold-300 text-sm flex justify-center items-center h-[38px] outline-none"
-                            :data-product-id="product.id"
-                            @blur="onQuantityBlur($event, product)"
-                            @keydown.enter.prevent="onQuantityEnter($event, product)"
-                          >
-                            {{ getCartQuantity(product.id) }}
-                          </div>
+                        <div v-else
+                          contenteditable="true"
+                          class="w-full text-center outline-none"
+                          :data-product-id="product.id"
+                          @blur="onQuantityBlur($event, product)"
+                          @keydown.enter.prevent="onQuantityEnter($event, product)"
+                        >
+                          {{ getCartQuantity(product.id) }}
                         </div>
                       </div>
 
                       <!-- Increment -->
                       <button
+                        :disabled="loadingStates[product.id]"
                         @click="updateQuantity(product, getCartQuantity(product.id) + 1)"
                         class="px-3 py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
                         +
@@ -247,9 +245,14 @@
                     </div>
 
                     <!-- Wishlist -->
-                    <button
-                      class="w-1/4 bg-gold-100 text-mprimary py-2  disabled:cursor-not-allowed disabled:hover:text-mprimary disabled:hover:bg-gold-100 rounded hover:bg-gold-500 hover:text-white text-sm font-semibold flex justify-center items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                    <button @click="toggleWishlist(product)"
+                      :class="[
+                        'w-1/4 py-2 rounded text-sm font-semibold flex justify-center items-center transition-colors',
+                        wishlistStore.items.find(p => p.id === product.id)
+                          ? 'bg-red-100 text-red-500 hover:bg-red-500 hover:text-white'
+                          : 'bg-gold-100 text-mprimary hover:bg-gold-500 hover:text-white'
+                      ]">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" :fill="wishlistStore.items.find(p => p.id === product.id) ? 'currentColor' : 'none'" viewBox="0 0 24 24"
                         stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round"
                           d="M21.8 8.6c0 5.4-9.2 11.1-9.8 11.4a1.5 1.5 0 0 1-1 0c-.6-.3-9.8-6-9.8-11.4A5 5 0 0 1 6.8 4.5c1.6 0 3.1.8 4 2a5.1 5.1 0 0 1 4-2 5 5 0 0 1 4.9 4.1z" />
@@ -258,22 +261,8 @@
                   </div>
 
                 </div>
-
-                <!-- 🔒 Global Page Lock Overlay
-                <div v-if="globalLoading"
-                  class="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm z-50 flex justify-center items-center">
-                  <svg class="animate-spin h-10 w-10 text-gold-500" xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                  </svg>
-                </div> -->
               </div>
             </div>
-
-
-
-
 
             <div ref="observerTarget" id="scroll-trigger" />
 
@@ -347,6 +336,14 @@
                     v-model.number="filters.maxPrice" />
                 </div>
               </div>
+              <div class="space-y-2">
+                <label v-for="range in priceRanges" :key="range.label"
+                  class="flex items-center gap-2 cursor-pointer text-sm">
+                  <input type="radio" name="price" class="w-4 h-4"
+                    @change="setPrice(range.min, range.max === Infinity ? null : range.max)" />
+                  {{ range.label }}
+                </label>
+              </div>
             </div>
 
             <div class="flex gap-2 mt-6 pt-4 border-t">
@@ -370,6 +367,7 @@
 import { reactive, ref, computed, onMounted, watch, nextTick } from 'vue';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import { useCartStore } from '@/stores/cart';
+import { useWishlistStore } from '@/stores/wishlist';
 
 const storageUrl = import.meta.env.VITE_STORAGE_URL || '';
 const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api';
@@ -405,27 +403,6 @@ const XIcon = {
   `
 }
 
-const HeartIcon = {
-  template: `
-    <svg xmlns="http://www.w3.org/2000/svg"
-        class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"
-        role="img" aria-label="Add to favorites">
-      <path stroke-linecap="round" stroke-linejoin="round"
-            d="M21.8 8.6c0 5.4-9.2 11.1-9.8 11.4a1.5 1.5 0 0 1-1 0c-.6-.3-9.8-6-9.8-11.4A5 5 0 0 1 6.8 4.5c1.6 0 3.1.8 4 2a5.1 5.1 0 0 1 4-2 5 5 0 0 1 4.9 4.1z"/>
-    </svg>
-  `
-}
-
-const HeartIconFilled = {
-  template: `
-    <svg xmlns="http://www.w3.org/2000/svg"
-        class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
-        role="img" aria-label="Favorited">
-      <path d="M12.1 21.35a1.5 1.5 0 0 1-1.1-.46C4.3 14.6 2 12.3 2 9.6 2 6.9 4.2 4.7 6.9 4.7c1.6 0 3.1.8 4 2 0 0 .1.2.1.2s.1-.1.1-.2c.9-1.2 2.4-2 4-2 2.7 0 4.9 2.2 4.9 4.9 0 2.7-2.3 5-8.9 11.3a1.5 1.5 0 0 1-1.1.46z"/>
-    </svg>
-  `
-}
-
 // Reactive state
 const state = reactive({
   products: [],
@@ -450,6 +427,7 @@ const selectedSubcategoryId = ref(null);
 const showSortDropdown = ref(false);
 const showMobileFilters = ref(false);
 const observerTarget = ref(null);
+const loadingStates = ref({});
 
 const sortOptions = {
   hp: 'Highest Price',
@@ -465,6 +443,9 @@ const priceRanges = [
   { label: '₦500,000+', min: 500000, max: Infinity },
 ];
 
+const cartStore = useCartStore();
+const wishlistStore = useWishlistStore();
+
 // Utility functions
 const priceToLocale = (val) => {
   if (val == null) return '0';
@@ -472,14 +453,18 @@ const priceToLocale = (val) => {
 };
 
 const getBasePrice = (product) => {
-  // Backend returns base_price or distributor_price depending on user
-  return product.base_price ?? product.distributor_price ?? product.price ?? 0;
+  return product.price ?? product.base_price ?? product.distributor_price ?? 0;
 };
 
 const getDisplayPrice = (product) => {
   const price = getBasePrice(product);
-  if (product.discount && product.discount.type === 'percentage') {
-    const discounted = price - (price * (product.discount.value / 100));
+  if (product.discount) {
+    let discounted;
+    if (product.discount.type === 'percentage') {
+      discounted = price - (price * (product.discount.value / 100));
+    } else {
+      discounted = price - product.discount.value
+    }
     return priceToLocale(discounted);
   }
   return priceToLocale(price);
@@ -488,8 +473,8 @@ const getDisplayPrice = (product) => {
 const discountLabel = (product) => {
   const d = product.discount;
   if (!d) return '';
-  if (d.type === 'percentage') return `${d.value}%`;
-  return '0%';
+  if (d.type === 'percentage') return `${d.value}% off`;
+  return `₦${d.value} off`;
 };
 
 const getProductImage = (product) => {
@@ -547,7 +532,6 @@ const fetchProducts = async (page = 1, isLoadMore = false) => {
     if (isLoadMore) {
       state.products = [...state.products, ...newProducts];
     } else {
-      state.products = [];
       state.products = newProducts;
       if (response.data.categories) {
         state.categories = response.data.categories;
@@ -568,7 +552,6 @@ const fetchProducts = async (page = 1, isLoadMore = false) => {
 
 // Initialize on mount
 onMounted(() => {
-  // Extract slug from URL (format: /c/category--subcategory or /c/category)
   const pathname = window.location.pathname;
   const match = pathname.match(/\/shop\/c\/(.+)?$/);
   const slug = (match && match[1]) || '';
@@ -578,13 +561,11 @@ onMounted(() => {
     const categorySlug = parts[0];
     const subcategorySlug = parts[1] || null;
 
-    // Find category ID by slug
     const category = state.categories.find(c => c.slug === categorySlug);
     if (category) {
       selectedCategoryId.value = category.id;
       state.pageTitle = categorySlug.replace(/-/g, ' ').toUpperCase();
 
-      // Find subcategory ID if provided
       if (subcategorySlug) {
         const subcategory = category.subcategories?.find(s => s.slug === subcategorySlug);
         if (subcategory) {
@@ -595,7 +576,6 @@ onMounted(() => {
     }
   }
 
-  // Load all products (with or without filters from URL)
   fetchProducts(1).then(() => {
     nextTick(() => setupObserver());
   });
@@ -681,13 +661,22 @@ const subcategorySlug = computed(() => {
   return null;
 });
 
+// Cart helpers
+const isInCart = (productId) => {
+  return cartStore.items.some(item => (item.product_id || item.id) === productId);
+};
 
+const getCartQuantity = (productId) => {
+  const item = cartStore.items.find(i => (i.product_id || i.id) === productId);
+  return item ? item.quantity : 0;
+};
+
+// Quantity input handlers
 const onQuantityBlur = (e, product) => {
   const newQty = parseInt(e.target.innerText, 10);
   if (!isNaN(newQty) && newQty !== getCartQuantity(product.id)) {
     updateQuantity(product, newQty);
   } else {
-    // Reset to previous quantity if invalid
     e.target.innerText = getCartQuantity(product.id);
   }
 };
@@ -697,68 +686,26 @@ const onQuantityEnter = (e, product) => {
   if (!isNaN(newQty) && newQty !== getCartQuantity(product.id)) {
     updateQuantity(product, newQty);
   }
-  // Reset focus so cursor doesn't stay in input
   e.target.blur();
 };
 
-// const globalLoading = ref(false)
-const loadingStates = ref({})
-// Disable all buttons/links globally during update
-const togglePageInteractivity = (disable) => {
-  const elements = document.querySelectorAll('button, a')
-  elements.forEach(el => {
-    if (disable) el.setAttribute('disabled', true)
-    else el.removeAttribute('disabled')
-  })
-  
-}
-
-const isInCart = (productId) => {
-  return cartStore.items.some(item => item.id === productId);
-};
-
-const getCartQuantity = (productId) => {
-  const item = cartStore.items.find(i => i.id === productId);
-  return item ? item.quantity : 0;
-};
-
-const cartStore = useCartStore()
-
-// const updateQuantity = async (product, quantity) => {
-//   // Set loading state for this specific product
-//   loadingStates.value[product.id] = true
-//   await (() => {
-//     loadingStates.value[product.id]
-//     for (let i = 0; i < 6; i++) {
-//       // const element = array[i];
-//       console.log(i)
-      
-//     }
-    
-//   })
-//   try {
-//     if (quantity <= 0) {
-//       cartStore.removeItem(product.id)
-//     } else {
-//       cartStore.updateQuantity(product.id, quantity)
-//     }
-//   } catch (error) {
-//     console.error('Error updating quantity:', error)
-//   } finally {
-//     // Clear loading state for this product
-//     loadingStates.value[product.id] = false
-//   }
-// }
-
-const updateQuantity = async (product, quantity) => {
-  // Set loading state for this specific product
-  togglePageInteractivity(true)
+// Cart actions
+const addToCart = async (product) => {
   loadingStates.value[product.id] = true;
   try {
-    // // Optional: simulate a small delay for testing/loading
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
+    await cartStore.addItem(product, 1);
+    console.log('object');
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+  } finally {
+    loadingStates.value[product.id] = false;
+  }
+};
 
-    // Update cart
+const updateQuantity = async (product, quantity) => {
+  loadingStates.value[product.id] = true;
+  
+  try {
     if (quantity <= 0) {
       cartStore.removeItem(product.id);
     } else {
@@ -767,41 +714,22 @@ const updateQuantity = async (product, quantity) => {
   } catch (error) {
     console.error('Error updating quantity:', error);
   } finally {
-    // Clear loading state for this product
     loadingStates.value[product.id] = false;
-    togglePageInteractivity(false)
   }
 };
 
-
-const addToCart = async (product) => {
-  loadingStates.value[product.id] = true
-  try {
-    await cartStore.addItem({
-      id: product.id,
-      name: product.name,
-      price: getBasePrice(product),
-      quantity: product.quantity || 1,
-      image: getProductImage(product),
-      stock: product.stock_quantity,
-    })
-  } catch (error) {
-    console.error('Error adding to cart:', error)
-  } finally {
-    loadingStates.value[product.id] = false
+// Wishlist actions
+const toggleWishlist = (product) => {
+  const exists = wishlistStore.items.find(p => p.id === product.id);
+  if (exists) {
+    wishlistStore.remove(product.id);
+  } else {
+    wishlistStore.add(product);
   }
 };
-
 </script>
 
 <style>
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;

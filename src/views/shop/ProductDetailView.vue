@@ -20,14 +20,14 @@
                 <!-- Product Images -->
                 <div>
                     <div class="bg-gray-100 rounded-lg p-8 mb-4">
-                        <img v-if="product.image" :src="product.image" :alt="product.name" class="w-full">
+                        <img v-if="product.images?.[0]?.url" :src="product.images[0].url" :alt="product.name" class="w-full">
                         <div v-else class="h-96 flex items-center justify-center">
                             <font-awesome-icon icon="image" size="4x" class="text-gray-400" />
                         </div>
                     </div>
                     <div class="grid grid-cols-4 gap-2">
-                        <button v-for="i in 4" :key="i" class="bg-gray-100 rounded p-2 hover:ring-2 hover:ring-primary">
-                            <font-awesome-icon icon="image" size="2x" class="text-gray-400" />
+                        <button v-for="(img, i) in product.images?.slice(0, 4)" :key="i" class="bg-gray-100 rounded p-2 hover:ring-2 hover:ring-primary">
+                            <img :src="img.url" :alt="product.name" class="w-full h-full object-cover">
                         </button>
                     </div>
                 </div>
@@ -46,43 +46,40 @@
                     </div>
 
                     <div class="text-3xl font-bold text-primary mb-6">
-                        ₦{{ product?.discountedPrice?.toLocaleString() }}
+                        ₦{{ product?.discountedPrice?.toLocaleString() || product?.price?.toLocaleString() }}
                     </div>
 
                     <div class="space-y-4 mb-6">
                         <p class="text-gray-600">{{ product.description }}</p>
-                        <div>
+                        <div v-if="product.sku">
                             <span class="font-semibold">SKU:</span> {{ product.sku }}
                         </div>
-                        <div>
-                            <span class="font-semibold">Volume:</span> {{ product.volume }}
-                        </div>
-                        <div>
-                            <span class="font-semibold">Category:</span> Motor Oil
+                        <div v-if="product.category">
+                            <span class="font-semibold">Category:</span> {{ product.category }}
                         </div>
                     </div>
 
                     <!-- Quantity and Add to Cart -->
                     <div class="flex items-center gap-4 mb-6">
                         <div class="flex items-center border rounded-lg">
-                            <button @click="quantity--" :disabled="quantity <= 1"
+                            <button @click="quantity = Math.max(1, quantity - 1)" :disabled="quantity <= 1"
                                 class="px-4 py-3 hover:bg-gray-100 disabled:opacity-50">
                                 <font-awesome-icon icon="minus" />
                             </button>
-                            <input v-model="quantity" type="number" min="1" class="w-20 text-center border-x py-3">
+                            <input v-model.number="quantity" type="number" min="1" class="w-20 text-center border-x py-3">
                             <button @click="quantity++" class="px-4 py-3 hover:bg-gray-100">
                                 <font-awesome-icon icon="plus" />
                             </button>
                         </div>
-                        <button @click="addToCart"
-                            class="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-opacity-90 transition">
+                        <button @click="addToCart" :disabled="loadingStates"
+                            class="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-opacity-90 transition disabled:opacity-50">
                             <font-awesome-icon icon="shopping-cart" class="mr-2" />
-                            Add to Cart
+                            {{ loadingStates ? 'Adding...' : 'Add to Cart' }}
                         </button>
 
                         <button @click="saveWishlist" class="p-3 border rounded-lg hover:bg-gray-100">
-                            <font-awesome-icon :icon="['fas', wishlistStore.items.find(p => p.id === product.id) ? 'heart' : 'heart']"
-                            :class="wishlistStore.items.find(p => p.id === product.id) ? 'text-red-500' : 'text-gray-400'" />
+                            <font-awesome-icon :icon="['fas', isInWishlist ? 'heart' : 'heart']"
+                            :class="isInWishlist ? 'text-red-500' : 'text-gray-400'" />
                         </button>
 
                     </div>
@@ -184,26 +181,18 @@ import { useWishlistStore } from '@/stores/wishlist'
 import Brochure from '@/components/common/Brochure.vue'
 import CTA from '@/components/common/CTA.vue'
 
-
 const route = useRoute()
 const product = ref({})
 const relatedProducts = ref([])
 
 const cartStore = useCartStore()
-const wishlistStore  = useWishlistStore()
+const wishlistStore = useWishlistStore()
 const toast = useToast()
 
 const quantity = ref(1)
 const activeTab = ref('description')
-// const wishlist = ref(JSON.parse(localStorage.getItem('wishlist')) || [])
-const wishlist = ref(
-  Array.isArray(JSON.parse(localStorage.getItem('wishlist')))
-    ? JSON.parse(localStorage.getItem('wishlist'))
-    : []
-)
-
+const loadingStates = ref(false)
 const isInWishlist = ref(false)
-
 
 const tabs = [
     { id: 'description', label: 'Description' },
@@ -211,47 +200,32 @@ const tabs = [
     { id: 'reviews', label: 'Reviews' }
 ]
 
-
-const addToCart = () => {
-    cartStore.addItem({ ...product.value, quantity: quantity.value })
-    // toast.success('Product added to cart!')
-    quantity.value = 1
-}
-
-const saveWishlist = () => {
-  const exists = wishlistStore.items.find(p => p.id === product.value.id)
-  if (exists) {
-    wishlistStore.remove(product.value.id)
-    toast.info(`${product.value.name} removed from wishlist`)
-  } else {
-    wishlistStore.add(product.value)
-    toast.success(`${product.value.name} added to wishlist`)
+const addToCart = async () => {
+  if (loadingStates.value) return
+  
+  loadingStates.value = true
+  
+  try {
+    await cartStore.addItem(product.value, quantity.value)
+  } catch (error) {
+    console.error('Error adding to cart:', error)
+    toast.error('Failed to add product to cart')
+  } finally {
+    loadingStates.value = false
   }
 }
 
-// ✅ Save wishlist
-// const saveWishlist = () => {
-
-//   if (!Array.isArray(wishlist.value)) {
-//     wishlist.value = []
-//   }
-
-//   const exists = wishlist.value.find(item => item.id === product.value.id)
-
-//   if (exists) {
-//     // Remove from wishlist
-//     wishlist.value = wishlist.value.filter(item => item.id !== product.value.id)
-//     toast.info(`${product.value.name} removed from wishlist`)
-//     isInWishlist.value = false
-//   } else {
-//     // Add to wishlist
-//     wishlist.value.push(product.value)
-//     toast.success(`${product.value.name} added to wishlist`)
-//     isInWishlist.value = true
-//   }
-
-//   localStorage.setItem('wishlist', JSON.stringify(wishlist.value))
-// }
+const saveWishlist = () => {
+  if (isInWishlist.value) {
+    wishlistStore.remove(product.value.id)
+    isInWishlist.value = false
+    toast.info(`${product.value.name} removed from wishlist`)
+  } else {
+    wishlistStore.add(product.value)
+    isInWishlist.value = true
+    toast.success(`${product.value.name} added to wishlist`)
+  }
+}
 
 onMounted(async () => {
   const id = route.params.id
@@ -261,20 +235,22 @@ onMounted(async () => {
     const json = await res.json()
 
     const apiProduct = json.data
-    
 
     // 🔄 Map API to UI structure
     product.value = {
       id: apiProduct.id,
       name: apiProduct.name,
       price: parseFloat(apiProduct.price),
-      discountedPrice: parseFloat(apiProduct.discounted_price) || null,
+      discountedPrice: apiProduct.discounted_price ? parseFloat(apiProduct.discounted_price) : null,
       sku: apiProduct.sku,
-      volume: apiProduct.volume || null, // not in API? keep fallback
-      rating: apiProduct.rating || 0,   // not in API yet? default 0
-      reviews: apiProduct.reviews || 0, // not in API yet? default 0
+      rating: apiProduct.rating || 0,
+      reviews: apiProduct.reviews || 0,
       description: apiProduct.short_description,
       fullDescription: apiProduct.description,
+      category: apiProduct.category?.name || null,
+      stock_quantity: apiProduct.stock_quantity,
+      low_stock_threshold: apiProduct.low_stock_threshold,
+      discount: apiProduct.discount || null,
       specifications: [
         { name: 'Stock Quantity', value: apiProduct.stock_quantity },
         { name: 'Low Stock Threshold', value: apiProduct.low_stock_threshold },
@@ -284,20 +260,17 @@ onMounted(async () => {
         id: img.id,
         url: `https://fursa.jarustraining.com.ng/storage/${img.path}`
       })),
-      reviewsList: [] // your API doesn’t send reviews yet
+      reviewsList: []
     }
 
-    if (!Array.isArray(wishlist.value)) {
-        wishlist.value = []
-    }
-
-    isInWishlist.value = wishlist.value.some(item => item.id === product.value.id)
+    isInWishlist.value = wishlistStore.items.some(item => item.id === product.value.id)
 
     // Related products
     relatedProducts.value = json.related.map(p => ({
       id: p.id,
       name: p.name,
       price: parseFloat(p.price),
+      discountedPrice: p.discounted_price ? parseFloat(p.discounted_price) : null,
       description: p.short_description,
       image: p.images[0]
         ? `https://fursa.jarustraining.com.ng/storage/${p.images[0].path}`
@@ -305,6 +278,7 @@ onMounted(async () => {
     }))
   } catch (error) {
     console.error('Error fetching product:', error)
+    toast.error('Failed to load product')
   }
 })
 </script>

@@ -151,7 +151,7 @@ async function syncCart() {
     }
   } catch (error) {
     // console.error('Cart sync failed:', error)
-    toast.error('Failed to synchronize cart')
+    // toast.error('Failed to synchronize cart')
   }
 }
 
