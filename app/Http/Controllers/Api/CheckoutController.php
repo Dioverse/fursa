@@ -142,7 +142,7 @@ class CheckoutController extends Controller
         $ship = $this->shippingCostLogic($user);
         if($make && (empty($ship['userAddress']??"") || empty($ship['shipCost']??""))) { return ['error'=>false, 'sp'=>true, 'message'=>"No shipping address found."]; }
         elseif (!(empty($ship['userAddress']??"") || empty($ship['shipCost']??""))) { $shipCost = $ship['shipCost']; }
-        else { $shipCost = []; }
+        else { $shipCost = collect(['cost'=>0,'min_days'=>0,'max_days'=>0]); }
 
         $amt = (float)round($cartItems->sum('subtotal'), 2);
         $payable = bcadd($amt, (float)$shipCost->cost, 2); // Payable (amount + shipping cost)
