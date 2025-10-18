@@ -26,7 +26,7 @@ class CartController extends Controller
                 },
                 'cartItems.product' => function ($q) {
                     $q->select([
-                        'id', 'name', 'category_id', 'slug', 'stock_quantity',
+                        'id', 'name', 'category_id', 'slug', 'stock_quantity', 'sku',
                         'low_stock_threshold', 'is_featured', 'distributor_price', 'base_price'
                     ])->with([
                         'category:id,name,slug,parent_id',
@@ -167,7 +167,7 @@ class CartController extends Controller
         return $cart->load([
             'cartItems' => fn($q) => $q->select(['id', 'cart_id', 'product_id', 'quantity']),
             'cartItems.product' => fn($q) => $q->select([
-                'id', 'name', 'category_id', 'slug', 'stock_quantity',
+                'id', 'name', 'category_id', 'slug', 'stock_quantity', 'sku',
                 'low_stock_threshold', 'is_featured', 'distributor_price', 'base_price'
             ])->with([
                 'category:id,name,slug,parent_id',
