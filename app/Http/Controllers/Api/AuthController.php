@@ -396,7 +396,7 @@ class AuthController extends Controller
         // Check if the authenticated user's email is already verified
         $user = $request->user();
         if ($user->hasVerifiedEmail()) {
-            return response()->json(['message' => 'Email already verified.', 'user' => $user], 400);
+            return response()->json(['message' => 'Email already verified.', 'user' => $user->refresh()], 400);
         }
 
         // Send the verification email notification
