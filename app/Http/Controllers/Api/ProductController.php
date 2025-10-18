@@ -97,7 +97,7 @@ class ProductController extends Controller
 {
     $query = Product::with([
         'category:id,name,slug,parent_id',
-        'discount:product_id,value,type',
+        'discount:id,product_id,value,type',
         'images' => fn($q) => $q->select('id', 'product_id', 'path')->limit(1),
     ]);
 
