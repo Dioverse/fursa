@@ -142,7 +142,7 @@ class CheckoutController extends Controller
         $ship = $this->shippingCostLogic($user);
         if($make && (empty($ship['userAddress']??"") || empty($ship['shipCost']??""))) { return ['error'=>false, 'sp'=>true, 'message'=>"No shipping address found."]; }
         elseif (!(empty($ship['userAddress']??"") || empty($ship['shipCost']??""))) { $ship = $ship['shipCost']; }
-        else { $ship = (object) ['userAddress'=>[], 'shipCost'=>['cost' => 0, 'min_days' => 0, 'max_days' => 0]]; }
+        else { $ship = ['userAddress'=>[], 'shipCost'=>(object)['cost' => 0, 'min_days' => 0, 'max_days' => 0]]; }
 
         $shipCost = $ship['shipCost'];
 
