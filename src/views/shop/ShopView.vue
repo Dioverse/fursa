@@ -188,7 +188,7 @@
             <div ref="featuredSlider" class="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-1 py-2">
               <div :to="`/c/${product.slug}`" v-for="product in shopData.featured_products" :key="product.id"
                 class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer relative flex-shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)]">
-                <RouterLink :to="`/c/${product.slug}`">
+                <RouterLink :to="`/product/${product.slug}`">
                   <div class="aspect-square bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
                     <img :src="getImageUrl(product.images[0]?.path)" :alt="product.name" loading="lazy"
                       class="w-full h-full object-cover" @error="handleImageError">

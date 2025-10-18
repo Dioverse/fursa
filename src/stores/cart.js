@@ -155,7 +155,7 @@ export const useCartStore = defineStore('cart', () => {
 
     if (token()) await callApi('/carts/clear', {}, 'POST')
 
-    toast.success('Cart cleared')
+    // toast.success('Cart cleared')
   }
 
   // --- APPLY/REMOVE COUPON ---
