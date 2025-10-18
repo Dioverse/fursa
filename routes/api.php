@@ -69,7 +69,7 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
 
 
         Route::apiResource('admin', AdminController::class);
-        Route::get('admin-profile', function (Request $request) {
+        Route::get('profile-details', function (Request $request) {
             return $request->user();
         });
 
