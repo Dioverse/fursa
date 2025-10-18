@@ -94,106 +94,98 @@ class ProductController extends Controller
     // }
 
     public function index(Request $request): JsonResponse
-    {
-        // Base query with relations
-        $query = Product::with([
-            'category:id,name,slug,parent_id',
-            'discount:product_id,value,type',
-            'images' => fn($q) => $q->select('id', 'product_id', 'path')->limit(1),
-        ]);
+{
+    $query = Product::with([
+        'category:id,name,slug,parent_id',
+        'discount:product_id,value,type',
+        'images' => fn($q) => $q->select('id', 'product_id', 'path')->limit(1),
+    ]);
 
-        // --- CATEGORY FILTER (using slug) ---
-        if ($request->filled('category')) {
-            $categorySlug = $request->input('category');
-            $category     = Category::with('subcategories:id,parent_id,slug')
-                ->where('slug', $categorySlug)
-                ->first();
+    // --- CATEGORY FILTER (using slug) ---
+    if ($request->filled('category')) {
+        $categorySlug = $request->input('category');
+        $category = Category::with('subcategories:id,parent_id,slug')
+            ->where('slug', $categorySlug)
+            ->first();
 
-            if ($category) {
-                // Parent category → include its subcategories’ products
-                if (is_null($category->parent_id)) {
-                    $subcategoryIds = $category->subcategories->pluck('id')->toArray();
+        if ($category) {
+            // Parent category: include products from subcategories too
+            if (is_null($category->parent_id)) {
+                $subcategoryIds = $category->subcategories->pluck('id')->toArray();
 
-                    $query->where(function ($q) use ($category, $subcategoryIds) {
-                        $q->where('category_id', $category->id)
-                            ->orWhereIn('category_id', $subcategoryIds);
-                    });
-                }
-                // Subcategory → only its own products
-                else {
-                    $query->where('category_id', $category->id);
-                }
+                $query->where(function ($q) use ($category, $subcategoryIds) {
+                    $q->where('category_id', $category->id)
+                      ->orWhereIn('category_id', $subcategoryIds);
+                });
+            } else {
+                // Subcategory: only its own products
+                $query->where('category_id', $category->id);
             }
         }
+    }
 
-        // --- NAME FILTER ---
-        if ($request->filled('name')) {
-            $query->where('name', 'like', '%' . $request->input('name') . '%');
+    // --- NAME FILTER ---
+    if ($request->filled('name')) {
+        $query->where('name', 'like', '%' . $request->input('name') . '%');
+    }
+
+    // --- PRICE FILTERS ---
+    $user = auth('sanctum')->user();
+    $priceField = ($user && $user->isDistributorApprov()) ? 'distributor_price' : 'base_price';
+
+    if ($request->filled('min_price') && is_numeric($request->min_price)) {
+        $query->where($priceField, '>=', $request->min_price);
+    }
+    if ($request->filled('max_price') && is_numeric($request->max_price)) {
+        $query->where($priceField, '<=', $request->max_price);
+    }
+
+    // --- SORTING ---
+    if ($request->filled('sort_by')) {
+        switch ($request->sort_by) {
+            case 'lp': $query->orderBy($priceField, 'asc'); break;
+            case 'hp': $query->orderBy($priceField, 'desc'); break;
+            case 'if': $query->orderBy('is_featured', 'desc'); break;
         }
+    } else {
+        // Default order by latest
+        $query->latest('id');
+    }
 
-        // --- PRICE FILTERS ---
-        $priceField = 'base_price';
-        $user = auth('sanctum')->user();
-        if ($user && $user->isDistributorApprov()) {
-            $priceField = 'distributor_price';
-        }
+    // --- PAGINATION ---
+    $perPage = max(1, (int) $request->query('per_page', 30));
+    $products = $query->paginate($perPage, [
+        'id','category_id','name','slug','sku',
+        'short_description','stock_quantity',
+        'low_stock_threshold','is_featured',
+        'distributor_price','base_price',
+    ]);
 
-        if ($request->filled('min_price') && is_numeric($request->min_price)) {
-            $query->where($priceField, '>=', $request->min_price);
-        }
-        if ($request->filled('max_price') && is_numeric($request->max_price)) {
-            $query->where($priceField, '<=', $request->max_price);
-        }
+    // --- CATEGORY LIST (with subcategories) ---
+    $categories = Category::with(['subcategories' => function ($query) {
+        $query->select(['id', 'icon', 'name', 'slug', 'parent_id'])
+              ->withCount('products');
+    }])
+    ->whereNull('parent_id')
+    ->get(['id', 'icon', 'name', 'slug']);
 
-        // --- SORTING ---
-        if ($request->filled('sort_by')) {
-            switch ($request->sort_by) {
-                case 'lp': $query->orderBy($priceField, 'asc'); break;
-                case 'hp': $query->orderBy($priceField, 'desc'); break;
-                case 'if': $query->orderBy('is_featured', 'desc'); break;
-            }
-        }
-
-        // --- PAGINATION ---
-        $perPage  = max(1, (int) $request->query('per_page', 30));
-        $products = $query->paginate($perPage, [
-            'id',
-            'category_id',
-            'name',
-            'slug',
-            'sku',
-            'short_description',
-            'stock_quantity',
-            'low_stock_threshold',
-            'is_featured',
-            'distributor_price',
-            'base_price'
-        ]);
-
-        // --- CATEGORY LIST (with subcategories) ---
-        $categories = Category::with(['subcategories' => function ($query) {
-            $query->select(['id', 'image', 'name', 'slug', 'parent_id'])
-                ->withCount('products');
-        }])
-            ->whereNull('parent_id')
-            ->get(['id', 'image', 'name', 'slug']);
-
-        // --- RESPONSE ---
-        return response()->json([
-            'message' => 'Products retrieved successfully.',
-            'data' => [
-                'products' => $products,
-                'categories' => $categories,
-                'filters' => [
-                    'sort_by' => [
-                        'Highest Price' => 'hp',
-                        'Lowest Price'  => 'lp',
-                        'Featured'      => 'if',
-                    ],
+    // --- RESPONSE ---
+    return response()->json([
+        'message' => 'Products retrieved successfully.',
+        'data' => [
+            'products' => $products,
+            'categories' => $categories,
+            'filters' => [
+                'sort_by' => [
+                    'Highest Price' => 'hp',
+                    'Lowest Price'  => 'lp',
+                    'Featured'      => 'if',
                 ],
             ],
-        ]);
-    }
+        ],
+    ]);
+}
+
 
 
     public function shop(Request $request): JsonResponse
