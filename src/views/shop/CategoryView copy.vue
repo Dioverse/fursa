@@ -1,155 +1,121 @@
 <template>
   <ShopLayout>
     <div class="min-h-screen bg-gray-50">
-      <!-- BREADCRUMB -->
-      <div class="bg-transparent border-b">
+      <!-- Breadcrumb -->
+      <div class="bg-white border-b">
         <div class="max-w-7xl mx-auto px-4 py-3 text-sm text-gray-600">
-          <div class="px-4">
-            Home &gt; 
-            <span v-if="currentCategory"> {{ currentCategory.name }}</span>
-            <span v-if="currentSubcategory"> &gt; {{ currentSubcategory.name }}</span>
-          </div>
+          Home
+          <span v-if="categorySlug"> &gt; {{ categorySlug }}</span>
+          <span v-if="subcategorySlug"> &gt; {{ subcategorySlug }}</span>
         </div>
       </div>
 
-      <!-- MAIN CONTENT -->
       <div class="max-w-7xl mx-auto px-4 py-6">
         <div class="flex gap-6">
-          <!-- SIDEBAR - Desktop -->
+          <!-- Desktop Sidebar -->
           <aside class="hidden lg:block w-64 flex-shrink-0">
-            <div class="bg-white rounded-lg shadow-sm p-4 sticky top-24">
-              <!-- CATEGORIES -->
-              <div class="mb-6">
-                <h3 class="font-bold text-lg mb-4">CATEGORY</h3>
-                <div class="space-y-1">
-                  <div 
-                    v-for="cat in visibleCategories" 
-                    :key="cat.id" 
-                    class="relative category-item group">
-                    <div 
-                      class="font-semibold text-gray-800 py-2 px-3 rounded hover:bg-orange-50 cursor-pointer transition-colors flex items-center justify-between"
-                      :class="{'bg-orange-50 text-orange-600': selectedCategory === cat.id}"
-                      @click="selectCategory(cat)">
-                      <span>{{ cat.name }}</span>
-                      <svg v-if="cat.subcategories && cat.subcategories.length > 0" 
-                        class="w-4 h-4" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                    
-                    <!-- Subcategories Popup -->
-                    <div 
-                      v-if="cat.subcategories && cat.subcategories.length > 0"
-                      class="absolute left-full top-0 ml-2 bg-white border border-gray-200 rounded-lg shadow-xl z-100 min-w-[200px] py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none group-hover:pointer-events-auto">
-                      <div class="px-3 py-2 font-semibold text-gray-700 border-b border-gray-100 text-sm">
+            <div class="overflow-y-auto max-h-[calc(100vh-6rem)] bg-white rounded-lg shadow-sm p-4 sticky top-24">
+              <div class="space-y-6">
+                <!-- Name Search -->
+                <div class="pb-6 border-b">
+                  <h3 class="font-bold text-lg mb-3">SEARCH</h3>
+                  <input type="text" placeholder="Search by name..."
+                    class="w-full px-2 py-1 border border-gray-300 rounded text-sm" v-model="filters.name"
+                    @keyup.enter="state.currentPage = 1; fetchProducts(1)" />
+                </div>
+
+                <!-- Categories -->
+                <div>
+                  <h3 class="font-bold text-lg mb-4">CATEGORY</h3>
+                  <div class="space-y-1">
+                    <div v-for="cat in categories" :key="cat.id" class="group relative">
+                      <div @click="navigateToCategory(cat.slug)" :class="[
+                        'font-semibold text-gray-800 py-2 px-3 rounded cursor-pointer transition-colors',
+                        selectedCategoryId === cat.id ? 'bg-primary-100 text-primary-600' : 'hover:bg-primary-50'
+                      ]">
                         {{ cat.name }}
                       </div>
-                      <div 
-                        v-for="sub in cat.subcategories" 
-                        :key="sub.id"
-                        @click="selectSubcategory(cat, sub)"
-                        :class="{'bg-orange-50 text-orange-600': selectedSubcategory === sub.id}"
-                        class="cursor-pointer py-2 px-3 hover:bg-orange-50 text-gray-600 text-sm transition-colors">
-                        {{ sub.name }}
+
+                      <div v-if="cat.subcategories && cat.subcategories.length > 0"
+                        class="absolute left-full top-0 ml-2 bg-white border border-gray-200 rounded-lg shadow-xl min-w-[200px] py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                        <div class="px-3 py-2 font-semibold text-gray-700 border-b text-sm">
+                          {{ cat.name }}
+                        </div>
+                        <div v-for="sub in cat.subcategories" :key="sub.id" @click="navigateToSubcategory(sub.slug)"
+                          :class="[
+                            'cursor-pointer py-2 px-3 text-gray-600 text-sm transition-colors',
+                            selectedSubcategoryId === sub.id ? 'bg-primary-100 text-primary-600 font-semibold' : 'hover:bg-primary-50'
+                          ]">
+                          {{ sub.name }}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <!-- PRICE RANGE -->
-              <div class="mb-6 pb-6 border-b">
-                <h3 class="font-bold text-lg mb-3">PRICE (₦)</h3>
-                <div class="flex gap-2 mb-3">
-                  <input type="number" v-model.number="filters.priceMin" placeholder="Min"
-                    class="w-full px-2 py-1 border border-gray-300 rounded text-sm" />
-                  <span class="text-gray-500">-</span>
-                  <input type="number" v-model.number="filters.priceMax" placeholder="Max"
-                    class="w-full px-2 py-1 border border-gray-300 rounded text-sm" />
-                </div>
-                <button @click="applyFilters"
-                  class="w-full py-2 bg-orange-500 text-white rounded hover:bg-orange-600 text-sm font-semibold">
-                  Apply
-                </button>
-                
-                <!-- Price Range Options -->
-                <div class="mt-3 space-y-2">
-                  <label v-for="range in priceRanges" :key="range.label" class="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" :value="range" v-model="selectedPriceRange" @change="applyPriceRange"
-                      name="priceRange" class="w-4 h-4" />
-                    <span class="text-sm text-gray-700">{{ range.label }}</span>
-                  </label>
-                </div>
-              </div>
+                <!-- Price Range -->
+                <div class="pb-6 border-b">
+                  <h3 class="font-bold text-lg mb-3">PRICE (₦)</h3>
+                  <div class="flex gap-2 mb-3">
+                    <input type="number" placeholder="Min"
+                      class="w-full px-2 py-1 border border-gray-300 rounded text-sm" v-model.number="filters.minPrice"
+                      @change="state.currentPage = 1; fetchProducts(1)" />
+                    <span>-</span>
+                    <input type="number" placeholder="Max"
+                      class="w-full px-2 py-1 border border-gray-300 rounded text-sm" v-model.number="filters.maxPrice"
+                      @change="state.currentPage = 1; fetchProducts(1)" />
+                  </div>
 
-              <!-- DISCOUNT -->
-              <div class="mb-6 pb-6 border-b">
-                <h3 class="font-bold text-lg mb-3">DISCOUNT PERCENTAGE</h3>
-                <div class="space-y-2">
-                  <label v-for="discount in discountRanges" :key="discount.value"
-                    class="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" :value="discount.value" v-model="filters.minDiscount" @change="applyFilters"
-                      name="discount" class="w-4 h-4" />
-                    <span class="text-sm text-gray-700">{{ discount.label }}</span>
-                  </label>
+                  <div class="space-y-2">
+                    <label v-for="range in priceRanges" :key="range.label"
+                      class="flex items-center gap-2 cursor-pointer text-sm">
+                      <input type="radio" name="price" class="w-4 h-4"
+                        @change="setPrice(range.min, range.max === Infinity ? null : range.max)" />
+                      {{ range.label }}
+                    </label>
+                  </div>
                 </div>
-              </div>
 
-              <!-- PRODUCT RATING -->
-              <div class="mb-6 pb-6 border-b">
-                <h3 class="font-bold text-lg mb-3">PRODUCT RATING</h3>
-                <div class="space-y-2">
-                  <label v-for="rating in ratingOptions" :key="rating.value" class="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" :value="rating.value" v-model="filters.minRating" @change="applyFilters"
-                      name="rating" class="w-4 h-4" />
-                    <span class="flex items-center gap-1 text-sm">
-                      <span v-for="i in 5" :key="i" class="text-yellow-400">
-                        {{ i <= rating.stars ? '★' : '☆' }}
-                      </span>
-                      <span class="text-gray-700 ml-1">& above</span>
-                    </span>
-                  </label>
+                <!-- Sorting for Desktop -->
+                <div>
+                  <h3 class="font-bold text-lg mb-3">SORT BY</h3>
+                  <div class="space-y-2">
+                    <label v-for="(label, value) in sortOptions" :key="value"
+                      class="flex items-center gap-2 cursor-pointer text-sm">
+                      <input type="radio" name="sort" class="w-4 h-4" @change="handleSort(value)" />
+                      {{ label }}
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
           </aside>
 
-          <!-- MAIN PRODUCTS AREA -->
+          <!-- Main Content -->
           <main class="flex-1">
             <!-- Filter Bar -->
             <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
               <div class="flex items-center justify-between flex-wrap gap-3">
-                <div class="flex items-center gap-4 flex-wrap">
-                  
-                  <!-- Sort By Dropdown -->
-                  <div class="relative">
-                    <button @click="showSortDropdown = !showSortDropdown"
-                      class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">
-                      <span class="text-sm">{{ selectedSortLabel }}</span>
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                      </svg>
+                <div class="relative">
+                  <button @click="showSortDropdown = !showSortDropdown"
+                    class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 lg:hidden">
+                    <span class="text-sm">Sort by</span>
+                    <ChevronDownIcon class="w-4 h-4" />
+                  </button>
+
+                  <div v-if="showSortDropdown"
+                    class="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded shadow-lg z-10 min-w-[200px]">
+                    <button v-for="(label, value) in sortOptions" :key="value"
+                      @click="handleSort(value); showSortDropdown = false"
+                      class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm">
+                      {{ label }}
                     </button>
-                    <div v-if="showSortDropdown"
-                      class="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded shadow-lg z-10 min-w-[200px]">
-                      <button v-for="(value, label) in sortByOptions" :key="value" @click="selectSort(value, label)"
-                        :class="{'bg-orange-50 text-orange-600': filters.sortBy === value}"
-                        class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm">
-                        {{ label }}
-                      </button>
-                    </div>
                   </div>
                 </div>
 
                 <button @click="showMobileFilters = true"
                   class="lg:hidden flex items-center gap-2 px-4 py-2 border border-gray-300 rounded">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                  </svg>
+                  <FilterIcon class="w-4 h-4" />
                   <span class="text-sm">Filter</span>
                 </button>
               </div>
@@ -157,83 +123,142 @@
 
             <!-- Products Heading -->
             <div class="mb-4">
-              <h2 class="text-2xl font-bold text-gray-800 mb-2">
-                {{ pageTitle }}
-              </h2>
-              <p class="text-sm text-gray-600">
-                ({{ filteredProducts.length }} products found)
-              </p>
+              <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ pageTitle }}</h2>
+              <p class="text-sm text-gray-600">({{ products.length }} products found)</p>
             </div>
 
             <!-- Loading State -->
             <div v-if="loading" class="text-center py-12">
-              <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+              <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500" />
               <p class="mt-4 text-gray-600">Loading products...</p>
             </div>
 
             <!-- Error State -->
-            <div v-else-if="error" class="text-center py-12">
+            <div v-if="error" class="text-center py-12">
               <p class="text-red-500">{{ error }}</p>
+              <button @click="fetchProducts(1)"
+                class="mt-4 px-6 py-2 bg-primary-500 text-white rounded hover:bg-primary-600">
+                Retry
+              </button>
             </div>
 
             <!-- Products Grid -->
-            <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              <div v-for="product in filteredProducts" :key="product.id"
-                class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+            <div v-if="!loading && !error"
+              class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
+              <div v-for="product in products" :key="product.id"
+                class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow relative">
                 <div class="relative">
-                  <img :src="getProductImage(product)" :alt="product.name" class="w-full h-48 object-cover" />
-                  <span v-if="product.discount"
-                    class="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 text-xs rounded font-semibold">
-                    -{{ getDiscountPercentage(product) }}%
-                  </span>
-                  <button class="absolute top-2 right-2 bg-white rounded-full p-2 hover:bg-orange-50 transition-colors">
-                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  <!-- Product Image -->
+                  <img :src="getProductImage(product)" :alt="product.name"
+                    class="w-full h-48 object-cover bg-gray-200" />
+
+                  <!-- Featured Icon -->
+                  <div v-if="product.is_featured" class="absolute top-2 left-2 text-white rounded-full p-1 shadow-md"
+                    title="Featured Product">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="#d4942a" class="w-4 h-4" viewBox="0 0 24 24">
+                      <path
+                        d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 7.1-1.01L12 2z" />
                     </svg>
-                  </button>
+                  </div>
+
+                  <!-- 💸 Discount Badge -->
+                  <span v-if="product.discount"
+                    class="absolute top-2 right-2 bg-primary-500 text-white px-2 py-1 text-xs rounded font-semibold">
+                    -{{ discountLabel(product) }}
+                  </span>
                 </div>
 
-                <div class="p-4">
-                  <h3 class="text-sm text-gray-800 mb-2 line-clamp-2 h-10">
-                    {{ product.name }}
-                  </h3>
+                <!-- Product Details -->
+                <div class="px-4 pt-4">
+                  <h3 class="text-sm text-gray-800 mb-2 line-clamp-1">{{ product.name }}</h3>
+                  <p class="text-xs text-gray-500 mb-2 line-clamp-1">{{ product.short_description }}</p>
 
-                  <div class="mb-2">
+                  <div>
                     <span class="text-lg font-bold text-gray-900">
-                      ₦ {{ (product.discounted_price ?? product.price).toLocaleString() }}
+                      ₦ {{ getDisplayPrice(product) }}
                     </span>
                     <span v-if="product.discount" class="text-sm text-gray-400 line-through ml-2">
-                      ₦ {{ product.price.toLocaleString() }}
+                      ₦ {{ priceToLocale(getBasePrice(product)) }}
                     </span>
                   </div>
 
-                  <div v-if="product.rating" class="flex items-center gap-1 mb-2">
-                    <span v-for="i in 5" :key="i" class="text-yellow-400 text-xs">
-                      {{ i <= Math.floor(product.rating) ? '★' : '☆' }}
+                  <div v-if="product.stock_quantity" class="text-xs text-gray-600 line-clamp-1">
+                    <span v-if="product.low_stock_threshold && product.stock_quantity <= product.low_stock_threshold"
+                      class="text-red-500 font-semibold">
+                      Available: {{ product.stock_quantity }} (Low stock)
                     </span>
-                    <span class="text-xs text-gray-500 ml-1">({{ product.reviews || 0 }})</span>
+                    <span v-else class="invisible">Available</span>
                   </div>
+                </div>
 
-                  <button @click="addToCart(product)"
-                    class="w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600 transition-colors text-sm font-semibold">
+                <!-- Action Buttons -->
+                <div class="flex w-full space-x-2 px-4 pb-4">
+                  <!-- <button
+                    class="flex-1 bg-gold-500 text-white py-2 rounded hover:bg-gold-100 hover:text-black text-sm font-semibold">
                     Add to cart
+                  </button> -->
+                  <div>
+                    <div class="flex items-center rounded overflow-hidden">
+                      <!-- Decrement Button -->
+                      <button :disabled="loadingQuantity || quantity <= 1" @click="updateQuantity(quantity - 1)"
+                        class="px-3 py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
+                        -
+                      </button>
+
+                      <!-- Input / Loader -->
+                      <div
+                        class="w-12 text-center border-x border-gold-300 text-sm flex justify-center items-center h-[38px]">
+                        <div v-if="loadingQuantity">
+                          <svg class="animate-spin h-4 w-4 text-gold-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                          </svg>
+                        </div>
+                        <div v-else>
+                          <input type="number" v-model="quantity" min="1" @change="updateQuantity(quantity)" class="w-full text-center focus:outline-none focus:ring-0 [appearance:textfield]
+                 [&::-webkit-outer-spin-button]:appearance-none
+                 [&::-webkit-inner-spin-button]:appearance-none" />
+                        </div>
+                      </div>
+
+                      <!-- Increment Button -->
+                      <button :disabled="loadingQuantity" @click="updateQuantity(quantity + 1)"
+                        class="px-3 py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  <button
+                    class="w-1/4 bg-gold-100 text-primary py-2 rounded hover:bg-gold-500  hover:text-white text-sm font-semibold flex justify-center items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor" stroke-width="1.5" role="img" aria-label="Add to favorites">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M21.8 8.6c0 5.4-9.2 11.1-9.8 11.4a1.5 1.5 0 0 1-1 0c-.6-.3-9.8-6-9.8-11.4A5 5 0 0 1 6.8 4.5c1.6 0 3.1.8 4 2a5.1 5.1 0 0 1 4-2 5 5 0 0 1 4.9 4.1z" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
+                      role="img" aria-label="Favorited">
+                      <path
+                        d="M12.1 21.35a1.5 1.5 0 0 1-1.1-.46C4.3 14.6 2 12.3 2 9.6 2 6.9 4.2 4.7 6.9 4.7c1.6 0 3.1.8 4 2 0 0 .1.2.1.2s.1-.1.1-.2c.9-1.2 2.4-2 4-2 2.7 0 4.9 2.2 4.9 4.9 0 2.7-2.3 5-8.9 11.3a1.5 1.5 0 0 1-1.1.46z" />
+                    </svg>
                   </button>
                 </div>
               </div>
             </div>
-            <div id="infinite-scroll-trigger"></div>
 
-            <!-- Loading More Indicator -->
+
+            <div ref="observerTarget" id="scroll-trigger" />
+
             <div v-if="loadingMore" class="text-center py-8">
-              <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
-              <p class="mt-2 text-gray-600 text-sm">Loading more products...</p>
+              <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500" />
             </div>
 
-            <!-- Empty State -->
-            <div v-if="!loading && !error && filteredProducts.length === 0" class="text-center py-12">
-              <p class="text-gray-600">No products match your filters. Try adjusting your search.</p>
-              <button @click="resetFilters" class="mt-4 px-6 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">
+            <div v-if="!loading && !error && products.length === 0" class="text-center py-12">
+              <p class="text-gray-600">No products match your filters.</p>
+              <button @click="resetFilters"
+                class="mt-4 px-6 py-2 bg-primary-500 text-white rounded hover:bg-primary-600">
                 Reset Filters
               </button>
             </div>
@@ -241,54 +266,72 @@
         </div>
       </div>
 
-      <!-- Mobile Filters Overlay -->
-      <div v-if="showMobileFilters" class="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden" @click="showMobileFilters = false">
+      <!-- Mobile Filters Drawer -->
+      <div v-if="showMobileFilters" class="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden"
+        @click="showMobileFilters = false">
         <div class="fixed inset-y-0 right-0 w-80 bg-white overflow-y-auto" @click.stop>
           <div class="p-4">
             <div class="flex justify-between items-center mb-4 pb-4 border-b">
               <h3 class="font-bold text-lg">Filters</h3>
               <button @click="showMobileFilters = false">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <XIcon class="w-6 h-6" />
               </button>
             </div>
-            
-            <!-- Mobile filter content (same as desktop sidebar) -->
+
             <div class="space-y-6">
-              <!-- Price Range -->
+              <!-- Name Search in Mobile -->
+              <div class="pb-4 border-b">
+                <h3 class="font-bold text-lg mb-3">SEARCH</h3>
+                <input type="text" placeholder="Search by name..."
+                  class="w-full px-2 py-1 border border-gray-300 rounded text-sm" v-model="filters.name" />
+              </div>
+
+              <!-- Categories in Mobile -->
               <div>
-                <h4 class="font-semibold mb-2">Price Range</h4>
-                <div class="flex gap-2 mb-2">
-                  <input type="number" v-model.number="filters.priceMin" placeholder="Min"
-                    class="w-full px-2 py-1 border border-gray-300 rounded text-sm" />
+                <h3 class="font-bold text-lg mb-4">CATEGORY</h3>
+                <div class="space-y-1">
+                  <div v-for="cat in categories" :key="cat.id">
+                    <div @click="navigateToCategory(cat.slug); showMobileFilters = false" :class="[
+                      'font-semibold text-gray-800 py-2 px-3 rounded cursor-pointer transition-colors',
+                      selectedCategoryId === cat.id ? 'bg-primary-100 text-primary-600' : 'hover:bg-primary-50'
+                    ]">
+                      {{ cat.name }}
+                    </div>
+                    <div v-if="cat.subcategories && cat.subcategories.length > 0" class="ml-4 space-y-1 mt-1">
+                      <div v-for="sub in cat.subcategories" :key="sub.id"
+                        @click="navigateToSubcategory(sub.slug); showMobileFilters = false" :class="[
+                          'cursor-pointer py-2 px-3 text-gray-600 text-sm rounded transition-colors',
+                          selectedSubcategoryId === sub.id ? 'bg-primary-100 text-primary-600 font-semibold' : 'hover:bg-primary-50'
+                        ]">
+                        {{ sub.name }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Price Range in Mobile -->
+              <div class="pb-4 border-b">
+                <h3 class="font-bold text-lg mb-3">PRICE (₦)</h3>
+                <div class="flex gap-2 mb-3">
+                  <input type="number" placeholder="Min" class="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                    v-model.number="filters.minPrice" />
                   <span>-</span>
-                  <input type="number" v-model.number="filters.priceMax" placeholder="Max"
-                    class="w-full px-2 py-1 border border-gray-300 rounded text-sm" />
+                  <input type="number" placeholder="Max" class="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                    v-model.number="filters.maxPrice" />
                 </div>
               </div>
+            </div>
 
-              <!-- Discount -->
-              <div>
-                <h4 class="font-semibold mb-2">Discount</h4>
-                <div class="space-y-2">
-                  <label v-for="discount in discountRanges" :key="discount.value" class="flex items-center gap-2">
-                    <input type="radio" :value="discount.value" v-model="filters.minDiscount" name="mobile-discount" class="w-4 h-4" />
-                    <span class="text-sm">{{ discount.label }}</span>
-                  </label>
-                </div>
-              </div>
-
-              <!-- Buttons -->
-              <div class="flex gap-2 pt-4 border-t">
-                <button @click="resetFilters" class="flex-1 py-2 border border-gray-300 rounded">
-                  Reset
-                </button>
-                <button @click="applyFilters(); showMobileFilters = false"
-                  class="flex-1 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">
-                  Apply
-                </button>
-              </div>
+            <div class="flex gap-2 mt-6 pt-4 border-t">
+              <button @click="resetFilters; showMobileFilters = false"
+                class="flex-1 py-2 border border-gray-300 rounded hover:bg-gray-50">
+                Reset
+              </button>
+              <button @click="state.currentPage = 1; fetchProducts(1); showMobileFilters = false"
+                class="flex-1 py-2 bg-primary-500 text-white rounded hover:bg-primary-600">
+                Apply
+              </button>
             </div>
           </div>
         </div>
@@ -298,439 +341,367 @@
 </template>
 
 <script setup>
+import { reactive, ref, computed, onMounted, watch, nextTick } from 'vue';
 import ShopLayout from '@/layouts/ShopLayout.vue';
-import { ref, computed, onMounted, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
 
-const route = useRoute();
-const router = useRouter();
+const storageUrl = import.meta.env.VITE_STORAGE_URL || '';
+const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api';
 
-const cartCount = ref(2);
-const showSidebar = ref(false);
-const showMobileFilters = ref(false);
-const showSortDropdown = ref(false);
-const searchQuery = ref('');
-const brandSearch = ref('');
+// Icons (inline SVG components)
+const ChevronDownIcon = {
+  template: `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor" class="w-4 h-4">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M19 9l-7 7-7-7" />
+    </svg>
+  `
+}
 
-const products = ref([]);
-const allProducts = ref([]);
-const categories = ref([]);
-const sortByOptions = ref({});
-const loading = ref(true);
-const loadingMore = ref(false);
-const error = ref(null);
-const hasMore = ref(true);
-const currentPage = ref(1);
-const perPage = ref(12);
+const FilterIcon = {
+  template: `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor" class="w-4 h-4">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L15 13.414V19a1 1 0 01-.447.894l-4 2.5A1 1 0 0110 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+    </svg>
+  `
+}
 
-const selectedCategory = ref(null);
-const selectedSubcategory = ref(null);
-const currentCategory = ref(null);
-const currentSubcategory = ref(null);
-const selectedBrands = ref([]);
-const selectedPriceRange = ref(null);
-const selectedSortLabel = ref('Sort by');
+const XIcon = {
+  template: `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor" class="w-4 h-4">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  `
+}
 
-const filters = ref({
-  priceMin: null,
-  priceMax: null,
-  minDiscount: null,
-  minRating: null,
-  sortBy: null
+const HeartIcon = {
+  template: `
+    <svg xmlns="http://www.w3.org/2000/svg"
+        class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"
+        role="img" aria-label="Add to favorites">
+      <path stroke-linecap="round" stroke-linejoin="round"
+            d="M21.8 8.6c0 5.4-9.2 11.1-9.8 11.4a1.5 1.5 0 0 1-1 0c-.6-.3-9.8-6-9.8-11.4A5 5 0 0 1 6.8 4.5c1.6 0 3.1.8 4 2a5.1 5.1 0 0 1 4-2 5 5 0 0 1 4.9 4.1z"/>
+    </svg>
+  `
+}
+
+const HeartIconFilled = {
+  template: `
+    <svg xmlns="http://www.w3.org/2000/svg"
+        class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
+        role="img" aria-label="Favorited">
+      <path d="M12.1 21.35a1.5 1.5 0 0 1-1.1-.46C4.3 14.6 2 12.3 2 9.6 2 6.9 4.2 4.7 6.9 4.7c1.6 0 3.1.8 4 2 0 0 .1.2.1.2s.1-.1.1-.2c.9-1.2 2.4-2 4-2 2.7 0 4.9 2.2 4.9 4.9 0 2.7-2.3 5-8.9 11.3a1.5 1.5 0 0 1-1.1.46z"/>
+    </svg>
+  `
+}
+
+// Reactive state
+const state = reactive({
+  products: [],
+  categories: [],
+  loading: true,
+  loadingMore: false,
+  error: null,
+  currentPage: 1,
+  hasMore: true,
+  pageTitle: 'PRODUCTS',
 });
 
-const storageUrl = import.meta.env.VITE_STORAGE_URL;
-const placeholderImage = '/images/placeholder.png';
+const filters = reactive({
+  name: '',
+  minPrice: null,
+  maxPrice: null,
+  sortBy: null,
+});
 
-// Parse URL slug to extract category and subcategory
-const parseSlug = (slug) => {
-  if (!slug) return { categorySlug: null, subcategorySlug: null };
-  
-  const parts = slug.split('--');
-  if (parts.length === 2) {
-    return {
-      categorySlug: parts[0],
-      subcategorySlug: parts[1]
-    };
-  }
-  
-  return {
-    categorySlug: slug,
-    subcategorySlug: null
-  };
+const selectedCategoryId = ref(null);
+const selectedSubcategoryId = ref(null);
+const showSortDropdown = ref(false);
+const showMobileFilters = ref(false);
+const observerTarget = ref(null);
+
+const sortOptions = {
+  hp: 'Highest Price',
+  lp: 'Lowest Price',
+  if: 'Featured',
 };
 
-// Get visible categories (parent category and its subcategories if URL has category)
-const visibleCategories = computed(() => {
-  if (!currentCategory.value) {
-    // Show all top-level categories if no category is selected
-    return categories.value;
-  }
-  
-  // Show only the selected category
-  return [currentCategory.value];
-});
-
-// Page title based on current category/subcategory
-const pageTitle = computed(() => {
-  if (currentSubcategory.value) {
-    return currentSubcategory.value.name.toUpperCase();
-  }
-  if (currentCategory.value) {
-    return currentCategory.value.name.toUpperCase();
-  }
-  return 'PRODUCTS';
-});
-
-// Computed: Extract price ranges from products
-const priceRanges = computed(() => {
-  const prices = allProducts.value.map(p => p.discounted_price ?? p.price);
-  if (prices.length === 0) return [];
-  
-  const minPrice = Math.min(...prices);
-  const maxPrice = Math.max(...prices);
-  
-  const ranges = [
-    { label: `₦0 - ₦50,000`, min: 0, max: 50000 },
-    { label: `₦50,000 - ₦100,000`, min: 50000, max: 100000 },
-    { label: `₦100,000 - ₦250,000`, min: 100000, max: 250000 },
-    { label: `₦250,000 - ₦500,000`, min: 250000, max: 500000 },
-    { label: `₦500,000+`, min: 500000, max: Infinity }
-  ];
-  
-  return ranges.filter(range => range.min <= maxPrice);
-});
-
-// Computed: Extract discount ranges from products
-const discountRanges = computed(() => {
-  const discounts = allProducts.value
-    .filter(p => p.discount)
-    .map(p => getDiscountPercentage(p));
-  
-  if (discounts.length === 0) return [];
-  
-  const maxDiscount = Math.max(...discounts, 0);
-  
-  const ranges = [
-    { label: '50% or more', value: 50 },
-    { label: '40% or more', value: 40 },
-    { label: '30% or more', value: 30 },
-    { label: '20% or more', value: 20 },
-    { label: '10% or more', value: 10 }
-  ];
-  
-  return ranges.filter(range => range.value <= maxDiscount);
-});
-
-// Computed: Rating options
-const ratingOptions = [
-  { label: '4 stars & above', value: 4, stars: 4 },
-  { label: '3 stars & above', value: 3, stars: 3 },
-  { label: '2 stars & above', value: 2, stars: 2 },
-  { label: '1 star & above', value: 1, stars: 1 }
+const priceRanges = [
+  { label: '₦0 - ₦50,000', min: 0, max: 50000 },
+  { label: '₦50,000 - ₦100,000', min: 50000, max: 100000 },
+  { label: '₦100,000 - ₦250,000', min: 100000, max: 250000 },
+  { label: '₦250,000 - ₦500,000', min: 250000, max: 500000 },
+  { label: '₦500,000+', min: 500000, max: Infinity },
 ];
 
-// Computed: Filtered and sorted products
-const filteredProducts = computed(() => {
-  let result = [...allProducts.value];
+// Utility functions
+const priceToLocale = (val) => {
+  if (val == null) return '0';
+  return Number(val).toLocaleString('en-NG');
+};
 
-  // Search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    result = result.filter(p => 
-      p.name.toLowerCase().includes(query) ||
-      (p.description && p.description.toLowerCase().includes(query))
-    );
+const getBasePrice = (product) => {
+  // Backend returns base_price or distributor_price depending on user
+  return product.base_price ?? product.distributor_price ?? product.price ?? 0;
+};
+
+const getDisplayPrice = (product) => {
+  const price = getBasePrice(product);
+  if (product.discount && product.discount.type === 'percentage') {
+    const discounted = price - (price * (product.discount.value / 100));
+    return priceToLocale(discounted);
   }
+  return priceToLocale(price);
+};
 
-  // Category filter - filter by subcategory if selected, otherwise by category
-  if (selectedSubcategory.value) {
-    result = result.filter(p => p.category_id === selectedSubcategory.value);
-  } else if (selectedCategory.value) {
-    // Include products from main category and all its subcategories
-    const subcategoryIds = currentCategory.value?.subcategories?.map(sub => sub.id) || [];
-    result = result.filter(p => 
-      p.category_id === selectedCategory.value || subcategoryIds.includes(p.category_id)
-    );
-  }
+const discountLabel = (product) => {
+  const d = product.discount;
+  if (!d) return '';
+  if (d.type === 'percentage') return `${d.value}%`;
+  return '0%';
+};
 
-  // Brand filter
-  if (selectedBrands.value.length > 0) {
-    result = result.filter(p => selectedBrands.value.includes(p.brand));
-  }
-
-  // Price filter
-  if (filters.value.priceMin !== null || filters.value.priceMax !== null) {
-    result = result.filter(p => {
-      const price = p.discounted_price ?? p.price;
-      const min = filters.value.priceMin ?? 0;
-      const max = filters.value.priceMax ?? Infinity;
-      return price >= min && price <= max;
-    });
-  }
-
-  // Discount filter
-  if (filters.value.minDiscount) {
-    result = result.filter(p => {
-      if (!p.discount) return false;
-      return getDiscountPercentage(p) >= filters.value.minDiscount;
-    });
-  }
-
-  // Rating filter
-  if (filters.value.minRating) {
-    result = result.filter(p => (p.rating || 0) >= filters.value.minRating);
-  }
-
-  // Sorting
-  if (filters.value.sortBy) {
-    switch (filters.value.sortBy) {
-      case 'hp': // Highest Price
-        result.sort((a, b) => (b.discounted_price ?? b.price) - (a.discounted_price ?? a.price));
-        break;
-      case 'lp': // Lowest Price
-        result.sort((a, b) => (a.discounted_price ?? a.price) - (b.discounted_price ?? b.price));
-        break;
-      case 'if': // Featured
-        result.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-        break;
-    }
-  }
-
-  return result;
-});
-
-// Methods
 const getProductImage = (product) => {
   if (product.images && product.images.length > 0) {
     return storageUrl + product.images[0].path;
   }
-  return placeholderImage;
+  return '/placeholder.png';
 };
 
-const getDiscountPercentage = (product) => {
-  if (!product.discount) return 0;
-  
-  if (product.discount.type === 'percentage') {
-    return Number(product.discount.value);
-  } else {
-    // Calculate percentage from fixed amount
-    return Math.round((product.discount.value / product.price) * 100);
+const buildQueryParams = () => {
+  const params = new URLSearchParams();
+
+  if (selectedCategoryId.value) {
+    params.append('category', selectedCategoryId.value);
   }
-};
-
-const applyPriceRange = () => {
-  if (selectedPriceRange.value) {
-    filters.value.priceMin = selectedPriceRange.value.min;
-    filters.value.priceMax = selectedPriceRange.value.max === Infinity ? null : selectedPriceRange.value.max;
-    applyFilters();
+  if (selectedSubcategoryId.value) {
+    params.append('category', selectedSubcategoryId.value);
   }
-};
-
-const applyFilters = () => {
-  // Filters are reactive, so this just triggers recomputation
-  showMobileFilters.value = false;
-};
-
-const resetFilters = () => {
-  filters.value = {
-    priceMin: null,
-    priceMax: null,
-    minDiscount: null,
-    minRating: null,
-    sortBy: null
-  };
-  selectedBrands.value = [];
-  selectedPriceRange.value = null;
-  searchQuery.value = '';
-  selectedSortLabel.value = 'Sort by';
-};
-
-const selectSort = (value, label) => {
-  filters.value.sortBy = value;
-  selectedSortLabel.value = label;
-  showSortDropdown.value = false;
-};
-
-const selectCategory = (category) => {
-  const slug = category.slug || category.name.toLowerCase().replace(/\s+/g, '-');
-  router.push(`/shop/${slug}`);
-};
-
-const selectSubcategory = (category, subcategory) => {
-  const categorySlug = category.slug || category.name.toLowerCase().replace(/\s+/g, '-');
-  const subcategorySlug = subcategory.slug || subcategory.name.toLowerCase().replace(/\s+/g, '-');
-  router.push(`/shop/${categorySlug}--${subcategorySlug}`);
-};
-
-const addToCart = (product) => {
-  cartCount.value++;
-  console.log('Added to cart:', product.name);
-};
-
-// Initialize from URL
-const initializeFromUrl = () => {
-  const { categorySlug, subcategorySlug } = parseSlug(route.params.slug);
-  
-  if (!categorySlug) {
-    // No category in URL, show all products
-    selectedCategory.value = null;
-    selectedSubcategory.value = null;
-    currentCategory.value = null;
-    currentSubcategory.value = null;
-    return;
+  if (filters.name) {
+    params.append('name', filters.name);
   }
-  
-  // Find category by slug
-  const category = categories.value.find(cat => 
-    (cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-')) === categorySlug
-  );
-  
-  if (!category) {
-    console.error('Category not found:', categorySlug);
-    return;
+  if (filters.minPrice != null) {
+    params.append('min_price', filters.minPrice);
   }
-  
-  currentCategory.value = category;
-  selectedCategory.value = category.id;
-  
-  // If subcategory slug exists, find and select it
-  if (subcategorySlug && category.subcategories) {
-    const subcategory = category.subcategories.find(sub => 
-      (sub.slug || sub.name.toLowerCase().replace(/\s+/g, '-')) === subcategorySlug
-    );
-    
-    if (subcategory) {
-      currentSubcategory.value = subcategory;
-      selectedSubcategory.value = subcategory.id;
-    } else {
-      console.error('Subcategory not found:', subcategorySlug);
-      currentSubcategory.value = null;
-      selectedSubcategory.value = null;
-    }
-  } else {
-    currentSubcategory.value = null;
-    selectedSubcategory.value = null;
+  if (filters.maxPrice != null) {
+    params.append('max_price', filters.maxPrice);
   }
+  if (filters.sortBy) {
+    params.append('sort_by', filters.sortBy);
+  }
+  params.append('page', state.currentPage);
+  params.append('per_page', 24);
+
+  return params.toString();
 };
 
-// Watch route changes
-watch(() => route.params.slug, () => {
-  if (categories.value.length > 0) {
-    initializeFromUrl();
-    // Reset to first page when category changes
-    currentPage.value = 1;
-    fetchProducts(1);
-  }
-});
-
-// Fetch data
-onMounted(async () => {
+// Fetch products from API
+const fetchProducts = async (page = 1, isLoadMore = false) => {
   try {
-    await fetchProducts();
-    initializeFromUrl();
-    setupInfiniteScroll();
-  } catch (err) {
-    console.error('Error fetching products:', err);
-    error.value = 'Failed to load products.';
-    loading.value = false;
-  }
-});
+    if (!isLoadMore) state.loading = true;
+    else state.loadingMore = true;
 
-// Fetch products function
-const fetchProducts = async (page = 1) => {
-  try {
-    if (page === 1) {
-      loading.value = true;
+    state.currentPage = page;
+
+    const queryString = buildQueryParams();
+    const res = await fetch(`${apiUrl}/products?${queryString}`);
+
+    if (!res.ok) throw new Error('Failed to fetch products');
+
+    const response = await res.json();
+
+    const newProducts = response.data.products.data || [];
+    const hasMore = response.data.products.current_page < response.data.products.last_page;
+
+    if (isLoadMore) {
+      state.products = [...state.products, ...newProducts];
     } else {
-      loadingMore.value = true;
-    }
-
-    // Build query params
-    const params = new URLSearchParams({
-      per_page: perPage.value,
-      page: page
-    });
-
-    // Add category filter if present
-    if (selectedSubcategory.value) {
-      params.append('category_id', selectedSubcategory.value);
-    } else if (selectedCategory.value) {
-      params.append('category_id', selectedCategory.value);
-    }
-
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/products?${params}`);
-    const json = await res.json();
-
-    const newProducts = json.data?.products?.data || [];
-    
-    if (page === 1) {
-      allProducts.value = newProducts;
-      categories.value = json.data?.categories || [];
-      sortByOptions.value = json.data?.filters?.sort_by || {};
-    } else {
-      allProducts.value = [...allProducts.value, ...newProducts];
-    }
-
-    // Check if there are more pages
-    const pagination = json.data?.products;
-    hasMore.value = pagination?.current_page < pagination?.last_page;
-    currentPage.value = pagination?.current_page || page;
-
-  } catch (err) {
-    console.error('Error fetching products:', err);
-    error.value = 'Failed to load products.';
-    throw err;
-  } finally {
-    loading.value = false;
-    loadingMore.value = false;
-  }
-};
-
-// Setup infinite scroll
-const setupInfiniteScroll = () => {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      const target = entries[0];
-      if (target.isIntersecting && !loadingMore.value && hasMore.value) {
-        loadMoreProducts();
+      state.products = [];
+      state.products = newProducts;
+      if (response.data.categories) {
+        state.categories = response.data.categories;
       }
-    },
-    {
-      root: null,
-      rootMargin: '200px',
-      threshold: 0.1
     }
-  );
 
-  // Observe the loading trigger element
-  const trigger = document.getElementById('infinite-scroll-trigger');
-  if (trigger) {
-    observer.observe(trigger);
+    state.hasMore = hasMore;
+    state.loading = false;
+    state.loadingMore = false;
+    state.error = null;
+  } catch (err) {
+    state.error = 'Failed to load products';
+    state.loading = false;
+    state.loadingMore = false;
+    console.error('Fetch error:', err);
   }
 };
 
-// Load more products
-const loadMoreProducts = async () => {
-  if (loadingMore.value || !hasMore.value) return;
-  
-  await fetchProducts(currentPage.value + 1);
-};
-
-// Close dropdowns when clicking outside
+// Initialize on mount
 onMounted(() => {
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.relative')) {
-      showSortDropdown.value = false;
+  // Extract slug from URL (format: /c/category--subcategory or /c/category)
+  const pathname = window.location.pathname;
+  const match = pathname.match(/\/shop\/c\/(.+)?$/);
+  const slug = (match && match[1]) || '';
+
+  if (slug) {
+    const parts = slug.split('--');
+    const categorySlug = parts[0];
+    const subcategorySlug = parts[1] || null;
+
+    // Find category ID by slug
+    const category = state.categories.find(c => c.slug === categorySlug);
+    if (category) {
+      selectedCategoryId.value = category.id;
+      state.pageTitle = categorySlug.replace(/-/g, ' ').toUpperCase();
+
+      // Find subcategory ID if provided
+      if (subcategorySlug) {
+        const subcategory = category.subcategories?.find(s => s.slug === subcategorySlug);
+        if (subcategory) {
+          selectedSubcategoryId.value = subcategory.id;
+          state.pageTitle = subcategorySlug.replace(/-/g, ' ').toUpperCase();
+        }
+      }
     }
+  }
+
+  // Load all products (with or without filters from URL)
+  fetchProducts(1).then(() => {
+    nextTick(() => setupObserver());
   });
 });
+
+// Infinite scroll setup
+let observer;
+const setupObserver = () => {
+  if (observer) observer.disconnect();
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0].isIntersecting && !state.loadingMore && state.hasMore) {
+        const nextPage = state.currentPage + 1;
+        fetchProducts(nextPage, true);
+      }
+    },
+    { rootMargin: '200px' }
+  );
+
+  if (observerTarget.value) observer.observe(observerTarget.value);
+};
+
+// Filter handlers
+const handleSort = (value) => {
+  filters.sortBy = value;
+  state.currentPage = 1;
+  fetchProducts(1);
+};
+
+const setPrice = (min, max) => {
+  filters.minPrice = min;
+  filters.maxPrice = max;
+  state.currentPage = 1;
+  fetchProducts(1);
+};
+
+const navigateToCategory = (categorySlug) => {
+  selectedCategoryId.value = categorySlug;
+  selectedSubcategoryId.value = null;
+  state.pageTitle = categorySlug.replace(/-/g, ' ').toUpperCase();
+  state.currentPage = 1;
+  resetFilters(false);
+  fetchProducts(1);
+};
+
+const navigateToSubcategory = (subcategorySlug) => {
+  selectedSubcategoryId.value = subcategorySlug;
+  state.pageTitle = subcategorySlug.replace(/-/g, ' ').toUpperCase();
+  state.currentPage = 1;
+  resetFilters(false);
+  fetchProducts(1);
+};
+
+const resetFilters = (fetchData = true) => {
+  filters.name = '';
+  filters.minPrice = null;
+  filters.maxPrice = null;
+  filters.sortBy = null;
+  state.currentPage = 1;
+
+  if (fetchData) fetchProducts(1);
+};
+
+// Computed properties
+const products = computed(() => state.products);
+const categories = computed(() => state.categories);
+const loading = computed(() => state.loading);
+const loadingMore = computed(() => state.loadingMore);
+const error = computed(() => state.error);
+const pageTitle = computed(() => state.pageTitle);
+const categorySlug = computed(() => {
+  if (selectedSubcategoryId.value) return null;
+  const cat = state.categories.find(c => c.id === selectedCategoryId.value);
+  return cat ? cat.slug : null;
+});
+const subcategorySlug = computed(() => {
+  if (!selectedSubcategoryId.value) return null;
+  for (const cat of state.categories) {
+    const sub = cat.subcategories?.find(s => s.id === selectedSubcategoryId.value);
+    if (sub) return sub.slug;
+  }
+  return null;
+});
+
+const quantity = ref(1)
+const loadingQuantity = ref(false)
+// Disable all buttons/links globally during update
+const togglePageInteractivity = (disable) => {
+  const elements = document.querySelectorAll('button, a')
+  elements.forEach(el => {
+    if (disable) el.setAttribute('disabled', true)
+    else el.removeAttribute('disabled')
+  })
+}
+
+const updateQuantity = async (newQty) => {
+  if (loadingQuantity.value || newQty < 1) return
+
+  loadingQuantity.value = true
+  togglePageInteractivity(true)
+
+  try {
+    const res = await fetch(`/api/cart/update`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product_id: 123, quantity: newQty }),
+    })
+
+    if (!res.ok) throw new Error('Failed to update quantity')
+
+    // On success
+    quantity.value = newQty
+  } catch (err) {
+    console.error('Error updating quantity:', err)
+  } finally {
+    loadingQuantity.value = false
+    togglePageInteractivity(false)
+  }
+}
 </script>
 
-<style scoped>
+<style>
 .line-clamp-2 {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

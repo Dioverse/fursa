@@ -62,7 +62,7 @@
           <div class="max-w-7xl max-h-full mx-auto flex flex-col lg:flex-row gap-6">
             <!-- Sidebar -->
             <div class="w-full lg:w-56 bg-white shadow-md flex-shrink-0 rounded">
-              <RouterLink :to="`/shop/categories`" class="flex items-center font-bold gap-3 p-2 bg-gray-100 rounded cursor-pointer transition-colors">
+              <RouterLink :to="`/categories`" class="flex items-center font-bold gap-3 p-2 bg-gray-100 rounded cursor-pointer transition-colors">
                 Categories
               </RouterLink>
               <hr>

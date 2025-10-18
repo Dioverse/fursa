@@ -1,3 +1,4 @@
+// /stores/cart.js
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 import { useToast } from 'vue-toastification'
@@ -7,23 +8,25 @@ const toNumber = v => (v === null || v === undefined ? 0 : Number(v))
 
 export const useCartStore = defineStore('cart', () => {
   const toast = useToast()
+
+  // --- STATE ---
   const items = ref([])
   const couponCode = ref('')
   const discount = ref(0)
   const shippingRate = ref(9.50)
-  const taxRate = ref(0) //0.075
+  const taxRate = ref(0)
   const freeShippingThreshold = ref(5000)
   const loading = ref(false)
 
   const token = () => localStorage.getItem('token')
 
-  // ✅ Load from localStorage
+  // --- LOAD LOCAL CART IF AVAILABLE ---
   const savedCart = localStorage.getItem('cart')
   if (savedCart) {
     try { items.value = JSON.parse(savedCart) } catch (e) { items.value = [] }
   }
 
-  // ✅ Computed properties
+  // --- COMPUTED ---
   const itemCount = computed(() =>
     items.value.reduce((total, i) => total + (toNumber(i.quantity) || 0), 0)
   )
@@ -32,11 +35,19 @@ export const useCartStore = defineStore('cart', () => {
     items.value.reduce((sum, i) => sum + (toNumber(i.price) * toNumber(i.quantity)), 0)
   )
 
-  const shipping = computed(() => (shippingRate.value))
-  const tax = computed(() => Number(((subtotal.value + shipping.value) * taxRate.value).toFixed(2)))
-  const totalPrice = computed(() => Number((subtotal.value + shipping.value + tax.value - toNumber(discount.value)).toFixed(2)))
+  const shipping = computed(() =>
+    subtotal.value > freeShippingThreshold.value ? 0 : shippingRate.value
+  )
 
-  // ✅ API helper
+  const tax = computed(() =>
+    Number(((subtotal.value + shipping.value) * taxRate.value).toFixed(2))
+  )
+
+  const totalPrice = computed(() =>
+    Number((subtotal.value + shipping.value + tax.value - toNumber(discount.value)).toFixed(2))
+  )
+
+  // --- API HELPER ---
   async function callApi(endpoint, payload = null, method = 'POST') {
     if (!token()) return null
 
@@ -56,12 +67,18 @@ export const useCartStore = defineStore('cart', () => {
       return data
     } catch (err) {
       console.error('❌ API call failed:', err)
-      toast.error('Cart sync failed. Please try again.')
+      // toast.error('Cart sync failed. Please try again.')
       return null
     }
   }
 
-  // ✅ Add item
+  // --- SAVE LOCAL CART ---
+  function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(items.value))
+  }
+  watch(items, saveCart, { deep: true })
+
+  // --- ADD ITEM ---
   async function addItem(product, quantity = 1) {
     try {
       const qty = Math.max(1, Number(quantity))
@@ -76,14 +93,15 @@ export const useCartStore = defineStore('cart', () => {
           price: Number(product.discountedPrice || product.price),
           sku: product.sku || '',
           image: product.image || null,
-          volume: product.volume || '5 Litres',
           quantity: qty,
         })
       }
 
-      // ✅ sync with backend
+      // --- Sync with backend ---
       if (token()) {
-        await callApi('/carts', { cart: [{ product_id: product.id, quantity: existing ? existing.quantity : qty }] })
+        const payload = { cart: [{ product_id: product.id, quantity: qty }] }
+        const data = await callApi('/carts', payload, 'POST')
+        if (data?.cart) items.value = data.cart
       }
 
       saveCart()
@@ -94,7 +112,7 @@ export const useCartStore = defineStore('cart', () => {
     }
   }
 
-  // ✅ Remove item
+  // --- REMOVE ITEM ---
   async function removeItem(productId) {
     const index = items.value.findIndex(i => i.id === productId)
     if (index === -1) return
@@ -103,43 +121,44 @@ export const useCartStore = defineStore('cart', () => {
     saveCart()
 
     if (token()) {
-      await callApi('/carts/rm', { cart: [{ product_id: productId, quantity: 0 }] })
+      const data = await callApi('/carts/rm', { product_id: productId }, 'POST')
+      if (data?.cart) items.value = data.cart
     }
 
     toast.success(`${removed.name} removed from cart`)
   }
 
-  // ✅ Update quantity
+  // --- UPDATE QUANTITY ---
   async function updateQuantity(productId, quantity) {
     const item = items.value.find(i => i.id === productId)
     if (!item) return toast.error('Item not found')
+
     if (quantity <= 0) return removeItem(productId)
 
     item.quantity = parseInt(quantity)
     saveCart()
 
     if (token()) {
-      await callApi('/carts', { cart: [{ product_id: productId, quantity: item.quantity }] })
+      const data = await callApi('/carts/update', { product_id: productId, quantity }, 'POST')
+      if (data?.cart) items.value = data.cart
     }
 
     toast.success(`Updated ${item.name} quantity`)
   }
 
-  // ✅ Clear cart
+  // --- CLEAR CART ---
   async function clearCart() {
     items.value = []
     discount.value = 0
     couponCode.value = ''
     saveCart()
 
-    if (token()) {
-      await callApi('/carts/clear', { cart: [] })
-    }
+    if (token()) await callApi('/carts/clear', {}, 'POST')
 
     toast.success('Cart cleared')
   }
 
-  // ✅ Apply coupon
+  // --- APPLY/REMOVE COUPON ---
   function applyCoupon(code) {
     if (code === 'SAVE10') {
       discount.value = subtotal.value * 0.1
@@ -156,18 +175,12 @@ export const useCartStore = defineStore('cart', () => {
     toast.info('Coupon removed')
   }
 
-  // ✅ Save to localStorage
-  function saveCart() {
-    localStorage.setItem('cart', JSON.stringify(items.value))
-  }
-  watch(items, saveCart, { deep: true })
-
-  // ✅ Fetch cart from backend (used in dashboard)
+  // --- FETCH CART FROM SERVER ---
   async function fetchCartFromServer() {
     if (!token()) return
     loading.value = true
     try {
-      const data = await callApi('/checkout/init', null, 'GET')
+      const data = await callApi('/carts', null, 'GET')
       if (data?.cart) {
         items.value = data.cart
         saveCart()
@@ -179,7 +192,7 @@ export const useCartStore = defineStore('cart', () => {
     }
   }
 
-  // ✅ Sync cart after login (called from dashboard)
+  // --- SYNC LOCAL CART AFTER LOGIN ---
   async function syncCart() {
     if (!token()) return
 
@@ -187,14 +200,14 @@ export const useCartStore = defineStore('cart', () => {
       const payload = {
         cart: items.value.map(i => ({
           product_id: i.id,
-          quantity: i.quantity
-        }))
+          quantity: i.quantity,
+        })),
       }
       await callApi('/carts', payload, 'POST')
       await fetchCartFromServer()
-      toast.success('Cart synchronized successfully')
+      // toast.success('Cart synchronized successfully')
     } catch (err) {
-      console.error('Cart sync failed:', err)
+      // console.error('Cart sync failed:', err)
     }
   }
 
@@ -211,10 +224,9 @@ export const useCartStore = defineStore('cart', () => {
     removeItem,
     updateQuantity,
     clearCart,
-    loadCart: () => { items.value = JSON.parse(localStorage.getItem('cart') || '[]') },
-    fetchCartFromServer,
     applyCoupon,
     removeCoupon,
+    fetchCartFromServer,
     syncCart,
   }
 })

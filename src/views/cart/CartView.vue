@@ -4,7 +4,7 @@
       <h1 class="text-3xl font-bold mb-8">Cart</h1>
 
       <!-- Loading -->
-      <div v-if="loading" class="text-center py-10">
+      <div v-if="cartStore.loading" class="text-center py-10">
         <font-awesome-icon icon="spinner" spin class="text-primary text-3xl" />
         <p class="mt-3 text-gray-600">Loading your cart...</p>
       </div>
@@ -77,7 +77,6 @@
 
     <!-- Bottom CTA -->
     <CTA />
-
     <!-- Brochure -->
     <Brochure />
   </DefaultLayout>
@@ -94,79 +93,30 @@ import Brochure from '@/components/common/Brochure.vue'
 import CTA from '@/components/common/CTA.vue'
 import { useCartStore } from '@/stores/cart'
 import { useAuthStore } from '@/stores/auth'
-import api from '@/services/api'
 
 const cartStore = useCartStore()
 const authStore = useAuthStore()
 const toast = useToast()
-
 const couponCode = ref('')
-const loading = ref(false)
 
-const loadCart = async () => {
-  loading.value = true
-  try {
-    if (authStore.isAuthenticated) {
-      // Fetch cart from server
-      const { data } = await api.get('/carts')
-
-      if (Array.isArray(data) && data.length > 0) {
-        cartStore.items = data.map((item) => {
-          const product = item.product || {}
-          const image =
-            product.images && product.images.length > 0
-            //   ? `${import.meta.env.VITE_API_BASE_URL}/storage/${product.images[0].path}`
-              ? `${product.images[0].path}`
-              : '/images/oil-droplet.jpg'
-
-          return {
-            id: Number(product.id),
-            name: product.name || 'Unnamed Product',
-            price: Number(product.discounted_price ?? product.price ?? 0),
-            quantity: Number(item.quantity ?? 1),
-            sku: product.slug || '',
-            image,
-            volume: product.volume || '',
-          }
-        })
-        cartStore.saveCart()
-        toast.success('Cart loaded from server')
-      } else {
-        cartStore.clearCart()
-        toast.info('Your cart is empty')
-      }
-    } else {
-      // Load from localStorage
-      cartStore.loadCart()
-      if (cartStore.items.length > 0) {
-        toast.info('Loaded cart from local storage')
-      }
-    }
-  } catch (error) {
-    console.error('Error loading cart:', error)
-    toast.error('Unable to load cart. Please try again.')
-  } finally {
-    loading.value = false
-  }
-}
-
+// --- Apply Coupon ---
 const applyCoupon = () => {
-  if (couponCode.value.trim().toUpperCase() === 'SAVE10') {
-    toast.success('Coupon applied successfully! 10% discount added.')
-  } else {
-    toast.error('Invalid coupon code')
-  }
+  if (!couponCode.value.trim()) return toast.error('Enter a coupon code')
+  cartStore.applyCoupon(couponCode.value.trim().toUpperCase())
   couponCode.value = ''
 }
 
+// --- Clear Cart ---
 const clearCart = () => {
   if (confirm('Are you sure you want to clear your cart?')) {
     cartStore.clearCart()
-    toast.success('Cart cleared')
   }
 }
 
-onMounted(() => {
-  loadCart()
+// --- Load Cart on Mount ---
+onMounted(async () => {
+  if (authStore.isAuthenticated) {
+    await cartStore.fetchCartFromServer()
+  }
 })
 </script>

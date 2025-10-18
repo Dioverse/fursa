@@ -90,13 +90,19 @@ const router = createRouter({
       meta: { title: 'Shop' },
     },
     {
-      path: '/shop/categories',
-      name: 'categories& subcategories',
+      path: '/categories',
+      name: 'categories & subcategories',
       component: Categories,
       meta: { title: 'Categories'},
     },
     {
-      path: '/shop/c/:slug',
+      path: '/c/:slug',
+      name: 'category',
+      component: CategoryView,
+      meta: { title: 'Category' },
+    },
+    {
+      path: '/c',
       name: 'category',
       component: CategoryView,
       meta: { title: 'Category' },

@@ -132,7 +132,7 @@ async function syncCart() {
       }
 
       await api.post('/carts', payload)
-      toast.success('Cart synchronized with server')
+      // toast.success('Cart synchronized with server')
     }
 
     // Fetch fresh cart from server to overwrite local copy
@@ -150,7 +150,7 @@ async function syncCart() {
       cartStore.saveCart()
     }
   } catch (error) {
-    console.error('Cart sync failed:', error)
+    // console.error('Cart sync failed:', error)
     toast.error('Failed to synchronize cart')
   }
 }

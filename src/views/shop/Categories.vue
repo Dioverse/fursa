@@ -36,7 +36,7 @@
               class="category-card"
             >
               <!-- Category Header -->
-              <RouterLink :to="`/shop/c/${category.slug}`" class="category-header">
+              <RouterLink :to="`/c/${category.slug}`" class="category-header">
                 <div class="category-image">
                   <img
                     v-if="category.image"
