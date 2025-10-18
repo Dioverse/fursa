@@ -217,7 +217,7 @@ class ProductController extends Controller
             'base_price'          => 'sometimes|numeric|min:0',
             'distributor_price'   => 'sometimes|numeric|min:0',
             'low_stock_threshold' => 'nullable|integer|min:0',
-            'sku'                 => 'required|unique:products,sku'
+            'sku'                 => 'required|unique:products,sku,'.$id.',id'
         ]);
 
         $data = $request->only([
