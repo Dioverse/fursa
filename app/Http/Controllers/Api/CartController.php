@@ -61,13 +61,18 @@ class CartController extends Controller
         $addedCount = 0;
 
         foreach ($validated['cart'] as $item) {
-            $addedCount++;
+            $cartItem = $cart->cartItems()->where('product_id', $item['product_id'])->first();
 
-            // Add or update quantity for product
-            $cart->cartItems()->updateOrCreate(
-                ['product_id' => $item['product_id']],
-                ['quantity'   => DB::raw("quantity + {$item['quantity']}")]
-            );
+            if ($cartItem) {
+                // Item exists, increment quantity
+                $cartItem->increment('quantity', $item['quantity']);
+            } else {
+                // Item does not exist, create it with the requested quantity
+                $cart->cartItems()->create([
+                    'product_id' => $item['product_id'],
+                    'quantity'   => $item['quantity'],
+                ]);
+            }
         }
 
         // Always return updated cart with full product relations
