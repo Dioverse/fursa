@@ -129,6 +129,17 @@ class ProductController extends Controller
             $query->where('name', 'like', '%' . $request->input('name') . '%');
         }
 
+        // --- TAGS FILTER ---
+        if ($request->filled('tags')) {
+            $tags = array_map('trim', explode(',', $request->input('tags')));
+            
+            $query->where(function ($q) use ($tags) {
+                foreach ($tags as $tag) {
+                    $q->orWhereJsonContains('tags', $tag);
+                }
+            });
+        }
+
         // --- PRICE FILTERS ---
         $user = auth('sanctum')->user();
         $priceField = ($user && $user->isDistributorApprov()) ? 'distributor_price' : 'base_price';
@@ -161,6 +172,20 @@ class ProductController extends Controller
             'distributor_price','base_price',
         ]);
 
+        // --- FETCH UNIQUE TAGS FOR FILTER LIST ---
+        // Note: This relies on your 'tags' column being a JSON field.
+        $uniqueTags = DB::table('products')
+            ->whereNotNull('tags')
+            ->pluck('tags')
+            ->flatMap(function ($tagArray) {
+                // Laravel's pluck will return a JSON string, so decode it
+                return json_decode($tagArray, true) ?? [];
+            })
+            ->unique()
+            ->values()
+            ->all();
+
+
         // --- CATEGORY LIST (with subcategories) ---
         $categories = Category::with(['subcategories' => function ($query) {
             $query->select(['id', 'icon', 'name', 'slug', 'parent_id'])
@@ -175,6 +200,7 @@ class ProductController extends Controller
             'data' => [
                 'products' => $products,
                 'categories' => $categories,
+                'available_tags' => $uniqueTags, // <-- NEW LIST OF TAGS
                 'filters' => [
                     'sort_by' => [
                         'Highest Price' => 'hp',
