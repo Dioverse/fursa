@@ -53,36 +53,64 @@ class CartController extends Controller
 
         $user = Auth::user();
 
-        // Ensure the user has a cart (or create it)
+        // Ensure the user has a cart
         $cart = $user->cart()->firstOrCreate([
             'user_id' => $user->id,
         ]);
 
-        $addedCount = 0;
+        $productIds = collect($validated['cart'])->pluck('product_id');
+
+        // Fetch all existing items at once
+        $existingItems = $cart->cartItems()
+            ->whereIn('product_id', $productIds)
+            ->get()
+            ->keyBy('product_id');
+
+        $toInsert = [];
+        $toUpdate = [];
 
         foreach ($validated['cart'] as $item) {
-            $cartItem = $cart->cartItems()->where('product_id', $item['product_id'])->first();
+            $productId = $item['product_id'];
+            $quantity  = $item['quantity'];
 
-            if ($cartItem) {
-                // Item exists, increment quantity
-                $cartItem->increment('quantity', $item['quantity']);
+            if ($existingItems->has($productId)) {
+                // Prepare for update
+                $existingItem = $existingItems[$productId];
+                $existingItem->quantity = $quantity;
+                $toUpdate[] = $existingItem;
             } else {
-                // Item does not exist, create it with the requested quantity
-                $cart->cartItems()->create([
-                    'product_id' => $item['product_id'],
-                    'quantity'   => $item['quantity'],
-                ]);
+                // Prepare for insert
+                $toInsert[] = [
+                    'cart_id'    => $cart->id,
+                    'product_id' => $productId,
+                    'quantity'   => $quantity,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
         }
 
-        // Always return updated cart with full product relations
+        // ✅ Batch update (via collection)
+        if (!empty($toUpdate)) {
+            foreach ($toUpdate as $item) {
+                $item->save();
+            }
+        }
+
+        // ✅ Batch create
+        if (!empty($toInsert)) {
+            $cart->cartItems()->insert($toInsert);
+        }
+
+        // Return updated cart
         $cart = $this->cartWithRelations($cart);
 
         return response()->json([
-            'message' => ($addedCount > 1 ? 'Items' : 'Item') . ' added to cart successfully',
+            'message' => 'Cart updated successfully',
             'cart'    => $cart->cartItems,
         ], 201);
     }
+
 
     public function unSetItem(Request $request)
     {
