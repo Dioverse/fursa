@@ -4,19 +4,19 @@
 
         <div class="space-y-3 mb-6">
             <div class="flex justify-between">
+                <span class="text-gray-600">Total</span>
+                <span class="font-semibold">₦{{ totalAtOriginalPrice.toLocaleString() }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">Discount</span>
+                <span class="font-semibold text-[red]">₦{{ totalSaved.toLocaleString() }}</span>
+            </div>
+            <div class="flex justify-between">
                 <span class="text-gray-600">Subtotal</span>
                 <span class="font-semibold">₦{{ subtotal.toLocaleString() }}</span>
             </div>
-            <div class="flex justify-between">
-                <span class="text-gray-600">Shipping</span>
-                <span class="font-semibold">₦{{ shipping.toLocaleString() }}</span>
-            </div>
-            <div class="flex justify-between">
-                <span class="text-gray-600">Tax</span>
-                <span class="font-semibold">₦{{ tax.toLocaleString() }}</span>
-            </div>
 
-            <div class="pt-3 border-t">
+            <!-- <div class="pt-3 border-t">
                 <div class="flex items-center gap-2 mb-3">
                     <font-awesome-icon icon="tag" class="text-primary" />
                     <span class="text-sm">Have a coupon?</span>
@@ -28,7 +28,7 @@
                         Apply
                     </button>
                 </div>
-            </div>
+            </div> -->
 
             <div v-if="discount > 0" class="flex justify-between text-green-600">
                 <span>Discount</span>
@@ -80,6 +80,8 @@ const couponCode = ref('')
 const discount = ref(0)
 
 const subtotal = computed(() => cartStore.subtotal)
+const totalSaved = computed(() => cartStore.totalSaved)
+const totalAtOriginalPrice = computed(() => cartStore.totalAtOriginalPrice)
 const shipping = computed(() => cartStore.shipping)
 const tax = computed(() => cartStore.tax)
 const total = computed(() => cartStore.totalPrice)

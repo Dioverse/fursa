@@ -30,7 +30,7 @@
             </div>
 
             <!-- Coupon -->
-            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+            <!-- <div class="mt-6 p-4 bg-gray-50 rounded-lg">
               <div class="flex items-center gap-2 mb-3">
                 <font-awesome-icon icon="tag" class="text-primary" />
                 <span class="font-semibold">Apply Coupon</span>
@@ -49,7 +49,7 @@
                   Apply
                 </button>
               </div>
-            </div>
+            </div> -->
 
             <!-- Continue Shopping -->
             <div class="mt-6 flex justify-between">
@@ -99,12 +99,12 @@ const authStore = useAuthStore()
 const toast = useToast()
 const couponCode = ref('')
 
-// --- Apply Coupon ---
-const applyCoupon = () => {
-  if (!couponCode.value.trim()) return toast.error('Enter a coupon code')
-  cartStore.applyCoupon(couponCode.value.trim().toUpperCase())
-  couponCode.value = ''
-}
+// // --- Apply Coupon ---
+// const applyCoupon = () => {
+//   if (!couponCode.value.trim()) return toast.error('Enter a coupon code')
+//   cartStore.applyCoupon(couponCode.value.trim().toUpperCase())
+//   couponCode.value = ''
+// }
 
 // --- Clear Cart ---
 const clearCart = () => {

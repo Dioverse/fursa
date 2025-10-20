@@ -4,7 +4,7 @@ import { ref, computed, watch } from 'vue'
 import { useToast } from 'vue-toastification'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://back.fursaenergy.com/public/api'
-const toNumber = v => (v === null || v === undefined ? 0 : Number(v))
+const toNumber = (v) => (v === null || v === undefined ? 0 : Number(v))
 
 export const useCartStore = defineStore('cart', () => {
   const toast = useToast()
@@ -13,7 +13,7 @@ export const useCartStore = defineStore('cart', () => {
   const items = ref([])
   const couponCode = ref('')
   const discount = ref(0)
-  const shippingRate = ref(9.50)
+  const shippingRate = ref(9.5)
   const taxRate = ref(0)
   const freeShippingThreshold = ref(5000)
   const loading = ref(false)
@@ -24,33 +24,49 @@ export const useCartStore = defineStore('cart', () => {
   if (!token()) {
     const savedCart = localStorage.getItem('cart')
     if (savedCart) {
-      try { items.value = JSON.parse(savedCart) } catch (e) { items.value = [] }
+      try {
+        items.value = JSON.parse(savedCart)
+      } catch (e) {
+        items.value = []
+      }
     }
   }
 
   // --- COMPUTED ---
   const itemCount = computed(() =>
-    items.value.reduce((total, i) => total + (toNumber(i.quantity) || 0), 0)
+    items.value.reduce((total, i) => total + (toNumber(i.quantity) || 0), 0),
   )
 
   const subtotal = computed(() =>
     items.value.reduce((sum, i) => {
       const product = i.product || i
-      const price = toNumber(product.discounted_price || product.price)
-      return sum + (price * toNumber(i.quantity))
-    }, 0)
+      const price = product.discount ? toNumber(product.discounted_price) : toNumber(product.price)
+      console.log('objecterrrr')
+      return sum + price * toNumber(i.quantity)
+    }, 0),
   )
+
+  const totalAtOriginalPrice = computed(() =>
+    items.value.reduce((sum, i) => {
+      const product = i.product || i
+      const price = toNumber(product.price)
+      console.log('object')
+      return sum + price * toNumber(i.quantity)
+    }, 0),
+  )
+
+  const totalSaved = computed(() => {
+    return totalAtOriginalPrice.value - subtotal.value
+  })
 
   const shipping = computed(() =>
-    subtotal.value > freeShippingThreshold.value ? 0 : shippingRate.value
+    subtotal.value > freeShippingThreshold.value ? 0 : shippingRate.value,
   )
 
-  const tax = computed(() =>
-    Number(((subtotal.value + shipping.value) * taxRate.value).toFixed(2))
-  )
+  const tax = computed(() => Number(((subtotal.value + shipping.value) * taxRate.value).toFixed(2)))
 
   const totalPrice = computed(() =>
-    Number((subtotal.value + shipping.value + tax.value - toNumber(discount.value)).toFixed(2))
+    Number((subtotal.value + shipping.value + tax.value - toNumber(discount.value)).toFixed(2)),
   )
 
   // --- API HELPER ---
@@ -97,6 +113,7 @@ export const useCartStore = defineStore('cart', () => {
       }
     }
     // Local format - convert to API format
+
     return {
       id: item.id,
       product_id: item.id,
@@ -104,10 +121,16 @@ export const useCartStore = defineStore('cart', () => {
       product: {
         id: item.id,
         name: item.name,
-        price: item.price,
-        discounted_price: item.discounted_price || item.price,
         sku: item.sku || '',
-        image: item.image || null,
+        images: item.images || null,
+        price: toNumber(item.price),
+        stock_quantity: item.stock_quantity,
+        ...(item.discount
+          ? {
+              discount: item.discount,
+              discounted_price: toNumber(item.discounted_price),
+            }
+          : { discount: null }),
       },
     }
   }
@@ -122,9 +145,7 @@ export const useCartStore = defineStore('cart', () => {
         const payload = { cart: [{ product_id: product.id, quantity: qty }] }
         const data = await callApi('/carts', payload, 'POST')
         if (data?.cart) {
-          console.log(data.cart);
           items.value = data.cart.map(normalizeItem)
-          console.log(items.value);
           saveCart()
           toast.success(`Product added to cart`)
           return
@@ -132,24 +153,32 @@ export const useCartStore = defineStore('cart', () => {
       }
 
       // --- Fallback to local cart ---
-      const existing = items.value.find(i => (i.product_id || i.id) === product.id)
+      const existing = items.value.find((i) => (i.product_id || i.id) === product.id)
 
       if (existing) {
         existing.quantity += qty
       } else {
-        items.value.push(normalizeItem({
-          id: product.id,
-          product_id: product.id,
-          quantity: qty,
-          product: {
+        items.value.push(
+          normalizeItem({
             id: product.id,
-            name: product.name,
-            price: Number(product.price),
-            discounted_price: Number(product.discountedPrice || product.price),
-            sku: product.sku || '',
-            image: product.image || null,
-          },
-        }))
+            product_id: product.id,
+            quantity: qty,
+            product: {
+              id: product.id,
+              name: product.name,
+              price: Number(product.price),
+              sku: product.sku || '',
+              images: product.images || [],
+              stock_quantity: product.stock_quantity,
+              ...(product.discount
+                ? {
+                    discount: product.discount,
+                    discounted_price: toNumber(product.discounted_price),
+                  }
+                : { discount: null }),
+            },
+          }),
+        )
       }
       saveCart()
       toast.success(`Product added to cart`)
@@ -161,7 +190,7 @@ export const useCartStore = defineStore('cart', () => {
 
   // --- REMOVE ITEM ---
   async function removeItem(productId) {
-    const item = items.value.find(i => (i.product_id || i.id) === productId)
+    const item = items.value.find((i) => (i.product_id || i.id) === productId)
     const itemName = item?.product?.name || item?.name || 'Item'
 
     if (token()) {
@@ -174,7 +203,7 @@ export const useCartStore = defineStore('cart', () => {
       }
     }
 
-    const index = items.value.findIndex(i => (i.product_id || i.id) === productId)
+    const index = items.value.findIndex((i) => (i.product_id || i.id) === productId)
     if (index === -1) return
 
     items.value.splice(index, 1)
@@ -183,8 +212,21 @@ export const useCartStore = defineStore('cart', () => {
   }
 
   // --- UPDATE QUANTITY ---
-  async function updateQuantity(productId, quantity) {
+  async function updateQuantity(productId, quantity, e = null) {
     
+    const item = items.value.find((i) => (i.product_id || i.id) === productId)
+    if (!item) return toast.error('Item not found')
+    
+    const stockQty = item.product?.stock_quantity || Infinity
+
+    if (quantity > stockQty) {
+      e.innerText = item.quantity
+      return toast.info(`Only ${stockQty} units left in stock`)
+    }
+
+    if (quantity <= 0) return removeItem(productId)
+
+    // --- Remote first ---
     if (token()) {
       const data = await callApi('/carts/update', { product_id: productId, quantity }, 'PATCH')
       if (data?.cart) {
@@ -195,11 +237,7 @@ export const useCartStore = defineStore('cart', () => {
       }
     }
 
-    const item = items.value.find(i => (i.product_id || i.id) === productId)
-    if (!item) return toast.error('Item not found')
-
-    if (quantity <= 0) return removeItem(productId)
-
+    // --- Local fallback ---
     item.quantity = parseInt(quantity)
     saveCart()
     toast.success(`Updated ${item.product?.name || item.name} quantity`)
@@ -254,7 +292,7 @@ export const useCartStore = defineStore('cart', () => {
 
     try {
       const payload = {
-        cart: items.value.map(i => ({
+        cart: items.value.map((i) => ({
           product_id: i.product_id || i.id,
           quantity: i.quantity,
         })),
@@ -273,6 +311,8 @@ export const useCartStore = defineStore('cart', () => {
     items,
     itemCount,
     subtotal,
+    totalAtOriginalPrice,
+    totalSaved,
     shipping,
     tax,
     totalPrice,

@@ -162,7 +162,7 @@ const handleLogout = () => {
 }
 
 onMounted(() => {
-  // syncCart()
+  syncCart()
   fetchDashboard()
 })
 

@@ -1,52 +1,71 @@
 <template>
-    <div class="flex items-center gap-4 py-4 border-b">
-        <div class="w-20 h-20 bg-gray-200 rounded flex items-center justify-center">
-            <img v-lazy="getImageUrl(item.product.images[0].path)" :alt="item.product.name"
-                class="w-full h-full object-cover rounded" @error="handleImageError">
-        </div>
+    <div class="">
+        <div class="flex items-center gap-4 py-4 border-b">
+            <div class="w-20 h-20 bg-gray-200 rounded flex items-center justify-center">
+                <img v-lazy="getImageUrl(item.product.images[0]?.path)" :alt="item.product.name"
+                    class="w-full h-full object-cover rounded" @error="handleImageError">
+            </div>
 
-        <div class="flex-1">
-            <h4 class="font-semibold line-clamp-1">{{ item.product.name }}</h4>
-            <small class="text-gray-600 text-xs line-clamp-1">#{{ item.product.sku }}</small>
-        </div>
+            <div class="flex-1">
+                <h4 class="font-semibold line-clamp-1">{{ item.product.name }}</h4>
+                <small class="text-gray-600 text-xs line-clamp-1">#{{ item.product.sku }}</small>
+            </div>
 
-        <div class="flex flex-col text-lg font-semibold">
-            <span class="text-sm">₦{{ Number((item.product?.discounted_price ?? item.product?.price) ||
-                0).toLocaleString() }}</span>
-            <small v-if="item.product?.discount"
-                class="text-gray-400 text-right text-xs font-normal line-through m-0">₦{{ Number(item.product?.price ||
-                    0).toLocaleString() }}</small>
+            <div class="flex flex-col font-semibold">
+                <span class="">₦{{ Number((item.product?.discounted_price ?? item.product?.price) ||
+                    0).toLocaleString() }}</span>
+                <small v-if="item.product?.discount"
+                    class="text-gray-400 text-right text-sm font-normal line-through m-0">₦{{ Number(item.product?.price
+                        ||
+                        0).toLocaleString() }}</small>
+            </div>
         </div>
-
-        <div class="flex items-center gap-2">
-            <button @click="updateQuantity(item.quantity - 1)"
-                class="w-8 h-8 rounded border hover:bg-gray-100 transition flex items-center justify-center"
-                :disabled="item.quantity <= 1">
-                <font-awesome-icon icon="minus" size="sm" />
+        <div class="flex items-center gap-4 py-4 border-b justify-between">
+            <button @click="removeItem(item.product.id)" class="p-2 text-red-500 rounded text-sm hover:text-red-700 hover:bg-red-300 transition">
+                <font-awesome-icon icon="trash" /> Remove
             </button>
-            <input :value="item.quantity" @change="updateQuantity($event.target.value)" type="number" min="1"
-                class="w-16 text-center border rounded px-2 py-1">
-            <button @click="updateQuantity(item.quantity + 1)"
-                class="w-8 h-8 rounded border hover:bg-gray-100 transition flex items-center justify-center">
-                <font-awesome-icon icon="plus" size="sm" />
-            </button>
-        </div>
+            <div class="flex items-center rounded overflow-hidden w-max">
+                <!-- Decrement -->
+                <button :disabled="getCartQuantity(item.product.id) <= 1 || loadingStates[item.product.id]"
+                    @click="updateQuantity(item.product, getCartQuantity(item.product.id) - 1)"
+                    class="px-[14px] py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
+                    -
+                </button>
 
-        <div class="text-lg font-bold text-primary text-sm">
-            ₦{{ ((item.product.discounted_price ?? item.product.price) * item.quantity).toLocaleString() }}
-        </div>
+                <!-- Quantity Display / Loader -->
+                <div
+                    class="w-[50px] text-center border-x border-gold-300 text-sm flex justify-center items-center h-[38px]">
+                    <div v-if="loadingStates[item.product.id]" class="flex justify-center items-center">
+                        <svg class="animate-spin h-4 w-4 text-gold-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
+                    </div>
+                    <div v-else contenteditable="true" class="w-full text-center outline-none"
+                        :data-product-id="item.product.id" @blur="onQuantityBlur($event, item.product)"
+                        @keydown.enter.prevent="onQuantityEnter($event, item.product)">
+                        {{ getCartQuantity(item.product.id) }}
+                    </div>
+                </div>
 
-        <button @click="removeItem" class="text-red-500 text-sm hover:text-red-700 transition">
-            <font-awesome-icon icon="trash" />
-        </button>
+                <!-- Increment -->
+                <button :disabled="loadingStates[item.product.id]"
+                    @click="updateQuantity(item.product, getCartQuantity(item.product.id) + 1)"
+                    class="px-3 py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
+                    +
+                </button>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
 import { useCartStore } from '@/stores/cart'
-import { getImageUrl, handleImageError } from '@/utils/helpers'
 import { ref } from 'vue'
 import { useToast } from 'vue-toastification'
+import { getCartQuantity, getImageUrl, handleImageError, onQuantityBlur, onQuantityEnter, updateQuantity, loadingStates, removeItem } from '@/utils/helpers';
 
 const props = defineProps({
     item: {
@@ -64,31 +83,24 @@ const toast = useToast()
 //         cartStore.updateQuantity(props.item.product.id, quantity)
 //     }
 // }
-const loadingStates = ref({});
 
-const updateQuantity = async (quantity) => {
-    const qty = parseInt(quantity);
-    if (isNaN(qty)) return;
+// const updateQuantity = async (quantity) => {
+//     const qty = parseInt(quantity);
+//     if (isNaN(qty)) return;
 
-    loadingStates.value = true;
-    try {
-        if (qty <= 0) {
-            cartStore.removeItem(props.item.product.id);
-        } else {
-            cartStore.updateQuantity(props.item.product.id, qty);
-        }
-    } catch (err) {
-        console.error(err);
-    } finally {
-        loadingStates.value = false;
-    }
-};
-
-const removeItem = () => {
-    cartStore.removeItem(props.item.product.id)
-    // toast.success('Item removed from cart')
-}
-
+//     loadingStates.value = true;
+//     try {
+//         if (qty <= 0) {
+//             cartStore.removeItem(props.item.product.id);
+//         } else {
+//             cartStore.updateQuantity(props.item.product.id, qty);
+//         }
+//     } catch (err) {
+//         console.error(err);
+//     } finally {
+//         loadingStates.value = false;
+//     }
+// };
 
 
 </script>
