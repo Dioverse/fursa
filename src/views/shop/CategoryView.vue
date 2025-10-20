@@ -5,10 +5,14 @@
       <div class="bg-white border-b">
         <div class="max-w-7xl mx-auto px-4 py-3 text-sm text-gray-600">
           Home
-          <span v-if="categorySlug"> &gt; {{ categorySlug }}</span>
-          <span v-if="subcategorySlug"> &gt; {{ subcategorySlug }}</span>
+          <span v-if="categorySlug"> &gt; 
+            <RouterLink :to="`/c/${categorySlug}`" v-if="subcategorySlug">{{ categoryTitle }}</RouterLink>
+            <span v-else>{{ categoryTitle }}</span>
+          </span>
+          <span v-if="subcategorySlug"> &gt; {{ subcategoryTitle }}</span>
         </div>
       </div>
+
 
       <div class="max-w-7xl mx-auto px-4 py-6">
         <div class="flex gap-6">
@@ -31,7 +35,7 @@
                     <div v-for="cat in categories" :key="cat.id" class="group relative">
                       <div @click="navigateToCategory(cat.slug)" :class="[
                         'font-semibold text-gray-800 py-2 px-3 rounded cursor-pointer transition-colors',
-                        selectedCategoryId === cat.id ? 'bg-mprimary-100 text-mprimary-600' : 'hover:bg-mprimary-50'
+                        selectedCategorySlug === cat.slug ? 'bg-mprimary-100 text-mprimary-600' : 'hover:bg-mprimary-50'
                       ]">
                         {{ cat.name }}
                       </div>
@@ -44,7 +48,7 @@
                         <div v-for="sub in cat.subcategories" :key="sub.id" @click="navigateToSubcategory(sub.slug)"
                           :class="[
                             'cursor-pointer py-2 px-3 text-gray-600 text-sm transition-colors',
-                            selectedSubcategoryId === sub.id ? 'bg-mprimary-100 text-mprimary-600 font-semibold' : 'hover:bg-mprimary-50'
+                            selectedSubcategorySlug === sub.slug ? 'bg-mprimary-100 text-mprimary-600 font-semibold' : 'hover:bg-mprimary-50'
                           ]">
                           {{ sub.name }}
                         </div>
@@ -308,7 +312,7 @@
                   <div v-for="cat in categories" :key="cat.id">
                     <div @click="navigateToCategory(cat.slug); showMobileFilters = false" :class="[
                       'font-semibold text-gray-800 py-2 px-3 rounded cursor-pointer transition-colors',
-                      selectedCategoryId === cat.id ? 'bg-mprimary-100 text-mprimary-600' : 'hover:bg-mprimary-50'
+                      selectedCategorySlug === cat.slug ? 'bg-mprimary-100 text-mprimary-600' : 'hover:bg-mprimary-50'
                     ]">
                       {{ cat.name }}
                     </div>
@@ -316,7 +320,7 @@
                       <div v-for="sub in cat.subcategories" :key="sub.id"
                         @click="navigateToSubcategory(sub.slug); showMobileFilters = false" :class="[
                           'cursor-pointer py-2 px-3 text-gray-600 text-sm rounded transition-colors',
-                          selectedSubcategoryId === sub.id ? 'bg-mprimary-100 text-mprimary-600 font-semibold' : 'hover:bg-mprimary-50'
+                          selectedSubcategorySlug === sub.slug ? 'bg-mprimary-100 text-mprimary-600 font-semibold' : 'hover:bg-mprimary-50'
                         ]">
                         {{ sub.name }}
                       </div>
@@ -422,8 +426,8 @@ const filters = reactive({
   sortBy: null,
 });
 
-const selectedCategoryId = ref(null);
-const selectedSubcategoryId = ref(null);
+const selectedCategorySlug = ref(null);
+const selectedSubcategorySlug = ref(null);
 const showSortDropdown = ref(false);
 const showMobileFilters = ref(false);
 const observerTarget = ref(null);
@@ -484,15 +488,9 @@ const getProductImage = (product) => {
   return '/placeholder.png';
 };
 
-const buildQueryParams = () => {
+const buildQueryParams = (n) => {
   const params = new URLSearchParams();
 
-  if (selectedCategoryId.value) {
-    params.append('category', selectedCategoryId.value);
-  }
-  if (selectedSubcategoryId.value) {
-    params.append('category', selectedSubcategoryId.value);
-  }
   if (filters.name) {
     params.append('name', filters.name);
   }
@@ -505,9 +503,17 @@ const buildQueryParams = () => {
   if (filters.sortBy) {
     params.append('sort_by', filters.sortBy);
   }
+  if (!n) { return params.toString(); }
+  
   params.append('page', state.currentPage);
   params.append('per_page', 24);
-
+  
+  if (selectedCategorySlug.value) {
+    params.append('category', selectedCategorySlug.value); // Now uses slug
+  }
+  if (selectedSubcategorySlug.value) {
+    params.append('category', selectedSubcategorySlug.value); // Now uses slug
+  }
   return params.toString();
 };
 
@@ -519,7 +525,7 @@ const fetchProducts = async (page = 1, isLoadMore = false) => {
 
     state.currentPage = page;
 
-    const queryString = buildQueryParams();
+    const queryString = buildQueryParams(true);
     const res = await fetch(`${apiUrl}/products?${queryString}`);
 
     if (!res.ok) throw new Error('Failed to fetch products');
@@ -550,12 +556,25 @@ const fetchProducts = async (page = 1, isLoadMore = false) => {
   }
 };
 
+const isInitialized = ref(false);
 // Initialize on mount
-onMounted(() => {
+onMounted(async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  // Set filters from URL params
+  if (urlParams.get('name')) filters.name = urlParams.get('name');
+  if (urlParams.get('min_price')) filters.minPrice = Number(urlParams.get('min_price'));
+  if (urlParams.get('max_price')) filters.maxPrice = Number(urlParams.get('max_price'));
+  if (urlParams.get('sort_by')) filters.sortBy = urlParams.get('sort_by');
+
+  // Fetch products to get categories
+  await fetchProducts(1);
+  
   const pathname = window.location.pathname;
-  const match = pathname.match(/\/shop\/c\/(.+)?$/);
+  const match = pathname.match(/\/c\/(.+)?$/);
   const slug = (match && match[1]) || '';
 
+  // Parse slug for category/subcategory
   if (slug) {
     const parts = slug.split('--');
     const categorySlug = parts[0];
@@ -563,23 +582,40 @@ onMounted(() => {
 
     const category = state.categories.find(c => c.slug === categorySlug);
     if (category) {
-      selectedCategoryId.value = category.id;
-      state.pageTitle = categorySlug.replace(/-/g, ' ').toUpperCase();
+      selectedCategorySlug.value = category.slug; // Use slug, not id
+      state.pageTitle = category.name.toUpperCase();
 
       if (subcategorySlug) {
         const subcategory = category.subcategories?.find(s => s.slug === subcategorySlug);
         if (subcategory) {
-          selectedSubcategoryId.value = subcategory.id;
-          state.pageTitle = subcategorySlug.replace(/-/g, ' ').toUpperCase();
+          selectedSubcategorySlug.value = subcategory.slug; // Use slug, not id
+          state.pageTitle = subcategory.name.toUpperCase();
         }
       }
     }
   }
 
-  fetchProducts(1).then(() => {
-    nextTick(() => setupObserver());
-  });
+  isInitialized.value = true; // Mark as initialized before setting up observer
+  nextTick(() => setupObserver());
 });
+
+watch(
+  [filters, selectedCategorySlug, selectedSubcategorySlug],
+  () => {
+    if (!isInitialized.value) return; // Skip initial watch trigger
+    const queryString = buildQueryParams(false);
+    const newUrl = `${window.location.pathname}?${queryString}`;
+    window.history.replaceState({}, '', newUrl);
+    fetchProducts(1);
+  },
+  { deep: true }
+);
+
+const readable = slug =>
+  slug ? slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''
+
+const categoryTitle = computed(() => readable(categorySlug.value))
+const subcategoryTitle = computed(() => readable(subcategorySlug.value))
 
 // Infinite scroll setup
 let observer;
@@ -614,8 +650,8 @@ const setPrice = (min, max) => {
 };
 
 const navigateToCategory = (categorySlug) => {
-  selectedCategoryId.value = categorySlug;
-  selectedSubcategoryId.value = null;
+  selectedCategorySlug.value = categorySlug;
+  selectedSubcategorySlug.value = null;
   state.pageTitle = categorySlug.replace(/-/g, ' ').toUpperCase();
   state.currentPage = 1;
   resetFilters(false);
@@ -623,7 +659,7 @@ const navigateToCategory = (categorySlug) => {
 };
 
 const navigateToSubcategory = (subcategorySlug) => {
-  selectedSubcategoryId.value = subcategorySlug;
+  selectedSubcategorySlug.value = subcategorySlug;
   state.pageTitle = subcategorySlug.replace(/-/g, ' ').toUpperCase();
   state.currentPage = 1;
   resetFilters(false);
@@ -647,18 +683,14 @@ const loading = computed(() => state.loading);
 const loadingMore = computed(() => state.loadingMore);
 const error = computed(() => state.error);
 const pageTitle = computed(() => state.pageTitle);
+// Update computed properties
 const categorySlug = computed(() => {
-  if (selectedSubcategoryId.value) return null;
-  const cat = state.categories.find(c => c.id === selectedCategoryId.value);
-  return cat ? cat.slug : null;
+  if (selectedSubcategorySlug.value) return null;
+  return selectedCategorySlug.value; // Just return the slug directly
 });
+
 const subcategorySlug = computed(() => {
-  if (!selectedSubcategoryId.value) return null;
-  for (const cat of state.categories) {
-    const sub = cat.subcategories?.find(s => s.id === selectedSubcategoryId.value);
-    if (sub) return sub.slug;
-  }
-  return null;
+  return selectedSubcategorySlug.value; // Just return the slug directly
 });
 
 // Cart helpers

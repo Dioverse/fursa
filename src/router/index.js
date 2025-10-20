@@ -97,13 +97,13 @@ const router = createRouter({
     },
     {
       path: '/c/:slug',
-      name: 'category',
+      name: 'category-slug',
       component: CategoryView,
       meta: { title: 'Category' },
     },
     {
       path: '/c',
-      name: 'category',
+      name: 'category-list',
       component: CategoryView,
       meta: { title: 'Category' },
     },

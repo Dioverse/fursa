@@ -152,12 +152,12 @@
             <h2 class="text-2xl font-bold flex items-center">
               <span class="text-white">Featured Products</span>
             </h2>
-            <a href="#" class="text-white hover:underline inline-flex items-center">
+            <RouterLink :to="`/c?sort_by=if`" class="text-white hover:underline inline-flex items-center">
               More
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
               </svg>
-            </a>
+            </RouterLink>
           </div>
 
           <!-- Empty State -->
