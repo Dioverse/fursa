@@ -1,97 +1,135 @@
 <?php
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\Category;
 use App\Models\Product;
-use Illuminate\Http\JsonResponse;
+use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     // public function index(Request $request): JsonResponse
     // {
-    //     // Start building the query with eager loading for the category
-    //     $query = Product::with(['category:id,name,slug', 'images:id,product_id,path', 'discount:product_id,value,type']);
+    //     $query = Product::with([
+    //         'category:id,name,slug,parent_id',
+    //         'discount:id,product_id,value,type',
+    //         'images' => fn($q) => $q->select('id', 'product_id', 'path')->limit(1),
+    //     ]);
 
-    //     // --- Filtering Options ---
-    //     // Filter by category
+    //     // --- CATEGORY FILTER (using slug) ---
     //     if ($request->filled('category')) {
-    //         $categoryIds = $request->input('category');
+    //         $categorySlug = $request->input('category');
+    //         $category = Category::with('subcategories:id,parent_id,slug')
+    //             ->where('slug', $categorySlug)
+    //             ->first();
 
-    //         // Handle both comma-separated string and array
-    //         if (is_string($categoryIds)) {
-    //             $categoryIds = explode(',', $categoryIds);
+    //         if ($category) {
+    //             // Parent category: include products from subcategories too
+    //             if (is_null($category->parent_id)) {
+    //                 $subcategoryIds = $category->subcategories->pluck('id')->toArray();
+
+    //                 $query->where(function ($q) use ($category, $subcategoryIds) {
+    //                     $q->where('category_id', $category->id)
+    //                     ->orWhereIn('category_id', $subcategoryIds);
+    //                 });
+    //             } else {
+    //                 // Subcategory: only its own products
+    //                 $query->where('category_id', $category->id);
+    //             }
     //         }
-
-    //         $query->whereInRelation('category', 'id', $categoryIds);
     //     }
 
-    //     // Filter by product name (partial match)
-    //     if ($request->has('name') && is_string($request->input('name'))) {
+    //     // --- NAME FILTER ---
+    //     if ($request->filled('name')) {
     //         $query->where('name', 'like', '%' . $request->input('name') . '%');
     //     }
 
-    //     // Filter by base_price range
-    //     // Determine price field based on user role (if authenticated)
-    //     $price_field = 'base_price';
-    //     $user        = auth('sanctum')->user();
-
-    //     if ($user && $user->isDistributorApprov()) {$price_field = 'distributor_price';}
-
-    //     if ($request->has('min_price') && is_numeric($request->input('min_price'))) {
-    //         $query->where($price_field, '>=', $request->input('min_price'));
-    //     }
-    //     if ($request->has('max_price') && is_numeric($request->input('max_price'))) {
-    //         $query->where($price_field, '<=', $request->input('max_price'));
+    //     // --- TAGS FILTER ---
+    //     if ($request->filled('tags')) {
+    //         $tags = array_map('trim', explode(',', $request->input('tags')));
+            
+    //         $query->where(function ($q) use ($tags) {
+    //             foreach ($tags as $tag) {
+    //                 $q->orWhereJsonContains('tags', $tag);
+    //             }
+    //         });
     //     }
 
-    //     if ($request->has('sort_by')) {
-    //         switch ($request->input('sort_by')) {
-    //             case 'lp':
-    //                 $query->orderBy($price_field, 'asc');
-    //                 break;
-    //             case 'hp':
-    //                 $query->orderBy($price_field, 'desc');
-    //                 break;
-    //             case 'if':
-    //                 $query->orderBy('is_featured', 'desc');
-    //                 break;
+    //     // --- PRICE FILTERS ---
+    //     $user = auth('sanctum')->user();
+    //     $priceField = ($user && $user->isDistributorApprov()) ? 'distributor_price' : 'base_price';
+
+    //     if ($request->filled('min_price') && is_numeric($request->min_price)) {
+    //         $query->where($priceField, '>=', $request->min_price);
+    //     }
+    //     if ($request->filled('max_price') && is_numeric($request->max_price)) {
+    //         $query->where($priceField, '<=', $request->max_price);
+    //     }
+
+    //     // --- SORTING ---
+    //     if ($request->filled('sort_by')) {
+    //         switch ($request->sort_by) {
+    //             case 'lp': $query->orderBy($priceField, 'asc'); break;
+    //             case 'hp': $query->orderBy($priceField, 'desc'); break;
+    //             case 'if': $query->orderBy('is_featured', 'desc'); break;
     //         }
+    //     } else {
+    //         // Default order by latest
+    //         $query->latest('id');
     //     }
 
-    //     // --- Pagination ---
-    //     // Get the number of items per page from the request, default to 10 if not provided
-    //     $perPage = $request->query('per_page', 30);
-    //     // Ensure per_page is a positive integer
-    //     $perPage = max(1, (int) $perPage);
+    //     // --- PAGINATION ---
+    //     $perPage = max(1, (int) $request->query('per_page', 30));
+    //     $products = $query->paginate($perPage, [
+    //         'id','category_id','name','slug','sku',
+    //         'short_description','stock_quantity',
+    //         'low_stock_threshold','is_featured',
+    //         'distributor_price','base_price',
+    //     ]);
 
-    //     $products   = $query->paginate($perPage);
+    //     // --- FETCH UNIQUE TAGS FOR FILTER LIST ---
+    //     // Note: This relies on your 'tags' column being a JSON field.
+    //     $uniqueTags = DB::table('products')
+    //         ->whereNotNull('tags')
+    //         ->pluck('tags')
+    //         ->flatMap(function ($tagArray) {
+    //             // Laravel's pluck will return a JSON string, so decode it
+    //             return json_decode($tagArray, true) ?? [];
+    //         })
+    //         ->unique()
+    //         ->values()
+    //         ->all();
+
+
+    //     // --- CATEGORY LIST (with subcategories) ---
     //     $categories = Category::with(['subcategories' => function ($query) {
-    //         $query->select(['id', 'image', 'name', 'slug', 'parent_id'])->withCount('products');
+    //         $query->select(['id', 'icon', 'name', 'slug', 'parent_id'])
+    //             ->withCount('products');
     //     }])
-    //         ->whereNull('parent_id')
-    //         ->get(['id', 'image', 'name', 'slug']);
+    //     ->whereNull('parent_id')
+    //     ->get(['id', 'icon', 'name', 'slug']);
 
+    //     // --- RESPONSE ---
     //     return response()->json([
     //         'message' => 'Products retrieved successfully.',
-    //         'data'    => [
-    //             'products'   => $products,
+    //         'data' => [
+    //             'products' => $products,
     //             'categories' => $categories,
-    //             'filters'    => [
+    //             'available_tags' => $uniqueTags, // <-- NEW LIST OF TAGS
+    //             'filters' => [
     //                 'sort_by' => [
-    //                     "Highest Price" => "hp",
-    //                     "Lowest Price"  => "lp",
-    //                     "Featured"      => "if",
+    //                     'Highest Price' => 'hp',
+    //                     'Lowest Price'  => 'lp',
+    //                     'Featured'      => 'if',
     //                 ],
     //             ],
     //         ],
     //     ]);
     // }
+
 
     public function index(Request $request): JsonResponse
     {
@@ -115,7 +153,7 @@ class ProductController extends Controller
 
                     $query->where(function ($q) use ($category, $subcategoryIds) {
                         $q->where('category_id', $category->id)
-                        ->orWhereIn('category_id', $subcategoryIds);
+                            ->orWhereIn('category_id', $subcategoryIds);
                     });
                 } else {
                     // Subcategory: only its own products
@@ -142,7 +180,7 @@ class ProductController extends Controller
 
         // --- PRICE FILTERS ---
         $user = auth('sanctum')->user();
-        $priceField = ($user && $user->isDistributorApprov()) ? 'distributor_price' : 'base_price';
+        $priceField = ($user && $user->isDistributorApproved()) ? 'distributor_price' : 'base_price';
 
         if ($request->filled('min_price') && is_numeric($request->min_price)) {
             $query->where($priceField, '>=', $request->min_price);
@@ -182,9 +220,9 @@ class ProductController extends Controller
                 return json_decode($tagArray, true) ?? [];
             })
             ->unique()
+            ->sort()
             ->values()
             ->all();
-
 
         // --- CATEGORY LIST (with subcategories) ---
         $categories = Category::with(['subcategories' => function ($query) {
@@ -200,7 +238,7 @@ class ProductController extends Controller
             'data' => [
                 'products' => $products,
                 'categories' => $categories,
-                'available_tags' => $uniqueTags, // <-- NEW LIST OF TAGS
+                'available_tags' => $uniqueTags,
                 'filters' => [
                     'sort_by' => [
                         'Highest Price' => 'hp',
@@ -211,8 +249,6 @@ class ProductController extends Controller
             ],
         ]);
     }
-
-
 
     public function shop(Request $request): JsonResponse
     {
