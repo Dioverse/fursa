@@ -5,7 +5,7 @@
       <div class="bg-white border-b">
         <div class="max-w-7xl mx-auto px-4 py-3 text-sm text-gray-600">
           Home
-          <span v-if="categorySlug"> &gt; 
+          <span v-if="categorySlug"> &gt;
             <RouterLink :to="`/c/${categorySlug}`" v-if="subcategorySlug">{{ categoryTitle }}</RouterLink>
             <span v-else>{{ categoryTitle }}</span>
           </span>
@@ -25,13 +25,21 @@
                   <h3 class="font-bold text-lg mb-3">SEARCH</h3>
                   <input type="text" placeholder="Search by name..."
                     class="w-full px-2 py-1 border border-gray-300 rounded text-sm" v-model="filters.name"
-                    @keyup.enter="state.currentPage = 1; fetchProducts(1)" />
+                    @keyup.enter="state.currentPage = 1;" />
                 </div>
 
                 <!-- Categories -->
                 <div>
                   <h3 class="font-bold text-lg mb-4">CATEGORY</h3>
                   <div class="space-y-1">
+                    <div class="group-relative">
+                      <div @click="navigateToAllProducts()" :class="[
+                        'font-semibold text-gray-800 py-2 px-3 rounded cursor-pointer transition-colors',
+                        (!selectedCategorySlug && !selectedSubcategorySlug) ? 'bg-mprimary-100 text-mprimary-600' : 'hover:bg-mprimary-50'
+                      ]">
+                        All Products
+                      </div>
+                    </div>
                     <div v-for="cat in categories" :key="cat.id" class="group relative">
                       <div @click="navigateToCategory(cat.slug)" :class="[
                         'font-semibold text-gray-800 py-2 px-3 rounded cursor-pointer transition-colors',
@@ -45,8 +53,8 @@
                         <div class="px-3 py-2 font-semibold text-gray-700 border-b text-sm">
                           {{ cat.name }}
                         </div>
-                        <div v-for="sub in cat.subcategories" :key="sub.id" @click="navigateToSubcategory(sub.slug)"
-                          :class="[
+                        <div v-for="sub in cat.subcategories" :key="sub.id"
+                          @click="navigateToSubcategory(cat.slug, sub.slug)" :class="[
                             'cursor-pointer py-2 px-3 text-gray-600 text-sm transition-colors',
                             selectedSubcategorySlug === sub.slug ? 'bg-mprimary-100 text-mprimary-600 font-semibold' : 'hover:bg-mprimary-50'
                           ]">
@@ -63,11 +71,11 @@
                   <div class="flex gap-2 mb-3">
                     <input type="number" placeholder="Min"
                       class="w-full px-2 py-1 border border-gray-300 rounded text-sm" v-model.number="filters.minPrice"
-                      @change="state.currentPage = 1; fetchProducts(1)" />
+                      @change="state.currentPage = 1;" />
                     <span>-</span>
                     <input type="number" placeholder="Max"
                       class="w-full px-2 py-1 border border-gray-300 rounded text-sm" v-model.number="filters.maxPrice"
-                      @change="state.currentPage = 1; fetchProducts(1)" />
+                      @change="state.currentPage = 1;" />
                   </div>
 
                   <div class="space-y-2">
@@ -127,8 +135,8 @@
 
             <!-- Products Heading -->
             <div class="mb-4">
-              <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ pageTitle }}</h2>
-              <p class="text-sm text-gray-600">({{ products.length }} products found)</p>
+              <h2 id="page-header" class="text-2xl font-bold text-gray-800 mb-2">{{ pageTitle }}</h2>
+              <p v-if="!loading && !loadingMore" class="text-sm text-gray-600">({{ products.length }} products found)</p>
             </div>
 
             <!-- Loading State -->
@@ -204,7 +212,8 @@
                   <div class="flex w-full space-x-2 px-4 pb-4">
 
                     <!-- Add To Cart -->
-                    <button v-if="!isInCart(product.id)" @click="addToCart(product)" :disabled="loadingStates[product.id]"
+                    <button v-if="!isInCart(product.id)" @click="addToCart(product)"
+                      :disabled="loadingStates[product.id]"
                       class="flex-1 bg-gold-500 text-white py-2 disabled:opacity-50 disabled:cursor-not-allowed rounded hover:bg-gold-100 hover:text-black text-sm font-semibold">
                       {{ loadingStates[product.id] ? 'Adding...' : 'Add to cart' }}
                     </button>
@@ -217,9 +226,10 @@
                         class="px-3 py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
                         -
                       </button>
-                        
+
                       <!-- Quantity Display / Loader -->
-                      <div class="w-12 text-center border-x border-gold-300 text-sm flex justify-center items-center h-[38px]">
+                      <div
+                        class="w-12 text-center border-x border-gold-300 text-sm flex justify-center items-center h-[38px]">
                         <div v-if="loadingStates[product.id]" class="flex justify-center items-center">
                           <svg class="animate-spin h-4 w-4 text-gold-500" xmlns="http://www.w3.org/2000/svg" fill="none"
                             viewBox="0 0 24 24">
@@ -228,20 +238,15 @@
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                           </svg>
                         </div>
-                        <div v-else
-                          contenteditable="true"
-                          class="w-full text-center outline-none"
-                          :data-product-id="product.id"
-                          @blur="onQuantityBlur($event, product)"
-                          @keydown.enter.prevent="onQuantityEnter($event, product)"
-                        >
+                        <div v-else contenteditable="true" class="w-full text-center outline-none"
+                          :data-product-id="product.id" @blur="onQuantityBlur($event, product)"
+                          @keydown.enter.prevent="onQuantityEnter($event, product)">
                           {{ getCartQuantity(product.id) }}
                         </div>
                       </div>
 
                       <!-- Increment -->
-                      <button
-                        :disabled="loadingStates[product.id]"
+                      <button :disabled="loadingStates[product.id]"
                         @click="updateQuantity(product, getCartQuantity(product.id) + 1)"
                         class="px-3 py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
                         +
@@ -249,15 +254,15 @@
                     </div>
 
                     <!-- Wishlist -->
-                    <button @click="toggleWishlist(product)"
-                      :class="[
-                        'w-1/4 py-2 rounded text-sm font-semibold flex justify-center items-center transition-colors',
-                        wishlistStore.items.find(p => p.id === product.id)
-                          ? 'bg-red-100 text-red-500 hover:bg-red-500 hover:text-white'
-                          : 'bg-gold-100 text-mprimary hover:bg-gold-500 hover:text-white'
-                      ]">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" :fill="wishlistStore.items.find(p => p.id === product.id) ? 'currentColor' : 'none'" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="1.5">
+                    <button @click="toggleWishlist(product)" :class="[
+                      'w-1/4 py-2 rounded text-sm font-semibold flex justify-center items-center transition-colors',
+                      wishlistStore.items.find(p => p.id === product.id)
+                        ? 'bg-red-100 text-red-500 hover:bg-red-500 hover:text-white'
+                        : 'bg-gold-100 text-mprimary hover:bg-gold-500 hover:text-white'
+                    ]">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+                        :fill="wishlistStore.items.find(p => p.id === product.id) ? 'currentColor' : 'none'"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round"
                           d="M21.8 8.6c0 5.4-9.2 11.1-9.8 11.4a1.5 1.5 0 0 1-1 0c-.6-.3-9.8-6-9.8-11.4A5 5 0 0 1 6.8 4.5c1.6 0 3.1.8 4 2a5.1 5.1 0 0 1 4-2 5 5 0 0 1 4.9 4.1z" />
                       </svg>
@@ -309,6 +314,16 @@
               <div>
                 <h3 class="font-bold text-lg mb-4">CATEGORY</h3>
                 <div class="space-y-1">
+                  <div>
+                    <div @click="navigateToAllProducts(); showMobileFilters = false" :class="[
+                      'font-semibold text-gray-800 py-2 px-3 rounded cursor-pointer transition-colors',
+                      (!selectedCategorySlug && !selectedSubcategorySlug) ? 'bg-mprimary-100 text-mprimary-600' : 'hover:bg-mprimary-50'
+                    ]">
+                      All Products
+                    </div>
+                  </div>
+
+
                   <div v-for="cat in categories" :key="cat.id">
                     <div @click="navigateToCategory(cat.slug); showMobileFilters = false" :class="[
                       'font-semibold text-gray-800 py-2 px-3 rounded cursor-pointer transition-colors',
@@ -318,7 +333,7 @@
                     </div>
                     <div v-if="cat.subcategories && cat.subcategories.length > 0" class="ml-4 space-y-1 mt-1">
                       <div v-for="sub in cat.subcategories" :key="sub.id"
-                        @click="navigateToSubcategory(sub.slug); showMobileFilters = false" :class="[
+                        @click="navigateToSubcategory(cat.slu, sub.slug); showMobileFilters = false" :class="[
                           'cursor-pointer py-2 px-3 text-gray-600 text-sm rounded transition-colors',
                           selectedSubcategorySlug === sub.slug ? 'bg-mprimary-100 text-mprimary-600 font-semibold' : 'hover:bg-mprimary-50'
                         ]">
@@ -355,7 +370,7 @@
                 class="flex-1 py-2 border border-gray-300 rounded hover:bg-gray-50">
                 Reset
               </button>
-              <button @click="state.currentPage = 1; fetchProducts(1); showMobileFilters = false"
+              <button @click="state.currentPage = 1; showMobileFilters = false"
                 class="flex-1 py-2 bg-mprimary-500 text-white rounded hover:bg-mprimary-600">
                 Apply
               </button>
@@ -372,6 +387,7 @@ import { reactive, ref, computed, onMounted, watch, nextTick } from 'vue';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import { useCartStore } from '@/stores/cart';
 import { useWishlistStore } from '@/stores/wishlist';
+import { useRoute, useRouter } from 'vue-router';
 
 const storageUrl = import.meta.env.VITE_STORAGE_URL || '';
 const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api';
@@ -416,7 +432,7 @@ const state = reactive({
   error: null,
   currentPage: 1,
   hasMore: true,
-  pageTitle: 'PRODUCTS',
+  pageTitle: 'ALL PRODUCTS',
 });
 
 const filters = reactive({
@@ -504,10 +520,10 @@ const buildQueryParams = (n) => {
     params.append('sort_by', filters.sortBy);
   }
   if (!n) { return params.toString(); }
-  
+
   params.append('page', state.currentPage);
   params.append('per_page', 24);
-  
+
   if (selectedCategorySlug.value) {
     params.append('category', selectedCategorySlug.value); // Now uses slug
   }
@@ -542,6 +558,9 @@ const fetchProducts = async (page = 1, isLoadMore = false) => {
       if (response.data.categories) {
         state.categories = response.data.categories;
       }
+
+      const top = document.getElementById('page-header').getBoundingClientRect().top + window.scrollY - 120
+      window.scrollTo({ top, behavior: 'smooth' })
     }
 
     state.hasMore = hasMore;
@@ -559,43 +578,60 @@ const fetchProducts = async (page = 1, isLoadMore = false) => {
 const isInitialized = ref(false);
 // Initialize on mount
 onMounted(async () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  
-  // Set filters from URL params
-  if (urlParams.get('name')) filters.name = urlParams.get('name');
-  if (urlParams.get('min_price')) filters.minPrice = Number(urlParams.get('min_price'));
-  if (urlParams.get('max_price')) filters.maxPrice = Number(urlParams.get('max_price'));
-  if (urlParams.get('sort_by')) filters.sortBy = urlParams.get('sort_by');
-
-  // Fetch products to get categories
-  await fetchProducts(1);
-  
+  // 1. Parse URL for category/subcategory SLUG first
   const pathname = window.location.pathname;
   const match = pathname.match(/\/c\/(.+)?$/);
   const slug = (match && match[1]) || '';
 
-  // Parse slug for category/subcategory
   if (slug) {
     const parts = slug.split('--');
     const categorySlug = parts[0];
     const subcategorySlug = parts[1] || null;
 
-    const category = state.categories.find(c => c.slug === categorySlug);
-    if (category) {
-      selectedCategorySlug.value = category.slug; // Use slug, not id
-      state.pageTitle = category.name.toUpperCase();
+    // Set the reactive category/subcategory slugs.
+    // NOTE: The main watcher will be disabled by isInitialized.value = false 
+    // when these are set.
+    if (categorySlug) {
+      selectedCategorySlug.value = categorySlug;
+    }
+    if (subcategorySlug) {
+      selectedSubcategorySlug.value = subcategorySlug;
+    }
+    // We can't set the pageTitle reliably here without categories,
+    // so we'll set it after the first fetch if needed.
+  }
 
-      if (subcategorySlug) {
-        const subcategory = category.subcategories?.find(s => s.slug === subcategorySlug);
-        if (subcategory) {
-          selectedSubcategorySlug.value = subcategory.slug; // Use slug, not id
-          state.pageTitle = subcategory.name.toUpperCase();
-        }
+  // 2. Set filters from URL params (This step also triggers the watcher if it were enabled)
+  const urlParams = new URLSearchParams(window.location.search);
+
+  if (urlParams.get('name')) filters.name = urlParams.get('name');
+  if (urlParams.get('min_price')) filters.minPrice = Number(urlParams.get('min_price'));
+  if (urlParams.get('max_price')) filters.maxPrice = Number(urlParams.get('max_price'));
+  if (urlParams.get('sort_by')) filters.sortBy = urlParams.get('sort_by');
+
+  // 3. Perform the initial data fetch with all parameters
+  //    This replaces the original fetch call AND the one from the watcher.
+  await fetchProducts(1);
+
+  // 4. Set the page title and categories based on the result of the fetch.
+  if (state.categories.length > 0) {
+    const targetSlug = selectedSubcategorySlug.value || selectedCategorySlug.value;
+    if (targetSlug) {
+      // Logic to find the title after categories have been fetched
+      const category = state.categories.find(c => c.slug === selectedCategorySlug.value)
+      const subcategory = category?.subcategories?.find(s => s.slug === selectedSubcategorySlug.value)
+
+      if (subcategory) {
+        state.pageTitle = subcategory.name.toUpperCase();
+      } else if (category) {
+        state.pageTitle = category.name.toUpperCase();
       }
     }
   }
 
-  isInitialized.value = true; // Mark as initialized before setting up observer
+
+  // 5. Enable the watcher and setup the intersection observer
+  isInitialized.value = true;
   nextTick(() => setupObserver());
 });
 
@@ -624,7 +660,7 @@ const setupObserver = () => {
 
   observer = new IntersectionObserver(
     (entries) => {
-      if (entries[0].isIntersecting && !state.loadingMore && state.hasMore) {
+      if (entries[0].isIntersecting && !state.loading && !state.loadingMore && state.hasMore) {
         const nextPage = state.currentPage + 1;
         fetchProducts(nextPage, true);
       }
@@ -639,31 +675,54 @@ const setupObserver = () => {
 const handleSort = (value) => {
   filters.sortBy = value;
   state.currentPage = 1;
-  fetchProducts(1);
+  // fetchProducts(1);
 };
 
 const setPrice = (min, max) => {
   filters.minPrice = min;
   filters.maxPrice = max;
   state.currentPage = 1;
-  fetchProducts(1);
+  // fetchProducts(1);
 };
+
+const router = useRouter()
+const route = useRoute()
+
+const changeRoute = (pass) => {
+  const currentQuery = { ...route.query }
+  router.replace({
+    path: `/c${pass}`,
+    query: currentQuery
+  })
+}
+
+const navigateToAllProducts = () => {
+  selectedCategorySlug.value = null
+  selectedSubcategorySlug.value = null
+  state.pageTitle = 'ALL PRODUCTS'
+  state.currentPage = 1
+  resetFilters(false)
+  changeRoute("")
+  // fetchProducts(1)
+}
 
 const navigateToCategory = (categorySlug) => {
-  selectedCategorySlug.value = categorySlug;
-  selectedSubcategorySlug.value = null;
-  state.pageTitle = categorySlug.replace(/-/g, ' ').toUpperCase();
-  state.currentPage = 1;
-  resetFilters(false);
-  fetchProducts(1);
-};
+  selectedCategorySlug.value = categorySlug
+  selectedSubcategorySlug.value = null
+  state.pageTitle = categorySlug.replace(/-/g, ' ').toUpperCase()
+  state.currentPage = 1
+  resetFilters(false)
+  changeRoute(`/${categorySlug}`)
+  // fetchProducts(1)
+}
 
-const navigateToSubcategory = (subcategorySlug) => {
+const navigateToSubcategory = (categorySlug, subcategorySlug) => {
   selectedSubcategorySlug.value = subcategorySlug;
-  state.pageTitle = subcategorySlug.replace(/-/g, ' ').toUpperCase();
+  state.pageTitle = subcategorySlug.replace(/-/g, ' ').toUpperCase() + `<small>${categorySlug.replace(/-/g, ' ').toUpperCase()}</small>`;
   state.currentPage = 1;
   resetFilters(false);
-  fetchProducts(1);
+  changeRoute(`/${categorySlug}--${subcategorySlug}`)
+  // fetchProducts(1);
 };
 
 const resetFilters = (fetchData = true) => {
@@ -673,7 +732,7 @@ const resetFilters = (fetchData = true) => {
   filters.sortBy = null;
   state.currentPage = 1;
 
-  if (fetchData) fetchProducts(1);
+  // if (fetchData) fetchProducts(1);
 };
 
 // Computed properties
@@ -736,7 +795,7 @@ const addToCart = async (product) => {
 
 const updateQuantity = async (product, quantity) => {
   loadingStates.value[product.id] = true;
-  
+
   try {
     if (quantity <= 0) {
       cartStore.removeItem(product.id);
