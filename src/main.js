@@ -152,8 +152,8 @@ app.use(Toast, {
 
 app.use(VueLazyLoad, {
   // Optional: default placeholder (you can use a spinner, blurred image, etc.)
-  loading: '/images/oil-droplet.gif',
-  error: '/images/oil-droplet.jpg'
+  loading: '../public/images/oil-droplet.gif',
+  error: '../public/images/oil-droplet.jpg'
 })
 
 app.mount('#app')

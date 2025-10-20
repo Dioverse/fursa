@@ -173,7 +173,7 @@
                     
                     <!-- Left: Image -->    
                     <div class="flex justify-center lg:justify-start">
-                        <img src="../../public/images/chairman.png" alt="About Fursa Energy" class="max-w-full">
+                        <img src="../../public/images/fursa-chairman.jpg" alt="About Fursa Energy" class="max-w-full rounded-lg">
                     </div>
 
                     <!-- Right: Text -->
