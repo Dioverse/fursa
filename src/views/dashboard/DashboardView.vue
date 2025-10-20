@@ -77,6 +77,7 @@ import api from '@/services/api'
 import axios from 'axios'
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL
+const token = localStorage.getItem('token')
 
 const router = useRouter()
 const toast = useToast()
@@ -98,7 +99,6 @@ const stats = ref({
 const fetchDashboard = async () => {
   loading.value = true
   try {
-    const token = localStorage.getItem('token')
     const { data } = await axios.get(`${baseUrl}/dashboard`, {
       headers: {
         Authorization: `Bearer ${token}`
@@ -162,7 +162,7 @@ const handleLogout = () => {
 }
 
 onMounted(() => {
-  syncCart()
+  // syncCart()
   fetchDashboard()
 })
 
