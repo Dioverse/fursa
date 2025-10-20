@@ -39,6 +39,15 @@ class Category extends Model implements AuditableContract
         );
     }
 
+    public function allProducts()
+    {
+        return $this->hasMany(Product::class)
+            ->orWhereIn('category_id', function ($query) {
+                $query->select('id')->from('categories')->whereColumn('parent_id', 'categories.id');
+            });
+    }
+
+
     public function subcategories()
     {
         return $this->hasMany(Category::class, 'parent_id');
