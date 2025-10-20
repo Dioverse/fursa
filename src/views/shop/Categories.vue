@@ -39,18 +39,10 @@
               <RouterLink :to="`/c/${category.slug}`" class="category-header">
                 <div class="category-image">
                   <img
-                    v-if="category.image"
-                    :src="`${storageUrl}${category.image}`"
+                    v-lazy="getImageUrl(category.image)"
                     :alt="category.name"
                     @error="handleImageError"
                   />
-                  <div v-else class="image-placeholder">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                      <circle cx="8.5" cy="8.5" r="1.5"/>
-                      <polyline points="21 15 16 10 5 21"/>
-                    </svg>
-                  </div>
                 </div>
                 <div class="category-info">
                   <h2 class="category-name">{{ category.name }}</h2>
@@ -98,6 +90,7 @@
 
 <script setup>
 import ShopLayout from '@/layouts/ShopLayout.vue';
+import { getImageUrl } from '@/utils/helpers';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -107,7 +100,6 @@ const loading = ref(false);
 const error = ref(null);
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
-const storageUrl = import.meta.env.VITE_STORAGE_URL;
 
 const fetchCategories = async () => {
   loading.value = true;

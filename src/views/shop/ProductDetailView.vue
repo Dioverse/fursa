@@ -2,35 +2,68 @@
     <DefaultLayout>
         <div class="container mx-auto px-4 py-8">
             <!-- Breadcrumb -->
-            <nav class="flex mb-6" aria-label="Breadcrumb">
-                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <nav class="flex mb-6 text-sm" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center justify-center space-x-1 md:space-x-2">
                     <li>
-                        <RouterLink to="/" class="text-gray-700 hover:text-primary">Home</RouterLink>
+                        <RouterLink to="/shop" class="text-gray-700 hover:text-primary"><font-awesome-icon icon="shop"/></RouterLink>
                     </li>
-                    <li><font-awesome-icon icon="chevron-right" class="mx-2 text-gray-400" /></li>
+                    <li class="mx-[3px]"><font-awesome-icon icon="chevron-right" class="h-[10px] w-[10px] text-gray-400" /></li>
                     <li>
-                        <RouterLink to="/shop" class="text-gray-700 hover:text-primary">Shop</RouterLink>
+                        <RouterLink :to="`/c/${product.catSlug}`" class="text-gray-700 hover:text-primary">{{ product.category }}</RouterLink>
                     </li>
-                    <li><font-awesome-icon icon="chevron-right" class="mx-2 text-gray-400" /></li>
+                    <li class="mx-[3px]"><font-awesome-icon icon="chevron-right" class="h-[10px] w-[10px] text-gray-400" /></li>
                     <li class="text-gray-500">{{ product?.name }}</li>
                 </ol>
             </nav>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 <!-- Product Images -->
-                <div>
-                    <div class="bg-gray-100 rounded-lg p-8 mb-4">
-                        <img v-if="product.images?.[0]?.url" :src="product.images[0].url" :alt="product.name" class="w-full">
-                        <div v-else class="h-96 flex items-center justify-center">
-                            <font-awesome-icon icon="image" size="4x" class="text-gray-400" />
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-4 gap-2">
-                        <button v-for="(img, i) in product.images?.slice(0, 4)" :key="i" class="bg-gray-100 rounded p-2 hover:ring-2 hover:ring-primary">
-                            <img :src="img.url" :alt="product.name" class="w-full h-full object-cover">
-                        </button>
-                    </div>
-                </div>
+                <!-- Product Images -->
+<div>
+  <!-- Main Image -->
+  <div
+    class="bg-gray-100 rounded-lg p-8 mb-4 cursor-pointer relative overflow-hidden"
+    @click="showLightbox(0)"
+  >
+    <div v-if="!product.images?.length" class="animate-pulse bg-gray-200 h-80 w-full rounded-lg"></div>
+
+    <img
+      v-else
+      v-lazy="getImageUrl(product.images[0]?.path)"
+      :alt="product.name"
+      class="w-full h-auto object-contain transition-opacity duration-300"
+      @error="handleImageError"
+    />
+  </div>
+
+  <!-- Thumbnail Images -->
+  <div class="grid grid-cols-4 gap-2">
+    <button
+      v-for="(img, i) in product.images?.slice(0, 4)"
+      :key="i"
+      class="bg-gray-100 rounded p-2 hover:ring-2 hover:ring-primary cursor-pointer overflow-hidden"
+      @click="showLightbox(i)"
+    >
+      <div v-if="!img?.path" class="animate-pulse bg-gray-200 h-20 w-full rounded"></div>
+      <img
+        v-else
+        v-lazy="getImageUrl(img.path)"
+        :alt="product.name"
+        class="w-full h-full object-cover transition-opacity duration-300"
+        @error="handleImageError"
+      />
+    </button>
+  </div>
+
+  <!-- Lightbox -->
+  <VueEasyLightbox
+    :visible="visibleRef"
+    :imgs="product.images?.map(img => getImageUrl(img.path))"
+    :index="indexRef"
+    @hide="visibleRef = false"
+  />
+</div>
+
 
                 <!-- Product Info -->
                 <div>
@@ -133,6 +166,14 @@
                                     <td class="py-3 font-medium">{{ spec.name }}</td>
                                     <td class="py-3">{{ spec.value }}</td>
                                 </tr>
+                                <tr>
+                                    <td class="py-3 font-medium">Tags</td>
+                                    <td class="py-3">
+                                        <p v-for="tag in product.tags" :key="tag" class="text-gray-700 hover:text-primary py-[1px]">
+                                            <RouterLink :to="`/c?tag=${tag}`">{{ toUcwords(tag) }}</RouterLink>
+                                        </p>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -180,6 +221,9 @@ import { useCartStore } from '@/stores/cart'
 import { useWishlistStore } from '@/stores/wishlist'
 import Brochure from '@/components/common/Brochure.vue'
 import CTA from '@/components/common/CTA.vue'
+import { getImageUrl, handleImageError, toUcwords } from '@/utils/helpers'
+import VueEasyLightbox from 'vue-easy-lightbox'
+import 'vue-easy-lightbox/external-css/vue-easy-lightbox.css'
 
 const route = useRoute()
 const product = ref({})
@@ -227,6 +271,13 @@ const saveWishlist = () => {
   }
 }
 
+const visibleRef = ref(false)
+const indexRef = ref(0)
+const showLightbox = (index) => {
+  indexRef.value = index
+  visibleRef.value = true
+}
+
 onMounted(async () => {
   const id = route.params.id
 
@@ -248,6 +299,8 @@ onMounted(async () => {
       description: apiProduct.short_description,
       fullDescription: apiProduct.description,
       category: apiProduct.category?.name || null,
+      catSlug: apiProduct.category?.slug || null,
+      tags: apiProduct.tags || [],
       stock_quantity: apiProduct.stock_quantity,
       low_stock_threshold: apiProduct.low_stock_threshold,
       discount: apiProduct.discount || null,
@@ -256,10 +309,7 @@ onMounted(async () => {
         { name: 'Low Stock Threshold', value: apiProduct.low_stock_threshold },
         { name: 'Category', value: apiProduct.category?.name }
       ],
-      images: apiProduct.images.map(img => ({
-        id: img.id,
-        url: `https://fursa.jarustraining.com.ng/storage/${img.path}`
-      })),
+      images: apiProduct.images,
       reviewsList: []
     }
 
@@ -272,9 +322,7 @@ onMounted(async () => {
       price: parseFloat(p.price),
       discountedPrice: p.discounted_price ? parseFloat(p.discounted_price) : null,
       description: p.short_description,
-      image: p.images[0]
-        ? `https://fursa.jarustraining.com.ng/storage/${p.images[0].path}`
-        : null
+      image: p.images[0]?.path
     }))
   } catch (error) {
     console.error('Error fetching product:', error)

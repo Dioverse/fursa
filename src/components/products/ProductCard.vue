@@ -14,10 +14,11 @@
 
     <div class="relative">
       <img
-        v-if="product.image"
-        :src="product.image"
+        v-if="getImageUrl(product.image)"
+        :src="getImageUrl(product.image)"
         :alt="product.name"
         class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+        @error="handleImageError"
       />
       <div
         v-else
@@ -88,6 +89,7 @@ import { ref, onMounted } from "vue";
 import { useCartStore } from "@/stores/cart";
 import { useToast } from "vue-toastification";
 import BaseButton from "@/components/common/BaseButton.vue";
+import { getImageUrl, handleImageError } from "@/utils/helpers";
 
 const props = defineProps({
   product: {

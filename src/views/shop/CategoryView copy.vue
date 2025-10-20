@@ -149,8 +149,8 @@
                 class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow relative">
                 <div class="relative">
                   <!-- Product Image -->
-                  <img :src="getProductImage(product)" :alt="product.name"
-                    class="w-full h-48 object-cover bg-gray-200" />
+                  <img v-lazy="getImageUrl(product.images[0].path)" :alt="product.name"
+                    class="w-full h-48 object-cover bg-gray-200" @error="handleImageError" />
 
                   <!-- Featured Icon -->
                   <div v-if="product.is_featured" class="absolute top-2 left-2 text-white rounded-full p-1 shadow-md"
@@ -343,8 +343,8 @@
 <script setup>
 import { reactive, ref, computed, onMounted, watch, nextTick } from 'vue';
 import ShopLayout from '@/layouts/ShopLayout.vue';
+import { getImageUrl, handleImageError } from '@/utils/helpers';
 
-const storageUrl = import.meta.env.VITE_STORAGE_URL || '';
 const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api';
 
 // Icons (inline SVG components)
@@ -463,13 +463,6 @@ const discountLabel = (product) => {
   if (!d) return '';
   if (d.type === 'percentage') return `${d.value}%`;
   return '0%';
-};
-
-const getProductImage = (product) => {
-  if (product.images && product.images.length > 0) {
-    return storageUrl + product.images[0].path;
-  }
-  return '/placeholder.png';
 };
 
 const buildQueryParams = () => {

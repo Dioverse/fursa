@@ -1,9 +1,8 @@
 <template>
     <div class="flex items-center gap-4 py-4 border-b">
         <div class="w-20 h-20 bg-gray-200 rounded flex items-center justify-center">
-            <img v-if="item.product.image" :src="getProductImage(item.product)" :alt="item.product.name"
-                class="w-full h-full object-cover rounded">
-            <font-awesome-icon v-else icon="image" size="2x" class="text-gray-400" />
+            <img v-lazy="getImageUrl(item.product.images[0].path)" :alt="item.product.name"
+                class="w-full h-full object-cover rounded" @error="handleImageError">
         </div>
 
         <div class="flex-1">
@@ -45,6 +44,7 @@
 
 <script setup>
 import { useCartStore } from '@/stores/cart'
+import { getImageUrl, handleImageError } from '@/utils/helpers'
 import { ref } from 'vue'
 import { useToast } from 'vue-toastification'
 
@@ -88,13 +88,6 @@ const removeItem = () => {
     cartStore.removeItem(props.item.product.id)
     // toast.success('Item removed from cart')
 }
-
-const getProductImage = (product) => {
-    if (product.images && product.images.length > 0) {
-        return storageUrl + product.images[0].path;
-    }
-    return '/placeholder.png';
-};
 
 
 

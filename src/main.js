@@ -3,6 +3,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import Toast from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
+import VueLazyLoad from 'vue3-lazyload'
 
 // FontAwesome imports
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -147,6 +148,12 @@ app.use(Toast, {
   closeButton: 'button',
   icon: true,
   rtl: false,
+})
+
+app.use(VueLazyLoad, {
+  // Optional: default placeholder (you can use a spinner, blurred image, etc.)
+  loading: '/images/oil-droplet.gif',
+  error: '/images/oil-droplet.jpg'
 })
 
 app.mount('#app')

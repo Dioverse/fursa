@@ -5,6 +5,23 @@ export function formatCurrency(amount) {
   return `₦${amount.toLocaleString('en-NG')}`
 }
 
+const storageUrl = import.meta.env.VITE_STORAGE_URL;
+export function getImageUrl(path) {
+  if (!path) return '/images/oil-droplet.jpg';
+  return `${storageUrl}${path.startsWith('/') ? path.slice(1) : path}`
+}
+
+export function handleImageError(e) {
+  e.target.src = '/images/oil-droplet.jpg';
+};
+
+export const toUcwords = (text) => {
+  if (!text) return ''
+  return text
+    .toLowerCase()
+    .replace(/\b\w/g, char => char.toUpperCase())
+}
+
 /**
  * Format date to readable string
  */
