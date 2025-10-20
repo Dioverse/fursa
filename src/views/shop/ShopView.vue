@@ -147,135 +147,116 @@
         </section>
 
         <!-- Featured Products Section -->
-        <section class="max-w-7xl mx-auto mb-8 bg-white">
-          <div class="flex justify-between items-center mb-4 bg-gold-500 py-1 px-3 rounded">
-            <h2 class="text-2xl font-bold flex items-center">
-              <span class="text-white">Featured Products</span>
-            </h2>
-            <RouterLink :to="`/c?sort_by=if`" class="text-white hover:underline inline-flex items-center">
-              More
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </RouterLink>
-          </div>
+<section class="max-w-7xl mx-auto mb-8 bg-white">
+  <div class="flex justify-between items-center mb-4 bg-gold-500 py-1 px-3 rounded">
+    <h2 class="text-2xl font-bold text-white">Featured Products</h2>
+    <RouterLink :to="`/c?sort_by=if`" class="text-white hover:underline inline-flex items-center">
+      More
+      <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+    </RouterLink>
+  </div>
 
-          <!-- Empty State -->
-          <div v-if="shopData.featured_products.length < 1" class="w-full py-16 text-center">
-            <p class="text-gray-500 text-lg">No featured products available</p>
-          </div>
+  <div v-if="shopData.featured_products.length < 1" class="w-full py-16 text-center">
+    <p class="text-gray-500 text-lg">No featured products available</p>
+  </div>
 
-          <!-- Slider Container -->
-          <div v-else class="relative group/slider">
-            <!-- Previous Button -->
-            <button @click="scrollSlider(featuredSlider, -1)"
-              class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 opacity-0 group-hover/slider:opacity-100 transition-opacity disabled:opacity-30"
-              :disabled="!canScrollLeft(featuredSlider)">
-              <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-              </svg>
-            </button>
-
-            <!-- Scrollable Products -->
-            <div ref="featuredSlider" class="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-1 py-2">
-              <RouterLink :to="`/product/${product.slug}`" v-for="product in shopData.featured_products" :key="product.id"
-                class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer relative flex-shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)]">
-                <div class="aspect-square bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
-                  <img :src="getImageUrl(product.images?.[0]?.path)" :alt="product.name" loading="lazy"
-                    class="w-full h-full object-cover" @error="handleImageError">
-                </div>
-                <h3 class="text-sm font-medium mb-1 truncate">{{ product.name }}</h3>
-                <div class="flex flex-col">
-                  <span v-if="product.discount" class="text-gold-500 font-bold">₦ {{
-                    product.discounted_price.toLocaleString() }}</span>
-                  <span :class="product.discount ? 'text-gray-400 line-through text-xs' : 'text-gold-500 font-bold'">
-                    ₦ {{ product.price.toLocaleString() }}
-                  </span>
-                </div>
-                <div v-if="product.discount" class="mt-1 absolute top-1 right-2">
-                  <span class="bg-gold-100 text-gold-500 text-xs px-2 py-1 rounded">
-                    -{{ product.discount.value }}{{ product.discount.type === 'percentage' ? '%' : '' }}
-                  </span>
-                </div>
-              </RouterLink>
-            </div>
-
-            <!-- Next Button -->
-            <button @click="scrollSlider(featuredSlider, 1)"
-              class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 opacity-0 group-hover/slider:opacity-100 transition-opacity disabled:opacity-30"
-              :disabled="!canScrollRight(featuredSlider)">
-              <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </button>
-          </div>
-        </section>
-
-        <!-- Categories with Products -->
-        <div v-for="(category, idx) in shopData.categories_with_products" :key="category.id"
-          class="max-w-7xl mx-auto mb-8">
-          <div class="flex justify-between items-center mb-4 bg-gold-500 py-1 px-3 rounded">
-            <h2 class="text-2xl font-bold flex items-center">
-              <span class="text-white">{{ category.name }}</span>
-            </h2>
-            <RouterLink :to="`/c/${category.slug}`" class="text-white hover:underline inline-flex items-center">
-              More
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </RouterLink>
-          </div>
-
-          <!-- Empty State -->
-          <div v-if="category.products.length < 1" class="w-full py-16 text-center">
-            <p class="text-gray-500 text-lg">No products available in {{ category.name }}</p>
-          </div>
-
-          <!-- Slider Container -->
-          <div v-else class="relative group/slider">
-            <!-- Previous Button -->
-            <button @click="scrollCategorySlider(idx, -1)"
-              class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 opacity-0 group-hover/slider:opacity-100 transition-opacity">
-              <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-              </svg>
-            </button>
-
-            <!-- Scrollable Products -->
-            <div :ref="el => categorySliders[idx] = el"
-              class="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-1 py-2">
-              <RouterLink :to="`/product/${product.slug}`" v-for="product in category.products"
-                :key="product.id"
-                class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer relative flex-shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)]">
-                <div class="aspect-square bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
-                  <img :src="getImageUrl(product.images?.[0]?.path)" :alt="product.name" loading="lazy"
-                    class="w-full h-full object-cover" @error="handleImageError">
-                </div>
-                <h3 class="text-sm font-medium mb-1 truncate">{{ product.name }}</h3>
-                <div class="flex flex-col">
-                  <span v-if="product.discount" class="text-gold-500 font-bold">₦ {{
-                    product.discounted_price.toLocaleString() }}</span>
-                  <span :class="product.discount ? 'text-gray-400 line-through text-xs' : 'text-gold-500 font-bold'">
-                    ₦ {{ product.price.toLocaleString() }}
-                  </span>
-                </div>
-                <div v-if="product.discount" class="mt-1 absolute top-1 right-2">
-                  <span class="bg-gold-100 text-gold-500 text-xs px-2 py-1 rounded">
-                    -{{ product.discount.value }}{{ product.discount.type === 'percentage' ? '%' : '' }}
-                  </span>
-                </div>
-              </RouterLink>
-            </div>
-
-            <!-- Next Button -->
-            <button @click="scrollCategorySlider(idx, 1)"
-              class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 opacity-0 group-hover/slider:opacity-100 transition-opacity">
-              <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </button>
-          </div>
+  <Swiper
+    v-else
+    :modules="[Navigation]"
+    :slides-per-view="2"
+    :space-between="16"
+    :breakpoints="{
+      640: { slidesPerView: 2, spaceBetween: 16 },
+      768: { slidesPerView: 3, spaceBetween: 16 },
+      1024: { slidesPerView: 4, spaceBetween: 20 },
+      1280: { slidesPerView: 6, spaceBetween: 24 }
+    }"
+    navigation
+    class="rounded-xl pb-6"
+  >
+    <SwiperSlide
+      v-for="product in shopData.featured_products"
+      :key="product.id"
+      class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer relative"
+    >
+      <RouterLink :to="`/product/${product.slug}`">
+        <div class="aspect-square bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
+          <img :src="getImageUrl(product.images?.[0]?.path)" :alt="product.name" loading="lazy"
+            class="w-full h-full object-cover" @error="handleImageError">
         </div>
+        <h3 class="text-sm font-medium mb-1 truncate">{{ product.name }}</h3>
+        <div class="flex flex-row">
+          <span v-if="product.discount" class="text-gold-500 font-bold">₦ {{ product.discounted_price.toLocaleString() }}</span>
+          <span :class="product.discount ? 'text-gray-400 line-through text-xs' : 'text-gold-500 font-bold'">
+            ₦ {{ product.price.toLocaleString() }}
+          </span>
+        </div>
+        <div v-if="product.discount" class="mt-1 absolute top-1 right-2">
+          <span class="bg-gold-100 text-gold-500 text-xs px-2 py-1 rounded">
+            -{{ product.discount.value }}{{ product.discount.type === 'percentage' ? '%' : '' }}
+          </span>
+        </div>
+      </RouterLink>
+    </SwiperSlide>
+  </Swiper>
+</section>
+
+
+        <div v-for="(category, idx) in shopData.categories_with_products" :key="category.id" class="max-w-7xl mx-auto mb-8">
+  <div class="flex justify-between items-center mb-4 bg-gold-500 py-1 px-3 rounded">
+    <h2 class="text-2xl font-bold text-white">{{ category.name }}</h2>
+    <RouterLink :to="`/c/${category.slug}`" class="text-white hover:underline inline-flex items-center">
+      More
+      <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+    </RouterLink>
+  </div>
+
+  <div v-if="category.products.length < 1" class="w-full py-16 text-center">
+    <p class="text-gray-500 text-lg">No products available in {{ category.name }}</p>
+  </div>
+
+  <Swiper
+    v-else
+    :modules="[Navigation]"
+    :slides-per-view="2"
+    :space-between="16"
+    :breakpoints="{
+      640: { slidesPerView: 2, spaceBetween: 16 },
+      768: { slidesPerView: 3, spaceBetween: 16 },
+      1024: { slidesPerView: 4, spaceBetween: 20 },
+      1280: { slidesPerView: 6, spaceBetween: 24 }
+    }"
+    navigation
+    class="rounded-xl pb-6"
+  >
+    <SwiperSlide v-for="product in category.products" :key="product.id"
+      class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer relative">
+      <RouterLink :to="`/product/${product.slug}`">
+        <div class="aspect-square bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden">
+          <img :src="getImageUrl(product.images?.[0]?.path)" :alt="product.name" loading="lazy"
+            class="w-full h-full object-cover" @error="handleImageError">
+        </div>
+        <h3 class="text-sm font-medium mb-1 truncate">{{ product.name }}</h3>
+        <div class="flex flex-row">
+          <span v-if="product.discount" class="text-gold-500 font-bold">₦ {{ product.discounted_price.toLocaleString() }}</span>
+          <span :class="product.discount ? 'text-gray-400 line-through text-xs mt-1 ml-1' : 'text-gold-500 font-bold'">
+            ₦ {{ product.price.toLocaleString() }}
+          </span>
+        </div>
+        <div v-if="product.discount" class="mt-1 absolute top-1 right-2">
+          <span class="bg-gold-100 text-gold-500 text-xs px-2 py-1 rounded">
+            -{{ product.discount.value }}{{ product.discount.type === 'percentage' ? '%' : '' }}
+          </span>
+        </div>
+      </RouterLink>
+    </SwiperSlide>
+  </Swiper>
+</div>
+
       </div>
 
       <!-- Error State -->
@@ -293,8 +274,9 @@
 import { ref, onMounted } from 'vue';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import { Swiper, SwiperSlide } from "swiper/vue";
-import { Autoplay, Pagination } from "swiper/modules";
+import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
+import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 const shopData = ref({
