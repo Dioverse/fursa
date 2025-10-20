@@ -1,14 +1,65 @@
 <!DOCTYPE html>
 <html lang="">
-  <head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vite App</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-    <script src="https://js.paystack.co/v1/inline.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vite App</title>
+  <style>
+    .line-clamp-1 {
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+
+    .mySwiper .swiper-button-next,
+    .mySwiper .swiper-button-prev {
+      color: #d4af37;
+      /* gold */
+      background: white;
+      border-radius: 9999px;
+      width: 30px;
+      height: 30px;
+      padding: 5px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      background-color: #ffedbf;
+    }
+
+    .mySwiper .swiper-button-next:hover,
+    .mySwiper .swiper-button-prev:hover {
+      color: #b89125;
+      transform: scale(1.1);
+    }
+
+    .mySwiper .swiper-button-next::after,
+    .mySwiper .swiper-button-prev::after {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .mySwiper .swiper-button-disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.js"></script>
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+</body>
+
 </html>

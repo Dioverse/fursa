@@ -29,22 +29,28 @@
 
                 <!-- Categories -->
                 <div class="pb-6 border-b">
-                  <h3 class="font-bold text-lg mb-4">CATEGORY</h3>
+                  <h3 class="font-bold mb-4">CATEGORY</h3>
                   <div class="space-y-1">
                     <div class="group-relative">
                       <div @click="navigateToAllProducts()" :class="[
-                        'font-semibold text-gray-800 py-2 px-3 rounded cursor-pointer transition-colors',
+                        'font-semibold text-gray-800 text-sm py-1 px-3 rounded cursor-pointer transition-colors',
                         (!selectedCategorySlug && !selectedSubcategorySlug) ? 'bg-mprimary-100 text-mprimary-600' : 'hover:bg-mprimary-50'
                       ]">
-                        All Products
+                        <div class="flex nowrap items-center">
+                          <font-awesome-icon class="w-4 h-4" icon="bars" />&nbsp;
+                        <span>All Products</span>
+                        </div>
                       </div>
                     </div>
                     <div v-for="cat in categories" :key="cat.id" class="group relative">
                       <div @click="navigateToCategory(cat.slug)" :class="[
-                        'font-semibold text-gray-800 py-2 px-3 rounded cursor-pointer transition-colors',
+                        'font-semibold text-gray-800 text-sm py-1 px-3 rounded cursor-pointer transition-colors',
                         selectedCategorySlug === cat.slug ? 'bg-mprimary-100 text-mprimary-600' : 'hover:bg-mprimary-50'
                       ]">
-                        {{ cat.name }}
+                        <div class="flex nowrap items-center">
+                          <font-awesome-icon class="w-4 h-4" :icon="cat.icon" />&nbsp;
+                        <span>{{ cat.name }}</span>
+                        </div>
                       </div>
 
                       <div v-if="cat.subcategories && cat.subcategories.length > 0"
@@ -66,27 +72,23 @@
 
                 <!-- Tags Filter -->
                 <div class="pb-6 border-b">
-                  <h3 class="font-bold text-lg mb-3">TAGS</h3>
+                  <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-bold text-lg">TAGS</h3>
+
+                    <button v-if="filters.selectedTags.length > 0"
+                      @click="filters.selectedTags = []; state.currentPage = 1;"
+                      class="mt-2 text-xs text-mprimary-600 hover:text-mprimary-700 font-semibold">
+                      Clear tags
+                    </button>
+                  </div>
                   <div class="space-y-2 max-h-48 overflow-y-auto">
                     <label v-for="tag in availableTags" :key="tag"
                       class="flex items-center gap-2 cursor-pointer text-sm">
-                      <input 
-                        type="checkbox" 
-                        class="w-4 h-4 rounded border-gray-300"
-                        :value="tag"
-                        v-model="filters.selectedTags"
-                        @change="state.currentPage = 1;" 
-                      />
+                      <input type="checkbox" class="w-4 h-4 rounded border-gray-300" :value="tag"
+                        v-model="filters.selectedTags" @change="state.currentPage = 1;" />
                       <span class="capitalize">{{ tag }}</span>
                     </label>
                   </div>
-                  <button 
-                    v-if="filters.selectedTags.length > 0"
-                    @click="filters.selectedTags = []; state.currentPage = 1;"
-                    class="mt-2 text-xs text-mprimary-600 hover:text-mprimary-700 font-semibold"
-                  >
-                    Clear tags
-                  </button>
                 </div>
 
                 <!-- Price Range -->
@@ -136,7 +138,7 @@
                   <button @click="showSortDropdown = !showSortDropdown"
                     class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 lg:hidden">
                     <span class="text-sm">Sort by</span>
-                    <ChevronDownIcon class="w-4 h-4" />
+                    <font-awesome-icon class="w-4 h-4" :icon="`chevron-${showSortDropdown ? 'up' : 'down'}`" />
                   </button>
 
                   <div v-if="showSortDropdown"
@@ -151,7 +153,7 @@
 
                 <button @click="showMobileFilters = true"
                   class="lg:hidden flex items-center gap-2 px-4 py-2 border border-gray-300 rounded">
-                  <FilterIcon class="w-4 h-4" />
+                  <font-awesome-icon class="w-4 h-4" icon="filter" />
                   <span class="text-sm">Filter</span>
                 </button>
               </div>
@@ -160,17 +162,11 @@
             <!-- Active Filters Display -->
             <div v-if="filters.selectedTags.length > 0" class="mb-4">
               <div class="flex flex-wrap gap-2">
-                <span 
-                  v-for="tag in filters.selectedTags" 
-                  :key="tag"
-                  class="inline-flex items-center gap-1 px-3 py-1 bg-mprimary-100 text-mprimary-700 rounded-full text-sm"
-                >
+                <span v-for="tag in filters.selectedTags" :key="tag"
+                  class="inline-flex items-center gap-1 px-3 py-1 bg-mprimary-100 text-mprimary-700 rounded-full text-sm">
                   <span class="capitalize">{{ tag }}</span>
-                  <button 
-                    @click="removeTag(tag)"
-                    class="hover:text-mprimary-900"
-                  >
-                    <XIcon class="w-3 h-3" />
+                  <button @click="removeTag(tag)" class="hover:text-mprimary-900">
+                    <XIcon class="w-4 h-4" />
                   </button>
                 </span>
               </div>
@@ -179,7 +175,8 @@
             <!-- Products Heading -->
             <div class="mb-4">
               <h2 id="page-header" class="text-2xl font-bold text-gray-800 mb-2">{{ pageTitle }}</h2>
-              <p v-if="!loading && !loadingMore" class="text-sm text-gray-600">Showing ({{ products.length }} of {{ state.totalFound }}) products found</p>
+              <p v-if="!loading && !loadingMore" class="text-sm text-gray-600">Showing ({{ products.length }} of {{
+                state.totalFound }}) products found</p>
             </div>
 
             <!-- Loading State -->
@@ -350,23 +347,29 @@
 
               <!-- Categories in Mobile -->
               <div class="pb-4 border-b">
-                <h3 class="font-bold text-lg mb-4">CATEGORY</h3>
+                <h3 class="font-bold mb-4">CATEGORY</h3>
                 <div class="space-y-1">
                   <div>
                     <div @click="navigateToAllProducts(); showMobileFilters = false" :class="[
-                      'font-semibold text-gray-800 py-2 px-3 rounded cursor-pointer transition-colors',
+                      'font-semibold text-gray-800 test-sm py-1 px-3 rounded cursor-pointer transition-colors',
                       (!selectedCategorySlug && !selectedSubcategorySlug) ? 'bg-mprimary-100 text-mprimary-600' : 'hover:bg-mprimary-50'
                     ]">
-                      All Products
+                      <div class="flex nowrap items-center">
+                        <font-awesome-icon class="w-4 h-4" icon="bars" />&nbsp;
+                      <span>All Products</span>
+                      </div>
                     </div>
                   </div>
 
                   <div v-for="cat in categories" :key="cat.id">
                     <div @click="navigateToCategory(cat.slug); showMobileFilters = false" :class="[
-                      'font-semibold text-gray-800 py-2 px-3 rounded cursor-pointer transition-colors',
+                      'font-semibold text-gray-800 test-sm py-1 px-3 rounded cursor-pointer transition-colors',
                       selectedCategorySlug === cat.slug ? 'bg-mprimary-100 text-mprimary-600' : 'hover:bg-mprimary-50'
                     ]">
-                      {{ cat.name }}
+                      <div class="flex nowrap items-center">
+                        <font-awesome-icon class="w-4 h-4" :icon="cat.icon" />&nbsp;
+                      <span>{{ cat.name }}</span>
+                      </div>
                     </div>
                     <div v-if="cat.subcategories && cat.subcategories.length > 0" class="ml-4 space-y-1 mt-1">
                       <div v-for="sub in cat.subcategories" :key="sub.id"
@@ -383,26 +386,21 @@
 
               <!-- Tags Filter in Mobile -->
               <div class="pb-4 border-b">
-                <h3 class="font-bold text-lg mb-3">TAGS</h3>
+                <div class="flex items-center justify-between mb-3">
+                  <h3 class="font-bold text-lg">TAGS</h3>
+
+                  <button v-if="filters.selectedTags.length > 0" @click="filters.selectedTags = []"
+                    class="mt-2 text-xs text-mprimary-600 hover:text-mprimary-700 font-semibold">
+                    Clear tags
+                  </button>
+                </div>
                 <div class="space-y-2 max-h-48 overflow-y-auto">
-                  <label v-for="tag in availableTags" :key="tag"
-                    class="flex items-center gap-2 cursor-pointer text-sm">
-                    <input 
-                      type="checkbox" 
-                      class="w-4 h-4 rounded border-gray-300"
-                      :value="tag"
-                      v-model="filters.selectedTags"
-                    />
+                  <label v-for="tag in availableTags" :key="tag" class="flex items-center gap-2 cursor-pointer text-sm">
+                    <input type="checkbox" class="w-4 h-4 rounded border-gray-300" :value="tag"
+                      v-model="filters.selectedTags" />
                     <span class="capitalize">{{ tag }}</span>
                   </label>
                 </div>
-                <button 
-                  v-if="filters.selectedTags.length > 0"
-                  @click="filters.selectedTags = []"
-                  class="mt-2 text-xs text-mprimary-600 hover:text-mprimary-700 font-semibold"
-                >
-                  Clear tags
-                </button>
               </div>
 
               <!-- Price Range in Mobile -->
@@ -446,10 +444,10 @@
 <script setup>
 import { reactive, ref, computed, onMounted, watch, nextTick } from 'vue';
 import ShopLayout from '@/layouts/ShopLayout.vue';
-import { useCartStore } from '@/stores/cart';
 import { useWishlistStore } from '@/stores/wishlist';
 import { useRoute, useRouter } from 'vue-router';
-import { addToCart, getCartQuantity, getImageUrl, handleImageError, isInCart, onQuantityBlur, onQuantityEnter, toggleWishlist, updateQuantity, loadingStates } from '@/utils/helpers';
+import { addToCart, getCartQuantity, isInCart, onQuantityBlur, onQuantityEnter, toggleWishlist, updateQuantity, loadingStates } from '@/utils/neut';
+import { getImageUrl, handleImageError } from '@/utils/helper';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -804,12 +802,3 @@ const subcategorySlug = computed(() => {
   return selectedSubcategorySlug.value;
 });
 </script>
-
-<style>
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-</style>

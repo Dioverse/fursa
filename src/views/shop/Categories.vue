@@ -90,7 +90,7 @@
 
 <script setup>
 import ShopLayout from '@/layouts/ShopLayout.vue';
-import { getImageUrl } from '@/utils/helpers';
+import { getImageUrl, handleImageError } from '@/utils/helpers';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -126,10 +126,6 @@ const fetchCategories = async () => {
 const truncateText = (text, maxLength) => {
   if (!text) return '';
   return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
-};
-
-const handleImageError = (e) => {
-  e.target.style.display = 'none';
 };
 
 onMounted(() => {

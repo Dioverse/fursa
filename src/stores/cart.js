@@ -1,10 +1,10 @@
 // /stores/cart.js
+import { toNumber } from '@/utils/helpers'
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 import { useToast } from 'vue-toastification'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://back.fursaenergy.com/public/api'
-const toNumber = (v) => (v === null || v === undefined ? 0 : Number(v))
 
 export const useCartStore = defineStore('cart', () => {
   const toast = useToast()

@@ -65,7 +65,8 @@
 import { useCartStore } from '@/stores/cart'
 import { ref } from 'vue'
 import { useToast } from 'vue-toastification'
-import { getCartQuantity, getImageUrl, handleImageError, onQuantityBlur, onQuantityEnter, updateQuantity, loadingStates, removeItem } from '@/utils/helpers';
+import { getCartQuantity, onQuantityBlur, onQuantityEnter, updateQuantity, loadingStates, removeItem } from '@/utils/neut';
+import { getImageUrl, handleImageError } from '@/utils/helpers';
 
 const props = defineProps({
     item: {
@@ -104,12 +105,3 @@ const toast = useToast()
 
 
 </script>
-
-<style>
-.line-clamp-1 {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-</style>

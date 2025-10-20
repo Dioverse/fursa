@@ -63,7 +63,7 @@
                 <h2 class="text-3xl font-bold text-center mb-12">Popular Now</h2>
                 <ProductGrid :products="popularProducts" :loading="loading" />
                 <div class="text-center mt-8">
-                    <RouterLink to="/shop" class="inline-flex items-center gap-2 text-primary hover:underline">
+                    <RouterLink to="/shop" class="inline-flex items-center gap-2 p-2 rounded bg-gray-300 text-mprimary-600 hover:opacity-60">
                         <span>View More</span>
                         <font-awesome-icon icon="arrow-right" />
                     </RouterLink>
@@ -427,20 +427,47 @@ import {
   faHandshake,
   faCertificate,
 } from '@fortawesome/free-solid-svg-icons'
+import { toNumber } from '@/utils/helpers'
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL
 const router = useRouter()
 const popularProducts = ref([])
 const loading = ref(false)
 
-const categories = [
-    { id: 1, name: 'Motor Oil', slug: 'motor-oil', icon: faCar },
-    { id: 2, name: 'Heavy Duty', slug: 'heavy-duty', icon: faTruck },
-    { id: 3, name: 'Industrial & Agricultural', slug: 'industrial', icon: faIndustry },
-    { id: 4, name: 'Gear Oil', slug: 'gear-oil', icon: faCog },
-    { id: 5, name: 'Hydraulic & Grease', slug: 'hydraulic', icon: faOilCan },
-    { id: 6, name: 'Transmission Fluids', slug: 'transmission', icon: faExchangeAlt },
-    { id: 7, name: 'Greases', slug: 'greases', icon: faFillDrip }
-]
+// const categories = [
+//     { id: 1, name: 'Motor Oil', slug: 'motor-oil', icon: faCar },
+//     { id: 2, name: 'Heavy Duty', slug: 'heavy-duty', icon: faTruck },
+//     { id: 3, name: 'Industrial & Agricultural', slug: 'industrial', icon: faIndustry },
+//     { id: 4, name: 'Gear Oil', slug: 'gear-oil', icon: faCog },
+//     { id: 5, name: 'Hydraulic & Grease', slug: 'hydraulic', icon: faOilCan },
+//     { id: 6, name: 'Transmission Fluids', slug: 'transmission', icon: faExchangeAlt },
+//     { id: 7, name: 'Greases', slug: 'greases', icon: faFillDrip }
+// ]
+
+const categories = ref([]);
+const catloading = ref(false);
+const caterror = ref(null);
+
+const fetchCategories = async () => {
+  catloading.value = true;
+  caterror.value = null;
+
+  try {
+    const response = await fetch(`${baseUrl}/cats`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch categories: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    categories.value = result.data || [];
+  } catch (err) {
+    caterror.value = err.message || 'Failed to load categories. Please try again.';
+    console.error('Error fetching categories:', err);
+  } finally {
+    catloading.value = false;
+  }
+};
 
 
 
@@ -457,22 +484,30 @@ const partners = [
 
 
 const goToCategory = (slug) => {
-    router.push(`/shop?category=${slug}`)
+    router.push(`/c/${slug}`)
 }
 
 onMounted(async () => {
+    fetchCategories()
     loading.value = true
     try {
         // Mock data - replace with actual API call
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/products`)
+        const response = await axios.get(`${baseUrl}/products?per_page=5`)
         const products = response.data.data.products.data
-        popularProducts.value = products.slice(0, 4).map(p => ({
+        popularProducts.value = products.map(p => ({
             id: p.id,
             name: p.name,
             slug: p.slug,
-            price: Number(p.base_price ?? p.price ?? p.distributor_price ?? 0),//parseFloat(p.base_price), // ensure number
+            sku: p.sku,
+            price: p.price,//parseFloat(p.base_price), // ensure number
             category: p.category?.name || "Uncategorized",
-            image: p.images.length ? p.images[0].url : "../../public/images/mrs_motor_oil.png"
+            image: p.images[0]?.path,
+            ...(p.discount
+            ? {
+                discount: p.discount,
+                discounted_price: p.discounted_price,
+                }
+            : { discount: null }),
         }))
     } catch (error) {
         console.error('Failed to load products:', error)

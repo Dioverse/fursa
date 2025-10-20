@@ -56,6 +56,13 @@ import {
   faCheckCircle,
   faTimesCircle,
   faInfoCircle as faInfo,
+  faCarSide,
+  faWrench,
+  faSeedling,
+  faShip,
+  faCube,
+  faTruckRampBox,
+  faMotorcycle,
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -126,6 +133,13 @@ library.add(
   faTwitter,
   faInstagram,
   faLinkedin,
+  faCarSide,
+  faWrench,
+  faSeedling,
+  faShip,
+  faCube,
+  faTruckRampBox,
+  faMotorcycle,
 )
 
 const app = createApp(App)
