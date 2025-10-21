@@ -1,14 +1,13 @@
 <template>
     <DefaultLayout>
         <!-- Hero Section -->
-        <section class="relative bg-[#4B4A3F] text-white py-16 overflow-hidden">
+        <section class="relative bg-[#4B4A3F] text-white py-12 md:py-16 lg:py-16 overflow-hidden">
             <!-- Background overlay with oil pouring image -->
             <div class="absolute inset-0">
                 <img src="/public/images/oil-bg.png" alt="Oil pouring" class="w-full h-full object-cover opacity-70">
                 <div class="absolute inset-0 bg-black bg-opacity-40"></div>
             </div>
-
-            <div class="container mx-auto px-4 relative rounded py-4 xxs:bg-black/20 xs:bg-black/20 sm:bg-black/20 z-10 flex flex-col md:flex-row items-center">
+            <div class="container mx-auto px-4 relative rounded py-4 bg-black/20 md:bg-transparent lg:bg-transparent z-10 flex flex-col md:flex-row items-center">
 
                 <!-- Left Text -->
                 <div class="w-full md:w-1/2 space-y-4">
@@ -44,7 +43,7 @@
         <section class="py-16 bg-gray-50">
             <div class="container mx-auto px-4">
                 <h2 class="text-3xl font-bold text-center mb-12">Categories</h2>
-                <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-7 gap-6">
+                <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-7 gap-6 justify-center justify-items-center">
                     <!-- Loading Skeleton -->
                     <template v-if="loading">
                         <div v-for="n in 7" :key="n" class="text-center animate-pulse">
