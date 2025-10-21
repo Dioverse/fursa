@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
@@ -49,6 +50,16 @@ class Order extends Model implements AuditableContract
 
     public function payment() {
         return $this->hasOne(Payment::class);
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope('active', function (Builder $builder) {
+            $user = auth('sanctum')->user();
+            if (!$user || $user->role !== 'admin') {
+                $builder->whereNotIn('status', ['pending']);
+            }
+        });
     }
 
     public function isAuditable()
