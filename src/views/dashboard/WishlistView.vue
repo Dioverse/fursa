@@ -48,7 +48,7 @@
                         <h3 class="font-semibold mb-2">{{ item.name }}</h3>
                         <p class="text-gray-600 text-sm mb-2">{{ item.short_description }}</p>
                         <p class="text-primary text-xl font-bold mb-4">
-                            ₦{{ Number(item.price).toLocaleString() }}
+                            ₦{{ Number(item.price).toFixed(2) }}
                         </p>
 
                         <button

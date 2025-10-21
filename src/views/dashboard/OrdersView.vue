@@ -60,7 +60,7 @@
                 </td>
                 <td class="px-6 py-4">
                   <span class="text-sm text-gray-900">
-                    ₦{{ Number(order.total_amount).toLocaleString() }}
+                    ₦{{ Number(order.total_amount).toFixed(2) }}
                   </span>
                   <span class="text-xs text-gray-500 block">
                     for {{ order.order_items_count || 0 }} items

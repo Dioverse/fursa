@@ -182,9 +182,9 @@
                 <h3 class="text-sm font-medium mb-1 truncate">{{ product.name }}</h3>
                 <div class="flex flex-row line-clamp-1">
                   <span v-if="product.discount" class="text-gold-500 font-bold">₦ {{
-                    product.discounted_price.toLocaleString() }}</span>
+                    product.discounted_price.toFixed(2) }}</span>
                   <span :class="product.discount ? 'text-gray-400 line-through text-xs' : 'text-gold-500 font-bold'">
-                    ₦ {{ product.price.toLocaleString() }}
+                    ₦ {{ product.price.toFixed(2) }}
                   </span>
                 </div>
                 <div v-if="product.discount" class="mt-1 absolute top-1 right-2">
@@ -242,12 +242,12 @@
                 <!-- Prices -->
                 <div class="flex items-center space-x-2 line-clamp-1">
                   <span v-if="product.discount" class="text-gold-500 font-bold text-sm">
-                    ₦ {{ product.discounted_price.toLocaleString() }}
+                    ₦ {{ product.discounted_price.toFixed(2) }}
                   </span>
                   <span :class="product.discount
                     ? 'text-gray-400 line-through text-xs'
                     : 'text-gold-500 font-bold text-sm'">
-                    ₦ {{ product.price.toLocaleString() }}
+                    ₦ {{ product.price.toFixed(2) }}
                   </span>
                 </div>
 

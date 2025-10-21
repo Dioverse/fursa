@@ -13,11 +13,11 @@
 
             <div class="flex flex-col font-semibold">
                 <span class="">₦{{ Number((item.product?.discounted_price ?? item.product?.price) ||
-                    0).toLocaleString() }}</span>
+                    0).toFixed(2) }}</span>
                 <small v-if="item.product?.discount"
                     class="text-gray-400 text-right text-sm font-normal line-through m-0">₦{{ Number(item.product?.price
                         ||
-                        0).toLocaleString() }}</small>
+                        0).toFixed(2) }}</small>
             </div>
         </div>
         <div class="flex items-center gap-4 py-4 border-b justify-between">
@@ -27,7 +27,7 @@
             <div class="flex items-center rounded overflow-hidden w-max">
                 <!-- Decrement -->
                 <button :disabled="getCartQuantity(item.product.id).value <= 1 || loadingStates[item.product.id]"
-                    @click="updateQuantity(item.product, getCartQuantity(item.product.id) - 1)"
+                    @click="updateQuantity(item.product, getCartQuantity(item.product.id).value - 1)"
                     class="px-[14px] py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
                     -
                 </button>
@@ -46,13 +46,13 @@
                     <div v-else contenteditable="true" class="w-full text-center outline-none"
                         :data-product-id="item.product.id" @blur="onQuantityBlur($event, item.product)"
                         @keydown.enter.prevent="onQuantityEnter($event, item.product)">
-                        {{ getCartQuantity(item.product.id) }}
+                        {{ getCartQuantity(item.product.id).value }}
                     </div>
                 </div>
 
                 <!-- Increment -->
                 <button :disabled="loadingStates[item.product.id]"
-                    @click="updateQuantity(item.product, getCartQuantity(item.product.id) + 1)"
+                    @click="updateQuantity(item.product, getCartQuantity(item.product.id).value + 1)"
                     class="px-3 py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
                     +
                 </button>
@@ -74,34 +74,4 @@ const props = defineProps({
         required: true
     }
 })
-
-const cartStore = useCartStore()
-const toast = useToast()
-
-// const updateQuantity = (newQuantity) => {
-//     const quantity = parseInt(newQuantity)
-//     if (quantity > 0) {
-//         cartStore.updateQuantity(props.item.product.id, quantity)
-//     }
-// }
-
-// const updateQuantity = async (quantity) => {
-//     const qty = parseInt(quantity);
-//     if (isNaN(qty)) return;
-
-//     loadingStates.value = true;
-//     try {
-//         if (qty <= 0) {
-//             cartStore.removeItem(props.item.product.id);
-//         } else {
-//             cartStore.updateQuantity(props.item.product.id, qty);
-//         }
-//     } catch (err) {
-//         console.error(err);
-//     } finally {
-//         loadingStates.value = false;
-//     }
-// };
-
-
 </script>

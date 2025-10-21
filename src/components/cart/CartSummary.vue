@@ -1,19 +1,19 @@
 <template>
     <div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
-        <h3 class="text-xl font-semibold mb-4">Order Summary</h3>
+        <h3 class="text-xl font-semibold mb-4">{{ title }}</h3>
 
         <div class="space-y-3 mb-6">
             <div class="flex justify-between">
                 <span class="text-gray-600">Total</span>
-                <span class="font-semibold">₦{{ totalAtOriginalPrice.toLocaleString() }}</span>
+                <span class="font-semibold">₦{{ totalAtOriginalPrice.toFixed(2) }}</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-600">Discount</span>
-                <span class="font-semibold text-[red]">₦{{ totalSaved.toLocaleString() }}</span>
+                <span class="font-semibold text-[red]">₦{{ totalSaved.toFixed(2) }}</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-600">Subtotal</span>
-                <span class="font-semibold">₦{{ subtotal.toLocaleString() }}</span>
+                <span class="font-semibold">₦{{ subtotal.toFixed(2) }}</span>
             </div>
 
             <!-- <div class="pt-3 border-t">
@@ -32,14 +32,14 @@
 
             <div v-if="discount > 0" class="flex justify-between text-green-600">
                 <span>Discount</span>
-                <span>-₦{{ discount.toLocaleString() }}</span>
+                <span>-₦{{ discount.toFixed(2) }}</span>
             </div>
         </div>
 
         <div class="border-t pt-4 mb-6">
             <div class="flex justify-between text-xl font-bold">
                 <span>Total</span>
-                <span class="text-primary">₦{{ total.toLocaleString() }}</span>
+                <span class="text-primary">₦{{ total.toFixed(2) }}</span>
             </div>
         </div>
 
@@ -103,4 +103,11 @@ const proceedToCheckout = () => {
 
     router.push('/checkout')
 }
+
+const props = defineProps({
+    title: {
+        type: String,
+        required: true
+    }
+})
 </script>

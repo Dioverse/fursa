@@ -33,7 +33,7 @@
             </div>
           </div>
           <div class="mt-4 text-sm text-gray-700">
-            <p><strong>Total:</strong> ₦{{ Number(order.total_amount).toLocaleString() }}</p>
+            <p><strong>Total:</strong> ₦{{ Number(order.total_amount).toFixed(2) }}</p>
             <p><strong>Items:</strong> {{ order.order_items_count || 0 }}</p>
           </div>
         </div>

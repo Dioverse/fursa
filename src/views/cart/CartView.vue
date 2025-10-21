@@ -70,7 +70,7 @@
 
         <!-- Cart Summary -->
         <div class="lg:col-span-1">
-          <CartSummary />
+          <CartSummary :title="`Cart Summary`" />
         </div>
       </div>
     </div>

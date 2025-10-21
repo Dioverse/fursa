@@ -223,10 +223,10 @@
 
                   <!-- Product Details -->
                   <div class="px-4 pt-4">
-                    <h3 class="text-sm text-gray-800 mb-2 line-clamp-1">
+                    <h3 class="text-sm text-gray-800 mb-2 line-clamp-1" :title="product.name">
                       <RouterLink :to="`/product/${product.slug}`">{{ product.name }}</RouterLink>
                     </h3>
-                    <p class="text-xs text-gray-500 mb-2 line-clamp-1">
+                    <p class="text-xs text-gray-500 mb-2 line-clamp-1 cursor-pointer" :title="product.short_description">
                       {{ product.short_description }}
                     </p>
 

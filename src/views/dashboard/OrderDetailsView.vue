@@ -24,7 +24,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
                 <p><strong>Date:</strong> {{ formatDate(order.created_at) }}</p>
                 <p><strong>Payment Method:</strong> {{ order.payment_method }}</p>
-                <p><strong>Total:</strong> ₦{{ Number(order.total_amount).toLocaleString() }}</p>
+                <p><strong>Total:</strong> ₦{{ Number(order.total_amount).toFixed(2) }}</p>
                 <p><strong>Delivery Method:</strong> {{ order.delivery_method }}</p>
                 </div>
             </div>

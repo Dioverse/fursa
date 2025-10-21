@@ -67,7 +67,7 @@
               @click="payWithPaystack"
               class="mt-6 w-full bg-primary text-white py-2 rounded hover:bg-opacity-90 transition"
             >
-              Pay ₦{{ cartTotal.toLocaleString() }}
+              Pay ₦{{ cartTotal.toFixed(2) }}
             
             </button>
           </div>

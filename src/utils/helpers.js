@@ -5,6 +5,20 @@ export function formatCurrency(amount) {
   return `₦${amount.toLocaleString('en-NG')}`
 }
 
+export const formatAmount = (amount, dp, locale = 'en-US') => {
+  if (isNaN(amount)) { return 0};
+  const options = {};
+
+  // Only apply decimal formatting if dp is provided
+  if (typeof dp === 'number') {
+    options.minimumFractionDigits = dp;
+    options.maximumFractionDigits = dp;
+  }
+
+  return Number(amount).toLocaleString(locale, options);
+};
+
+
 const storageUrl = import.meta.env.VITE_STORAGE_URL;
 export function getImageUrl(path) {
   if (!path) return '/images/oil-droplet.jpg';

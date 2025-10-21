@@ -35,7 +35,7 @@ export const useCartStore = defineStore('cart', () => {
   watch(
     items,
     (newItems) => {
-      localStorage.setItem('cartItems', JSON.stringify(newItems))
+      localStorage.setItem('cart', JSON.stringify(newItems))
     },
     { deep: true },
   )
@@ -302,8 +302,11 @@ export const useCartStore = defineStore('cart', () => {
   // --- CLEAR CART ---
   async function clearCart() {
     if (token()) {
-      await callApi('/carts/clear', {}, 'POST')
-      // Cart will be auto-updated from response
+      const data = await callApi('/carts/clear', {}, 'POST')
+      if (data?.cart) {
+        toast.success(`Cart cleared successfully`)
+        return
+      }
     } else {
       items.value = []
       saveCart()
@@ -359,7 +362,7 @@ export const useCartStore = defineStore('cart', () => {
       // Clear local storage after syncing
       localStorage.removeItem('cart')
       // Fetch server cart to ensure we have the latest
-      await fetchCartFromServer()
+      // await fetchCartFromServer()
     } catch (err) {
       console.error('Cart sync failed:', err)
     }
