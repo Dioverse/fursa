@@ -169,7 +169,12 @@ class ProductController extends Controller
                 ->orWhere('short_description', 'like', "%{$keyword}%")
                 // Match category name
                 ->orWhereHas('category', function ($q2) use ($keyword) {
-                    $q2->where('name', 'like', "%{$keyword}%");
+                    $q2->where('name', 'like', "%{$keyword}%")
+                    ->orWhere('description', 'like', "%{$keyword}%");
+                })
+                ->orWhereHas('category.parent', function ($q2) use ($keyword) {
+                    $q2->where('name', 'like', "%{$keyword}%")
+                    ->orWhere('description', 'like', "%{$keyword}%");
                 });
             });
         }

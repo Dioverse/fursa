@@ -1,13 +1,12 @@
 <?php
-
 namespace App\Models;
 
-use OwenIt\Auditing\Auditable;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
 class Product extends Model implements AuditableContract
@@ -15,7 +14,7 @@ class Product extends Model implements AuditableContract
     /** @use HasFactory<\Database\Factories\ProductFactory> */
     use HasFactory, Auditable;
 
-    public $table = 'products';
+    public $table      = 'products';
     protected $appends = ['price'];
     //  protected $with = ['images:id,product_id,path'];
     protected $fillable = [
@@ -31,20 +30,22 @@ class Product extends Model implements AuditableContract
         'slug',
         'sku',
         'is_featured',
-        'tags'
+        'tags',
     ];
 
     protected $casts = [
-        'tags'          => 'array',
-        'is_featured'   =>'boolean',
-        'status'   =>'boolean'
+        'tags'        => 'array',
+        'is_featured' => 'boolean',
+        'status'      => 'boolean',
     ];
-    
-    public function category() {
+
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
-    
-    public function distributorPrices() {
+
+    public function distributorPrices()
+    {
         return $this->hasMany(DistributorProductPrice::class);
     }
 
@@ -66,7 +67,7 @@ class Product extends Model implements AuditableContract
     public function toArray()
     {
         $array = parent::toArray();
-        $user = auth('sanctum')->user();
+        $user  = auth('sanctum')->user();
 
         if ($user && $user->role === 'admin') {
             // Admin sees raw prices, hide computed price
@@ -96,17 +97,17 @@ class Product extends Model implements AuditableContract
     public function getDiscountedPriceAttribute()
     {
         $discount = $this->discount()->first();
-        $price = $this->base_price;
-        $user = auth('sanctum')->user();
+        $price    = $this->base_price;
+        $user     = auth('sanctum')->user();
 
-        if ($user && $user->isDistributorApprov()) { $price = $this->distributor_price; }
+        if ($user && $user->isDistributorApprov()) {$price = $this->distributor_price;}
 
-        if (!$discount) { return (float)$price; }
+        if (! $discount) {return (float) $price;}
 
-        if ($discount->type === 'percentage') { return (float)round($price * (1 - ($discount->value / 100)), 2); }
+        if ($discount->type === 'percentage') {return (float) round($price * (1 - ($discount->value / 100)), 2);}
 
         // fixed discount
-        return (float)max($price - $discount->value, 0);
+        return (float) max($price - $discount->value, 0);
     }
 
     public function getPriceAttribute()
@@ -119,7 +120,35 @@ class Product extends Model implements AuditableContract
         }
 
         // Otherwise → base price
-        return (float)$this->base_price;
+        return (float) $this->base_price;
+    }
+
+    /**
+     * Get the "top-level" parent category for the product.
+     */
+    public function parentCategory()
+    {
+        return $this->belongsTo(Category::class, 'category_id')
+            ->whereNull('parent_id')
+            ->orWhereHas('parent'); // Include subcategory's parent
+    }
+
+    /**
+     * Helper attribute to get the parent category object
+     */
+    public function getParentCategoryAttribute()
+    {
+        if (! $this->category) {
+            return null;
+        }
+
+        // If the product's category is already a parent
+        if ($this->category->parent_id === null) {
+            return $this->category;
+        }
+
+        // Otherwise, return the parent of the subcategory
+        return $this->category->parent;
     }
 
     protected static function booted()
@@ -128,7 +157,7 @@ class Product extends Model implements AuditableContract
             $user = auth('sanctum')->user();
 
             // If not logged in or not an admin, only show active products
-            if (!$user || $user->role !== 'admin') {
+            if (! $user || $user->role !== 'admin') {
                 $builder->where('status', 1);
             }
         });
