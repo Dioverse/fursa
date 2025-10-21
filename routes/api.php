@@ -169,8 +169,6 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
         Route::apiResource('orders', DistCustOrderController::class)->only(['index', 'show', 'update']);
         Route::apiResource('shipping-address', ShippingAddressController::class);
         Route::post('set-default-address/{id}', [ShippingAddressController::class, 'setDefaultAddress']);
-        Route::get('states-provinces/{country}', [ShippingAddressController::class, 'getStatesWithProvinces']);
-        Route::get('countries', [ShippingAddressController::class, 'getCountries']);
     });
 
     // Shared routes for all authenticated users
@@ -202,7 +200,8 @@ Route::get('/lang/fetch/{lang}/{qry}', [DistCustLanguageController::class, 'fetc
 // Email verification
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])->middleware('signed')->name('verification.verify');
 
-
+Route::get('states-provinces/{country}', [ShippingAddressController::class, 'getStatesWithProvinces']);
+Route::get('countries', [ShippingAddressController::class, 'getCountries']);
 
 
 

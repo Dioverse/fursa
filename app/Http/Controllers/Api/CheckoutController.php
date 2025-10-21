@@ -33,6 +33,7 @@ class CheckoutController extends Controller
     {
         $user = $request->user();
         $cartSummary = $this->getCartSummary($user);
+        $shippingAddress = $user->shippingAddress()->orderByDesc("is_default")->get();
 
         // if error, return immediately
         if ($cartSummary['error'] === true) {
@@ -49,7 +50,8 @@ class CheckoutController extends Controller
             "message" => "Checkout",
             "data" => [
                 "gateways"              => $gateways,
-                "user_cart"             => $cartSummary
+                "user_cart"             => $cartSummary,
+                "shippingAddresses"     => $shippingAddress
             ]
         ]);
     }
