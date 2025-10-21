@@ -198,7 +198,6 @@ class CheckoutController extends Controller
 
         // 1. Validate cart & stock
         $cartSummary = $this->getCartSummary($user, true);
-        return response()->json($cartSummary, 422);
         if ($cartSummary['error']) {
             return response()->json($cartSummary, 422);
         }
