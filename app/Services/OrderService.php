@@ -69,7 +69,7 @@ class OrderService
                 'error'     => false,
                 'orderId'   => $orderId,
                 'trans_ref' => $transRef,
-                'amount'    => $total_amount
+                'amount'    => $total
             ];
         } catch (\Exception $e) {
             return [
