@@ -200,7 +200,7 @@ class CheckoutController extends Controller
         $cartSummary = $this->getCartSummary($user, true);
         if ($cartSummary['error']) {
             return response()->json($cartSummary, 422);
-        } elseif ($cartSummary['sp']) {
+        } elseif (isset($cartSummary['sp'])) {
             return response()->json([$cartSummary], 422);
         }
 
