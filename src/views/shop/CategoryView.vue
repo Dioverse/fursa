@@ -200,7 +200,7 @@
                 class="grid grid-cols-2 xxs:grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
                 <div v-for="product in products" :key="product.id"
                   class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow relative">
-                  <div class="relative">
+                  <RouterLink :to="`/product/${product.slug}`" class="relative">
                     <!-- Product Image -->
                     <img :src="getImageUrl(product.images[0].path)" :alt="product.name"
                       class="w-full h-48 object-cover bg-gray-200" @error="handleImageError" />
@@ -219,12 +219,12 @@
                       class="absolute top-2 right-2 bg-mprimary-500 text-white px-2 py-1 text-xs rounded font-semibold">
                       {{ discountLabel(product) }}
                     </span>
-                  </div>
+                  </RouterLink>
 
                   <!-- Product Details -->
                   <div class="px-4 pt-4">
                     <h3 class="text-sm text-gray-800 mb-2 line-clamp-1">
-                      {{ product.name }}
+                      <RouterLink :to="`/product/${product.slug}`">{{ product.name }}</RouterLink>
                     </h3>
                     <p class="text-xs text-gray-500 mb-2 line-clamp-1">
                       {{ product.short_description }}
@@ -251,16 +251,24 @@
                   <!-- Action Buttons -->
                   <div class="flex w-full space-x-2 px-4 pb-4">
                     <!-- Add To Cart -->
-                    <button v-if="!isInCart(product.id)" @click="addToCart(product)"
+                    <button v-if="!isInCart(product.id).value" @click="addToCart(product)"
                       :disabled="loadingStates[product.id]"
                       class="flex-1 bg-gold-500 text-white py-2 disabled:opacity-50 disabled:cursor-not-allowed rounded hover:bg-gold-100 hover:text-black text-sm font-semibold">
-                      {{ loadingStates[product.id] ? 'Adding...' : 'Add to cart' }}
+                      <div v-if="loadingStates[product.id]" class="flex justify-center">
+                        <svg class="animate-spin h-4 w-4 text-gold-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                          </svg>
+                      </div>
+                      <div v-else>Add to cart</div>
                     </button>
 
                     <!-- Quantity Control -->
                     <div v-else class="flex items-center rounded overflow-hidden w-max">
-                      <button :disabled="getCartQuantity(product.id) <= 1 || loadingStates[product.id]"
-                        @click="updateQuantity(product, getCartQuantity(product.id) - 1)"
+                      <button :dd="getCartQuantity(product.id).value" :disabled="getCartQuantity(product.id).value <= 1 || loadingStates[product.id]"
+                        @click="updateQuantity(product, getCartQuantity(product.id).value - 1)"
                         class="px-[14px] py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
                         -
                       </button>
@@ -278,12 +286,12 @@
                         <div v-else contenteditable="true" class="w-full text-center outline-none overflow-hidden"
                           :data-product-id="product.id" @blur="onQuantityBlur($event, product)"
                           @keydown.enter.prevent="onQuantityEnter($event, product)">
-                          {{ getCartQuantity(product.id) }}
+                          {{ getCartQuantity(product.id).value }}
                         </div>
                       </div>
 
                       <button :disabled="loadingStates[product.id]"
-                        @click="updateQuantity(product, getCartQuantity(product.id) + 1)"
+                        @click="updateQuantity(product, getCartQuantity(product.id).value + 1)"
                         class="px-3 py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
                         +
                       </button>
@@ -447,7 +455,7 @@ import ShopLayout from '@/layouts/ShopLayout.vue';
 import { useWishlistStore } from '@/stores/wishlist';
 import { useRoute, useRouter } from 'vue-router';
 import { addToCart, getCartQuantity, isInCart, onQuantityBlur, onQuantityEnter, toggleWishlist, updateQuantity, loadingStates } from '@/utils/neut';
-import { getImageUrl, handleImageError } from '@/utils/helper';
+import { getImageUrl, handleImageError, getBasePrice, getDisplayPrice, discountLabel, priceToLocale } from '@/utils/helpers';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -525,37 +533,6 @@ const priceRanges = [
 ];
 
 const wishlistStore = useWishlistStore();
-
-// Utility functions
-const priceToLocale = (val) => {
-  if (val == null) return '0';
-  return Number(val).toLocaleString('en-NG');
-};
-
-const getBasePrice = (product) => {
-  return product.price ?? product.base_price ?? product.distributor_price ?? 0;
-};
-
-const getDisplayPrice = (product) => {
-  const price = getBasePrice(product);
-  if (product.discount) {
-    let discounted;
-    if (product.discount.type === 'percentage') {
-      discounted = price - (price * (product.discount.value / 100));
-    } else {
-      discounted = price - product.discount.value
-    }
-    return priceToLocale(discounted);
-  }
-  return priceToLocale(price);
-};
-
-const discountLabel = (product) => {
-  const d = product.discount;
-  if (!d) return '';
-  if (d.type === 'percentage') return `${d.value}% off`;
-  return `₦${d.value} off`;
-};
 
 const removeTag = (tag) => {
   filters.selectedTags = filters.selectedTags.filter(t => t !== tag);

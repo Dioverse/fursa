@@ -116,7 +116,7 @@ const clearCart = () => {
 // --- Load Cart on Mount ---
 onMounted(async () => {
   if (authStore.isAuthenticated) {
-    await cartStore.fetchCartFromServer()
+    await cartStore.items
   }
 })
 </script>

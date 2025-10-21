@@ -492,7 +492,7 @@ onMounted(async () => {
     loading.value = true
     try {
         // Mock data - replace with actual API call
-        const response = await axios.get(`${baseUrl}/products?per_page=5`)
+        const response = await axios.get(`${baseUrl}/products?per_page=345`)
         const products = response.data.data.products.data
         popularProducts.value = products.map(p => ({
             id: p.id,

@@ -26,7 +26,7 @@
             </button>
             <div class="flex items-center rounded overflow-hidden w-max">
                 <!-- Decrement -->
-                <button :disabled="getCartQuantity(item.product.id) <= 1 || loadingStates[item.product.id]"
+                <button :disabled="getCartQuantity(item.product.id).value <= 1 || loadingStates[item.product.id]"
                     @click="updateQuantity(item.product, getCartQuantity(item.product.id) - 1)"
                     class="px-[14px] py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
                     -

@@ -16,6 +16,10 @@
         class="absolute inset-0 bg-black bg-opacity-50 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
         <span class="bg-primary px-4 py-2 rounded">Quick View</span>
       </button>
+      <span v-if="product.discount"
+        class="absolute top-2 right-2 bg-mprimary-500 text-white px-2 py-1 text-xs rounded font-semibold">
+        {{ discountLabel(product) }}
+      </span>
     </div>
 
     <div class="p-4">
@@ -26,15 +30,14 @@
 
       <div class="flex items-center justify-between mb-3">
         <span class="text-2xl font-bold text-primary">
-          ₦{{ product.price.toLocaleString() }}
-          <span v-if="product.discount" class="line-through text-sm text-gray-400">₦{{
-            product.discounted_price.toLocaleString() }}</span>
+          ₦ {{ getDisplayPrice(product) }}
+          <span v-if="product.discount" class="line-through text-sm text-gray-400">₦ {{ priceToLocale(getBasePrice(product)) }}</span>
         </span>
       </div>
 
       <div class="flex w-full space-x-2">
         <!-- Add To Cart -->
-        <button v-if="!isInCart(product.id)" @click="addToCart(product)" :disabled="loadingStates[product.id]"
+        <button v-if="!isInCart(product.id).value" @click="addToCart(product)" :disabled="loadingStates[product.id]"
           class="flex-1 bg-gold-500 text-white py-2 disabled:opacity-50 disabled:cursor-not-allowed rounded hover:bg-gold-100 hover:text-black text-sm font-semibold">
           {{ loadingStates[product.id] ? 'Adding...' : 'Add to cart' }}
         </button>
@@ -94,7 +97,7 @@ import { ref, onMounted } from "vue";
 import { useCartStore } from "@/stores/cart";
 import { useToast } from "vue-toastification";
 import { addToCart, getCartQuantity, isInCart, onQuantityBlur, onQuantityEnter, toggleWishlist, updateQuantity, loadingStates } from '@/utils/neut';
-import { getImageUrl, handleImageError } from "@/utils/helpers";
+import { discountLabel, getBasePrice, getDisplayPrice, priceToLocale, getImageUrl, handleImageError } from "@/utils/helpers";
 import { useRouter } from "vue-router";
 import { useWishlistStore } from "@/stores/wishlist";
 

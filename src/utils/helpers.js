@@ -24,6 +24,31 @@ export const toUcwords = (text) => {
 
 export const toNumber = (v) => (v === null || v === undefined ? 0 : Number(v))
 
+// Utility functions
+export const priceToLocale = (val) => {
+  if (val == null) return '0';
+  return Number(val).toLocaleString('en-NG');
+};
+
+export const getBasePrice = (product) => {
+  return product.price;
+};
+
+export const getDisplayPrice = (product) => {
+  const price = getBasePrice(product);
+  if (product.discount) {
+    return priceToLocale(product.discounted_price);
+  }
+  return priceToLocale(price);
+};
+
+export const discountLabel = (product) => {
+  const d = product.discount;
+  if (!d) return '';
+  if (d.type === 'percentage') return `${d.value}% off`;
+  return `₦${d.value} off`;
+};
+
 /**
  * Format date to readable string
  */

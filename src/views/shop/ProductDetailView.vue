@@ -38,9 +38,9 @@
                     <!-- Thumbnail Images -->
                     <Swiper :modules="[Navigation]" :slides-per-view="4" :space-between="2" navigation
                         class="product-thumbnails" :breakpoints="{
-                            640: { slidesPerView: 10, spaceBetween: 4 },
-                            768: { slidesPerView: 10, spaceBetween: 5 },
-                            1024: { slidesPerView: 10, spaceBetween: 6 }
+                            640: { slidesPerView: 5, spaceBetween: 9 },
+                            768: { slidesPerView: 6, spaceBetween: 10 },
+                            1024: { slidesPerView: 7, spaceBetween: 11 }
                         }">
                         <SwiperSlide v-for="(img, i) in product.images" :key="i">
                             <button
@@ -73,8 +73,13 @@
                         <span class="text-green-600">✓ In Stock</span>
                     </div>
 
-                    <div class="text-3xl font-bold text-primary mb-6">
-                        ₦{{ product?.discountedPrice?.toLocaleString() || product?.price?.toLocaleString() }}
+                    <div class="flex items-center space-x-2 line-clamp-1">
+                        <div class="text-3xl font-bold text-primary mb-6">
+                            ₦{{ getDisplayPrice(product) }}
+                            <span v-if="product.discount" class="line-through text-sm text-gray-400">₦ {{
+                                priceToLocale(getBasePrice(product)) }}</span>
+                        </div>
+
                     </div>
 
                     <div class="space-y-4 mb-6">
@@ -89,7 +94,7 @@
 
                     <div class="flex w-full space-x-2 justify-end">
                         <!-- Add To Cart -->
-                        <button v-if="!isInCart(product.id)" @click="addToCart(product)"
+                        <button v-if="!isInCart(product.id).value" @click="addToCart(product)"
                             :disabled="loadingStates[product.id]"
                             class="flex-1 bg-gold-500 text-white py-2 disabled:opacity-50 disabled:cursor-not-allowed rounded hover:bg-gold-100 hover:text-black text-sm font-semibold">
                             {{ loadingStates[product.id] ? 'Adding...' : 'Add to cart' }}
@@ -256,7 +261,7 @@ import 'swiper/css/navigation';
 import { useWishlistStore } from '@/stores/wishlist'
 import Brochure from '@/components/common/Brochure.vue'
 import CTA from '@/components/common/CTA.vue'
-import { getImageUrl, handleImageError, toUcwords } from '@/utils/helpers'
+import { getBasePrice, getDisplayPrice, getImageUrl, handleImageError, priceToLocale, toNumber, toUcwords } from '@/utils/helpers'
 import VueEasyLightbox from 'vue-easy-lightbox'
 import 'vue-easy-lightbox/external-css/vue-easy-lightbox.css'
 
@@ -323,8 +328,7 @@ onMounted(async () => {
         product.value = {
             id: apiProduct.id,
             name: apiProduct.name,
-            price: parseFloat(apiProduct.price),
-            discountedPrice: apiProduct.discounted_price ? parseFloat(apiProduct.discounted_price) : null,
+            price: apiProduct.price,
             sku: apiProduct.sku,
             rating: apiProduct.rating || 0,
             reviews: apiProduct.reviews || 0,
@@ -335,14 +339,19 @@ onMounted(async () => {
             tags: apiProduct.tags || [],
             stock_quantity: apiProduct.stock_quantity,
             low_stock_threshold: apiProduct.low_stock_threshold,
-            discount: apiProduct.discount || null,
             specifications: [
                 { name: 'Stock Quantity', value: apiProduct.stock_quantity },
                 { name: 'Low Stock Threshold', value: apiProduct.low_stock_threshold },
                 { name: 'Category', value: apiProduct.category?.name }
             ],
             images: apiProduct.images,
-            reviewsList: []
+            reviewsList: [],
+            ...(apiProduct.discount
+                ? {
+                    discount: apiProduct.discount,
+                    discounted_price: apiProduct.discounted_price,
+                }
+                : { discount: null }),
         }
 
         isInWishlist.value = wishlistStore.items.some(item => item.id === product.value.id)
