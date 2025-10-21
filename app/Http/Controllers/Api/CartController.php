@@ -145,13 +145,13 @@ class CartController extends Controller
         if (!$cart) {
             return response()->json(['message' => 'Cart not found'], 404);
         }
-        
+
         $cart->delete();
 
         $cart = $this->cartWithRelations($cart);
 
         return response()->json([
-            'message' => 'Item removed from cart successfully',
+            'message' => 'Cart cleared successfully',
             'cart'    => $cart->cartItems,
         ], 200);
     }
