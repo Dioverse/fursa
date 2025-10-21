@@ -147,6 +147,7 @@ class CheckoutController extends Controller
         else { $ship = ['userAddress'=>[], 'shipCost'=>(object)['cost' => 0, 'min_days' => 0, 'max_days' => 0]]; }
 
         $shipCost = $ship['shipCost'];
+        print_r($shipCost);
 
         $amt = (float)round($cartItems->sum('subtotal'), 2);
         $payable = bcadd($amt, (float)$shipCost->cost, 2); // Payable (amount + shipping cost)
