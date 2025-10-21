@@ -22,7 +22,7 @@
                 <!-- Name Search -->
                 <div class="pb-6 border-b">
                   <h3 class="font-bold text-lg mb-3">SEARCH</h3>
-                  <input type="text" placeholder="Search by name..."
+                  <input type="text" placeholder="Search by keywords..."
                     class="w-full px-2 py-1 border border-gray-300 rounded text-sm" v-model="filters.name"
                     @keyup.enter="state.currentPage = 1;" />
                 </div>
@@ -349,7 +349,7 @@
               <!-- Name Search in Mobile -->
               <div class="pb-4 border-b">
                 <h3 class="font-bold text-lg mb-3">SEARCH</h3>
-                <input type="text" placeholder="Search by name..."
+                <input type="text" placeholder="Search by keywords..."
                   class="w-full px-2 py-1 border border-gray-300 rounded text-sm" v-model="filters.name" />
               </div>
 
