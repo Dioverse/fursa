@@ -24,13 +24,12 @@ class OrderService
             $orderId = 'ORD-' . $nextId . strtoupper(Str::random(9));
             $now = Carbon::now();
             $transRef = Str::random(9) . $now->format("Ymd");
-            $total_amount = $total + $shipCost->cost;
             $order = Order::create([
                 'user_id'          => $user->id,
                 'shipping_address' => $shippingAddress->toJson(), // serialize address
                 'order_id'         => $orderId,
                 'trans_ref'        => $transRef,
-                'total_amount'     => $total_amount,
+                'total_amount'     => $total,
                 'tax'              => $tax,
                 'status'           => 'pending',
                 'shipping_cost'    => $shipCost->cost,

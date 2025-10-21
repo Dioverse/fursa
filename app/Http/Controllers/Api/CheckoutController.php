@@ -233,7 +233,7 @@ class CheckoutController extends Controller
                 "data"    => [
                     "orderId"      => $orderCreate['orderId'],
                     "trans_ref"    => $orderCreate['trans_ref'],
-                    "total_amount" => $orderCreate['payable'],
+                    "total_amount" => $cartSummary['payable'],
                     "gws"          => $pubKey,
                 ],
             ], 200);
