@@ -160,9 +160,18 @@ class ProductController extends Controller
             }
         }
 
-        // --- NAME FILTER ---
         if ($request->filled('name')) {
-            $query->where('name', 'like', '%' . $request->input('name') . '%');
+            $keyword = $request->input('name');
+
+            $query->where(function ($q) use ($keyword) {
+                // Match product name or short description
+                $q->where('name', 'like', "%{$keyword}%")
+                ->orWhere('short_description', 'like', "%{$keyword}%")
+                // Match category name
+                ->orWhereHas('category', function ($q2) use ($keyword) {
+                    $q2->where('name', 'like', "%{$keyword}%");
+                });
+            });
         }
 
         // --- TAGS FILTER ---
