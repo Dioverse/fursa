@@ -116,7 +116,8 @@ class CheckoutController extends Controller
         if (! empty($unavailable)) {
             return [
                 'error'   => true,
-                'message' => 'Unavailable stock in cart',
+                'response'=> 'unavailable',
+                'message' => 'Unavailable stock quantity in cart',
                 'errors'  => $unavailable,
             ];
         }
@@ -147,7 +148,7 @@ class CheckoutController extends Controller
         // Handle Shipping Errors when $make (creating an order) is true
         if ($make) {
             if (isset($ship['shipCost']) && $ship['shipCost'] === "unserviceable") {
-                return ['error' => true, 'sp' => true, 'message' => "Can't ship/deliver to location currently"];
+                return ['error' => true, 'sp' => true, 'response'=>'unserviceable', 'message' => "Can't ship/deliver to location currently"];
             }
             if (empty($ship['userAddress'])) {
                 return ['error' => true, 'sp' => true, 'message' => "No shipping address found."];
@@ -200,7 +201,7 @@ class CheckoutController extends Controller
         if ($cartSummary['error']) {
             return response()->json($cartSummary, 422);
         } elseif ($cartSummary['sp']) {
-            return response()->json(['response' => 'no-shipping', ...$cartSummary], 422);
+            return response()->json([$cartSummary], 422);
         }
 
         try {
