@@ -54,17 +54,6 @@ class OrderService
 
             if (!empty($orderItems)) { OrderItem::insert($orderItems); }
 
-            // 3. Create pending payment
-            // Payment::create([
-            //     'order_id'             => $order->id,
-            //     'user_id'              => $user->id,
-            //     'status'               => 'pending',
-            //     'refund_status'        => null,
-            //     'payment_gateway'      => $gateway,
-            //     'transaction_reference'=> $transRef,
-            //     'amount'               => $total + $shipCost->cost,
-            // ]);
-
             return [
                 'error'     => false,
                 'orderId'   => $orderId,
