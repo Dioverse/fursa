@@ -1,13 +1,13 @@
 <?php
 namespace App\Http\Controllers\Api;
 
-use App\Models\Product;
-use App\Models\Category;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -50,7 +50,7 @@ class ProductController extends Controller
     //     // --- TAGS FILTER ---
     //     if ($request->filled('tags')) {
     //         $tags = array_map('trim', explode(',', $request->input('tags')));
-            
+
     //         $query->where(function ($q) use ($tags) {
     //             foreach ($tags as $tag) {
     //                 $q->orWhereJsonContains('tags', $tag);
@@ -103,7 +103,6 @@ class ProductController extends Controller
     //         ->values()
     //         ->all();
 
-
     //     // --- CATEGORY LIST (with subcategories) ---
     //     $categories = Category::with(['subcategories' => function ($query) {
     //         $query->select(['id', 'icon', 'name', 'slug', 'parent_id'])
@@ -130,7 +129,6 @@ class ProductController extends Controller
     //     ]);
     // }
 
-
     public function index(Request $request): JsonResponse
     {
         $query = Product::with([
@@ -142,7 +140,7 @@ class ProductController extends Controller
         // --- CATEGORY FILTER (using slug) ---
         if ($request->filled('category')) {
             $categorySlug = $request->input('category');
-            $category = Category::with('subcategories:id,parent_id,slug')
+            $category     = Category::with('subcategories:id,parent_id,slug')
                 ->where('slug', $categorySlug)
                 ->first();
 
@@ -170,7 +168,7 @@ class ProductController extends Controller
         // --- TAGS FILTER ---
         if ($request->filled('tags')) {
             $tags = array_map('trim', explode(',', $request->input('tags')));
-            
+
             $query->where(function ($q) use ($tags) {
                 foreach ($tags as $tag) {
                     $q->orWhereJsonContains('tags', $tag);
@@ -179,7 +177,7 @@ class ProductController extends Controller
         }
 
         // --- PRICE FILTERS ---
-        $user = auth('sanctum')->user();
+        $user       = auth('sanctum')->user();
         $priceField = ($user && $user->isDistributorApproved()) ? 'distributor_price' : 'base_price';
 
         if ($request->filled('min_price') && is_numeric($request->min_price)) {
@@ -192,9 +190,12 @@ class ProductController extends Controller
         // --- SORTING ---
         if ($request->filled('sort_by')) {
             switch ($request->sort_by) {
-                case 'lp': $query->orderBy($priceField, 'asc'); break;
-                case 'hp': $query->orderBy($priceField, 'desc'); break;
-                case 'if': $query->orderBy('is_featured', 'desc'); break;
+                case 'lp':$query->orderBy($priceField, 'asc');
+                    break;
+                case 'hp':$query->orderBy($priceField, 'desc');
+                    break;
+                case 'if':$query->orderBy('is_featured', 'desc');
+                    break;
             }
         } else {
             // Default order by latest
@@ -202,12 +203,12 @@ class ProductController extends Controller
         }
 
         // --- PAGINATION ---
-        $perPage = max(1, (int) $request->query('per_page', 30));
+        $perPage  = max(1, (int) $request->query('per_page', 30));
         $products = $query->paginate($perPage, [
-            'id','category_id','name','slug','sku',
-            'short_description','stock_quantity',
-            'low_stock_threshold','is_featured',
-            'distributor_price','base_price',
+            'id', 'category_id', 'name', 'slug', 'sku',
+            'short_description', 'stock_quantity',
+            'low_stock_threshold', 'is_featured',
+            'distributor_price', 'base_price',
         ]);
 
         // --- FETCH UNIQUE TAGS FOR FILTER LIST ---
@@ -229,17 +230,17 @@ class ProductController extends Controller
             $query->select(['id', 'icon', 'name', 'slug', 'parent_id'])
                 ->withCount('products');
         }])
-        ->whereNull('parent_id')
-        ->get(['id', 'icon', 'name', 'slug']);
+            ->whereNull('parent_id')
+            ->get(['id', 'icon', 'name', 'slug']);
 
         // --- RESPONSE ---
         return response()->json([
             'message' => 'Products retrieved successfully.',
-            'data' => [
-                'products' => $products,
-                'categories' => $categories,
+            'data'    => [
+                'products'       => $products,
+                'categories'     => $categories,
                 'available_tags' => $uniqueTags,
-                'filters' => [
+                'filters'        => [
                     'sort_by' => [
                         'Highest Price' => 'hp',
                         'Lowest Price'  => 'lp',
@@ -299,7 +300,6 @@ class ProductController extends Controller
                 return $category;
             });
 
-
         $categoryGrid = Category::whereNull('parent_id')
             ->inRandomOrder()
             ->take($catGridLimit)
@@ -324,7 +324,6 @@ class ProductController extends Controller
                 return $category;
             });
 
-
         $categories = Category::with(['subcategories' => function ($query) {
             $query->select(['id', 'image', 'name', 'slug', 'parent_id'])->withCount('products');
         }])
@@ -344,8 +343,10 @@ class ProductController extends Controller
 
     public function cats(Request $request)
     {
-        $sub       = $request->boolean('sub');         // auto-cast "true"/"false"
-        $slug      = $request->query('category_slug'); // <-- use slug instead of id
+        $sub       = $request->boolean('sub');
+        $slug      = $request->query('category_slug');
+        $limit     = $request->query('limit');
+        $random    = $request->boolean('random'); // fixed
         $parentCat = null;
 
         if ($slug) {
@@ -358,18 +359,36 @@ class ProductController extends Controller
             }
         }
 
+        $queryLimit = $limit ? intval($limit) : null;
+
         if ($sub && $parentCat) {
-            // Fetch subcategories of this parent by id
             $categories = Category::withCount('products')
-                ->where('parent_id', $parentCat->id)
-                ->get(['id', 'name', 'description', 'image', 'slug', 'parent_id']);
+                ->where('parent_id', $parentCat->id);
+
+            if ($random) {
+                $categories->inRandomOrder();
+            }
+
+            if ($queryLimit) {
+                $categories->limit($queryLimit);
+            }
+
+            $categories = $categories->get(['id', 'name', 'description', 'image', 'slug', 'parent_id']);
 
         } elseif ($sub) {
-            // Fetch ALL parents with their subcategories + product count
             $categories = Category::with([
-                'subcategories' => function ($query) {
+                'subcategories' => function ($query) use ($random, $queryLimit) {
                     $query->select('id', 'name', 'description', 'image', 'slug', 'parent_id')
                         ->withCount('products');
+
+                    if ($random) {
+                        $query->inRandomOrder();
+                    }
+
+                    if ($queryLimit) {
+                        $query->limit($queryLimit);
+                    }
+
                 },
             ])
                 ->withCount('subcategories')
@@ -377,22 +396,41 @@ class ProductController extends Controller
                 ->get(['id', 'name', 'description', 'image', 'slug']);
 
         } elseif ($parentCat) {
-            // Fetch specific parent with subcategories
             $categories = Category::where('id', $parentCat->id)
                 ->with([
-                    'subcategories' => function ($query) {
+                    'subcategories' => function ($query) use ($random, $queryLimit) {
                         $query->select('id', 'name', 'description', 'image', 'slug', 'parent_id')
                             ->withCount('products');
+
+                        if ($random) {
+                            $query->inRandomOrder();
+                        }
+
+                        if ($queryLimit) {
+                            $query->limit($queryLimit);
+                        }
+
                     },
                 ])
                 ->withCount('subcategories')
-                ->first(['id', 'name', 'description', 'image', 'slug']); // use first() here for single
+                ->first(['id', 'name', 'description', 'image', 'slug']);
+
+            // wrap in array for consistent response
+            $categories = $categories ? [$categories] : [];
 
         } else {
-            // Fetch all parent categories
             $categories = Category::withCount('subcategories')
-                ->whereNull('parent_id')
-                ->get(['id', 'name', 'description', 'image', 'slug']);
+                ->whereNull('parent_id');
+
+            if ($random) {
+                $categories->inRandomOrder();
+            }
+
+            if ($queryLimit) {
+                $categories->limit($queryLimit);
+            }
+
+            $categories = $categories->get(['id', 'name', 'description', 'image', 'slug']);
         }
 
         return response()->json([
