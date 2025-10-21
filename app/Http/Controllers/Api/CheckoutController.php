@@ -148,10 +148,10 @@ class CheckoutController extends Controller
         // Handle Shipping Errors when $make (creating an order) is true
         if ($make) {
             if (isset($ship['shipCost']) && $ship['shipCost'] === "unserviceable") {
-                return ['error' => true, 'sp' => true, 'response'=>'unserviceable', 'message' => "Can't ship/deliver to location currently"];
+                return ['error' => true, 'response'=>'unserviceable', 'message' => "Can't ship/deliver to location currently"];
             }
             if (empty($ship['userAddress'])) {
-                return ['error' => true, 'sp' => true, 'message' => "No shipping address found."];
+                return ['error' => true, 'response'=>'noshipping', 'message' => "No shipping address found."];
             }
         }
 
@@ -198,10 +198,9 @@ class CheckoutController extends Controller
 
         // 1. Validate cart & stock
         $cartSummary = $this->getCartSummary($user, true);
+        return response()->json($cartSummary, 422);
         if ($cartSummary['error']) {
             return response()->json($cartSummary, 422);
-        } elseif (isset($cartSummary['sp'])) {
-            return response()->json([$cartSummary], 422);
         }
 
         try {
