@@ -1,7 +1,7 @@
 <template>
     <DashboardLayout>
         <div class="space-y-6">
-            <h1 class="text-2xl font-bold">My Wishlist</h1>
+            <h1 class="lg:text-2xl md:text-xl text-lg font-bold">My Wishlist</h1>
 
             <!-- Empty State -->
             <div
@@ -116,7 +116,7 @@ const moveToCart = (item) => {
 <template>
     <DashboardLayout>
         <div class="space-y-6">
-            <h1 class="text-2xl font-bold">My Wishlist</h1>
+            <h1 class="lg:text-2xl md:text-xl text-lg font-bold">My Wishlist</h1>
 
             <!-- Empty State -->
             <div

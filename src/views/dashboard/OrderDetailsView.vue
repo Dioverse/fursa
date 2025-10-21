@@ -7,7 +7,7 @@
 
             <div v-else>
             <!-- Page Title -->
-            <h2 class="text-2xl font-bold mb-6">Order Details</h2>
+            <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-6">Order Details</h2>
 
             <!-- Order Summary -->
             <div class="bg-white shadow rounded-lg p-6 mb-6">

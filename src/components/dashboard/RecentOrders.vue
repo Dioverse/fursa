@@ -73,7 +73,7 @@
       </table>
 
       <!-- Empty State -->
-      <div v-else class="p-6 text-center text-gray-500">
+      <div v-else class="min-h-[200px] flex justify-center items-center p-6 text-center text-gray-500">
         No recent orders found.
       </div>
     </div>

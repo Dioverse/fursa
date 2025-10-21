@@ -1,22 +1,56 @@
 <template>
     <DefaultLayout>
         <div class="container mx-auto px-4 py-8">
-            <div class="flex flex-col lg:flex-row gap-8">
-                <!-- Sidebar -->
-                <aside class="lg:w-64">
-                    <DashboardSidebar />
-                </aside>
+            <div class="flex flex-row lg:flex-row md:gap-6 lg:gap-8 gap-3">
+                <DashboardSidebar />
 
                 <!-- Main Content -->
-                <main class="flex-1">
+                <main class="flex-1 text-sm md:text-md">
                     <slot />
                 </main>
+            </div>
+        </div>
+        <div class="bg-white p-2 mt-5">
+
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-2 text-xs md:text-md sm:grid-cols-4 md:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
+                <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition cursor-pointer">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <font-awesome-icon icon="shield-alt" size="2x" class="text-yellow-600" />
+                    </div>
+                    <h3 class="font-semibold mb-2">Secure Payment Gateways</h3>
+                    <p class="text-sm text-gray-600">48+ gateways to ensure your security.</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition cursor-pointer">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <font-awesome-icon icon="star" size="2x" class="text-blue-600" />
+                    </div>
+                    <h3 class="font-semibold mb-2">Genuine Customer Reviews</h3>
+                    <p class="text-sm text-gray-600">Find verified reviews showcased on our platforms</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition cursor-pointer">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <font-awesome-icon icon="headset" size="2x" class="text-green-600" />
+                    </div>
+                    <h3 class="font-semibold mb-2">24/7 Customer Support</h3>
+                    <p class="text-sm text-gray-600">Always our support team is available for you.</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition cursor-pointer">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <font-awesome-icon icon="undo" size="2x" class="text-purple-600" />
+                    </div>
+                    <h3 class="font-semibold mb-2">Easy Return Policy</h3>
+                    <p class="text-sm text-gray-600">If you're not satisfied, return it hassle-free.</p>
+                </div>
             </div>
         </div>
     </DefaultLayout>
 </template>
 
 <script setup>
-import DefaultLayout from './DefaultLayout.vue'
+import DefaultLayout from './DefaultLayout.vue';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar.vue'
 </script>

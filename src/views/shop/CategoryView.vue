@@ -1,5 +1,5 @@
 <template>
-  <ShopLayout>
+  <DefaultLayout>
     <div class="xs:px-[clamp(2rem,4vw,4rem)] xxs:px-0 min-h-screen bg-gray-50">
       <!-- Breadcrumb -->
       <div class="bg-white border-b">
@@ -174,7 +174,7 @@
 
             <!-- Products Heading -->
             <div class="mb-4">
-              <h2 id="page-header" class="text-2xl font-bold text-gray-800 mb-2">{{ pageTitle }}</h2>
+              <h2 id="page-header" class="lg:text-2xl md:text-xl text-lg font-bold text-gray-800 mb-2">{{ pageTitle }}</h2>
               <p v-if="!loading && !loadingMore" class="text-sm text-gray-600">Showing ({{ products.length }} of {{
                 state.totalFound }}) products found</p>
             </div>
@@ -446,16 +446,16 @@
         </div>
       </div>
     </div>
-  </ShopLayout>
+  </DefaultLayout>
 </template>
 
 <script setup>
 import { reactive, ref, computed, onMounted, watch, nextTick } from 'vue';
-import ShopLayout from '@/layouts/ShopLayout.vue';
 import { useWishlistStore } from '@/stores/wishlist';
 import { useRoute, useRouter } from 'vue-router';
 import { addToCart, getCartQuantity, isInCart, onQuantityBlur, onQuantityEnter, toggleWishlist, updateQuantity, loadingStates } from '@/utils/neut';
 import { getImageUrl, handleImageError, getBasePrice, getDisplayPrice, discountLabel, priceToLocale } from '@/utils/helpers';
+import DefaultLayout from '@/layouts/DefaultLayout.vue';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api';
 

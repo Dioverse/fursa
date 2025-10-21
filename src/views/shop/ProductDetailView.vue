@@ -325,7 +325,7 @@
 
             <!-- Related Products -->
             <div v-if="!isLoading" class="mt-12">
-                <h2 class="text-2xl font-bold mb-6">Related Products</h2>
+                <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-6">Related Products</h2>
                 <ProductGrid :makeSwiper="true" :products="relatedProducts" />
             </div>
         </div>

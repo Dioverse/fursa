@@ -37,7 +37,7 @@
                     <div class="relative" v-if="authStore.isAuthenticated">
                         <!-- Account Button -->
                         <button @click="toggleAccountMenu"
-                            class="bg-primary text-white px-3 py-1.5 rounded-md hover:bg-opacity-90 transition flex items-center gap-1.5 text-sm md:text-base">
+                            class="bg-primary text-white px-3 py-[9px] sm:py-[6px] rounded-md hover:bg-opacity-90 transition flex items-center gap-1.5 text-sm md:text-base">
                             <font-awesome-icon icon="circle-user" class="text-sm md:text-base" />
                             <span class="hidden sm:inline">Account</span>
                             <font-awesome-icon :icon="showAccountMenu ? 'chevron-up' : 'chevron-down'"
@@ -90,20 +90,22 @@
                     </RouterLink>
 
                     <!-- Language Selector -->
-                    <div class="relative text-sm">
+                    <div class="relative text-xs sm:text-sm">
                         <button @click="showLangMenu = !showLangMenu"
                             class="flex items-center gap-1 text-white hover:text-primary transition">
-                            <span>{{ languageStore.current.toUpperCase() }}</span>
-                            <span>{{ languageStore.currentName }}</span>
+                            <!-- <span>{{ languageStore.current.toUpperCase() }}</span> -->
+                            <img :src="`../../../public/images/language/${languageStore.currentLanguage.icon}`" class="w-[20px] h-[15px] rounded" :alt="languageStore.currentLanguage.name">
+                            <span class="sm:block hidden">{{ languageStore.currentLanguage.name }}</span>
                             <font-awesome-icon :icon="showLangMenu ? 'chevron-up' : 'chevron-down'" />
                         </button>
 
                         <!-- Dropdown -->
                         <transition name="fade">
-                            <div v-if="showLangMenu" class="absolute right-0 mt-2 bg-white rounded shadow-lg py-2 w-32">
+                            <div v-if="showLangMenu" class="absolute right-0 mt-2 bg-white rounded shadow-lg py-2 w-32 z-20">
                                 <a v-for="lang in languageStore.allowedLanguages" :key="lang.code" href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100" @click.prevent="switchLang(lang.code)">
-                                    {{ lang.name }}
+                                    class="flex items-center gap-x-1.5 nowrap block px-4 py-2 hover:bg-gray-100" @click.prevent="switchLang(lang.code)">
+                                    <img :src="`../../../public/images/language/${lang.icon}`" class="w-[20px] h-[15px] rounded" :alt="lang.icon">
+                                    <span>{{ lang.name }}</span>
                                 </a>
                             </div>
                         </transition>
@@ -117,25 +119,30 @@
             </div>
         </div>
 
-        <!-- Mobile Search -->
-        <transition name="fade">
-            <div v-if="mobileMenuOpen" class="md:hidden px-4 pb-2">
-                <input v-model="searchQuery" type="text" placeholder="Search Products..."
-                    class="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                    @keyup.enter="handleSearch" />
-            </div>
-        </transition>
-
         <!-- Navigation -->
         <transition name="slide-fade">
-            <nav v-show="mobileMenuOpen || windowWidth >= 768" class="bg-white border-t md:border-t-0 md:border-b">
+            <nav v-show="mobileMenuOpen || windowWidth >= 768" class="bg-white border-t md:border-t-0 md:border-b md:relative absolute w-full md:w-auto ">
                 <div class="container mx-auto px-4">
                     <div
-  class="flex flex-col md:flex-row md:items-center md:justify-between bg-white/80 backdrop-blur-md border-b border-gray-100 rounded-lg md:rounded-none py-2 shadow-sm"
->
+                    class="flex flex-col md:flex-row md:items-center md:justify-between bg-white/80 backdrop-blur-md border-b border-gray-100 rounded-lg md:rounded-none py-2 shadow-sm"
+                    >
+                    <!-- Mobile Search -->
+        <transition name="fade">
+            <div v-if="mobileMenuOpen" class="md:hidden gap-1.5 px-2.5 md:py-1.5 py-3">
+                <div class="relative w-full bg-">
+                        <input v-model="searchQuery" type="text" placeholder="Search Products..."
+                            class="w-full px-4 py-2 pr-10 rounded-lg bg-black/50 focus:outline-none focus:ring-2 focus:ring-primary"
+                            @keyup.enter="handleSearch" />
+                        <button @click="handleSearch"
+                            class="absolute right-1 top-1/2 -translate-y-1/2 bg-primary text-white px-3 py-1 rounded">
+                            <font-awesome-icon icon="search" />
+                        </button>
+                    </div>
+            </div>
+        </transition>
   <!-- Navigation Links -->
   <ul
-    class="flex flex-col md:flex-row md:items-center gap-0.5 md:gap-0.5 xl:gap-5 text-gray-700 text-[14px] font-medium"
+    class="flex flex-col md:flex-row md:items-center gap-[2px] md:gap-0.1 xl:gap-5 text-gray-700 text-[14px] font-medium"
   >
     <li
       v-for="link in navLinks"
@@ -161,8 +168,8 @@
     to="/distributor-registration"
     class="bg-primary text-white px-4 py-1.5 rounded-md hover:bg-primary/90 active:scale-[0.97] transition-all duration-200 flex items-center gap-1.5 text-sm md:text-[14px] w-full md:w-auto justify-center mt-2 md:mt-0"
   >
-    <!-- <font-awesome-icon icon="truck" class="text-xs" /> -->
-    <span>Become a Distributor</span>
+    <font-awesome-icon icon="truck" class="text-xs" />
+    <span class="flex nowrap">Distributor<span class="hidden sm:block">&nbsp;Registration</span></span>
   </RouterLink>
 </div>
 

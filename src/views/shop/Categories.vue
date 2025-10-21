@@ -1,5 +1,5 @@
 <template>
-  <ShopLayout>
+  <DefaultLayout>
     <div class="min-h-screen mx-auto bg-gray-50 container lg:px-20 bg-transparent">
       <!-- BREADCRUMB -->
       <div class="bg-transparent border-b">
@@ -84,12 +84,12 @@
         </div>
       </div>
     </div>
-  </ShopLayout>
+  </DefaultLayout>
 
 </template>
 
 <script setup>
-import ShopLayout from '@/layouts/ShopLayout.vue';
+import DefaultLayout from '@/layouts/DefaultLayout.vue';
 import { getImageUrl, handleImageError } from '@/utils/helpers';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';

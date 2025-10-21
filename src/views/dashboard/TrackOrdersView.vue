@@ -1,7 +1,7 @@
 <template>
   <DashboardLayout>
     <div class="space-y-6">
-      <h1 class="text-2xl font-bold">Track Order</h1>
+      <h1 class="lg:text-2xl md:text-xl text-lg font-bold">Track Order</h1>
 
       <!-- Loading -->
       <div v-if="loading" class="p-6 text-center text-gray-500">

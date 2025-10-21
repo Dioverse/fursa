@@ -99,14 +99,14 @@
             <div class="container mx-auto px-4">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-12xl mx-auto">
                     <div class="bg-white rounded-lg shadow-lg p-8 border-t-4 border-primary">
-                        <h3 class="text-2xl font-bold mb-4">Vision</h3>
+                        <h3 class="lg:text-2xl md:text-xl text-lg font-bold mb-4">Vision</h3>
                         <p class="text-gray-600">
                             To be West Africa's most dependable and innovative energy solutions provider,
                             delivering outstanding value and fostering partnerships that last.
                         </p>
                     </div>
                     <div class="bg-white rounded-lg shadow-lg p-8 border-t-4 border-primary">
-                        <h3 class="text-2xl font-bold mb-4">Mission</h3>
+                        <h3 class="lg:text-2xl md:text-xl text-lg font-bold mb-4">Mission</h3>
                         <p class="text-gray-600">
                             To provide premium oil lubricants and energy solutions, supporting businesses with quality
                             products, exceptional service, and sustainable practices that drive growth and development.

@@ -48,7 +48,7 @@
         <!-- Suggested Products -->
         <section class="py-16 bg-white">
             <div class="container mx-auto px-4">
-                <h3 class="text-2xl font-bold text-center mb-8">You Might Be Interested In</h3>
+                <h3 class="lg:text-2xl md:text-xl text-lg font-bold text-center mb-8">You Might Be Interested In</h3>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
                     <div v-for="i in 4" :key="i"
                         class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">

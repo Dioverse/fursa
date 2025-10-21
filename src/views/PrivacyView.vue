@@ -11,7 +11,7 @@
             <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
                 <div class="prose prose-lg max-w-none">
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">Introduction</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">Introduction</h2>
                         <p class="text-gray-600 mb-4">
                             Fursa Energy ("we," "our," or "us") is committed to protecting your privacy. This Privacy
                             Policy explains
@@ -21,7 +21,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">Information We Collect</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">Information We Collect</h2>
                         <h3 class="text-xl font-semibold mb-3 text-gray-700">Personal Information</h3>
                         <ul class="list-disc ml-6 text-gray-600 space-y-2 mb-4">
                             <li>Name and contact information (email, phone number, address)</li>
@@ -40,7 +40,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">How We Use Your Information</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">How We Use Your Information</h2>
                         <ul class="list-disc ml-6 text-gray-600 space-y-2">
                             <li>Process and fulfill your orders</li>
                             <li>Communicate with you about products and services</li>
@@ -52,7 +52,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">Information Sharing</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">Information Sharing</h2>
                         <p class="text-gray-600 mb-4">We do not sell or rent your personal information. We may share
                             your information with:</p>
                         <ul class="list-disc ml-6 text-gray-600 space-y-2">
@@ -64,7 +64,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">Data Security</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">Data Security</h2>
                         <p class="text-gray-600 mb-4">
                             We implement appropriate technical and organizational measures to protect your personal
                             information against
@@ -75,7 +75,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">Your Rights</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">Your Rights</h2>
                         <p class="text-gray-600 mb-4">You have the right to:</p>
                         <ul class="list-disc ml-6 text-gray-600 space-y-2">
                             <li>Access your personal information</li>
@@ -87,7 +87,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">Cookies Policy</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">Cookies Policy</h2>
                         <p class="text-gray-600 mb-4">
                             We use cookies and similar tracking technologies to enhance your experience on our website.
                             You can control
@@ -96,7 +96,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">Children's Privacy</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">Children's Privacy</h2>
                         <p class="text-gray-600 mb-4">
                             Our services are not directed to individuals under 18 years of age. We do not knowingly
                             collect personal
@@ -105,7 +105,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">Changes to This Policy</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">Changes to This Policy</h2>
                         <p class="text-gray-600 mb-4">
                             We may update this Privacy Policy from time to time. We will notify you of any changes by
                             posting the new
@@ -114,7 +114,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">Contact Us</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">Contact Us</h2>
                         <div class="bg-blue-50 p-6 rounded-lg">
                             <p class="text-gray-600 mb-2">
                                 If you have questions about this Privacy Policy, please contact us:

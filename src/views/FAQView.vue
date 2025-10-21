@@ -43,7 +43,7 @@
                     <!-- Contact Sidebar -->
                     <div class="lg:col-span-1">
                         <div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
-                            <h3 class="text-2xl font-bold mb-4">Any Questions?</h3>
+                            <h3 class="lg:text-2xl md:text-xl text-lg font-bold mb-4">Any Questions?</h3>
                             <p class="text-gray-600 mb-6">Contact:</p>
 
                             <div class="space-y-4">

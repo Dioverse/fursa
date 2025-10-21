@@ -1,7 +1,7 @@
 <template>
     <DashboardLayout>
         <div class="space-y-6">
-            <h1 class="text-2xl font-bold">My Wishlist</h1>
+            <h1 class="lg:text-2xl md:text-xl text-lg font-bold">My Wishlist</h1>
 
             <!-- Empty State -->
             <div
@@ -15,7 +15,7 @@
                 </p>
                 <RouterLink
                     to="/shop"
-                    class="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded hover:bg-opacity-90 transition"
+                    class="inline-flex items-center gap-0.5 md:gap-2 bg-primary text-xs text-white px-2 md:px-3 lg:px-6 py-3 rounded hover:bg-opacity-90 transition"
                 >
                     <font-awesome-icon icon="shopping-cart" />
                     <span>Continue Shopping</span>

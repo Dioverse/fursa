@@ -122,7 +122,7 @@
         <section class="py-16 bg-gray-50">
             <div class="container mx-auto px-4">
                 <div class="max-w-3xl mx-auto">
-                    <h3 class="text-2xl font-bold mb-8">Comments ({{ comments.length }})</h3>
+                    <h3 class="lg:text-2xl md:text-xl text-lg font-bold mb-8">Comments ({{ comments.length }})</h3>
 
                     <!-- Comment Form -->
                     <div class="bg-white rounded-lg shadow-md p-6 mb-8">

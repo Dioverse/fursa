@@ -189,7 +189,7 @@
                     <!-- Header -->
                     <div class="bg-white rounded-lg shadow-md p-4 mb-6">
                         <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                        <h1 class="text-2xl font-bold mb-4 md:mb-0">Motor Oil</h1>
+                        <h1 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 md:mb-0">Motor Oil</h1>
 
                         <div class="flex items-center gap-4">
                             <!-- View Toggle -->

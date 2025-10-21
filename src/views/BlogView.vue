@@ -15,7 +15,7 @@
             <span class="text-xs text-gray-500 font-bold uppercase tracking-wide">
               {{ post.category?.name }}
             </span>
-            <h2 class="text-2xl font-bold mt-2">
+            <h2 class="lg:text-2xl md:text-xl text-lg font-bold mt-2">
               {{ post.title }}
             </h2>
           </router-link>

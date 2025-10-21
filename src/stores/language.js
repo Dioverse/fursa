@@ -3,13 +3,13 @@ import { ref, computed } from 'vue'
 import languageService from '@/services/language.service'
 
 const allowedLanguages = [
-  { code: 'en', name: 'English' },
-  { code: 'fr', name: 'French' },
-  { code: 'de', name: 'German' },
-  { code: 'ar', name: 'Arabic' },
-  { code: 'es', name: 'Spanish' },
-  { code: 'zh', name: 'Chinese' },
-  { code: 'ru', name: 'Russian' },
+  { code: 'en', name: 'English' , icon:'en.png' },
+  { code: 'fr', name: 'French' , icon:'fr.png' },
+  { code: 'de', name: 'German' , icon:'de.png' },
+  { code: 'ar', name: 'Arabic' , icon:'ar.png' },
+  { code: 'es', name: 'Spanish' , icon:'es.png' },
+  { code: 'zh', name: 'Chinese' , icon:'zh.png' },
+  { code: 'ru', name: 'Russian' , icon:'ru.png' },
 ]
 
 function initLanguage() {
@@ -27,8 +27,11 @@ export const useLanguageStore = defineStore('language', () => {
   const loading = ref(false)
   const error = ref(null)
 
-  const currentName = computed(() => {
-    return allowedLanguages.find((l) => l.code === current.value)?.name || 'English'
+  const currentLanguage = computed(() => {
+    return {
+      name: allowedLanguages.find((l) => l.code === current.value)?.name || 'English',
+      icon: allowedLanguages.find((l) => l.code === current.value)?.icon
+    }
   })
 
   function set(lang) {
@@ -56,7 +59,7 @@ export const useLanguageStore = defineStore('language', () => {
 
   return {
     current,
-    currentName,
+    currentLanguage,
     loading,
     error,
     allowedLanguages,

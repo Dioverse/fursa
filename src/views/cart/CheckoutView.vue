@@ -1,5 +1,5 @@
 <template>
-  <ShopLayout>
+  <DefaultLayout>
     <div class="min-h-screen mx-auto bg-gray-50 container lg:px-20 px-3">
       <div>
         <div class="container mx-auto px-4 py-8">
@@ -390,11 +390,11 @@
         </div>
       </Teleport>
     </div>
-  </ShopLayout>
+  </DefaultLayout>
 </template>
 
 <script setup>
-import ShopLayout from '@/layouts/ShopLayout.vue'
+import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { ref, computed, onMounted, watch } from 'vue'
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'

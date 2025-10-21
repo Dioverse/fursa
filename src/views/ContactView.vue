@@ -73,7 +73,7 @@
                     <!-- Right Side - Get in Touch Box -->
                     <div>
                         <div class="bg-primary text-white rounded-lg p-8">
-                            <h3 class="text-2xl font-bold mb-6">Get in touch</h3>
+                            <h3 class="lg:text-2xl md:text-xl text-lg font-bold mb-6">Get in touch</h3>
                             <p class="mb-8 opacity-90">
                                 Want to get in touch? We'd love to hear from you. Here's how you can reach us.
                             </p>
@@ -121,7 +121,7 @@
         <section class="py-16 bg-white">
             <div class="container mx-auto px-4">
                 <div class="text-center mb-8">
-                    <h3 class="text-2xl font-bold mb-2">Can't get through us?</h3>
+                    <h3 class="lg:text-2xl md:text-xl text-lg font-bold mb-2">Can't get through us?</h3>
                     <p class="text-gray-600">Locate our office Branch using the map below</p>
                 </div>
 

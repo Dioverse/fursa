@@ -3,9 +3,9 @@
     <div class="space-y-6">
       <!-- Welcome Section -->
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h1 class="text-2xl font-bold mb-2">
+        <h1 class="text-lg md:text-xl lg:text-2xl font-bold mb-2">
           Hello {{ user?.first_name }}!
-          <button @click="handleLogout" class="text-primary hover:underline text-base font-normal ml-2">
+          <button @click="handleLogout" class="text-primary text-sm md:text-md lg:text-md hover:underline text-base font-normal ml-2">
             Log Out
           </button>
         </h1>
@@ -16,50 +16,39 @@
       </div>
 
       <!-- Stats Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatsCard :value="stats.ongoingOrders" label="On Going Order" icon="truck" />
-        <StatsCard :value="stats.cartItems" label="Product in cart" icon="shopping-cart" />
-        <StatsCard :value="stats.wishlistItems" label="Product in wishlist" icon="heart" />
-        <StatsCard :value="stats.totalOrders" label="Product ordered" icon="box" />
+      <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
+        <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
+            <div class="text-4xl font-bold text-gray-800 mb-2">{{ value }}</div>
+            <div class="text-gray-600">Product<br class="hidden lg:block"/>&nbsp;in cart</div>
+            <div class="mt-4">
+                <font-awesome-icon icon="shopping-cart" size="2x" class="text-primary opacity-50" />
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
+            <div class="text-4xl font-bold text-gray-800 mb-2">{{ value }}</div>
+            <div class="text-gray-600">Product<br class="hidden lg:block"/>&nbsp;in wishlist</div>
+            <div class="mt-4">
+                <font-awesome-icon icon="heart" size="2x" class="text-primary opacity-50" />
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
+            <div class="text-4xl font-bold text-gray-800 mb-2">{{ value }}</div>
+            <div class="text-gray-600">Product <br class="hidden lg:block"/>&nbsp;Ordered</div>
+            <div class="mt-4">
+                <font-awesome-icon icon="box" size="2x" class="text-primary opacity-50" />
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
+            <div class="text-4xl font-bold text-gray-800 mb-2">{{ value }}</div>
+            <div class="text-gray-600">On Going<br class="hidden lg:block"/>&nbsp;Order</div>
+            <div class="mt-4">
+                <font-awesome-icon icon="truck" size="2x" class="text-primary opacity-50" />
+            </div>
+        </div>
       </div>
 
       <!-- Recent Orders -->
       <RecentOrders :orders="recentOrders" />
-
-      <!-- Quick Actions -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition cursor-pointer">
-          <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <font-awesome-icon icon="shield-alt" size="2x" class="text-yellow-600" />
-          </div>
-          <h3 class="font-semibold mb-2">Secure Payment Gateways</h3>
-          <p class="text-sm text-gray-600">48+ gateways to ensure your security.</p>
-        </div>
-
-        <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition cursor-pointer">
-          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <font-awesome-icon icon="star" size="2x" class="text-blue-600" />
-          </div>
-          <h3 class="font-semibold mb-2">Genuine Customer Reviews</h3>
-          <p class="text-sm text-gray-600">Find verified reviews showcased on our platforms</p>
-        </div>
-
-        <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition cursor-pointer">
-          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <font-awesome-icon icon="headset" size="2x" class="text-green-600" />
-          </div>
-          <h3 class="font-semibold mb-2">24/7 Customer Support</h3>
-          <p class="text-sm text-gray-600">Always our support team is available for you.</p>
-        </div>
-
-        <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition cursor-pointer">
-          <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <font-awesome-icon icon="undo" size="2x" class="text-purple-600" />
-          </div>
-          <h3 class="font-semibold mb-2">Easy Return Policy</h3>
-          <p class="text-sm text-gray-600">If you're not satisfied, return it hassle-free.</p>
-        </div>
-      </div>
     </div>
   </DashboardLayout>
 </template>

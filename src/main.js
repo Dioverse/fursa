@@ -20,6 +20,9 @@ import {
   faBlog,
   faPhone,
   faBriefcase,
+  faShieldAlt,
+  faUndo,
+  faHeadset,
   faTruck,
   faDashboard,
   faBox,
@@ -65,6 +68,7 @@ import {
   faCube,
   faTruckRampBox,
   faMotorcycle,
+  faCog,
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -85,6 +89,7 @@ library.add(
   faSearch,
   faShoppingCart,
   faHeart,
+  faCog,
   faTachometerAlt,
   faSignOutAlt,
   faUser,
@@ -96,6 +101,9 @@ library.add(
   faBlog,
   faPhone,
   faBriefcase,
+  faShieldAlt,
+  faUndo,
+  faHeadset,
   faTruck,
   faDashboard,
   faBox,

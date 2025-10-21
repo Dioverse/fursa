@@ -11,7 +11,7 @@
             <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
                 <div class="prose prose-lg max-w-none">
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">1. Acceptance of Terms</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">1. Acceptance of Terms</h2>
                         <p class="text-gray-600 mb-4">
                             By accessing and using the Fursa Energy website and services, you accept and agree to be
                             bound by the terms
@@ -21,7 +21,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">2. Use License</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">2. Use License</h2>
                         <p class="text-gray-600 mb-4">
                             Permission is granted to temporarily download one copy of the materials on Fursa Energy's
                             website for personal,
@@ -37,7 +37,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">3. Product Information</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">3. Product Information</h2>
                         <p class="text-gray-600 mb-4">
                             We strive to provide accurate product descriptions and pricing information. However, we do
                             not warrant that
@@ -49,7 +49,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">4. Order Acceptance</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">4. Order Acceptance</h2>
                         <p class="text-gray-600 mb-4">
                             We reserve the right to refuse or cancel any order for any reason at any time. We may
                             require additional
@@ -60,7 +60,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">5. Payment Terms</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">5. Payment Terms</h2>
                         <ul class="list-disc ml-6 text-gray-600 space-y-2">
                             <li>All prices are quoted in Nigerian Naira (₦) unless otherwise stated</li>
                             <li>Payment must be received before order processing</li>
@@ -70,7 +70,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">6. Shipping and Delivery</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">6. Shipping and Delivery</h2>
                         <p class="text-gray-600 mb-4">
                             Delivery times are estimates and not guaranteed. Fursa Energy shall not be liable for any
                             delays in delivery.
@@ -79,7 +79,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">7. Returns and Refunds</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">7. Returns and Refunds</h2>
                         <p class="text-gray-600 mb-4">
                             Products may be returned within 7 days of delivery if unused and in original packaging.
                             Refunds will be
@@ -89,7 +89,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">8. Limitation of Liability</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">8. Limitation of Liability</h2>
                         <p class="text-gray-600 mb-4">
                             In no event shall Fursa Energy or its suppliers be liable for any damages arising out of the
                             use or inability
@@ -100,7 +100,7 @@
                     </section>
 
                     <section class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">9. Contact Information</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-4 text-gray-800">9. Contact Information</h2>
                         <div class="bg-gray-50 p-6 rounded-lg">
                             <p class="text-gray-600 mb-2">
                                 <strong>Email:</strong> legal@fursaenergy.com

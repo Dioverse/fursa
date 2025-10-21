@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group relative">
+    class="bg-white rounded-lg shadow-md overflow-hidden max-w-64 m-auto hover:shadow-xl transition-shadow duration-300 group relative">
     <!-- 🔹 Loader Overlay -->
     <div v-if="loading" class="absolute inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center z-20">
       <div class="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -23,13 +23,13 @@
     </div>
 
     <div class="p-4">
-      <h3 class="font-semibold text-lg mb-1 line-clamp-1">
+      <h3 class="font-semibold text-xs sm:text-md md:text-[14px] lg:text-[14px] mb-1 line-clamp-1">
         <a :href="`/product/${product.slug}`" :title="product.name">{{ product.name }}</a>
       </h3>
       <p class="text-gray-500 text-xs mb-3">#{{ product.sku }}</p>
 
       <div class="flex items-center justify-between mb-3">
-        <span class="text-2xl font-bold text-primary">
+        <span class="text-lg font-bold text-primary">
           ₦ {{ getDisplayPrice(product) }}
           <span v-if="product.discount" class="line-through text-sm text-gray-400">₦ {{ priceToLocale(getBasePrice(product)) }}</span>
         </span>
@@ -38,7 +38,7 @@
       <div class="flex w-full space-x-2">
         <!-- Add To Cart -->
         <button v-if="!isInCart(product.id).value" @click="addToCart(product)" :disabled="loadingStates[product.id]"
-          class="flex-1 bg-gold-500 text-white py-2 disabled:opacity-50 disabled:cursor-not-allowed rounded hover:bg-gold-100 hover:text-black text-sm font-semibold">
+          class="flex-1 bg-gold-500 text-white py-2 disabled:opacity-50 disabled:cursor-not-allowed rounded hover:bg-gold-100 hover:text-black text-xs font-semibold">
           {{ loadingStates[product.id] ? 'Adding...' : 'Add to cart' }}
         </button>
 

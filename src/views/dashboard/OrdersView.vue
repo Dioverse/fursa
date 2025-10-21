@@ -1,7 +1,7 @@
 <template>
   <DashboardLayout>
     <div class="space-y-6">
-      <h1 class="text-2xl font-bold">Your Orders</h1>
+      <h1 class="lg:text-2xl md:text-xl text-lg font-bold">My Orders</h1>
 
       <!-- Filter Tabs -->
       <div class="bg-white rounded-lg shadow-md p-4">

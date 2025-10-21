@@ -22,7 +22,7 @@
                     <!-- Main Content -->
                     <div class="lg:col-span-2">
                         <!-- Top Blog -->
-                        <h2 class="text-2xl font-bold mb-6">{{ language.top_blog_header_1 || 'Top Blog' }}</h2>
+                        <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-6">{{ language.top_blog_header_1 || 'Top Blog' }}</h2>
 
                         <!-- Blog Grid -->
                         <!-- Skeletons while loading -->
