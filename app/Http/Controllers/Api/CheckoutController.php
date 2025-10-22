@@ -366,7 +366,7 @@ class CheckoutController extends Controller
 
             return response()->json([
                 'message' => 'Order placed successfully',
-                // 'order'   => $order->load('payment:id,order_id,status,transaction_reference,payment_gateway,paid_at')
+                'orderId'   => $orderId
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
