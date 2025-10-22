@@ -5,7 +5,7 @@ export function formatCurrency(amount) {
   return `₦${amount.toLocaleString('en-NG')}`
 }
 
-export const formatAmount = (amount, dp, locale = 'en-US') => {
+export const formatAmount = (amount, dp=2, locale = 'en-US') => {
   if (isNaN(amount)) { return 0};
   const options = {};
 
@@ -15,7 +15,7 @@ export const formatAmount = (amount, dp, locale = 'en-US') => {
     options.maximumFractionDigits = dp;
   }
 
-  return Number(amount).toLocaleString(locale, options);
+  return Number(parseFloat(amount)).toLocaleString(locale, options);
 };
 
 

@@ -3,240 +3,253 @@
     <div class="min-h-screen mx-auto bg-gray-50 container lg:px-20 px-3">
       <div>
         <div class="container mx-auto px-4 py-8">
-        <!-- Loader -->
-        <div v-if="loading" class="flex items-center justify-center py-20">
-          <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
-          <span class="ml-3 text-gray-600">Initializing checkout...</span>
-        </div>
-
-        <div v-else-if="unavailable" class="text-center py-20">
-          <p class="text-red-600 font-semibold mb-4">
-            {{ unavailableProducts ? 'Some items in your cart are out of stock.' : 'Checkout initialization failed' }}
-          </p>
-
-          <div v-if="unavailableProducts"
-            class="bg-red-50 border border-red-200 rounded-lg p-4 mx-auto max-w-lg mb-6 text-left">
-            <p class="font-semibold text-red-800 mb-2">Please remove these items to proceed:</p>
-            <ul class="list-disc list-inside space-y-1 text-sm text-red-700">
-              <li v-for="(item, index) in unavailableProducts" :key="index" class="pl-2">
-                <span class="font-medium">{{ item.name }}</span>: Requested {{ item.requested }}, Available {{
-                  item.available }}
-              </li>
-            </ul>
+          <!-- Loader -->
+          <div v-if="loading"
+            class="flex items-center justify-center py-20 w-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+            <span class="ml-3 text-gray-600">
+              <p>Initializing checkout</p>
+              <span class="text-xs">Please wait...</span>
+            </span>
           </div>
-          <button @click="initCheckout" class="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-            Retry
-          </button>
-        </div>
 
-        <!-- Error -->
-        <div v-else-if="error" class="text-center py-20">
-          <p class="text-red-600 font-semibold mb-4">{{ error }}</p>
-          <button @click="initCheckout" class="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-            Retry
-          </button>
-        </div>
+          <div v-else-if="unavailable" class="text-center py-20 w-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <p class="text-red-600 font-semibold mb-4">
+              {{ unavailableProducts ? 'Some items in your cart are out of stock.' : 'Checkout initialization failed' }}
+            </p>
 
-        <!-- Success Content -->
-        <div v-else>
-          <h1 class="text-3xl font-bold mb-8">Checkout</h1>
-
-          <!-- Address Section -->
-          <div class="mb-6">
-            <!-- No Address Warning -->
-            <div v-if="shippingAddresses.length === 0" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <div class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-yellow-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"
-                  aria-hidden="true">
-                  <path fill-rule="evenodd"
-                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                    clip-rule="evenodd" />
-                </svg>
-                <div class="flex-1">
-                  <p class="font-semibold text-yellow-800">No Address Saved</p>
-                  <p class="text-yellow-700 text-sm mt-1">Add a shipping address so we can deliver your order</p>
-                  <button @click="openAddressModal"
-                    class="mt-3 px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition text-sm font-medium">
-                    Add new Address
-                  </button>
-                </div>
-              </div>
+            <div v-if="unavailableProducts"
+              class="bg-red-50 border border-red-200 rounded-lg p-4 mx-auto max-w-lg mb-6 text-left">
+              <p class="font-semibold text-red-800 mb-2">Please remove these items to proceed:</p>
+              <ul class="list-disc list-inside space-y-1 text-sm text-red-700">
+                <li v-for="(item, index) in unavailableProducts" :key="index" class="pl-2">
+                  <span class="font-medium">{{ item.name }}</span>: Requested {{ item.requested }}, Available {{
+                    item.available }}
+                </li>
+              </ul>
             </div>
+            <button @click="initCheckout" class="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+              Retry
+            </button>
+          </div>
 
-            <!-- Saved Addresses -->
-            <div v-else class="space-y-3">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold">Shipping Address</h3>
-                <button @click="openAddressModal"
-                  class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-                  Add New
-                </button>
-              </div>
+          <!-- Error -->
+          <div v-else-if="error" class="text-center py-20 w-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <p class="text-red-600 font-semibold mb-4">{{ error }}</p>
+            <button @click="initCheckout" class="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+              Retry
+            </button>
+          </div>
 
-              <div v-for="addr in shippingAddresses" :key="addr.id"
-                class="bg-white rounded-lg border p-4 cursor-pointer transition hover:shadow-md"
-                :class="{ 'border-blue-500 bg-blue-50': selectedAddressId === addr.id }"
-                @click="selectAddress(addr.id)">
-                <div class="flex items-start justify-between gap-4">
-                  <div class="flex items-start gap-3 flex-1">
-                    <input type="radio" :id="`addr-${addr.id}`" :value="addr.id" v-model="selectedAddressId"
-                      @change="setDefaultAddress(addr.id)" class="mt-1 cursor-pointer"
-                      :aria-label="`Select ${addr.full_name} as shipping address`" />
-                    <div class="flex-1">
-                      <div class="flex items-center gap-2 mb-1">
-                        <label :for="`addr-${addr.id}`" class="font-semibold text-gray-800 cursor-pointer">{{
-                          addr.full_name }}</label>
-                        <span v-if="addr.is_default"
-                          class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded"
-                          aria-label="This is your default address">
-                          Default
-                        </span>
-                      </div>
-                      <p class="text-gray-600 text-sm">{{ addr.address_line_one }}</p>
-                      <p v-if="addr.address_line_two" class="text-gray-600 text-sm">{{ addr.address_line_two }}</p>
-                      <p class="text-gray-600 text-sm">{{ addr.city }}, {{ addr.state }} {{ addr.postal_code }}</p>
-                      <p class="text-gray-500 text-sm">{{ addr.country }}</p>
-                      <p class="text-gray-600 text-sm font-medium mt-1">{{ addr.phone }}</p>
-                    </div>
+          <!-- Success Content -->
+          <div v-else>
+            <h1 class="lg:text-2xl md:text-xl text-lg font-bold mb-8">Checkout</h1>
+
+            <!-- Address Section -->
+            <div class="mb-6">
+              <!-- No Address Warning -->
+              <div v-if="shippingAddresses.length === 0" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div class="flex items-start gap-3">
+                  <svg class="w-5 h-5 text-yellow-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"
+                    aria-hidden="true">
+                    <path fill-rule="evenodd"
+                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                      clip-rule="evenodd" />
+                  </svg>
+                  <div class="flex-1">
+                    <p class="font-semibold text-yellow-800">No Address Saved</p>
+                    <p class="text-yellow-700 text-sm mt-1">Add a shipping address so we can deliver your order</p>
+                    <button @click="openAddressModal"
+                      class="mt-3 px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition text-sm font-medium">
+                      Add new Address
+                    </button>
                   </div>
-                  <button @click.stop="editAddress(addr)"
-                    class="px-3 py-1 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded transition">
-                    Edit
+                </div>
+              </div>
+
+              <!-- Saved Addresses -->
+              <div v-else class="space-y-3">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-sm lg:text-lg md:text-lg font-semibold">Shipping Address</h3>
+                  <button @click="openAddressModal"
+                    class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                    Add New
                   </button>
                 </div>
-              </div>
-            </div>
-          </div>
 
-          <!-- Product Notice & Delivery -->
-          <div class="flex gap-x-3">
-            <div class="w-1/2 bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-              <div class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"
-                  aria-hidden="true">
-                  <path fill-rule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clip-rule="evenodd" />
-                </svg>
-                <div>
-                  <p class="font-semibold text-blue-800">Check your cart items before payment</p>
-                  <p class="text-blue-700 text-sm mt-1">Ensure everything is correct before completing your purchase</p>
+                <div v-for="addr in shippingAddresses" :key="addr.id"
+                  class="bg-white  rounded-lg border p-4 cursor-pointer transition hover:shadow-md"
+                  :class="{ 'border-blue-500 bg-blue-50': selectedAddressId === addr.id }"
+                  @click="selectAddress(addr.id)">
+                  <div class="flex items-start justify-between gap-4">
+                    <div class="flex items-start gap-3 flex-1">
+                      <input type="radio" :id="`addr-${addr.id}`" :value="addr.id" v-model="selectedAddressId"
+                        @change="setDefaultAddress(addr.id)" class="mt-1 cursor-pointer"
+                        :aria-label="`Select ${addr.full_name} as shipping address`" />
+                      <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1">
+                          <label :for="`addr-${addr.id}`"
+                            class="font-semibold text-xs md:text-sm lg:text-sm text-gray-800 cursor-pointer">{{
+                              addr.full_name }}</label>
+                          <span v-if="addr.is_default"
+                            class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded"
+                            aria-label="This is your default address">
+                            Default
+                          </span>
+                        </div>
+                        <p class="text-gray-600 text-xs md:text-sm lg:text-sm">{{ addr.address_line_one }}</p>
+                        <p v-if="addr.address_line_two" class="text-gray-600 text-xs md:text-sm lg:text-sm">{{
+                          addr.address_line_two }}</p>
+                        <p class="text-gray-600 text-xs md:text-sm lg:text-sm">{{ addr.city }}, {{ addr.state }} {{
+                          addr.postal_code }}</p>
+                        <p class="text-gray-500 text-xs md:text-sm lg:text-sm">{{ addr.country }}</p>
+                        <p class="text-gray-600 text-xs md:text-sm lg:text-sm font-medium mt-1">{{ addr.phone }}</p>
+                      </div>
+                    </div>
+                    <button @click.stop="editAddress(addr)"
+                      class="px-3 py-1 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded transition">
+                      Edit
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="w-1/2 bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
-              <div class="flex items-start gap-3">
-                <font-awesome-icon icon="truck" class="text-orange-600" />
-                <div>
-                  <p class="font-semibold text-orange-800">Estimated Delivery</p>
-                  <p v-if="shippingDateRange.text" class="text-orange-700 text-sm mt-1">
-                    <span><strong>{{ shippingDateRange.text }}</strong>&nbsp;</span>
-                    <span class="font-medium"><strong>{{ shippingDateRange.range }}</strong></span>
+
+            <!-- Product Notice & Delivery -->
+            <div class="flex gap-x-3 text-xs md:text-sm lg:text-sm">
+              <div class="w-7/12 bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <div class="flex items-start gap-3">
+                  <svg class="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"
+                    aria-hidden="true">
+                    <path fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clip-rule="evenodd" />
+                  </svg>
+                  <div>
+                    <p class="font-semibold text-blue-800">Confirm cart items before payment</p>
+                    <p class="text-blue-700 text-sm mt-1">Ensure everything is correct before completing your purchase
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="w-5/12 bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+                <div class="flex items-start gap-3">
+                  <font-awesome-icon icon="truck" class="text-orange-600" />
+                  <div>
+                    <p class="font-semibold text-orange-800">Estimated Delivery</p>
+                    <p v-if="shippingDateRange.text" class="text-orange-700 mt-1">
+                      <span><strong>{{ shippingDateRange.text }}</strong>&nbsp;</span><br
+                        class="hidden xs:block sm:block" />
+                      <span class="font-medium"><strong>{{ shippingDateRange.range }}</strong></span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-3 gap-8">
+              <!-- Payment Section -->
+              <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                  <h2 class="lg:text-xl md:text-lg text-sm font-semibold mb-4">Select Payment Method</h2>
+
+                  <!-- Dynamic Payment Options -->
+                  <div class="space-y-3 relative">
+                    <!-- Loader Overlay when fetching gateway -->
+                    <div v-if="gatewayLoading"
+                      class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 rounded-lg z-10">
+                      <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent">
+                      </div>
+                      <span class="ml-2 text-gray-600">Loading gateway...</span>
+                    </div>
+
+                    <fieldset class="space-y-3 text-xs md:text-sm lg:text-sm">
+                      <legend class="sr-only">Payment method options</legend>
+                      <label v-for="gateway in gateways" :key="gateway.name"
+                        class="flex items-center gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition"
+                        :class="{ 'border-blue-500 bg-blue-50': paymentMethod === gateway.name }">
+                        <input v-model="paymentMethod" type="radio" @change="setGateway(gateway.name)"
+                          :value="gateway.name" class="text-blue-600 focus:ring-blue-600"
+                          :aria-label="`Pay with ${gateway.display}`" />
+                        <div class="flex-1 flex items-center gap-3">
+                          <span class="font-medium">Pay with {{ gateway.display }}</span>
+                          <img v-if="gateway.logo" :src="gateway.logo" :alt="`${gateway.name} logo`"
+                            class="h-6 object-contain" />
+                        </div>
+                      </label>
+                    </fieldset>
+                  </div>
+
+                  <!-- Pay Now -->
+                  <button @click="placeOrder" :disabled="!selectedAddressId || !paymentMethod || isProcessingPayment"
+                    class="mt-6 w-full bg-blue-600 text-white text-sm py-3 rounded font-semibold hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                    <span v-if="isProcessingPayment"
+                      class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+                    {{ isProcessingPayment ? 'Processing...' : `Pay ₦${formatAmount(cartData?.payable)}` }}
+                  </button>
+                  <p v-if="!selectedAddressId" class="text-center text-red-600 text-sm mt-2" role="alert">
+                    <span class="inline-block mr-1">⚠️</span> Please select a shipping address to proceed
+                  </p>
+                  <p v-if="!paymentMethod" class="text-center text-red-600 text-sm mt-2" role="alert">
+                    <span class="inline-block mr-1">⚠️</span> Please select a payment method to proceed
                   </p>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Payment Section -->
-            <div class="lg:col-span-2 space-y-6">
-              <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold mb-4">Select Payment Method</h2>
+              <!-- Order Summary -->
+              <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-md p-6 sticky top-20">
+                  <h3 class="text-sm lg:text-lg md:text-lg font-semibold mb-6">Order Summary</h3>
 
-                <!-- Dynamic Payment Options -->
-                <div class="space-y-3 relative">
-                  <!-- Loader Overlay when fetching gateway -->
-                  <div v-if="gatewayLoading"
-                    class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 rounded-lg z-10">
-                    <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
-                    <span class="ml-2 text-gray-600">Loading gateway...</span>
-                  </div>
+                  <div class="border-t pt-4 space-y-3 text-xs lg:text-sm md:text-sm">
+                    <!-- Subtotal -->
+                    <div class="flex justify-between font-bold">
+                      <span class="text-gray-600">Subtotal</span>
+                      <span>₦{{ formatAmount(cartData?.amount) }}</span>
+                    </div>
 
-                  <fieldset class="space-y-3">
-                    <legend class="sr-only">Payment method options</legend>
-                    <label v-for="gateway in gateways" :key="gateway.name"
-                      class="flex items-center gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition"
-                      :class="{ 'border-blue-500 bg-blue-50': paymentMethod === gateway.name }">
-                      <input v-model="paymentMethod" type="radio" @change="setGateway(gateway.name)" :value="gateway.name"
-                        class="text-blue-600 focus:ring-blue-600"
-                        :aria-label="`Pay with ${gateway.display}`" />
-                      <div class="flex-1 flex items-center gap-3">
-                        <span class="font-medium">Pay with {{ gateway.display }}</span>
-                        <img v-if="gateway.logo" :src="gateway.logo" :alt="`${gateway.name} logo`"
-                          class="h-6 object-contain" />
-                      </div>
-                    </label>
-                  </fieldset>
-                </div>
+                    <!-- Original Price (if discounted) -->
+                    <div
+                      v-if="cartData?.originalAmount && parseFloat(cartData.originalAmount) > parseFloat(cartData.amount)"
+                      class="flex justify-between font-bold text-gray-500 line-through">
+                      <span>Original Price</span>
+                      <span>₦{{ formatAmount(cartData.originalAmount) }}</span>
+                    </div>
 
-                <!-- Pay Now -->
-                <button @click="placeOrder" :disabled="!selectedAddressId || !paymentMethod || isProcessingPayment"
-                  class="mt-6 w-full bg-blue-600 text-white py-3 rounded font-semibold hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                  <span v-if="isProcessingPayment"
-                    class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
-                  {{ isProcessingPayment ? 'Processing...' : `Pay ₦${cartTotal.toFixed(2)}` }}
-                </button>
-                <p v-if="!selectedAddressId" class="text-center text-red-600 text-sm mt-2" role="alert">
-                  <span class="inline-block mr-1">⚠️</span> Please select a shipping address to proceed
-                </p>
-                <p v-if="!paymentMethod" class="text-center text-red-600 text-sm mt-2" role="alert">
-                  <span class="inline-block mr-1">⚠️</span> Please select a payment method to proceed
-                </p>
-              </div>
-            </div>
+                    <!-- Saved -->
+                    <div
+                      v-if="cartData?.originalAmount && parseFloat(cartData.originalAmount) > parseFloat(cartData.amount)"
+                      class="flex justify-between font-bold text-green-600">
+                      <span>Saved</span>
+                      <span>₦{{ formatAmount(parseFloat(cartData.originalAmount) - parseFloat(cartData.amount))
+                        }}</span>
+                    </div>
 
-            <!-- Cart Summary -->
-            <div class="lg:col-span-1">
-              <div class="bg-white rounded-lg shadow-md p-6 sticky top-8">
-                <h3 class="text-xl font-semibold mb-6">Order Summary</h3>
+                    <!-- Shipping -->
+                    <div class="flex justify-between font-bold">
+                      <span class="text-gray-600">Shipping</span>
+                      <span>₦{{ formatAmount(cartData?.shippingCost?.cost) }}</span>
+                    </div>
+                    <!-- Tax -->
+                    <div class="flex justify-between font-bold">
+                      <span class="text-gray-600">Tax</span>
+                      <span>
+                        <span class="text-red-600">({{ (cartData?.tax_value * 100).toFixed(2) }}%)</span>
+                        ₦{{ formatAmount(cartData?.tax) }}
+                      </span>
+                    </div>
 
-                <div class="border-t pt-4 space-y-3">
-                  <!-- Subtotal -->
-                  <div class="flex justify-between font-bold">
-                    <span class="text-gray-600">Subtotal</span>
-                    <span>₦{{ parseInt(cartData?.amount || 0).toFixed(2) }}</span>
-                  </div>
-
-                  <!-- Original Price (if discounted) -->
-                  <div v-if="cartData?.originalAmount && parseInt(cartData.originalAmount) > parseInt(cartData.amount)"
-                    class="flex justify-between font-bold text-gray-500 line-through">
-                    <span>Original Price</span>
-                    <span>₦{{ parseInt(cartData.originalAmount || 0).toFixed(2) }}</span>
-                  </div>
-
-                  <!-- Saved -->
-                  <div v-if="cartData?.originalAmount && parseInt(cartData.originalAmount) > parseInt(cartData.amount)"
-                    class="flex justify-between font-bold text-green-600">
-                    <span>Saved</span>
-                    <span>₦{{ (parseInt(cartData.originalAmount) - parseInt(cartData.amount)).toFixed(2) }}</span>
-                  </div>
-
-                  <!-- Shipping -->
-                  <div class="flex justify-between font-bold">
-                    <span class="text-gray-600">Shipping</span>
-                    <span>₦{{ parseInt(cartData?.shippingCost?.cost || 0).toFixed(2) }}</span>
-                  </div>
-                  <!-- Tax -->
-                  <div class="flex justify-between font-bold">
-                    <span class="text-gray-600">Tax</span>
-                    <span>
-                      <span class="text-red-600">({{ (parseFloat(cartData?.tax_value || 0) * 100).toFixed(1) }}%)</span>
-                      ₦{{ parseInt(cartData?.tax || 0).toFixed(2) }}
-                    </span>
-                  </div>
-
-                  <!-- Total -->
-                  <div class="flex justify-between font-bold text-lg border-t pt-3">
-                    <span>Total</span>
-                    <span class="text-blue-600">₦{{ cartTotal.toFixed(2) }}</span>
+                    <!-- Total -->
+                    <div class="flex justify-between font-bold text-lg border-t pt-3">
+                      <span>Total</span>
+                      <span class="text-blue-600">₦{{ formatAmount(cartData?.payable) }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
       </div>
 
       <!-- Address Modal -->
@@ -395,6 +408,8 @@
 
 <script setup>
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import { formatAmount } from '@/utils/helpers'
+import { clearCart } from '@/utils/neut'
 import { ref, computed, onMounted, watch } from 'vue'
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
@@ -509,6 +524,7 @@ const showAddressModal = ref(false)
 const loadingStates = ref(false)
 const isSubmittingForm = ref(false)
 const isProcessingPayment = ref(false)
+const isFinalStep = ref(false)
 const paymentMethod = ref(null)
 const selectedGateway = ref(null)
 const selectedAddressId = ref(null)
@@ -537,7 +553,6 @@ const createEmptyAddressForm = () => ({
 const addressForm = ref(createEmptyAddressForm())
 
 // Computed
-const cartTotal = computed(() => parseInt(cartData.value?.payable || 0))
 const shippingDateRange = computed(() => {
   const shippingCost = cartData.value?.shippingCost;
   if (!shippingCost || !shippingCost.min_days || !shippingCost.max_days) {
@@ -734,11 +749,21 @@ const setGateway = (gatewayName) => {
 }
 
 const placeOrder = async () => {
+  if (!paymentMethod.value) {
+    toast.error('Please select a payment method')
+    return
+  }
   try {
     let gatewayName = selectedGateway.value
     gatewayLoading.value = true
-    const data = await apiClient.post(`/place-order/${gatewayName}`, {})
-    await handlePayment()
+    const response = await apiClient.post(`/place-order/${gatewayName}`, {})
+
+    if (paymentMethod.value === PAYMENT_METHODS.PAYSTACK) {
+      await processPaystackPayment(response.data)
+    } else if (paymentMethod.value === PAYMENT_METHODS.FLUTTERWAVE) {
+      await processFlutterwavePayment(response.data)
+    }
+
   } catch (err) {
     console.error('Failed to fetch gateway details:', err)
     toast.error(err.message)
@@ -747,6 +772,24 @@ const placeOrder = async () => {
     gatewayLoading.value = false
   }
 }
+
+// const handlePayment = async () => {
+
+//   isProcessingPayment.value = true
+
+//   try {
+//     const paymentData = {
+//       address_id: selectedAddressId.value,
+//       gateway: paymentMethod.value
+//     }
+
+//     const response = await apiClient.post('/process-payment', paymentData)
+//   } catch (err) {
+//     console.error('Payment error:', err)
+//     toast.error(err.message || 'Payment processing failed')
+//     isProcessingPayment.value = false
+//   }
+// }
 
 const selectAddress = (addressId) => {
   selectedAddressId.value = addressId
@@ -836,40 +879,8 @@ const handleAddAddress = async () => {
   }
 }
 
-const handlePayment = async () => {
-  // if (!selectedAddressId.value) {
-  //   toast.error('Please select a shipping address')
-  //   return
-  // }
-
-  if (!paymentMethod.value) {
-    toast.error('Please select a payment method')
-    return
-  }
-
-  isProcessingPayment.value = true
-
-  try {
-    const paymentData = {
-      address_id: selectedAddressId.value,
-      gateway: paymentMethod.value
-    }
-
-    const response = await apiClient.post('/process-payment', paymentData)
-
-    if (paymentMethod.value === PAYMENT_METHODS.PAYSTACK) {
-      await processPaystackPayment(response.data)
-    } else if (paymentMethod.value === PAYMENT_METHODS.FLUTTERWAVE) {
-      await processFlutterwavePayment(response.data)
-    }
-  } catch (err) {
-    console.error('Payment error:', err)
-    toast.error(err.message || 'Payment processing failed')
-    isProcessingPayment.value = false
-  }
-}
-
 const processPaystackPayment = async (paymentData) => {
+  console.log(paymentData);
   return new Promise((resolve, reject) => {
     if (!window.PaystackPop) {
       toast.error('Payment gateway not loaded')
@@ -878,24 +889,27 @@ const processPaystackPayment = async (paymentData) => {
     }
 
     window.PaystackPop.setup({
-      key: paymentData.public_key,
+      key: paymentData.gws.public_key,
       email: paymentData.email,
-      amount: cartTotal.value * 100,
-      ref: paymentData.reference,
+      amount: paymentData.total_amount * 100,
+      ref: paymentData.trans_ref,
       onClose: () => {
         toast.info('Payment cancelled')
         isProcessingPayment.value = false
         reject(new Error('Payment cancelled'))
       },
-      onSuccess: async (transaction) => {
-        try {
-          await verifyPayment(paymentData.reference, PAYMENT_METHODS.PAYSTACK)
-          toast.success('Payment successful!')
-          resolve()
-        } catch (err) {
-          reject(err)
-        }
-      }
+      callback: function (response) { // <- regular function
+        // wrap async in here
+        (async () => {
+          try {
+            await verifyPayment(PAYMENT_METHODS.PAYSTACK, response.reference, paymentData.orderId)
+            toast.success('Payment successful!')
+            resolve()
+          } catch (err) {
+            reject(err)
+          }
+        })()
+      },
     }).openIframe()
   })
 }
@@ -909,13 +923,13 @@ const processFlutterwavePayment = async (paymentData) => {
     }
 
     window.FlutterwaveCheckout({
-      public_key: paymentData.public_key,
-      tx_ref: paymentData.reference,
-      amount: cartTotal.value,
+      public_key: paymentData.gws.public_key,
+      tx_ref: paymentData.trans_ref,
+      amount: paymentData.total_amount,
       currency: 'NGN',
       customer: {
         email: paymentData.email,
-        name: paymentData.customer_name
+        name: paymentData.name
       },
       customizations: {
         title: 'Order Payment',
@@ -924,7 +938,7 @@ const processFlutterwavePayment = async (paymentData) => {
       callback: async (response) => {
         if (response.status === 'completed') {
           try {
-            await verifyPayment(paymentData.reference, PAYMENT_METHODS.FLUTTERWAVE)
+            await verifyPayment(PAYMENT_METHODS.FLUTTERWAVE, paymentData.trans_ref, paymentData.orderId)
             toast.success('Payment successful!')
             resolve()
           } catch (err) {
@@ -945,24 +959,22 @@ const processFlutterwavePayment = async (paymentData) => {
   })
 }
 
-const verifyPayment = async (reference, gateway) => {
+const verifyPayment = async (gateway, reference, order) => {
   try {
-    const data = await apiClient.post('/verify-payment', {
-      reference,
-      gateway
-    })
+    const data = await apiClient.post(`/checkout/${gateway}/${reference}/${order}`, {})
 
-    isProcessingPayment.value = false
+    isProcessingPayment.value = true
+    isFinalStep.value = true
 
     // Redirect to order confirmation or success page
-    if (data.data?.order_id) {
-      window.location.href = `/order/${data.data.order_id}`
-    } else {
-      window.location.href = '/orders'
-    }
+    clearCart()
+    window.location.href = `/order/${data.data.order_id}`
   } catch (err) {
     console.error('Payment verification failed:', err)
     throw err
+  } finally {
+    isProcessingPayment.value = false
+    isFinalStep.value = false
   }
 }
 

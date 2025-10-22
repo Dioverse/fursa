@@ -125,3 +125,8 @@ export function toggleWishlist(product) {
     wishlistStore.add(product);
   }
 }
+
+export function clearCart() {
+  localStorage.removeItem('cart')
+  cartStore.items.values = []
+}

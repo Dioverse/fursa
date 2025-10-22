@@ -9,7 +9,7 @@
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-600">Discount</span>
-                <span class="font-semibold text-[red]">₦{{ totalSaved.toFixed(2) }}</span>
+                <span class="font-semibold text-[green]">₦{{ totalSaved.toFixed(2) }}</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-600">Subtotal</span>
