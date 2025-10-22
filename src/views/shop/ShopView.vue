@@ -148,9 +148,10 @@
         </section>
 
         <!-- Featured Products Section -->
-        <section class="max-w-7xl mx-auto mb-6 bg-white rounded">
-          <div class="flex justify-between items-center mb-4 bg-gold-500 py-3 px-3 rounded">
-            <h2 class="md:text-xl font-bold text-white">Featured Products</h2>
+        <section class="max-w-7xl mx-auto mb-4 md:mb-6 lg:mb-6 bg-white rounded">
+          <div
+            class="flex justify-between items-center mb-4 bg-gold-500 py-3 px-3 rounded text-sm md:text-lg lg:text-xl">
+            <h2 class="font-bold text-white">Featured Products</h2>
             <RouterLink :to="`/c?sort_by=if`" class="text-white hover:underline inline-flex items-center">
               More
               <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,7 +161,7 @@
           </div>
 
           <div v-if="shopData.featured_products.length < 1" class="w-full py-16 text-center">
-            <p class="text-gray-500 text-lg">No featured products available</p>
+            <p class="text-gray-500 text-sm md:text-lg lg:text-lg">No featured products available</p>
           </div>
 
           <Swiper v-else :modules="[Navigation, FreeMode]" :pagination="{
@@ -179,12 +180,18 @@
                   <img :src="getImageUrl(product.images?.[0]?.path)" :alt="product.name" loading="lazy"
                     class="w-full h-full object-cover" @error="handleImageError">
                 </div>
-                <h3 class="text-sm font-medium mb-1 truncate">{{ product.name }}</h3>
-                <div class="flex flex-row line-clamp-1">
-                  <span v-if="product.discount" class="text-gold-500 font-bold">₦ {{
-                    product.discounted_price.toFixed(2) }}</span>
-                  <span :class="product.discount ? 'text-gray-400 line-through text-xs' : 'text-gold-500 font-bold'">
-                    ₦ {{ product.price.toFixed(2) }}
+                <h3 class="text-xs md:text-sm lg:text-sm font-medium mb-1 truncate">{{ product.name }}</h3>
+                <div class="block md:flex md:flex-row lg:flex lg:flex-row line-clamp-1">
+                  <span v-if="product.discount" class="text-xs md:text-sm lg:text-sm text-gold-500 font-bold md:mr-2">
+                    ₦&nbsp;{{ formatAmount(product.discounted_price) }}
+                  </span>
+
+                  <span :class="[
+                    product.discount
+                      ? 'text-gray-400 line-through text-[10px] md:text-xs lg:text-xs'
+                      : 'text-gold-500 font-bold text-xs md:text-sm lg:text-sm',
+                  ]">
+                    ₦&nbsp;{{ formatAmount(product.price) }}
                   </span>
                 </div>
                 <div v-if="product.discount" class="mt-1 absolute top-1 right-2">
@@ -199,8 +206,9 @@
 
 
         <div v-for="(category, idx) in shopData.categories_with_products" :key="category.id"
-          class="max-w-7xl mx-auto mb-6">
-          <div class="flex justify-between items-center mb-4 bg-gold-500 py-3 px-3 rounded">
+          class="max-w-7xl mx-auto mb-4 md:mb-6 lg:mb-6">
+          <div
+            class="flex justify-between items-center mb-4 bg-gold-500 py-3 px-3 rounded text-sm md:text-lg lg:text-xl">
             <h2 class="md:lg:text-xl font-bold text-white">{{ category.name }}</h2>
             <RouterLink :to="`/c/${category.slug}`" class="text-white hover:underline inline-flex items-center">
               More
@@ -211,7 +219,7 @@
           </div>
 
           <div v-if="category.products.length < 1" class="w-full py-16 text-center">
-            <p class="text-gray-500 text-lg">No products available in {{ category.name }}</p>
+            <p class="text-gray-500 text-xs md:text-sm lg:text-lg">No products available in {{ category.name }}</p>
           </div>
 
           <Swiper v-else :modules="[Navigation, FreeMode]" :pagination="{
@@ -235,19 +243,22 @@
 
                 <!-- Product Name -->
                 <h3
-                  class="text-sm font-semibold mb-1 truncate text-gray-800 group-hover:text-gold-500 transition-colors duration-200">
+                  class="text-xs md:text-sm lg:text-sm font-semibold mb-1 truncate text-gray-800 group-hover:text-gold-500 transition-colors duration-200">
                   {{ product.name }}
                 </h3>
 
                 <!-- Prices -->
-                <div class="flex items-center space-x-2 line-clamp-1">
-                  <span v-if="product.discount" class="text-gold-500 font-bold text-sm">
-                    ₦ {{ product.discounted_price.toFixed(2) }}
+                <div class="block md:flex md:flex-row lg:flex lg:flex-row line-clamp-1">
+                  <span v-if="product.discount" class="text-xs md:text-sm lg:text-sm text-gold-500 font-bold md:mr-2">
+                    ₦&nbsp;{{ formatAmount(product.discounted_price) }}
                   </span>
-                  <span :class="product.discount
-                    ? 'text-gray-400 line-through text-xs'
-                    : 'text-gold-500 font-bold text-sm'">
-                    ₦ {{ product.price.toFixed(2) }}
+
+                  <span :class="[
+                    product.discount
+                      ? 'text-gray-400 line-through text-[10px] md:text-xs lg:text-xs'
+                      : 'text-gold-500 font-bold text-xs md:text-sm lg:text-sm',
+                  ]">
+                    ₦&nbsp;{{ formatAmount(product.price) }}
                   </span>
                 </div>
 
@@ -284,7 +295,7 @@ import { Autoplay, Pagination, Navigation, FreeMode } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { getImageUrl, handleImageError } from '@/utils/helpers';
+import { formatAmount, getImageUrl, handleImageError } from '@/utils/helpers';
 
 const shopData = ref({
   featured_products: [],
