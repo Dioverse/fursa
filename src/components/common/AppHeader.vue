@@ -94,7 +94,7 @@
                         <button @click="showLangMenu = !showLangMenu"
                             class="flex items-center gap-1 text-white hover:text-primary transition">
                             <!-- <span>{{ languageStore.current.toUpperCase() }}</span> -->
-                            <img :src="`../../../public/images/language/${languageStore.currentLanguage.icon}`" class="w-[20px] h-[15px] rounded" :alt="languageStore.currentLanguage.name">
+                            <img :src="`/images/language/${languageStore.currentLanguage.icon}`" class="w-[20px] h-[15px] rounded" :alt="languageStore.currentLanguage.name">
                             <span class="sm:block hidden">{{ languageStore.currentLanguage.name }}</span>
                             <font-awesome-icon :icon="showLangMenu ? 'chevron-up' : 'chevron-down'" />
                         </button>
@@ -104,7 +104,7 @@
                             <div v-if="showLangMenu" class="absolute right-0 mt-2 bg-white rounded shadow-lg py-2 w-32 z-20">
                                 <a v-for="lang in languageStore.allowedLanguages" :key="lang.code" href="#"
                                     class="flex items-center gap-x-1.5 nowrap block px-4 py-2 hover:bg-gray-100" @click.prevent="switchLang(lang.code)">
-                                    <img :src="`../../../public/images/language/${lang.icon}`" class="w-[20px] h-[15px] rounded" :alt="lang.icon">
+                                    <img :src="`/images/language/${lang.icon}`" class="w-[20px] h-[15px] rounded" :alt="lang.icon">
                                     <span>{{ lang.name }}</span>
                                 </a>
                             </div>

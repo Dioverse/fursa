@@ -5,15 +5,15 @@
         <div class="space-y-3 mb-6">
             <div class="flex justify-between">
                 <span class="text-gray-600">Total</span>
-                <span class="font-semibold">₦{{ totalAtOriginalPrice.toFixed(2) }}</span>
+                <span class="font-semibold">₦{{ formatAmount(totalAtOriginalPrice) }}</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-600">Discount</span>
-                <span class="font-semibold text-[green]">₦{{ totalSaved.toFixed(2) }}</span>
+                <span class="font-semibold text-[green]">₦{{ formatAmount(totalSaved) }}</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-600">Subtotal</span>
-                <span class="font-semibold">₦{{ subtotal.toFixed(2) }}</span>
+                <span class="font-semibold">₦{{ formatAmount(subtotal) }}</span>
             </div>
 
             <!-- <div class="pt-3 border-t">
@@ -32,14 +32,14 @@
 
             <div v-if="discount > 0" class="flex justify-between text-green-600">
                 <span>Discount</span>
-                <span>-₦{{ discount.toFixed(2) }}</span>
+                <span>-₦{{ formatAmount(discount) }}</span>
             </div>
         </div>
 
         <div class="border-t pt-4 mb-6">
             <div class="flex justify-between text-xl font-bold">
                 <span>Total</span>
-                <span class="text-primary">₦{{ total.toFixed(2) }}</span>
+                <span class="text-primary">₦{{ formatAmount(total) }}</span>
             </div>
         </div>
 
@@ -71,6 +71,7 @@ import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cart'
 import { useToast } from 'vue-toastification'
 import BaseButton from '@/components/common/BaseButton.vue'
+import { formatAmount } from '@/utils/helpers'
 
 const router = useRouter()
 const cartStore = useCartStore()

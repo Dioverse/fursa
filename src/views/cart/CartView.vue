@@ -1,6 +1,6 @@
 <template>
-  <DefaultLayout>
-    <div class="container mx-auto px-4 py-8">
+  <ShopLayout :bgColor="`bg-white`">
+    <div class="min-h-screen mx-auto bg-gray-50 container lg:px-20 px-3 bg-transparent">
       <h1 class="text-3xl font-bold mb-8">Cart</h1>
 
       <!-- Loading -->
@@ -79,7 +79,7 @@
     <CTA />
     <!-- Brochure -->
     <Brochure />
-  </DefaultLayout>
+  </ShopLayout>
 </template>
 
 <script setup>
@@ -93,6 +93,7 @@ import Brochure from '@/components/common/Brochure.vue'
 import CTA from '@/components/common/CTA.vue'
 import { useCartStore } from '@/stores/cart'
 import { useAuthStore } from '@/stores/auth'
+import ShopLayout from '@/layouts/ShopLayout.vue'
 
 const cartStore = useCartStore()
 const authStore = useAuthStore()

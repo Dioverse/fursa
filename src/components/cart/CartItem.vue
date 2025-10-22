@@ -12,12 +12,11 @@
             </div>
 
             <div class="flex flex-col font-semibold">
-                <span class="">₦{{ Number((item.product?.discounted_price ?? item.product?.price) ||
-                    0).toFixed(2) }}</span>
+                <span class="">₦{{ formatAmount(item.product?.discounted_price ?? item.product?.price) }}</span>
                 <small v-if="item.product?.discount"
-                    class="text-gray-400 text-right text-sm font-normal line-through m-0">₦{{ Number(item.product?.price
+                    class="text-gray-400 text-right text-sm font-normal line-through m-0">₦{{ formatAmount(item.product?.price
                         ||
-                        0).toFixed(2) }}</small>
+                        0) }}</small>
             </div>
         </div>
         <div class="flex items-center gap-4 py-4 border-b justify-between">
@@ -66,7 +65,7 @@ import { useCartStore } from '@/stores/cart'
 import { ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import { getCartQuantity, onQuantityBlur, onQuantityEnter, updateQuantity, loadingStates, removeItem } from '@/utils/neut';
-import { getImageUrl, handleImageError } from '@/utils/helpers';
+import { formatAmount, getImageUrl, handleImageError } from '@/utils/helpers';
 
 const props = defineProps({
     item: {

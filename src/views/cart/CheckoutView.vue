@@ -91,7 +91,7 @@
                           <label :for="`addr-${addr.id}`"
                             class="font-semibold text-xs md:text-sm lg:text-sm text-gray-800 cursor-pointer">{{
                               addr.full_name }}</label>
-                          <span v-if="addr.is_default"
+                          <span v-if="addr.is_default == 1"
                             class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded"
                             aria-label="This is your default address">
                             Default
@@ -968,7 +968,7 @@ const verifyPayment = async (gateway, reference, order) => {
 
     // Redirect to order confirmation or success page
     clearCart()
-    window.location.href = `/order/${data.data.order_id}`
+    window.location.href = `/order/${data.orderId}`
   } catch (err) {
     console.error('Payment verification failed:', err)
     throw err
