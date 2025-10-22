@@ -235,6 +235,8 @@ class CheckoutController extends Controller
                     "trans_ref"    => $orderCreate['trans_ref'],
                     "total_amount" => $cartSummary['payable'],
                     "gws"          => $pubKey,
+                    "email"        => $user->email,
+                    "name"         => $user->name
                 ],
             ], 200);
 
