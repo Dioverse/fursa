@@ -54,7 +54,7 @@ class Order extends Model implements AuditableContract
 
     protected static function booted()
     {
-        static::addGlobalScope('active', function (Builder $builder) {
+        static::addGlobalScope('pending', function (Builder $builder) {
             $user = auth('sanctum')->user();
             if (!$user || $user->role !== 'admin') {
                 $builder->whereNotIn('status', ['pending']);

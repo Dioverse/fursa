@@ -261,7 +261,7 @@ class CheckoutController extends Controller
             return response()->json($gateCheck, 422);
         }
 
-        $order = $user->order()->where("order_id", $orderId)->where("trans_ref", $transRef)
+        $order = $user->order()->withoutGlobalScope('pending')->where("order_id", $orderId)->where("trans_ref", $transRef)
             ->whereDoesntHave('payment', function ($q) {
                 $q->where("status", "!=", "pending");
             })->first();
