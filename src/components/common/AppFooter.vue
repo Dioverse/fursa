@@ -101,12 +101,14 @@
                 <p>&copy; 2025 Fursa Energy. All rights reserved.</p>
             </div>
         </div>
+        <DashboardSidebar :showDesktop="false"/>
     </footer>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { useToast } from 'vue-toastification'
+import DashboardSidebar from '../dashboard/DashboardSidebar.vue'
 
 const toast = useToast()
 const email = ref('')

@@ -1,6 +1,6 @@
 <template>
     <!-- Desktop Sidebar -->
-    <aside
+    <aside v-if="$props.showDesktop"
         class="hidden sm:block md:block lg:block w-[10rem] md:w-48 lg:w-64 bg-white shadow-md text-sm md:text-sm lg:text-md">
         <nav class="p-1 md:p-2 lg:p-4 sticky top-[87px]">
             <ul class="space-y-2">
@@ -27,7 +27,7 @@
     <transition name="slide-up" class="container mx-auto px-4 shadow-2xl">
         <div class="block sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-2xl rounded-t-2xl z-50 transition-all duration-300 ease-out"
             :class="expanded ? 'h-[15rem]' : 'h-[5rem]'" @touchstart.passive="onTouchStart"
-            @touchmove.prevent="onTouchMove" @touchend="onTouchEnd">
+            @touchmove.self.prevent="onTouchMove" @touchend="onTouchEnd">
             <!-- Handle (clickable) -->
             <div class="flex justify-center py-2 cursor-pointer active:scale-95 transition-transform"
                 @click.stop="toggleExpanded">
@@ -69,6 +69,13 @@ const handleLogout = () => {
     toast.success('Logged out successfully')
     router.push('/')
 }
+
+defineProps({
+    showDesktop: {
+        type: Boolean,
+        default: true
+    },
+})
 
 // All menu links
 const fullLinks = [
