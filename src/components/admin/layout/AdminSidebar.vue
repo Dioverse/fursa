@@ -8,11 +8,14 @@
     <!-- Logo Section -->
     <div class="flex items-center px-6 py-4 border-b border-gray-200" :class="{ 'px-4': isCollapsed }">
       <div class="flex items-center space-x-3">
-        <div class="bg-primary-600 rounded-lg p-2 flex-shrink-0">
+        <div v-if="logo" class="flex-shrink-0">
+          <img :src="logo" alt="Logo" class="h-8 w-auto" />
+        </div>
+        <div v-else class="bg-primary-600 rounded-lg p-2 flex-shrink-0">
           <font-awesome-icon icon="bolt" class="h-6 w-6 text-white" />
         </div>
         <div v-if="!isCollapsed" class="flex flex-col">
-          <span class="text-lg font-bold text-gray-900">Fursa Energy</span>
+          <span class="text-lg font-bold text-gray-900">{{ siteName }}</span>
           <span class="text-xs text-gray-500 uppercase tracking-wide">Admin Panel</span>
         </div>
       </div>
@@ -81,11 +84,14 @@
     <!-- Mobile Logo Section -->
     <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
       <div class="flex items-center space-x-3">
-        <div class="bg-primary-600 rounded-lg p-2">
+        <div v-if="logo" class="flex-shrink-0">
+          <img :src="logo" alt="Logo" class="h-8 w-auto" />
+        </div>
+        <div v-else class="bg-primary-600 rounded-lg p-2">
           <font-awesome-icon icon="bolt" class="h-6 w-6 text-white" />
         </div>
         <div class="flex flex-col">
-          <span class="text-lg font-bold text-gray-900">Fursa Energy</span>
+          <span class="text-lg font-bold text-gray-900">{{ siteName }}</span>
           <span class="text-xs text-gray-500 uppercase tracking-wide">Admin Panel</span>
         </div>
       </div>
@@ -135,6 +141,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useSiteStore } from '@/stores/site'
 // import { useAuth } from '@/composables/useAuth'
 
 // Props
@@ -247,6 +254,11 @@ const menuSections = computed(() => {
 
   return sections
 })
+
+// Site info (name/logo)
+const siteStore = useSiteStore()
+const siteName = computed(() => siteStore.name)
+const logo = computed(() => siteStore.logo)
 </script>
 
 <style scoped>

@@ -308,9 +308,20 @@ const handleCreateProduct = () => {
   showProductDrawer.value = true
 }
 
-const handleEditProduct = (product) => {
+const handleEditProduct = async (product) => {
+  // Open immediately with available data
   selectedProduct.value = product
   showProductDrawer.value = true
+  // Fetch full product details so images and rich fields are complete
+  try {
+    const res = await productsStore.fetchProduct(product.id)
+    if (res?.success && productsStore.currentProduct) {
+      selectedProduct.value = { ...productsStore.currentProduct }
+    }
+  } catch (e) {
+    // non-blocking; keep basic product
+    console.warn('Failed to load full product for edit:', e)
+  }
 }
 
 const closeProductDrawer = () => {

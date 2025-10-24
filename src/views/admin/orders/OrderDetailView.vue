@@ -1,6 +1,11 @@
 <template>
   <div class="space-y-6">
-    <OrderDetailPanel :order="order" />
+    <OrderDetailPanel
+      :order="order"
+      :loading="ordersStore.loading"
+      @update-delivery="handleUpdateDelivery"
+      @update-status="handleUpdateStatus"
+    />
   </div>
 </template>
 
@@ -25,4 +30,31 @@ onMounted(async () => {
     }
   }
 })
+
+const refreshOrder = async () => {
+  const id = route.params.id
+  if (!id) return
+  await ordersStore.fetchOrder(id)
+  order.value = ordersStore.order
+}
+
+const handleUpdateDelivery = async (dateStr) => {
+  if (!order.value?.id) return
+  try {
+    await ordersStore.updateOrder(order.value.id, { delivery_date: dateStr })
+    await refreshOrder()
+  } catch {
+    // handled by store/api toasts
+  }
+}
+
+const handleUpdateStatus = async (newStatus) => {
+  if (!order.value?.id) return
+  try {
+    await ordersStore.updateOrder(order.value.id, { status: newStatus })
+    await refreshOrder()
+  } catch {
+    // handled by store/api toasts
+  }
+}
 </script>

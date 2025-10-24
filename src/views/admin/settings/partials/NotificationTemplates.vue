@@ -148,7 +148,7 @@
 
         <div class="flex items-center justify-end gap-3 px-4 py-3 border-t">
           <button type="button" class="btn-outline" @click="closeEditor">Cancel</button>
-          <button type="button" class="btn-primary" :disabled="saving" @click="save">{{ saving ? 'Saving…' : 'Save changes' }}</button>
+          <button type="button" class="btn-primary" :disabled="saving || !current?.id" @click="save">{{ saving ? 'Saving…' : 'Save changes' }}</button>
         </div>
       </div>
     </div>

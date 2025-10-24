@@ -28,6 +28,18 @@
             </div>
 
             <div>
+              <label for="sku" class="block text-sm font-medium text-gray-700">SKU</label>
+              <div class="mt-1 flex gap-2">
+                <input type="text" id="sku" v-model="form.sku" placeholder="e.g., PROD-ABC-123456"
+                  class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                <button type="button" class="btn-outline" @click="generateSku" :disabled="!form.name">
+                  Generate
+                </button>
+              </div>
+              <p class="mt-1 text-xs text-gray-500">Leave blank to auto-generate or click Generate. You can edit it anytime.</p>
+            </div>
+
+            <div>
               <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
               <select id="category" v-model="form.category_id" required
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
@@ -47,7 +59,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700">Full Description</label>
               <div class="mt-1 border border-gray-300 rounded-md">
-                <RichTextEditor v-model="form.description" />
+                <RichTextEditor v-model="form.description" min-height="480px" />
               </div>
             </div>
 
@@ -126,34 +138,62 @@
           <!-- Images -->
           <div class="space-y-4">
             <h3 class="text-lg font-medium text-gray-900">Product Images</h3>
-            <div
-              class="flex items-center justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-              <div class="space-y-1 text-center">
-                <font-awesome-icon icon="cloud-upload" class="mx-auto h-12 w-12 text-gray-400" />
-                <div class="flex text-sm text-gray-600">
-                  <label for="images"
-                    class="relative cursor-pointer rounded-md font-medium text-primary-600 hover:text-primary-500">
-                    <span>Upload images</span>
-                    <input id="images" type="file" multiple accept="image/*" class="sr-only"
-                      @change="handleImageUpload">
-                  </label>
-                  <p class="pl-1">or drag and drop</p>
-                </div>
-                <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-              </div>
-            </div>
 
-            <!-- Image Preview -->
-            <div v-if="imagePreviewUrls.length" class="grid grid-cols-3 gap-4 mt-4">
-              <div v-for="(url, index) in imagePreviewUrls" :key="index"
-                class="relative rounded-lg overflow-hidden group">
-                <img :src="buildFileUrl(url)" alt="Preview" class="h-32 w-full object-cover">
-                <button type="button" @click="removeImage(index)"
-                  class="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                  <font-awesome-icon icon="times" class="h-4 w-4" />
-                </button>
+            <!-- Create mode: show uploader -->
+            <template v-if="!isEditing">
+              <div
+                class="flex items-center justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                <div class="space-y-1 text-center">
+                  <font-awesome-icon icon="cloud-upload" class="mx-auto h-12 w-12 text-gray-400" />
+                  <div class="flex text-sm text-gray-600">
+                    <label for="images"
+                      class="relative cursor-pointer rounded-md font-medium text-primary-600 hover:text-primary-500">
+                      <span>Upload images</span>
+                      <input id="images" type="file" multiple accept="image/*" class="sr-only"
+                        @change="handleImageUpload">
+                    </label>
+                    <p class="pl-1">or drag and drop</p>
+                  </div>
+                  <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                </div>
               </div>
-            </div>
+
+              <!-- New Image Previews (create) -->
+              <div v-if="imagePreviewUrls.length" class="grid grid-cols-3 gap-4 mt-4">
+                <div v-for="(url, index) in imagePreviewUrls" :key="index"
+                  class="relative rounded-lg overflow-hidden group">
+                  <img :src="buildFileUrl(url)" alt="Preview" class="h-32 w-full object-cover">
+                  <button type="button" @click="removeImage(index)"
+                    class="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                    <font-awesome-icon icon="times" class="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </template>
+
+            <!-- Edit mode: manage existing images (delete only) -->
+            <template v-else>
+              <p class="text-sm text-gray-500">Remove images here; to add new images, use the “Add Images” button on the product details page.</p>
+              <div v-if="existingImageItems.length" class="grid grid-cols-3 gap-4 mt-2">
+                <div v-for="item in existingImageItems" :key="`ex-${item.id ?? item.url}`"
+                  class="relative rounded-lg overflow-hidden border border-gray-200 group">
+                  <img :src="item.url" alt="Existing image" class="h-32 w-full object-cover">
+                  <div v-if="item.isPrimary" class="absolute top-2 left-2 text-[10px] px-2 py-0.5 bg-gray-800/70 text-white rounded">Primary</div>
+                  <!-- Delete only when ID exists (server-managed image) -->
+                  <button
+                    v-if="item.id"
+                    type="button"
+                    @click="deleteExistingImage(item.id)"
+                    class="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    :disabled="deletingImageIds.has(item.id)"
+                    title="Remove image"
+                  >
+                    <font-awesome-icon v-if="!deletingImageIds.has(item.id)" icon="trash" class="h-4 w-4" />
+                    <font-awesome-icon v-else icon="spinner" class="h-4 w-4 animate-spin" />
+                  </button>
+                </div>
+              </div>
+            </template>
           </div>
 
           <!-- Submit Button -->
@@ -173,8 +213,9 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from 'vue'
-import { buildFileUrl } from '@/utils/fileUrl'
+import { ref, watch, nextTick, computed } from 'vue'
+import { buildFileUrl, extractImagePath } from '@/utils/fileUrl'
+import { useProductsStore } from '@/stores/products'
 import RichTextEditor from '@/components/RichTextEditor.vue'
 
 const props = defineProps({
@@ -197,6 +238,7 @@ const emit = defineEmits(['close', 'submit'])
 // Form state - Initialize with proper defaults
 const form = ref({
   name: '',
+  sku: '',
   category_id: '',
   short_description: '',
   description: '',
@@ -211,6 +253,49 @@ const form = ref({
 const imagePreviewUrls = ref([])
 const isEditing = ref(false)
 const newTag = ref('')
+const productsStore = useProductsStore()
+const deletingImageIds = ref(new Set())
+
+// Prefer store.currentProduct if it matches the drawer product, so image updates reflect immediately
+const productSource = computed(() => {
+  const cp = productsStore.currentProduct
+  return cp && props.product && cp.id === props.product.id ? cp : props.product
+})
+
+// Combine primary and gallery images for edit preview
+const existingImageItems = computed(() => {
+  const list = []
+  const p = productSource.value
+  if (p) {
+    const primary = extractImagePath(p.image)
+    if (primary) list.push({ id: p.image?.id ?? null, url: buildFileUrl(primary), isPrimary: true })
+    if (Array.isArray(p.images)) {
+      p.images.forEach((img) => {
+        const path = extractImagePath(img)
+        if (path) list.push({ id: img?.id ?? null, url: buildFileUrl(path), isPrimary: false })
+      })
+    }
+  }
+  // Deduplicate while preserving order
+  const seen = new Set()
+  return list.filter((it) => it?.url && (!seen.has(it.url) && seen.add(it.url)))
+})
+
+const deleteExistingImage = async (imageId) => {
+  if (!imageId || !productSource.value?.id) return
+  const confirmed = window.confirm('Remove this image?')
+  if (!confirmed) return
+  try {
+    deletingImageIds.value.add(imageId)
+    await productsStore.deleteProductImages(productSource.value.id, [imageId])
+    // refresh the current product so computed list updates
+    await productsStore.fetchProduct(productSource.value.id)
+  } catch {
+    // errors are toasted by the store
+  } finally {
+    deletingImageIds.value.delete(imageId)
+  }
+}
 
 // Methods
 const addTag = () => {
@@ -262,6 +347,7 @@ const handleSubmit = () => {
     // Basic fields
     const fieldsToProcess = {
       name: form.value.name,
+      sku: form.value.sku || '',
       category_id: form.value.category_id,
       short_description: form.value.short_description || '',
   description: form.value.description || '',
@@ -314,6 +400,7 @@ const closeDrawer = () => {
 const resetForm = () => {
   form.value = {
     name: '',
+    sku: '',
     category_id: '',
     short_description: '',
     description: '',
@@ -350,6 +437,7 @@ const populateFormWithProduct = (product) => {
 
   form.value = {
     name: product.name || '',
+    sku: product.sku || '',
     category_id: product.category_id || '',
     short_description: product.short_description || '',
     description: product.description || '',
@@ -376,6 +464,18 @@ const populateFormWithProduct = (product) => {
 
   console.log('Form populated:', form.value)
   console.log('Image previews:', imagePreviewUrls.value)
+}
+
+// SKU helpers
+const generateSku = () => {
+  try {
+    form.value.sku = productsStore.generateSKU(form.value.name || '', form.value.category_id || null)
+  } catch {
+    // fallback simple SKU
+    const initials = (form.value.name || '').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,3)
+    const ts = Date.now().toString().slice(-6)
+    form.value.sku = `PROD-${initials}-${ts}`
+  }
 }
 
 // Watch for product prop changes

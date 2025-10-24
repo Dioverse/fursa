@@ -77,7 +77,7 @@
             </th>
 
             <!-- Status Column -->
-            <th
+            <!-- <th
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
               @click="handleSort('status')">
               <div class="flex items-center space-x-1">
@@ -86,9 +86,9 @@
                   class="h-3 w-3" />
                 <font-awesome-icon v-else icon="sort" class="h-3 w-3 text-gray-400" />
               </div>
-            </th>
+            </th> -->
 
-            <!-- Created Date Column -->
+            <!-- Created Date Column
             <th
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
               @click="handleSort('created_at')">
@@ -98,7 +98,7 @@
                   class="h-3 w-3" />
                 <font-awesome-icon v-else icon="sort" class="h-3 w-3 text-gray-400" />
               </div>
-            </th>
+            </th> -->
 
             <!-- Actions Column -->
             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -186,7 +186,7 @@
               </div>
             </td>
 
-            <!-- Status -->
+            <!-- Status
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="relative">
                 <select :value="product.status" @change="handleStatusChange(product, $event.target.value)"
@@ -194,16 +194,16 @@
                   :class="getStatusClass(product.status)" :disabled="loading">
                   <option value="1">Active</option>
                   <option value="0">Inactive</option>
-                  <!-- <option value="draft">Draft</option>
-                  <option value="archived">Archived</option> -->
+                  <option value="draft">Draft</option>
+                  <option value="archived">Archived</option>
                 </select>
               </div>
-            </td>
+            </td> -->
 
-            <!-- Created Date -->
+            <!-- Created Date
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               {{ formatDate(product.created_at) }}
-            </td>
+            </td> -->
 
             <!-- Actions -->
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -265,7 +265,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { formatDistanceToNow, format } from 'date-fns'
+// import { formatDistanceToNow, format } from 'date-fns'
 import TablePagination from '@/components/common/TablePagination.vue'
 import { productPrimaryImageUrl } from '@/utils/fileUrl'
 
@@ -340,11 +340,11 @@ const handleSort = (column) => {
   emit('sort', sortBy.value, sortOrder.value)
 }
 
-const handleStatusChange = (product, newStatus) => {
-  if (newStatus !== product.status) {
-    emit('updateStatus', product, newStatus)
-  }
-}
+// const handleStatusChange = (product, newStatus) => {
+//   if (newStatus !== product.status) {
+//     emit('updateStatus', product, newStatus)
+//   }
+// }
 
 const toggleActionMenu = (productId) => {
   activeActionMenu.value = activeActionMenu.value === productId ? null : productId
@@ -384,29 +384,29 @@ const formatCurrency = (amount) => {
   }).format(amount)
 }
 
-const formatDate = (date) => {
-  if (!date) return 'N/A'
+// const formatDate = (date) => {
+  // if (!date) return 'N/A'
 
-  const dateObj = new Date(date)
-  const now = new Date()
-  const diffInHours = (now - dateObj) / (1000 * 60 * 60)
+  // const dateObj = new Date(date)
+  // const now = new Date()
+  // const diffInHours = (now - dateObj) / (1000 * 60 * 60)
 
-  if (diffInHours < 24) {
-    return formatDistanceToNow(dateObj, { addSuffix: true })
-  } else {
-    return format(dateObj, 'MMM d, yyyy')
-  }
-}
+  // if (diffInHours < 24) {
+  //   return formatDistanceToNow(dateObj, { addSuffix: true })
+  // } else {
+  //   return format(dateObj, 'MMM d, yyyy')
+  // }
+// }
 
-const getStatusClass = (status) => {
-  const classes = {
-    1: 'bg-green-100 text-green-800 border-green-200',
-    0: 'bg-gray-100 text-gray-800 border-gray-200',
-    // draft: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    // archived: 'bg-red-100 text-red-800 border-red-200'
-  }
-  return classes[status] || 'bg-gray-100 text-gray-800 border-gray-200'
-}
+// const getStatusClass = (status) => {
+//   const classes = {
+//     1: 'bg-green-100 text-green-800 border-green-200',
+//     0: 'bg-gray-100 text-gray-800 border-gray-200',
+//     // draft: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+//     // archived: 'bg-red-100 text-red-800 border-red-200'
+//   }
+//   return classes[status] || 'bg-gray-100 text-gray-800 border-gray-200'
+// }
 
 const getStockStatusColor = (product) => {
   const quantity = product.stock_quantity || 0

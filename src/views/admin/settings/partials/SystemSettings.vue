@@ -6,21 +6,37 @@
     </div>
 
     <div class="grid md:grid-cols-2 gap-6">
-      <div class="space-y-3">
+      <div class="space-y-3 md:col-span-2">
         <label class="block text-sm font-medium text-gray-700">Site name</label>
-        <input v-model="form.siteName" type="text" class="input" placeholder="Fursa Energy" />
+        <input v-model="form.site_name" type="text" class="input" placeholder="Fursa Energy LTD" />
+      </div>
+
+      <div class="space-y-3">
+        <label class="block text-sm font-medium text-gray-700">Site logo</label>
+        <div class="flex items-center gap-3">
+          <input ref="logoInput" type="file" accept="image/*" class="hidden" @change="onLogoFileChange" />
+          <button type="button" class="btn-outline" :disabled="uploadingLogo" @click="triggerLogoPicker">
+            {{ uploadingLogo ? `Uploading ${uploadProgress}%` : 'Upload logo' }}
+          </button>
+          <span class="text-xs text-gray-500">PNG, JPG, SVG up to ~2MB</span>
+        </div>
+        <div class="text-xs text-gray-500">Or paste a public URL</div>
+        <input v-model="form.site_logo" type="text" class="input" placeholder="https://.../logo.png" />
       </div>
       <div class="space-y-3">
-        <label class="block text-sm font-medium text-gray-700">Support email</label>
-        <input v-model="form.supportEmail" type="email" class="input" placeholder="support@fursaenergy.com" />
+        <label class="block text-sm font-medium text-gray-700">Tax (%)</label>
+        <input v-model="form.tax" type="number" step="0.01" class="input" placeholder="7.5" />
       </div>
-      <div class="space-y-3">
-        <label class="block text-sm font-medium text-gray-700">Default currency</label>
-        <input v-model="form.currency" type="text" class="input" placeholder="NGN" />
-      </div>
-      <div class="space-y-3">
-        <label class="block text-sm font-medium text-gray-700">Timezone</label>
-        <input v-model="form.timezone" type="text" class="input" placeholder="Africa/Lagos" />
+
+      <div class="space-y-3 md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700">Logo preview</label>
+        <div class="flex items-center gap-3">
+          <div class="h-12 w-12 rounded bg-gray-100 border flex items-center justify-center overflow-hidden">
+            <img v-if="form.site_logo" :src="form.site_logo" alt="Logo" class="object-contain h-full w-full" />
+            <span v-else class="text-xs text-gray-500">No logo</span>
+          </div>
+          <div class="text-xs text-gray-500">Paste a public URL to your logo image</div>
+        </div>
       </div>
     </div>
 
@@ -33,38 +49,74 @@
 
 <script setup>
 import { reactive, ref, onMounted } from 'vue'
-import { apiHelpers as api } from '@/services/api'
 import { useNotificationStore } from '@/stores/notification'
+import { useSiteStore } from '@/stores/site'
+import { apiHelpers } from '@/services/api'
 
-const form = reactive({ siteName: '', supportEmail: '', currency: 'NGN', timezone: 'Africa/Lagos' })
+const form = reactive({ site_name: '', site_logo: '', tax: '' })
 const saving = ref(false)
 const notify = useNotificationStore()
+const siteStore = useSiteStore()
+const logoInput = ref(null)
+const uploadingLogo = ref(false)
+const uploadProgress = ref(0)
 
 onMounted(async () => {
   try {
-    const { data } = await api.silent({ method: 'get', url: '/admin/settings/system' })
-    Object.assign(form, data || {})
+    const info = await siteStore.fetchSiteInfo()
+    form.site_name = info.site_name || ''
+    form.site_logo = info.site_logo || ''
+    form.tax = info.tax ?? ''
   } catch (e) {
     console.debug('System preload skipped', e?.message)
   }
 })
 
 const reset = () => {
-  form.siteName = ''
-  form.supportEmail = ''
-  form.currency = 'NGN'
-  form.timezone = 'Africa/Lagos'
+  form.site_name = siteStore.name || ''
+  form.site_logo = siteStore.logo || ''
+  form.tax = siteStore.taxNumber ?? ''
 }
 
 const save = async () => {
   try {
     saving.value = true
-    await api.silent({ method: 'put', url: '/admin/settings/system', data: form })
+    const payload = { site_name: form.site_name, site_logo: form.site_logo, tax: form.tax }
+    await siteStore.updateSiteInfo(payload)
     notify.success('System settings saved')
   } catch {
     notify.error('Failed to save system settings')
   } finally {
     saving.value = false
+  }
+}
+
+const triggerLogoPicker = () => {
+  logoInput.value?.click()
+}
+
+const onLogoFileChange = async (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  uploadingLogo.value = true
+  uploadProgress.value = 0
+  try {
+    const res = await apiHelpers.uploadFile('/admin/site/logo', file, (p) => (uploadProgress.value = p))
+    const body = res?.data?.data || res?.data || {}
+    const url = body.url || body.path || body.location || body.file || body.site_logo
+    if (url) {
+      form.site_logo = url
+      notify.success('Logo uploaded')
+    } else {
+      notify.error('Upload succeeded but no URL returned')
+    }
+  } catch (err) {
+    console.error('Logo upload failed', err)
+    notify.error('Failed to upload logo')
+  } finally {
+    uploadingLogo.value = false
+    uploadProgress.value = 0
+    if (logoInput.value) logoInput.value.value = ''
   }
 }
 </script>

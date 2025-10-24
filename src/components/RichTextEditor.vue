@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :style="{ '--editor-min-h': minHeight }">
     <QuillEditor
       theme="snow"
       :toolbar="toolbar"
@@ -19,6 +19,7 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css'
 
 const props = defineProps({
   modelValue: { type: String, default: '' },
+  minHeight: { type: String, default: '320px' },
   toolbar: {
     type: [Array, String, Boolean, Object],
     default: () => [
@@ -71,5 +72,5 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.quill :deep(.ql-container) { min-height: 220px; }
+.quill :deep(.ql-container) { min-height: var(--editor-min-h, 320px); }
 </style>

@@ -93,7 +93,7 @@ export const useOrdersStore = defineStore('orders', {
       this.loading = true
       this.error = null
       try {
-        const response = await api.put(`/admin-orders/update-status/${id}`, payload)
+        const response = await api.post(`/admin-orders/update-status/${id}`, payload)
         const idx = this.orders.findIndex((o) => o.id === id)
         if (idx !== -1) this.orders[idx] = response.data
         return response

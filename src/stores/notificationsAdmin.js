@@ -16,8 +16,8 @@ export const useNotificationsAdminStore = defineStore('notificationsAdmin', () =
   const fetchEmailConfig = async () => {
     emailLoading.value = true
     try {
-      const { data } = await api({ method: 'get', url: '/admin/settings/notifications/email' })
-      const cfg = data || {}
+      const { data } = await api({ method: 'get', url: '/admin/email/setting' })
+      const cfg = data?.data || data || {}
       emailConfig.email_method = cfg.name || cfg.email_method || 'php'
       emailConfig.host = cfg.host || ''
       emailConfig.port = cfg.port || ''
@@ -36,7 +36,7 @@ export const useNotificationsAdminStore = defineStore('notificationsAdmin', () =
   const updateEmailConfig = async (payload) => {
     emailSaving.value = true
     try {
-      await api({ method: 'put', url: '/admin/settings/notifications/email', data: payload })
+      await api({ method: 'post', url: '/admin/email/setting-update', data: payload })
     } finally {
       emailSaving.value = false
     }
@@ -59,7 +59,7 @@ export const useNotificationsAdminStore = defineStore('notificationsAdmin', () =
   const fetchTemplates = async () => {
     templatesLoading.value = true
     try {
-      const { data } = await api({ method: 'get', url: '/admin/settings/notifications/templates' })
+      const { data } = await api({ method: 'get', url: '/admin/email/templates' })
       templates.value = data?.data || data || []
       return templates.value
     } finally {
@@ -70,7 +70,7 @@ export const useNotificationsAdminStore = defineStore('notificationsAdmin', () =
   const updateTemplate = async (id, payload) => {
     templatesSaving.value = true
     try {
-      await api({ method: 'put', url: `/admin/settings/notifications/templates/${id}` , data: payload })
+      await api({ method: 'post', url: `/admin/email/template-update/${id}` , data: payload })
       const idx = templates.value.findIndex(t => t.id === id)
       if (idx !== -1) templates.value[idx] = { ...templates.value[idx], ...payload }
     } finally {

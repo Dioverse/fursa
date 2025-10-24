@@ -73,6 +73,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
+import { useSiteStore } from '@/stores/site'
 import AdminSidebar from '@/components/admin/layout/AdminSidebar.vue'
 import AdminHeader from '@/components/admin/layout/AdminHeader.vue'
 import AdminBreadcrumb from '@/components/admin/layout/AdminBreadcrumb.vue'
@@ -158,6 +159,10 @@ onMounted(() => {
 
   // Handle responsive behavior on mount
   handleResize()
+
+  // Preload site info (logo, name, tax)
+  const siteStore = useSiteStore()
+  siteStore.fetchSiteInfo().catch(() => {})
 })
 
 onUnmounted(() => {
