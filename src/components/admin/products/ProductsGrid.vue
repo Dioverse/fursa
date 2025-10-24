@@ -43,7 +43,7 @@
           <!-- Product Image -->
           <div class="relative aspect-w-16 aspect-h-12">
             <img v-if="product.image || product.images?.[0]"
-              :src="product.image || `import.meta.env.FILE_BASE_PATH${product.images?.[0].path}`" :alt="product.name"
+              :src="productPrimaryImageUrl(product)" :alt="product.name"
               class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
               @click="handleView(product)">
             <div v-else class="w-full h-48 bg-gray-100 flex items-center justify-center" @click="handleView(product)">
@@ -224,6 +224,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { formatDistanceToNow } from 'date-fns'
+import { productPrimaryImageUrl } from '@/utils/fileUrl'
 
 // Props
 const props = defineProps({

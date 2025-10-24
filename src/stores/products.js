@@ -58,10 +58,20 @@ export const useProductsStore = defineStore('products', () => {
   })
 
   // Image Update Action
-  const updateProductImages = async (productId, formData) => {
+  const updateProductImages = async (productId, filesOrForm) => {
     try {
       isUpdatingImages.value = true
-      const response = await api.put(`/api/products/${productId}/images`, formData, {
+      // Normalize input to FormData with images[]
+      let formData
+      if (filesOrForm instanceof FormData) {
+        formData = filesOrForm
+      } else {
+        formData = new FormData()
+        const files = Array.from(filesOrForm || [])
+        files.forEach((f) => formData.append('images[]', f))
+      }
+
+      const response = await api.post(`/admin-products/${productId}/images`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -71,7 +81,7 @@ export const useProductsStore = defineStore('products', () => {
       if (currentProduct.value?.id === productId) {
         currentProduct.value = {
           ...currentProduct.value,
-          images: response.data.images,
+          images: response.data.images || currentProduct.value.images,
         }
       }
 
@@ -80,7 +90,7 @@ export const useProductsStore = defineStore('products', () => {
       if (index !== -1) {
         products.value[index] = {
           ...products.value[index],
-          images: response.data.images,
+          images: response.data.images || products.value[index].images,
         }
       }
 
@@ -292,7 +302,9 @@ export const useProductsStore = defineStore('products', () => {
     try {
       isLoading.value = true
       const response = await api.get(`/admin-products/${id}`)
-      currentProduct.value = response.data.product || response.data
+      // Support multiple response shapes: {product}, {data}, or direct entity
+      const body = response.data
+      currentProduct.value = body.product || body.data || body
       return { success: true, data: currentProduct.value }
     } catch (error) {
       console.error('Failed to fetch product:', error)
@@ -491,6 +503,48 @@ export const useProductsStore = defineStore('products', () => {
       const errorMessage = error.response?.data?.message || 'Failed to update product status'
       toast.error(errorMessage)
       return { success: false, error: errorMessage }
+    }
+  }
+
+  // Delete specific images from a product
+  const deleteProductImages = async (productId, imageIds = []) => {
+    if (!Array.isArray(imageIds) || imageIds.length === 0) {
+      return { success: true, deleted: [] }
+    }
+    try {
+      isUpdatingImages.value = true
+      const response = await api.delete(`/admin-products/${productId}/images`, {
+        data: { image_ids: imageIds },
+      })
+
+      const deleted = response.data.deleted || imageIds
+
+      // Update current product
+      if (currentProduct.value?.id === productId && Array.isArray(currentProduct.value.images)) {
+        currentProduct.value = {
+          ...currentProduct.value,
+          images: currentProduct.value.images.filter((img) => !deleted.includes(img.id)),
+        }
+      }
+
+      // Update list item
+      const index = products.value.findIndex((p) => p.id === productId)
+      if (index !== -1 && Array.isArray(products.value[index].images)) {
+        products.value[index] = {
+          ...products.value[index],
+          images: products.value[index].images.filter((img) => !deleted.includes(img.id)),
+        }
+      }
+
+      toast.success(response.data.message || 'Selected images deleted')
+      return { success: true, deleted }
+    } catch (error) {
+      console.error('Error deleting product images:', error)
+      const msg = error.response?.data?.message || 'Failed to delete product images'
+      toast.error(msg)
+      return { success: false, error: msg }
+    } finally {
+      isUpdatingImages.value = false
     }
   }
 
@@ -713,6 +767,10 @@ export const useProductsStore = defineStore('products', () => {
 
     // Actions
     fetchProducts,
+  refetchProducts,
+  fetchNextPage,
+  fetchPreviousPage,
+  searchProducts,
     fetchProduct,
     createProduct,
     updateProduct,
@@ -722,6 +780,7 @@ export const useProductsStore = defineStore('products', () => {
     duplicateProduct,
     updateStock,
     updateProductImages,
+  deleteProductImages,
     fetchCategories,
     fetchBrands,
     fetchStatistics,

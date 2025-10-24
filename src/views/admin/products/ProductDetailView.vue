@@ -115,14 +115,20 @@
                                     </div>
 
                                     <!-- Thumbnail Images -->
-                                    <div v-if="product.images?.length > 1" class="grid grid-cols-4 gap-2">
-                                        <button v-for="(image, index) in product.images" :key="index"
-                                            @click="currentImage = image"
-                                            class="aspect-w-1 aspect-h-1 rounded-md border-2 transition-colors"
-                                            :class="currentImage === image ? 'border-primary-500' : 'border-gray-300'">
-                                            <img :src="image" :alt="`${product.name} ${index + 1}`"
-                                                class="w-full h-20 object-cover rounded-md">
-                                        </button>
+                                    <div v-if="imageUrls.length" class="grid grid-cols-4 gap-2">
+                                        <div v-for="(image, index) in imageUrls" :key="index" class="relative group">
+                                            <button @click="currentImage = image"
+                                                class="w-full aspect-w-1 aspect-h-1 rounded-md border-2 transition-colors overflow-hidden"
+                                                :class="currentImage === image ? 'border-primary-500' : 'border-gray-300'">
+                                                <img :src="image" :alt="`${product.name} ${index + 1}`"
+                                                    class="w-full h-20 object-cover rounded-md">
+                                            </button>
+                                            <button v-if="canEdit && imageIdMap[index]"
+                                                class="absolute top-1 right-1 p-1 bg-red-500 text-white rounded opacity-0 group-hover:opacity-100 transition"
+                                                title="Remove image" @click.stop="removeImage(imageIdMap[index])">
+                                                <font-awesome-icon icon="times" class="h-3 w-3" />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -132,18 +138,20 @@
                                     <div>
                                         <div class="flex items-center space-x-3 mb-2">
                                             <span class="text-3xl font-bold text-gray-900">
-                                                {{ formatCurrency(product.price) }}
+                                                {{ formatCurrency(product.discounted_price ?? product.base_price) }}
                                             </span>
-                                            <span v-if="product.compare_price && product.compare_price > product.price"
+                                            <span v-if="product.discounted_price && product.base_price && Number(product.discounted_price) < Number(product.base_price)"
                                                 class="text-lg text-gray-500 line-through">
-                                                {{ formatCurrency(product.compare_price) }}
+                                                {{ formatCurrency(product.base_price) }}
                                             </span>
                                         </div>
-                                        <div v-if="product.compare_price && product.compare_price > product.price"
+                                        <div v-if="product.discounted_price && product.base_price && Number(product.discounted_price) < Number(product.base_price)"
                                             class="text-green-600 font-medium">
-                                            Save {{ formatCurrency(product.compare_price - product.price) }}
-                                            ({{ Math.round(((product.compare_price - product.price) /
-                                            product.compare_price) * 100) }}% off)
+                                            Save {{ formatCurrency(Number(product.base_price) - Number(product.discounted_price)) }}
+                                            ({{ Math.round(((Number(product.base_price) - Number(product.discounted_price)) / Number(product.base_price)) * 100) }}% off)
+                                        </div>
+                                        <div class="text-sm text-blue-600 mt-2" v-if="product.distributor_price">
+                                            Distributor price: {{ formatCurrency(product.distributor_price) }}
                                         </div>
                                     </div>
 
@@ -194,6 +202,10 @@
                                         <button @click="handleUpdateStock" class="btn-outline flex-1">
                                             <font-awesome-icon icon="boxes" class="h-4 w-4 mr-2" />
                                             Update Stock
+                                        </button>
+                                        <button v-if="canEdit" @click="showImagesModal = true" class="btn-outline">
+                                            <font-awesome-icon icon="image" class="h-4 w-4 mr-2" />
+                                            Add Images
                                         </button>
                                         <button @click="toggleFeatured"
                                             :class="product.is_featured ? 'btn-warning' : 'btn-outline'">
@@ -341,12 +353,10 @@
                         <div class="card-body space-y-4">
                             <div>
                                 <label class="text-sm font-medium text-gray-700 mb-2 block">Product Status</label>
-                                <select v-if="hasPermission('products.edit')" :value="product.status"
+                                <select v-if="hasPermission('products.edit')" :value="isActiveStatus(product.status) ? '1' : '0'"
                                     @change="handleStatusChange($event.target.value)" class="form-input">
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                    <option value="draft">Draft</option>
-                                    <option value="archived">Archived</option>
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
                                 </select>
                                 <div v-else class="text-sm text-gray-900">{{ getStatusLabel(product.status) }}</div>
                             </div>
@@ -444,17 +454,21 @@
 
         <StockUpdateModal v-model:show="showStockModal" :product="product" :loading="productsStore.isUpdating"
             @confirm="handleStockUpdate" />
+        <ProductImagesModal v-model:show="showImagesModal" :product-id="product?.id"
+            :existing-images="existingImagesForModal" @updated="onImagesUpdated" />
     </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 import { useProductsStore } from '@/stores/products'
 import { format } from 'date-fns'
 import ProductDeleteModal from '@/components/admin/products/ProductDeleteModal.vue'
 import StockUpdateModal from '@/components/admin/products/StockUpdateModal.vue'
+import { buildFileUrl, extractImagePath, productPrimaryImageUrl } from '@/utils/fileUrl'
+import ProductImagesModal from '@/components/admin/products/ProductImagesModal.vue'
 
 // Composables
 const route = useRoute()
@@ -466,21 +480,50 @@ const productsStore = useProductsStore()
 const showActionsDropdown = ref(false)
 const showDeleteModal = ref(false)
 const showStockModal = ref(false)
+const showImagesModal = ref(false)
 const actionsDropdownRef = ref(null)
 const currentImage = ref('')
+// Build thumbnails with aligned ids to avoid mismatch on deduplication
+const thumbnails = computed(() => {
+    const list = []
+    if (product.value) {
+        const direct = extractImagePath(product.value.image)
+        if (direct) list.push({ url: buildFileUrl(direct), id: null })
+        if (Array.isArray(product.value.images)) {
+            product.value.images.forEach((img) => {
+                const p = extractImagePath(img)
+                if (p) list.push({ url: buildFileUrl(p), id: img?.id ?? null })
+            })
+        }
+    }
+    // Deduplicate by url while preserving order
+    const seen = new Set()
+    return list.filter((t) => t.url && (!seen.has(t.url) && seen.add(t.url)))
+})
+const imageUrls = computed(() => thumbnails.value.map((t) => t.url))
 
 // Computed
 const product = computed(() => productsStore.currentProduct)
+const canEdit = true// computed(() => hasPermission('products.edit'))
 const productStats = computed(() => product.value?.stats)
 const relatedProducts = computed(() => product.value?.related_products || [])
+// Merge primary image and additional images for the modal preview
+const existingImagesForModal = computed(() => {
+    const list = []
+    if (product.value) {
+        if (product.value.image) list.push(product.value.image)
+        if (Array.isArray(product.value.images)) list.push(...product.value.images)
+    }
+    return list
+})
 
 // Methods
 const formatCurrency = (amount) => {
-    if (!amount) return '$0.00'
-    return new Intl.NumberFormat('en-US', {
+    const n = parseFloat(amount || 0)
+    return new Intl.NumberFormat('en-NG', {
         style: 'currency',
-        currency: 'USD'
-    }).format(amount)
+        currency: 'NGN'
+    }).format(isNaN(n) ? 0 : n)
 }
 
 const formatDate = (date) => {
@@ -488,35 +531,14 @@ const formatDate = (date) => {
     return format(new Date(date), 'MMM d, yyyy')
 }
 
-const getStatusLabel = (status) => {
-    const labels = {
-        active: 'Active',
-        inactive: 'Inactive',
-        draft: 'Draft',
-        archived: 'Archived'
-    }
-    return labels[status] || status
+const isActiveStatus = (status) => {
+    return status === true || status === 1 || status === '1' || status === 'active'
 }
+const getStatusLabel = (status) => (isActiveStatus(status) ? 'Active' : 'Inactive')
 
-const getStatusClass = (status) => {
-    const classes = {
-        active: 'bg-green-100 text-green-800',
-        inactive: 'bg-gray-100 text-gray-800',
-        draft: 'bg-yellow-100 text-yellow-800',
-        archived: 'bg-red-100 text-red-800'
-    }
-    return classes[status] || 'bg-gray-100 text-gray-800'
-}
+const getStatusClass = (status) => (isActiveStatus(status) ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800')
 
-const getStatusDotClass = (status) => {
-    const classes = {
-        active: 'bg-green-500',
-        inactive: 'bg-gray-500',
-        draft: 'bg-yellow-500',
-        archived: 'bg-red-500'
-    }
-    return classes[status] || 'bg-gray-500'
-}
+const getStatusDotClass = (status) => (isActiveStatus(status) ? 'bg-green-500' : 'bg-gray-500')
 
 const getStockStatusColor = (quantity) => {
     const qty = quantity || 0
@@ -576,8 +598,12 @@ const handleUpdateStock = () => {
 }
 const handleStatusChange = (status) => {
     if (!hasPermission('products.edit')) return
-    productsStore.updateProductStatus(product.value.id, status)
+    // Ensure we pass 1/0 to backend toggler
+    const normalized = status === '1' || status === 1 || status === true ? 1 : 0
+    productsStore.updateProductStatus(product.value.id, normalized)
 }
+
+// removed normalizedStatus; using inline computed on select binding
 const handleDelete = () => {
     if (!hasPermission('products.delete')) return
     showDeleteModal.value = true
@@ -590,15 +616,43 @@ const handleStockUpdate = (newStock) => {
     productsStore.updateProductStock(product.value.id, newStock)
     showStockModal.value = false
 }
+const onImagesUpdated = async () => {
+    // Re-fetch product to get authoritative data after image upload
+    if (product.value?.id) {
+        await productsStore.fetchProduct(product.value.id)
+    }
+    // Refresh current image from latest thumbnails
+    const first = imageUrls.value[0] || productPrimaryImageUrl(product.value)
+    if (first) currentImage.value = first
+}
 // Lifecycle hooks
 onMounted(() => {
     const productId = route.params.id
     if (productId) {
         productsStore.fetchProduct(productId)
     }
-    currentImage.value = product.value?.images?.[0] || ''
+    currentImage.value = imageUrls.value[0] || ''
 })
 onUnmounted(() => {
     productsStore.resetCurrentProduct()
 })
+
+// Keep currentImage in sync when product or its images change
+watch(product, () => {
+    const first = imageUrls.value[0] || productPrimaryImageUrl(product.value)
+    if (first) currentImage.value = first
+})
+
+// Image remove handler and id map
+const imageIdMap = computed(() => thumbnails.value.map((t) => t.id))
+const removeImage = async (imageId) => {
+    if (!canEdit || !imageId) return
+    await productsStore.deleteProductImages(product.value.id, [imageId])
+    // Re-fetch to ensure we have server source of truth
+    if (product.value?.id) {
+        await productsStore.fetchProduct(product.value.id)
+    }
+    const first = imageUrls.value[0] || productPrimaryImageUrl(product.value)
+    if (first) currentImage.value = first
+}
 </script>

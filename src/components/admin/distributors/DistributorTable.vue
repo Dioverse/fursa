@@ -138,13 +138,13 @@
             <!-- Business Info -->
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-900">
-                {{ distributor.distributor.business_name || 'N/A' }}
+                {{ distributor.distributor?.company_name || 'N/A' }}
               </div>
               <div class="text-sm text-gray-500">
-                {{ distributor.distributor.business_type || 'Individual' }}
+                {{ distributor.distributor?.company_type || 'Individual' }}
               </div>
               <div class="text-xs text-gray-400">
-                {{ distributor.distributor.years_in_business || 0 }}+ years exp
+                {{ distributor.distributor?.years_in_business || 0 }}+ years exp
               </div>
             </td>
 

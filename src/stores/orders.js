@@ -62,7 +62,7 @@ export const useOrdersStore = defineStore('orders', {
       this.loading = true
       this.error = null
       try {
-        const response = await api.get(`//admin-orders/${id}`)
+        const response = await api.get(`/admin-orders/${id}`)
         this.order = response.data?.data || response.data || response.data?.order || response.data
         return response
       } catch (error) {

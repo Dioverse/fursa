@@ -2,7 +2,6 @@
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { apiHelpers } from '@/services/api'
 import { useToast } from 'vue-toastification'
 
 /**

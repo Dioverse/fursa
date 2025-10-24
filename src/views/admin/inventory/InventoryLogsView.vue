@@ -5,22 +5,34 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-white p-4 rounded-lg shadow">
                 <div class="text-sm text-gray-500">Logs</div>
-                <div class="mt-2 text-2xl font-semibold">{{ totalLogs }}</div>
+                <div class="mt-2 text-2xl font-semibold">
+                    <span v-if="store.loading" class="inline-block h-6 w-16 bg-gray-200 rounded animate-pulse"></span>
+                    <span v-else>{{ store.stats?.total ?? totalLogs }}</span>
+                </div>
             </div>
 
             <div class="bg-white p-4 rounded-lg shadow">
                 <div class="text-sm text-gray-500">Last Change</div>
-                <div class="mt-2 text-2xl font-semibold">{{ lastChange }}</div>
+                <div class="mt-2 text-2xl font-semibold">
+                    <span v-if="store.loading" class="inline-block h-6 w-40 bg-gray-200 rounded animate-pulse"></span>
+                    <span v-else>{{ lastChange }}</span>
+                </div>
             </div>
 
             <div class="bg-white p-4 rounded-lg shadow">
                 <div class="text-sm text-gray-500">Total Added</div>
-                <div class="mt-2 text-2xl font-semibold">{{ totalAdded }}</div>
+                <div class="mt-2 text-2xl font-semibold">
+                    <span v-if="store.loading" class="inline-block h-6 w-12 bg-gray-200 rounded animate-pulse"></span>
+                    <span v-else>{{ store.stats?.added ?? totalAdded }}</span>
+                </div>
             </div>
 
             <div class="bg-white p-4 rounded-lg shadow">
                 <div class="text-sm text-gray-500">Total Removed</div>
-                <div class="mt-2 text-2xl font-semibold">{{ totalRemoved }}</div>
+                <div class="mt-2 text-2xl font-semibold">
+                    <span v-if="store.loading" class="inline-block h-6 w-12 bg-gray-200 rounded animate-pulse"></span>
+                    <span v-else>{{ store.stats?.subtracted ?? totalRemoved }}</span>
+                </div>
             </div>
         </div>
 

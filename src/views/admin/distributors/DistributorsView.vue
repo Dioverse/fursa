@@ -130,7 +130,7 @@ const loadDistributors = async () => {
     await distributorStore.fetchDistributors({
       ...filters,
       page: pagination.currentPage,
-      perPage: pagination.perPage
+      per_page: pagination.perPage // backend expects 'per_page'
     })
 
     pagination.totalPages = distributorStore.pagination.totalPages

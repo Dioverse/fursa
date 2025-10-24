@@ -13,6 +13,10 @@ const api = axios.create({
   withCredentials: false, // Set to false for API-only authentication
 })
 
+// Feature flags via env
+const ENABLE_TOKEN_REFRESH = (import.meta.env.VITE_ENABLE_TOKEN_REFRESH || '0') === '1'
+const REFRESH_ENDPOINT = import.meta.env.VITE_REFRESH_ENDPOINT || '/auth/admin/refresh'
+
 // Track active requests for loading states
 let activeRequests = 0
 const loadingCallbacks = new Set()
@@ -103,12 +107,15 @@ api.interceptors.response.use(
       switch (status) {
         case 401:
           // Unauthorized - token expired or invalid
-          if (!originalRequest._retry && originalRequest.url !== '/auth/admin/refresh') {
+          if (
+            ENABLE_TOKEN_REFRESH &&
+            !originalRequest._retry &&
+            originalRequest.url !== REFRESH_ENDPOINT
+          ) {
             originalRequest._retry = true
-
             try {
               // Try to refresh token
-              const refreshResponse = await api.post('/auth/admin/refresh')
+              const refreshResponse = await api.post(REFRESH_ENDPOINT)
               const newToken = refreshResponse.data.token
 
               // Update stored token
@@ -118,15 +125,12 @@ api.interceptors.response.use(
               originalRequest.headers.Authorization = `Bearer ${newToken}`
               return api(originalRequest)
             } catch (refreshError) {
-              // Refresh failed, redirect to login
-              handleAuthFailure()
+              // Let caller handle 401 if refresh fails
               return Promise.reject(refreshError)
             }
-          } else {
-            handleAuthFailure()
-            toast.error('Session expired. Please login again.')
           }
-          break
+          // If refresh disabled or not applicable, let the caller decide how to handle 401
+          return Promise.reject(error)
 
         case 403:
           toast.error(data.message || 'Access denied')
@@ -187,7 +191,7 @@ api.interceptors.response.use(
 )
 
 // Helper function to handle authentication failures
-const handleAuthFailure = () => {
+const _handleAuthFailure = () => {
   localStorage.removeItem('admin_token')
   delete api.defaults.headers.common['Authorization']
 
@@ -198,7 +202,7 @@ const handleAuthFailure = () => {
 }
 
 // Loading state management
-const notifyLoadingChange = (isLoading) => {
+const notifyLoadingChange = (_isLoading) => {
   const hasActiveRequests = activeRequests > 0
   loadingCallbacks.forEach((callback) => {
     callback(hasActiveRequests)
@@ -296,3 +300,24 @@ export const apiHelpers = {
 }
 
 export default api
+
+// --- Lightweight API conveniences expected by stores ---
+// Fallbacks to keep pages working even if dedicated endpoints are not ready
+// Territories: backend endpoint not defined yet → return empty list
+api.getTerritories = async () => {
+  return { data: [] }
+}
+
+// Distributor stats: use placeholder zeros so UI renders
+api.getStats = async () => {
+  return {
+    data: {
+      totalDistributors: 0,
+      pendingApplications: 0,
+      activeDistributors: 0,
+      totalRevenue: 0,
+      monthlyGrowth: 0,
+      topPerformers: [],
+    },
+  }
+}

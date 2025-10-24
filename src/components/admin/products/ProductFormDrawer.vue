@@ -47,7 +47,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700">Full Description</label>
               <div class="mt-1 border border-gray-300 rounded-md">
-                <editor-content :editor="editor" />
+                <RichTextEditor v-model="form.description" />
               </div>
             </div>
 
@@ -147,7 +147,7 @@
             <div v-if="imagePreviewUrls.length" class="grid grid-cols-3 gap-4 mt-4">
               <div v-for="(url, index) in imagePreviewUrls" :key="index"
                 class="relative rounded-lg overflow-hidden group">
-                <img :src="`import.meta.env.FILE_BASE_PATH${url}`" alt="Preview" class="h-32 w-full object-cover">
+                <img :src="buildFileUrl(url)" alt="Preview" class="h-32 w-full object-cover">
                 <button type="button" @click="removeImage(index)"
                   class="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                   <font-awesome-icon icon="times" class="h-4 w-4" />
@@ -173,9 +173,9 @@
 </template>
 
 <script setup>
-import { ref, onBeforeUnmount, watch, nextTick } from 'vue'
-import { useEditor, EditorContent } from '@tiptap/vue-3'
-import StarterKit from '@tiptap/starter-kit'
+import { ref, watch, nextTick } from 'vue'
+import { buildFileUrl } from '@/utils/fileUrl'
+import RichTextEditor from '@/components/RichTextEditor.vue'
 
 const props = defineProps({
   show: Boolean,
@@ -192,16 +192,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'submit'])
 
-// Rich text editor setup
-const editor = useEditor({
-  extensions: [StarterKit],
-  content: '',
-  editorProps: {
-    attributes: {
-      class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none',
-    },
-  }
-})
+// Rich text editor handled by RichTextEditor component via v-model
 
 // Form state - Initialize with proper defaults
 const form = ref({
@@ -262,7 +253,7 @@ const handleSubmit = () => {
   console.log('isEditing:', isEditing.value)
   console.log('props.product:', props.product)
   console.log('Form state:', form.value)
-  console.log('Editor state:', editor.value?.getHTML())
+  console.log('Description HTML:', form.value.description)
 
   const formData = new FormData()
 
@@ -273,7 +264,7 @@ const handleSubmit = () => {
       name: form.value.name,
       category_id: form.value.category_id,
       short_description: form.value.short_description || '',
-      description: editor.value?.getHTML() || '',
+  description: form.value.description || '',
       base_price: form.value.base_price,
       distributor_price: form.value.distributor_price || 0,
       stock_quantity: form.value.stock_quantity,
@@ -337,9 +328,7 @@ const resetForm = () => {
   newTag.value = ''
   isEditing.value = false
 
-  if (editor.value) {
-    editor.value.commands.setContent('')
-  }
+  // RichTextEditor binds to form.description directly
 }
 
 // Watch for show prop changes
@@ -373,10 +362,7 @@ const populateFormWithProduct = (product) => {
     images: [] // Reset for new image uploads
   }
 
-  // Set editor content
-  if (editor.value) {
-    editor.value.commands.setContent(product.description || '')
-  }
+  // RichTextEditor reflects form.description via v-model
 
   // Handle existing images for preview (URLs from server)
   if (product.images && Array.isArray(product.images)) {
@@ -403,28 +389,8 @@ watch(() => props.product, (newProduct) => {
   }
 }, { immediate: true, deep: true })
 
-// Cleanup
-onBeforeUnmount(() => {
-  if (editor.value) {
-    editor.value.destroy()
-  }
-})
+// No editor cleanup needed; component handles its own lifecycle
 </script>
 
 <style>
-.ProseMirror {
-  padding: 1rem;
-  min-height: 150px;
-  outline: none;
-  border: none;
-}
-
-.ProseMirror p {
-  margin-bottom: 0.5rem;
-}
-
-.ProseMirror:focus {
-  outline: none;
-  box-shadow: none;
-}
 </style>

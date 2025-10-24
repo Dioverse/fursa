@@ -37,7 +37,7 @@
                   class="flex items-center space-x-3 bg-white rounded-md p-3">
                   <div class="flex-shrink-0">
                     <img v-if="product.image || product.images?.[0]"
-                      :src="product.image || `import.meta.env.FILE_BASE_PATH${product.images?.[0].path}`"
+                      :src="imageUrl(product)"
                       :alt="product.name" class="w-12 h-12 rounded-md object-cover">
                     <div v-else class="w-12 h-12 rounded-md bg-gray-100 flex items-center justify-center">
                       <font-awesome-icon icon="image" class="h-4 w-4 text-gray-400" />
@@ -233,6 +233,7 @@
 
 <script setup>
 import { reactive, computed, watch } from 'vue'
+import { productPrimaryImageUrl } from '@/utils/fileUrl'
 
 // Props
 const props = defineProps({
@@ -425,6 +426,8 @@ const canConfirm = computed(() => {
 })
 
 // Methods
+const imageUrl = (product) => productPrimaryImageUrl(product)
+
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat('en-NG', {
     style: 'currency',

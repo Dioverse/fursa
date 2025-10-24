@@ -166,14 +166,15 @@ export const useAuthStore = defineStore('auth', () => {
   const fetchProfile = async () => {
     try {
       isLoading.value = true
-      const response = await api.get('/profile-details')
+      // Backend exposes this under the admin namespace
+      const response = await api.get('/admin/profile-details')
 
       user.value = response.data.user
       permissions.value = response.data.permissions || []
       lastActivity.value = Date.now()
 
       return response.data.user
-    } catch (error) {
+  } catch (error) {
       console.error('Profile fetch error:', error)
 
       // If token is invalid, logout silently

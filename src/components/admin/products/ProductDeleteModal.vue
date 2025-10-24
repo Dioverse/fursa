@@ -32,7 +32,7 @@
                             <div class="flex items-center space-x-4">
                                 <div class="flex-shrink-0">
                                     <img v-if="product.image || product.images?.[0]"
-                                        :src="product.image || product.images?.[0]" :alt="product.name"
+                                        :src="productPrimaryImageUrl(product)" :alt="product.name"
                                         class="h-16 w-16 rounded-lg object-cover border border-gray-200">
                                     <div v-else
                                         class="h-16 w-16 rounded-lg bg-gray-100 flex items-center justify-center border border-gray-200">
@@ -165,7 +165,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { productPrimaryImageUrl } from '@/utils/fileUrl'
 
 // Props
 const props = defineProps({

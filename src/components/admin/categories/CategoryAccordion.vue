@@ -5,7 +5,7 @@
         <button @click="toggle" class="text-gray-600 hover:text-gray-900">
           <font-awesome-icon :icon="open ? 'chevron-down' : 'chevron-right'" />
         </button>
-        <font-awesome-icon icon="tags" class="text-gray-400" />
+  <font-awesome-icon :icon="category.icon || 'tags'" class="text-gray-400" />
         <div>
           <div class="font-medium">{{ category.name }}</div>
           <div class="text-xs text-gray-500">{{ category.description }}</div>
@@ -27,7 +27,7 @@
         <div v-for="sub in category.subcategories" :key="sub.id" class="py-2 border-b">
           <div class="flex items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-              <font-awesome-icon icon="tag" class="text-gray-400" />
+              <font-awesome-icon :icon="sub.icon || 'tag'" class="text-gray-400" />
               <div>
                 <div class="font-medium">{{ sub.name }}</div>
                 <div class="text-xs text-gray-500">{{ sub.description }}</div>

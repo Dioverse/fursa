@@ -27,11 +27,14 @@
         class="relative rounded-lg overflow-hidden group border border-gray-200">
         <img :src="preview.url" :alt="`Preview ${index + 1}`" class="h-32 w-full object-cover"
           @error="handleImageError(index)">
-        <button type="button" @click="removeImage(index)"
+        <button
+          v-if="!preview.isExisting || preview.id"
+          type="button" @click="removeImage(index)"
           class="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
           :title="`Remove image ${index + 1}`">
           <font-awesome-icon icon="times" class="h-4 w-4" />
         </button>
+        <div v-else class="absolute top-2 right-2 text-[10px] px-2 py-0.5 bg-gray-800/70 text-white rounded">Primary</div>
         <!-- Image type indicator -->
         <div class="absolute bottom-2 left-2 px-2 py-1 bg-black bg-opacity-50 text-white text-xs rounded">
           {{ preview.type }}
@@ -69,6 +72,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { buildFileUrl, extractImagePath } from '@/utils/fileUrl'
 
 const props = defineProps({
   productId: {
@@ -103,6 +107,7 @@ const emit = defineEmits(['submit', 'reset', 'error'])
 const images = ref([])
 const imagePreviewUrls = ref([])
 const errors = ref([])
+const removedExistingIds = ref([])
 const fileInput = ref(null)
 
 // Computed properties
@@ -112,21 +117,18 @@ const totalFiles = computed(() => images.value.length + (props.existingImages?.l
 // Initialize with existing images
 const initializeExistingImages = () => {
   if (props.existingImages?.length > 0) {
-    imagePreviewUrls.value = props.existingImages.map((img, index) => {
-      let url = ''
-      if (typeof img === 'string') {
-        url = img
-      } else if (img && typeof img === 'object') {
-        url = img.url || img.path || img.src || ''
-      }
-
-      return {
-        url,
-        type: 'existing',
-        isExisting: true,
-        id: img.id || index
-      }
-    }).filter(preview => preview.url)
+    imagePreviewUrls.value = props.existingImages
+      .map((img, index) => {
+        const raw = extractImagePath(img)
+        const url = buildFileUrl(raw)
+        return {
+          url,
+          type: 'existing',
+          isExisting: true,
+          id: img?.id ?? index
+        }
+      })
+      .filter(preview => !!preview.url)
   }
 }
 
@@ -213,7 +215,10 @@ const removeImage = (index) => {
   const preview = imagePreviewUrls.value[index]
 
   if (preview.isExisting) {
-    // Remove existing image from preview only
+    // Track removals of existing images (with ID) to delete on submit
+    if (preview.id) {
+      removedExistingIds.value.push(preview.id)
+    }
     imagePreviewUrls.value.splice(index, 1)
   } else {
     // Remove new image from both arrays
@@ -244,26 +249,18 @@ const handleSubmit = () => {
   const formData = new FormData()
 
   // Append new images
-  images.value.forEach((file, index) => {
+  images.value.forEach((file) => {
     if (file instanceof File) {
-      formData.append(`images[${index}]`, file)
+      formData.append('images[]', file)
     }
   })
 
-  // Also send info about which existing images to keep
-  const remainingExistingImages = imagePreviewUrls.value
-    .filter(preview => preview.isExisting)
-    .map(preview => preview.id)
-
-  if (remainingExistingImages.length > 0) {
-    formData.append('existing_images', JSON.stringify(remainingExistingImages))
-  }
-
+  // Emit removed existing IDs so the parent can delete via API
   emit('submit', {
     formData,
     productId: props.productId,
-    newImagesCount: images.value.length,
-    existingImagesCount: remainingExistingImages.length
+    removedExistingIds: removedExistingIds.value.slice(),
+    newImagesCount: images.value.length
   })
 }
 
@@ -271,6 +268,7 @@ const handleSubmit = () => {
 const resetForm = () => {
   images.value = []
   errors.value = []
+  removedExistingIds.value = []
   initializeExistingImages()
 
   // Clear file input
@@ -290,11 +288,11 @@ defineExpose({
 </script>
 
 <style scoped>
-.btn-outline {
-  @apply px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed;
-}
+.btn-outline { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; color: #374151; background: #fff; }
+.btn-outline:hover { background: #f9fafb; }
+.btn-outline:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn-primary {
-  @apply px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed;
-}
+.btn-primary { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 0.375rem; color: #fff; background: #2563eb; border: 1px solid transparent; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>

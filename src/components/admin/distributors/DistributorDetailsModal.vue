@@ -545,14 +545,7 @@ const getRelativeTime = (date) => {
 }
 
 // Documents helper: map known distributor.distributor fields to user-friendly labels
-const buildFileUrl = (path) => {
-  if (!path) return null
-  const base = import.meta.env.FILE_BASE_PATH || ''
-  // If path already looks like a full URL, return it
-  if (/^https?:\/\//i.test(path)) return path
-  // Trim slashes appropriately
-  return `${base.replace(/\/$/, '')}/${path.replace(/^\//, '')}`
-}
+import { buildFileUrl } from '@/utils/fileUrl'
 
 const getDocuments = () => {
   const nested = props.distributor?.distributor || {}

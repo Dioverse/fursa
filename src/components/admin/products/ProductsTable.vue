@@ -121,7 +121,7 @@
               <div class="flex items-center">
                 <div class="flex-shrink-0 h-16 w-16">
                   <img v-if="product.image || product.images?.[0]"
-                    :src="product.image || `import.meta.env.FILE_BASE_PATH${product.images?.[0].path}`"
+                    :src="productPrimaryImageUrl(product)"
                     :alt="product.name" class="h-16 w-16 rounded-lg object-cover border border-gray-200">
                   <div v-else
                     class="h-16 w-16 rounded-lg bg-gray-100 flex items-center justify-center border border-gray-200">
@@ -130,9 +130,10 @@
                 </div>
                 <div class="ml-4">
                   <div class="flex items-center space-x-2">
-                    <div class="text-sm font-medium text-gray-900">
+                    <router-link :to="{ name: 'admin.products.detail', params: { id: product.id } }"
+                      class="text-sm font-medium text-gray-900 hover:text-primary-600">
                       {{ product.name }}
-                    </div>
+                    </router-link>
                     <div v-if="product.is_featured === '1'" class="text-yellow-500">
                       <font-awesome-icon icon="star" class="h-4 w-4" title="Featured" />
                     </div>
@@ -266,6 +267,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { formatDistanceToNow, format } from 'date-fns'
 import TablePagination from '@/components/common/TablePagination.vue'
+import { productPrimaryImageUrl } from '@/utils/fileUrl'
 
 // Props
 const props = defineProps({

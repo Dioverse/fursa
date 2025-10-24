@@ -1,6 +1,6 @@
 <template>
     <div>
-        <InventoryLogDetail :log="store.log" />
+        <InventoryLogDetail :log="store.log" :loading="store.loading" />
     </div>
 </template>
 

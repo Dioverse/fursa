@@ -8,9 +8,9 @@ export const useCategoriesStore = defineStore('categories', () => {
   const categories = ref([])
   const toast = useToast()
 
-  const fetchCategories = async () => {
+  const fetchCategories = async (params = { sub: true }) => {
     try {
-      const res = await api.get('/categories')
+      const res = await api.get('/categories', { params })
       categories.value = res.data.data
       // Optionally transform into nested structure if API returns flat list
       // For now assume API returns nested categories with subcategories array
@@ -22,7 +22,7 @@ export const useCategoriesStore = defineStore('categories', () => {
 
   const createCategory = async (payload) => {
     try {
-      const res = await api.post('/categories', payload)
+  const res = await api.post('/categories', payload)
       categories.value.push(res.data)
       toast.success('Category created')
       return res.data
@@ -35,10 +35,10 @@ export const useCategoriesStore = defineStore('categories', () => {
 
   const updateCategory = async (id, payload) => {
     try {
-      const res = await api.put(`/categories/${id}`, payload)
+  const res = await api.put(`/categories/${id}`, payload)
       // update local
-      const idx = categories.value.findIndex((c) => c.id === id)
-      if (idx !== -1) categories.value[idx] = res.data
+  const idx = categories.value.findIndex((c) => c.id === id)
+  if (idx !== -1) categories.value[idx] = res.data
       toast.success('Category updated')
       return res.data
     } catch (err) {

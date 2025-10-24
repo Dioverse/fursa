@@ -12,7 +12,6 @@ import AdminLayout from '@/layouts/AdminLayout.vue'
 
 // Admin Views - Eager loaded critical views
 import DashboardView from '@/views/admin/dashboard/DashboardView.vue'
-import path from 'path'
 
 // Lazy-loaded views for better performance
 const UsersView = () => import('@/views/admin/users/UsersView.vue')

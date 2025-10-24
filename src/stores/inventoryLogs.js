@@ -5,6 +5,8 @@ export const useInventoryLogsStore = defineStore('inventoryLogs', {
   state: () => ({
     logs: [],
     log: null,
+    stats: { total: 0, added: 0, subtracted: 0 },
+    filters: { operation: [], sort_by: {}, sort_order: {} },
     pagination: {
       currentPage: 1,
       current_page: 1,
@@ -28,10 +30,14 @@ export const useInventoryLogsStore = defineStore('inventoryLogs', {
     async fetchLogs(params = {}) {
       this.loading = true
       this.error = null
+      const start = Date.now()
       try {
         const response = await api.get('/admin-inventory-logs', { params })
-        const payload = response?.data?.data || response?.data || {}
-        this.logs = payload.data || []
+        const body = response?.data || {}
+        const payload = body?.data || {}
+
+        // Logs list
+        this.logs = Array.isArray(payload.data) ? payload.data : []
 
         this.pagination = {
           currentPage: payload.current_page || payload.page || 1,
@@ -49,11 +55,21 @@ export const useInventoryLogsStore = defineStore('inventoryLogs', {
           per_page: payload.per_page || payload.perPage || 10,
         }
 
+        // Optional stats and filters from API
+        this.stats = body.stats || { total: 0, added: 0, subtracted: 0 }
+        this.filters = body.filters || { operation: [], sort_by: {}, sort_order: {} }
+
         return response
       } catch (error) {
         this.error = error
         throw error
       } finally {
+        // Ensure dummy loading minimum duration
+        const elapsed = Date.now() - start
+        const min = 400
+        if (elapsed < min) {
+          await new Promise((resolve) => setTimeout(resolve, min - elapsed))
+        }
         this.loading = false
       }
     },

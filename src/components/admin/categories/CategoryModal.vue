@@ -12,6 +12,19 @@
           <textarea v-model="local.description" class="mt-1 block w-full border rounded p-2"></textarea>
         </div>
         <div>
+          <label class="block text-sm font-medium text-gray-700">Icon</label>
+          <div class="flex items-center gap-3 mt-1">
+            <select v-model="local.icon" class="block w-full border rounded p-2">
+              <option value="">None</option>
+              <option v-for="i in ICONS" :key="i" :value="i">{{ i }}</option>
+            </select>
+            <div class="w-10 h-10 flex items-center justify-center rounded border">
+              <font-awesome-icon v-if="local.icon" :icon="local.icon" class="text-gray-600" />
+            </div>
+          </div>
+          <p class="text-xs text-gray-500 mt-1">Pick from the preset icon names. We can expand this list later.</p>
+        </div>
+        <div>
           <label class="block text-sm font-medium text-gray-700">Parent Category</label>
           <select v-model="local.parent_id" class="mt-1 block w-full border rounded p-2">
             <option value="">None</option>
@@ -39,11 +52,13 @@ const emit = defineEmits(['close', 'saved'])
 
 const categoriesStore = useCategoriesStore()
 
-const local = ref({ name: '', description: '', parent_id: '' })
+import { CATEGORY_ICON_OPTIONS as ICONS } from '@/constants/categoryIcons'
+
+const local = ref({ name: '', description: '', parent_id: '', icon: '' })
 const isSaving = ref(false)
 
 if (props.category) {
-  local.value = { ...props.category, parent_id: props.category.parent_id || '' }
+  local.value = { ...props.category, parent_id: props.category.parent_id || '', icon: props.category.icon || '' }
 }
 
 const flatCategories = computed(() => categoriesStore.categories)
