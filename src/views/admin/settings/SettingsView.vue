@@ -38,12 +38,13 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Cog6ToothIcon, BellIcon, MapIcon } from '@heroicons/vue/24/outline'
+import { Cog6ToothIcon, BellIcon, MapIcon, CreditCardIcon } from '@heroicons/vue/24/outline'
 
 // Import sub-views synchronously to avoid async root runtime issues in transitions
 import LogisticsSettings from './partials/LogisticsSettings.vue'
 import NotificationSettings from './partials/NotificationSettings.vue'
 import SystemSettings from './partials/SystemSettings.vue'
+import PaymentGatewaySettings from './partials/PaymentGatewaySettings.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -51,6 +52,7 @@ const router = useRouter()
 const tabs = [
 	{ id: 'logistics', label: 'Logistics', icon: MapIcon, view: LogisticsSettings },
 	{ id: 'notifications', label: 'Notifications', icon: BellIcon, view: NotificationSettings },
+	{ id: 'payments', label: 'Payment', icon: CreditCardIcon, view: PaymentGatewaySettings },
 	{ id: 'system', label: 'System', icon: Cog6ToothIcon, view: SystemSettings },
 ]
 

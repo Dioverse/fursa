@@ -81,8 +81,25 @@ const reset = () => {
 const save = async () => {
   try {
     saving.value = true
-    const payload = { site_name: form.site_name, site_logo: form.site_logo, tax: form.tax }
-    await siteStore.updateSiteInfo(payload)
+    const tasks = []
+
+    // Compare and update only changed fields
+    if ((form.site_name || '') !== (siteStore.name || '')) {
+      tasks.push(siteStore.updateSiteName(form.site_name))
+    }
+    // For logo, if changed, post URL too (file upload path already handled upload)
+    if ((form.site_logo || '') !== (siteStore.logo || '')) {
+      tasks.push(siteStore.updateSiteLogoUrl(form.site_logo))
+    }
+    const currentTax = siteStore.taxNumber ?? ''
+    const nextTax = form.tax === '' || form.tax === null ? '' : form.tax
+    if (`${nextTax}` !== `${currentTax ?? ''}`) {
+      tasks.push(siteStore.updateSiteTax(form.tax))
+    }
+
+    await Promise.all(tasks)
+    // Refresh to ensure store is fully in sync with backend formats
+    await siteStore.fetchSiteInfo()
     notify.success('System settings saved')
   } catch {
     notify.error('Failed to save system settings')
@@ -101,12 +118,14 @@ const onLogoFileChange = async (e) => {
   uploadingLogo.value = true
   uploadProgress.value = 0
   try {
-    const res = await apiHelpers.uploadFile('/admin/site/logo', file, (p) => (uploadProgress.value = p))
+  const res = await apiHelpers.uploadFile('/admin/site/logo', file, (p) => (uploadProgress.value = p), 'put')
     const body = res?.data?.data || res?.data || {}
     const url = body.url || body.path || body.location || body.file || body.site_logo
     if (url) {
       form.site_logo = url
       notify.success('Logo uploaded')
+      // Keep store in sync so sidebar/header reflect immediately
+  try { await siteStore.fetchSiteInfo() } catch { /* no-op sync */ }
     } else {
       notify.error('Upload succeeded but no URL returned')
     }
@@ -123,6 +142,6 @@ const onLogoFileChange = async (e) => {
 
 <style scoped>
 .input { width: 100%; border-radius: 0.375rem; border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; }
-.btn-primary { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 0.375rem; color: #fff; background: #2563eb; }
+.btn-primary { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 0.375rem; color: #fff; background: #b8974f; }
 .btn-outline { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; color: #374151; background: #fff; }
 </style>

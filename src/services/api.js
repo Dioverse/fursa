@@ -227,11 +227,13 @@ export const apiHelpers = {
   /**
    * Upload file with progress tracking
    */
-  uploadFile: (url, file, onProgress) => {
+  uploadFile: (url, file, onProgress, method = 'post') => {
     const formData = new FormData()
     formData.append('file', file)
 
-    return api.post(url, formData, {
+    const httpMethod = (method || 'post').toLowerCase()
+
+    return api[httpMethod](url, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

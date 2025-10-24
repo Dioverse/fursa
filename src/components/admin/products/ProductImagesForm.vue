@@ -292,7 +292,7 @@ defineExpose({
 .btn-outline:hover { background: #f9fafb; }
 .btn-outline:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn-primary { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 0.375rem; color: #fff; background: #2563eb; border: 1px solid transparent; }
+.btn-primary { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 0.375rem; color: #fff; background: #b8974f; border: 1px solid transparent; }
 .btn-primary:hover { background: #1d4ed8; }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>

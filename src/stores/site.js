@@ -43,19 +43,51 @@ export const useSiteStore = defineStore('site', {
         this.loading = false
       }
     },
-    async updateSiteInfo(payload) {
+    async updateSiteName(site_name) {
       this.loading = true
       this.error = null
       try {
-        // Try POST to same endpoint by convention; adjust if backend differs
-        const { data } = await api.post('/admin/site/info', payload)
+        const payload = { site_name, name: site_name }
+        const { data } = await api.put('/admin/site/name', payload)
         const body = data?.data || data || {}
-        this.info = {
-          site_name: body.site_name ?? payload.site_name ?? this.info.site_name,
-          site_logo: body.site_logo ?? payload.site_logo ?? this.info.site_logo,
-          tax: body.tax ?? payload.tax ?? this.info.tax,
-        }
-        return this.info
+        this.info.site_name = body.site_name ?? body.name ?? site_name ?? this.info.site_name
+        return this.info.site_name
+      } catch (e) {
+        this.error = e
+        throw e
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async updateSiteTax(tax) {
+      this.loading = true
+      this.error = null
+      try {
+        const payload = { tax }
+        const { data } = await api.put('/admin/site/tax', payload)
+        const body = data?.data || data || {}
+        const value = body.tax ?? tax
+        this.info.tax = typeof value === 'string' ? parseFloat(value) : value
+        return this.info.tax
+      } catch (e) {
+        this.error = e
+        throw e
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async updateSiteLogoUrl(site_logo) {
+      this.loading = true
+      this.error = null
+      try {
+        const payload = { site_logo, url: site_logo }
+        const { data } = await api.put('/admin/site/logo', payload)
+        const body = data?.data || data || {}
+        const url = body.site_logo || body.url || body.path || body.location || body.file || site_logo
+        if (url) this.info.site_logo = url
+        return this.info.site_logo
       } catch (e) {
         this.error = e
         throw e

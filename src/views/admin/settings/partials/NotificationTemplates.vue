@@ -287,7 +287,7 @@ const save = async () => {
 <style scoped>
 .input { width: 100%; border-radius: 0.375rem; border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; }
 .textarea { width: 100%; border-radius: 0.375rem; border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-.btn-primary { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 0.375rem; color: #fff; background: #2563eb; }
+.btn-primary { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 0.375rem; color: #fff; background: #b8974f; }
 .btn-outline { display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; border-radius: 0.375rem; border: 1px solid #d1d5db; color: #374151; background: #fff; }
 .lbl { display:block; font-size: 0.875rem; margin-bottom: 0.25rem; color: #374151; }
 .th { text-align:left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: .05em; color: #6b7280; padding: .75rem .5rem; }

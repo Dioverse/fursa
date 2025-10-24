@@ -304,7 +304,7 @@ watch(() => form.state, async (val, old) => {
 
 <style scoped>
 .input { width: 100%; border-radius: 0.375rem; border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; }
-.btn-primary { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 0.375rem; color: #fff; background: #2563eb; }
+.btn-primary { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 0.375rem; color: #fff; background: #b8974f; }
 .btn-outline { display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; border-radius: 0.375rem; border: 1px solid #d1d5db; color: #374151; background: #fff; }
 .th { text-align:left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: .05em; color: #6b7280; padding: .75rem .5rem; }
 .td { padding: .75rem .5rem; font-size: 0.875rem; color: #111827; }
