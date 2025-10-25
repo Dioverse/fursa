@@ -71,7 +71,7 @@ class AdminController extends Controller
 
         if (!$admin) {
             return response()->json([
-                'message' => 'Admin not found.',
+                'message' => 'Admin not found 34.',
             ], 404);
         }
 
@@ -90,7 +90,7 @@ class AdminController extends Controller
 
         if (!$admin) {
             return response()->json([
-                'message' => 'Admin not found.',
+                'message' => 'Admin not found 45.',
             ], 404);
         }
 
@@ -125,7 +125,7 @@ class AdminController extends Controller
 
         if (!$admin) {
             return response()->json([
-                'message' => 'Admin not found.',
+                'message' => 'Admin not found. 56',
             ], 404);
         }
 
