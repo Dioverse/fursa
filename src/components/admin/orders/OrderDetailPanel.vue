@@ -123,7 +123,7 @@
                     <td class="py-3 px-3">
                       <div class="flex items-start gap-3">
                         <div class="w-12 h-12 rounded bg-gray-100 flex items-center justify-center overflow-hidden border flex-shrink-0">
-                          <img v-if="item.image" :src="buildImageUrl(item.image)" :alt="item.name" class="w-full h-full object-cover" />
+                          <img v-if="item.image" :src="getImageUrl(item.image)" :alt="item.name" class="w-full h-full object-cover" />
                           <span v-else class="text-xs text-gray-400">No img</span>
                         </div>
                         <div class="min-w-0">
@@ -209,7 +209,7 @@
 </template>
 
 <script setup>
-import { toUcwords } from '@/utils/helpers'
+import { getImageUrl, toUcwords } from '@/utils/helpers'
 import { ref, watch, computed, defineEmits } from 'vue'
 
 const emit = defineEmits(['update-delivery', 'update-status'])
