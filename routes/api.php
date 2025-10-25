@@ -51,7 +51,7 @@ Route::middleware('auth:api')->post('/auth/admin/refresh', [AuthController::clas
 
 Route::middleware(['auth:sanctum','ban'])->group(function () {
     // Resend verification email
-    Route::post('/email/verification-notification', [AuthController::class, 'verificationSend'])->middleware('throttle:6,1')->name('verification.send');
+    Route::post('/email/verification-notification', [AuthController::class, 'verificationSend'])->middleware('throttle:2,1')->name('verification.send');
 });
 
 Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
@@ -168,6 +168,8 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
         Route::apiResource('shipping-address', ShippingAddressController::class);
         Route::post('set-default-address/{id}', [ShippingAddressController::class, 'setDefaultAddress']);
     });
+
+    Route::post('/change-password', [AuthController::class, 'changePassword'])->middleware('throttle:2,1');
 
     // Shared routes for all authenticated users
     Route::apiResource('carts', CartController::class)->only(['index','store']);
