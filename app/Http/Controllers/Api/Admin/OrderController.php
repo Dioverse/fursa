@@ -110,7 +110,7 @@ class OrderController extends Controller
             'orderItem' => function ($q) {
                 $q->with([
                     'product' => function ($p) {
-                        $p->with(['firstImage:id,product_id,image_path']);
+                        $p->with(['firstImage:id,product_id,path']);
                     }
                 ]);
             },

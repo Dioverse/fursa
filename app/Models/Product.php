@@ -135,7 +135,7 @@ class Product extends Model implements AuditableContract
 
     public function firstImage()
     {
-        return $this->hasOne(ProductImage::class)->select('id', 'product_id', 'image_path');
+        return $this->hasOne(ProductImage::class)->select('id', 'product_id', 'path');
     }
 
     /**
