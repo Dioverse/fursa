@@ -2,19 +2,9 @@
     <!-- Why Choose Us -->
     <section class="py-16">
         <div class="container mx-auto px-4">
-<<<<<<< Updated upstream
             <h2 class="text-3xl font-bold text-center mb-6">{{ $t('home.why_choose.title') }}</h2>
             <p class="text-center mb-12">{{ $t('home.why_choose.subtitle') }}</p>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-=======
-            <h2 class="text-3xl font-bold text-center mb-6">
-                Why Choose Fursa Energy as Your Trusted Lubricant Distributor
-            </h2>
-            <p class="text-center mb-12">
-                Fursa Energy is more than a lubricant distributor, we are a trusted partner for businesses across Nigeria. Backed by MRS Lubricants, one of Africa’s leading blending plants, we deliver high-performance products that meet global standards.
-            </p>
-            <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8">
->>>>>>> Stashed changes
                 <div v-for="feature in features" :key="feature.title" class="text-center">
                     <div
                         class="w-20 h-20 mx-auto mb-4 bg-primary bg-opacity-10 rounded-full flex items-center justify-center">

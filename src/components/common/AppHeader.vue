@@ -9,7 +9,6 @@
 
                 <!-- Desktop Search Bar -->
                 <div class="hidden md:flex flex-1 max-w-md mx-6">
-<<<<<<< Updated upstream
                     <div class="relative w-full" ref="searchRef">
                         <input
                             v-model="searchQuery"
@@ -20,12 +19,6 @@
                             @input="onSearchInput"
                             @keydown.esc.prevent="hideSuggestions"
                         />
-=======
-                    <div class="relative w-full">
-                        <input v-model="searchQuery" type="text" placeholder="Search Products..."
-                            class="w-full px-4 py-2 text-gray-600 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                            @keyup.enter="handleSearch" />
->>>>>>> Stashed changes
                         <button @click="handleSearch"
                             class="absolute right-1 top-1/2 -translate-y-1/2 bg-primary text-white px-3 py-1 rounded">
                             <font-awesome-icon icon="search" />
@@ -67,11 +60,7 @@
                         <button @click="toggleAccountMenu"
                             class="bg-primary text-white px-3 py-[9px] sm:py-[6px] rounded-md hover:bg-opacity-90 transition flex items-center gap-1.5 text-sm md:text-base">
                             <font-awesome-icon icon="circle-user" class="text-sm md:text-base" />
-<<<<<<< Updated upstream
-                            <span class="hidden sm:inline">{{ $t('header.account') || 'Account' }}</span>
-=======
-                            <span class="hidden sm:inline text-xs md:text-sm">Account</span>
->>>>>>> Stashed changes
+                            <span class="hidden sm:inline text-xs md:text-sm">{{ $t('header.account') || 'Account' }}</span>
                             <font-awesome-icon :icon="showAccountMenu ? 'chevron-up' : 'chevron-down'"
                                 class="text-xs md:text-sm" />
                         </button>
@@ -157,7 +146,6 @@
                 class="bg-white border-t md:border-t-0 md:border-b md:relative absolute w-full md:w-auto ">
                 <div class="container mx-auto px-2 sm:px-0 md:px-4">
                     <div
-<<<<<<< Updated upstream
                     class="flex flex-col md:flex-row md:items-center md:justify-between bg-white/80 backdrop-blur-md border-b border-gray-100 rounded-lg md:rounded-none py-2 shadow-sm"
                     >
                     <!-- Mobile Search -->
@@ -227,48 +215,6 @@
         <span class="flex nowrap">{{ $t('header.distributor') || 'Distributor' }}<span class="hidden sm:block">&nbsp;{{ $t('header.registration') || 'Registration' }}</span></span>
   </RouterLink>
 </div>
-=======
-                        class="flex flex-col md:flex-row md:items-center md:justify-between bg-white/80 backdrop-blur-md border-b border-gray-100 rounded-lg md:rounded-none py-2 shadow-sm">
-                        <!-- Mobile Search -->
-                        <transition name="fade">
-                            <div v-if="mobileMenuOpen" class="md:hidden gap-1.5 px-2.5 md:py-1.5 py-3">
-                                <div class="relative w-full bg-">
-                                    <input v-model="searchQuery" type="text" placeholder="Search Products..."
-                                        class="w-full px-4 py-2 pr-10 text-white rounded-lg bg-black/50 focus:outline-none focus:ring-2 focus:ring-primary"
-                                        @keyup.enter="handleSearch" />
-                                    <button @click="handleSearch"
-                                        class="absolute right-1 top-1/2 -translate-y-1/2 bg-primary text-white px-3 py-1 rounded">
-                                        <font-awesome-icon icon="search" />
-                                    </button>
-                                </div>
-                            </div>
-                        </transition>
-                        <!-- Navigation Links -->
-                        <ul
-                            class="flex flex-col md:flex-row md:items-center gap-[2px] md:gap-0.1 xl:gap-5 text-gray-700 text-[14px] font-medium">
-                            <li v-for="(link, index) in navLinks" :key="link.to" class="group">
-                                <RouterLink :to="link.to" :class="[
-                                    'flex items-center gap-1.5 px-2.5 md:py-1.5 py-3 pl-2.5 rounded-md hover:bg-primary/10 hover:text-primary transition-all duration-200',
-                                    index === 0 ? 'md:pl-0' : ''
-                                ]" @click="mobileMenuOpen = false">
-                                    <font-awesome-icon :icon="link.icon"
-                                        class="text-gray-500 text-sm group-hover:text-primary transition-colors" />
-                                    <span class="truncate">{{ link.label }}</span>
-                                </RouterLink>
-                            </li>
-                        </ul>
-
-
-                        <!-- Distributor Button -->
-                        <RouterLink v-if="authStore?.user?.value != 'distributor'" :dd="authStore?.user?.value"
-                            to="/distributor-registration"
-                            class="bg-primary text-white px-4 py-2 md:py-1.5 rounded-md hover:bg-primary/90 active:scale-[0.97] transition-all duration-200 flex items-center gap-1.5 text-sm md:text-[14px] w-full md:w-auto justify-center mt-2 md:mt-0">
-                            <font-awesome-icon icon="truck" class="text-xs" />
-                            <span class="flex nowrap">Distributor<span
-                                    class="hidden xs:block sm:block md:hidden lg:block">&nbsp;Registration</span></span>
-                        </RouterLink>
-                    </div>
->>>>>>> Stashed changes
 
                 </div>
             </nav>
@@ -314,7 +260,6 @@ const computedLinks = computed(() => [
 ])
 
 const handleSearch = () => {
-<<<<<<< Updated upstream
     const q = searchQuery.value.trim()
     if (!q) return
     router.push({ name: 'category-list', query: { name: q } })
@@ -341,12 +286,6 @@ const fetchSuggestions = async () => {
     } catch (e) {
         suggestions.value = []
         showSuggestions.value = false
-=======
-    if (searchQuery.value.trim()) {
-        router.push({ name: 'category-list', query: { name: searchQuery.value } })
-        searchQuery.value = ''
-        mobileMenuOpen.value = false
->>>>>>> Stashed changes
     }
 }
 

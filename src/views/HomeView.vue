@@ -30,12 +30,7 @@
 
                 <!-- Right Image -->
                 <div class="w-full md:w-1/2 mt-8 md:mt-0 flex justify-center">
-<<<<<<< Updated upstream
                     <img src="/images/lubricants.png" :alt="$t('home.hero_image_alt')" class="max-w-xs xxxs:w-[15rem] xxs:w-[15rem] md:max-w-md xs:left-[160px] xs:top-[0px] xs:absolute sm:absolute sm:left-[320px] sm:top-[0px] lg:relative lg:left-[0] sm:top-[0px]">
-=======
-                    <img src="/public/images/lubricants.png" alt="MRS Lubricants"
-                        class="max-w-xs xxxs:w-[15rem] xxs:w-[15rem] md:max-w-md xs:left-[160px] xs:top-[0px] xs:absolute sm:absolute sm:left-[320px] sm:top-[0px] lg:relative lg:left-[0] sm:top-[0px]">
->>>>>>> Stashed changes
                 </div>
             </div>
         </section>
@@ -44,21 +39,13 @@
         <!-- Categories Section -->
         <section class="py-16 bg-gray-50">
             <div class="container mx-auto px-4">
-<<<<<<< Updated upstream
-                <h2 class="text-3xl font-bold text-center mb-12">{{ $t('home.categories') || 'Categories' }}</h2>
-                <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-7 gap-6 justify-center justify-items-center">
-                    <!-- Loading Skeleton -->
-                    <template v-if="loading">
-                        <div v-for="n in 6" :key="n" class="text-center animate-pulse">
-=======
-                <h2 class="grid text-2xl sm:text-2xl md:text-3xl lg:text-3xl font-bold text-center mb-12">Categories
+                <h2 class="grid text-2xl sm:text-2xl md:text-3xl lg:text-3xl font-bold text-center mb-12">{{ $t('home.categories') || 'Categories' }}
                 </h2>
                 <!-- Loading Skeleton -->
                 <template v-if="loading">
                     <div class="flex justify-center gap-10 place-items-center" :style="{ placeItems: center }">
 
                         <div v-for="n in 4" :key="n" class="text-center animate-pulse">
->>>>>>> Stashed changes
                             <div class="w-20 h-20 mx-auto mb-3 bg-gray-200 rounded-full shadow-md"></div>
                             <p class="h-4 bg-gray-200 rounded w-3/4 mx-auto"></p>
                         </div>
