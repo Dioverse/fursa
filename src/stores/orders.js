@@ -5,6 +5,7 @@ export const useOrdersStore = defineStore('orders', {
   state: () => ({
     orders: [],
     order: null,
+    allowedStatuses: null,
     pagination: {
       currentPage: 1,
       current_page: 1,
@@ -64,6 +65,7 @@ export const useOrdersStore = defineStore('orders', {
       try {
         const response = await api.get(`/admin-orders/${id}`)
         this.order = response.data?.data || response.data || response.data?.order || response.data
+        this.allowedStatuses = response.data?.allowedStatuses || response.allowedStatuses || []
         return response
       } catch (error) {
         this.error = error
