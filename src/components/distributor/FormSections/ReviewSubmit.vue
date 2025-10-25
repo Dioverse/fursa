@@ -1,15 +1,15 @@
 <template>
   <div class="space-y-6">
-    <h3 class="text-xl font-semibold text-primary mb-4">Section 6: Review & Submit</h3>
+  <h3 class="text-xl font-semibold text-primary mb-4">{{ $t('distributor.sections.review_submit') }}</h3>
 
     <!-- Info Alert -->
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
       <div class="flex items-start gap-3">
         <font-awesome-icon icon="info-circle" class="text-blue-600 mt-1" />
         <div>
-          <p class="font-semibold text-blue-800">Please Review Your Information</p>
+          <p class="font-semibold text-blue-800">{{ $t('distributor.review.info_title') }}</p>
           <p class="text-blue-700 text-sm mt-1">
-            Ensure all information provided is accurate before submitting your application.
+            {{ $t('distributor.review.info_desc') }}
           </p>
         </div>
       </div>
@@ -21,47 +21,47 @@
       <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
         <h4 class="font-semibold mb-3 flex items-center gap-2">
           <font-awesome-icon icon="building" class="text-primary" />
-          Business Information
+          {{ $t('distributor.review.business_info_title') }}
         </h4>
         <dl class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
           <div>
-            <dt class="text-gray-600">Company Name:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.company_name || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.company_name') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.company_name || $t('distributor.common.na') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">Registered Business Name:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.registered_name || 'Same as company name' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.registered_name') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.registered_name || $t('distributor.common.same_as_company_name') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">RC Number:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.rc_number || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.rc_number') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.rc_number || $t('distributor.common.na') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">Company Type:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.company_type || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.company_type') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.company_type || $t('distributor.common.na') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">Email:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.email || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.email') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.email || $t('distributor.common.na') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">Office Phone:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.office_phone || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.office_phone') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.office_phone || $t('distributor.common.na') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">Website:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.website || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.website') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.website || $t('distributor.common.na') }}</dd>
           </div>
 
           <div class="md:col-span-2">
-            <dt class="text-gray-600">Business Address:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.business_address || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.business_address') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.businessInfo?.business_address || $t('distributor.common.na') }}</dd>
           </div>
         </dl>
       </div>
@@ -70,37 +70,37 @@
       <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
         <h4 class="font-semibold mb-3 flex items-center gap-2">
           <font-awesome-icon icon="user-tie" class="text-primary" />
-          Contact Person
+          {{ $t('distributor.review.contact_person_title') }}
         </h4>
         <dl class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
           <div>
-            <dt class="text-gray-600">Full Name:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.contact_full_name || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.full_name') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.contact_full_name || $t('distributor.common.na') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">Position/Title:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.contact_position || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.position_title') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.contact_position || $t('distributor.common.na') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">Mobile Number:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.contact_mobile || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.mobile_number') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.contact_mobile || $t('distributor.common.na') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">Years in Business:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.years_in_business || 'N/A' }} year(s)</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.years_in_business') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.years_in_business || $t('distributor.common.na') }} {{ $t('distributor.common.years_suffix') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">ID Type:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.means_of_id || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.id_type') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.means_of_id || $t('distributor.common.na') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">ID Number:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.id_number || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.id_number') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.contactPerson?.id_number || $t('distributor.common.na') }}</dd>
           </div>
         </dl>
       </div>
@@ -109,65 +109,65 @@
       <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
         <h4 class="font-semibold mb-3 flex items-center gap-2">
           <font-awesome-icon icon="truck" class="text-primary" />
-          Distribution Capacity
+          {{ $t('distributor.review.distribution_capacity_title') }}
         </h4>
         <dl class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
           <div>
-            <dt class="text-gray-600">Current Product Lines:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.current_product_lines || 'None' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.current_product_lines') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.current_product_lines || $t('distributor.common.none') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">Monthly Capacity:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.monthly_capacity || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.monthly_capacity') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.monthly_capacity || $t('distributor.common.na') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">Regions Covered:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.regions_covered || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.regions_covered') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.regions_covered || $t('distributor.common.na') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">Number of Sales Staff:</dt>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.sales_staff') }}</dt>
             <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.number_of_sales_staff || '0' }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">Preferred Region:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.preferred_region || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.preferred_region') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.preferred_region || $t('distributor.common.na') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">Has Warehouse:</dt>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.has_warehouse') }}</dt>
             <dd class="font-medium text-gray-900">
               <span v-if="formData.distributionCapacity?.has_warehouse === 1" class="text-green-600">
-                <font-awesome-icon icon="check-circle" /> Yes
+                <font-awesome-icon icon="check-circle" /> {{ $t('distributor.common.yes') }}
               </span>
               <span v-else class="text-red-600">
-                <font-awesome-icon icon="times-circle" /> No
+                <font-awesome-icon icon="times-circle" /> {{ $t('distributor.common.no') }}
               </span>
             </dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">Has Distribution Vehicles:</dt>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.has_vehicles') }}</dt>
             <dd class="font-medium text-gray-900">
               <span v-if="formData.distributionCapacity?.has_vehicles === 1" class="text-green-600">
-                <font-awesome-icon icon="check-circle" /> Yes
+                <font-awesome-icon icon="check-circle" /> {{ $t('distributor.common.yes') }}
               </span>
               <span v-else class="text-red-600">
-                <font-awesome-icon icon="times-circle" /> No
+                <font-awesome-icon icon="times-circle" /> {{ $t('distributor.common.no') }}
               </span>
             </dd>
           </div>
 
           <div v-if="formData.distributionCapacity?.vehicle_details" class="md:col-span-2">
-            <dt class="text-gray-600">Vehicle Details:</dt>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.vehicle_details') }}</dt>
             <dd class="font-medium text-gray-900">{{ formData.distributionCapacity?.vehicle_details }}</dd>
           </div>
 
           <div class="md:col-span-2">
-            <dt class="text-gray-600 mb-2">Preferred States to Cover:</dt>
+            <dt class="text-gray-600 mb-2">{{ $t('distributor.review.labels.preferred_states_to_cover') }}</dt>
             <dd class="font-medium text-gray-900">
               <div v-if="formData.distributionCapacity?.preferred_states?.length > 0" class="flex flex-wrap gap-2">
                 <span v-for="state in formData.distributionCapacity.preferred_states" :key="state"
@@ -175,7 +175,7 @@
                   {{ state }}
                 </span>
               </div>
-              <span v-else>None selected</span>
+              <span v-else>{{ $t('distributor.common.none_selected') }}</span>
             </dd>
           </div>
         </dl>
@@ -185,72 +185,77 @@
       <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
         <h4 class="font-semibold mb-3 flex items-center gap-2">
           <font-awesome-icon icon="oil-can" class="text-primary" />
-          Distribution Strategy & Product Focus
+          {{ $t('distributor.review.product_focus_title') }}
         </h4>
         <dl class="space-y-3 text-sm">
           <div>
-            <dt class="text-gray-600 mb-1">Product Categories Interested In:</dt>
+            <dt class="text-gray-600 mb-1">{{ $t('distributor.review.labels.product_categories_interested') }}</dt>
             <dd class="font-medium text-gray-900">
               <div v-if="formData.productFocus?.product_categories?.length > 0" class="flex flex-wrap gap-2">
-                <span v-for="category in formData.productFocus.product_categories" :key="category"
+                <span v-for="(category, i) in formData.productFocus.product_categories" :key="category"
                   class="px-3 py-1 bg-primary bg-opacity-10 text-primary rounded-full text-xs">
-                  {{ category }}
+                  {{ formData.productFocus?.product_categories_display?.[i] || $t('distributor.product_focus.categories.' + category) || category }}
                 </span>
               </div>
-              <span v-else>None selected</span>
+              <span v-else>{{ $t('distributor.common.none_selected') }}</span>
             </dd>
+          </div>
+
+          <div v-if="formData.productFocus?.other_specify">
+            <dt class="text-gray-600 mb-1">{{ $t('distributor.product_focus.other_specify_label') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.productFocus.other_specify }}</dd>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <dt class="text-gray-600">Technical Knowledge:</dt>
+              <dt class="text-gray-600">{{ $t('distributor.review.labels.technical_knowledge') }}</dt>
               <dd class="font-medium text-gray-900">
                 <span v-if="formData.productFocus?.has_technical_knowledge === 1" class="text-green-600">
-                  <font-awesome-icon icon="check-circle" /> Yes
+                  <font-awesome-icon icon="check-circle" /> {{ $t('distributor.common.yes') }}
                 </span>
                 <span v-else class="text-red-600">
-                  <font-awesome-icon icon="times-circle" /> No
+                  <font-awesome-icon icon="times-circle" /> {{ $t('distributor.common.no') }}
                 </span>
               </dd>
             </div>
 
             <div>
-              <dt class="text-gray-600">Willing to Take Training:</dt>
+              <dt class="text-gray-600">{{ $t('distributor.review.labels.willing_to_train') }}</dt>
               <dd class="font-medium text-gray-900">
                 <span v-if="formData.productFocus?.willing_to_train === 1" class="text-green-600">
-                  <font-awesome-icon icon="check-circle" /> Yes
+                  <font-awesome-icon icon="check-circle" /> {{ $t('distributor.common.yes') }}
                 </span>
                 <span v-else-if="formData.productFocus?.willing_to_train === 0" class="text-red-600">
-                  <font-awesome-icon icon="times-circle" /> No
+                  <font-awesome-icon icon="times-circle" /> {{ $t('distributor.common.no') }}
                 </span>
                 <span v-else class="text-yellow-600">
-                  <font-awesome-icon icon="question-circle" /> Depends on Arrangement
+                  <font-awesome-icon icon="question-circle" /> {{ $t('distributor.common.depends') }}
                 </span>
               </dd>
             </div>
 
             <div>
-              <dt class="text-gray-600">Distribution Start Date:</dt>
+              <dt class="text-gray-600">{{ $t('distributor.review.labels.distribution_start_date') }}</dt>
               <dd class="font-medium text-gray-900">
                 {{ formatDate(formData.productFocus?.distribution_start_time) }}
               </dd>
             </div>
 
             <div>
-              <dt class="text-gray-600">Promo Participation:</dt>
+              <dt class="text-gray-600">{{ $t('distributor.review.labels.promo_participation') }}</dt>
               <dd class="font-medium text-gray-900">
-                {{ formData.productFocus?.promo_participation || 'N/A' }}
+                {{ formData.productFocus?.promo_participation || $t('distributor.common.na') }}
               </dd>
             </div>
           </div>
 
           <div v-if="formData.productFocus?.declarant_name" class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <dt class="text-gray-600">Declarant Name:</dt>
+              <dt class="text-gray-600">{{ $t('distributor.review.labels.declarant_name') }}</dt>
               <dd class="font-medium text-gray-900">{{ formData.productFocus?.declarant_name }}</dd>
             </div>
             <div>
-              <dt class="text-gray-600">Declaration Date:</dt>
+              <dt class="text-gray-600">{{ $t('distributor.review.labels.declaration_date') }}</dt>
               <dd class="font-medium text-gray-900">{{ formatDate(formData.productFocus?.declaration_date) }}</dd>
             </div>
           </div>
@@ -261,31 +266,31 @@
       <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
         <h4 class="font-semibold mb-3 flex items-center gap-2">
           <font-awesome-icon icon="university" class="text-primary" />
-          Banking & KYC Information
+          {{ $t('distributor.review.banking_kyc_title') }}
         </h4>
         <dl class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
           <div>
-            <dt class="text-gray-600">Bank Name:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.bankingKYC?.bank_name || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.bank_name') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.bankingKYC?.bank_name || $t('distributor.common.na') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">Account Number:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.bankingKYC?.account_number || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.account_number') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.bankingKYC?.account_number || $t('distributor.common.na') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">Account Name:</dt>
-            <dd class="font-medium text-gray-900">{{ formData.bankingKYC?.account_name || 'N/A' }}</dd>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.account_name') }}</dt>
+            <dd class="font-medium text-gray-900">{{ formData.bankingKYC?.account_name || $t('distributor.common.na') }}</dd>
           </div>
 
           <div>
-            <dt class="text-gray-600">BVN:</dt>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.bvn') }}</dt>
             <dd class="font-medium text-gray-900">{{ maskBVN(formData.bankingKYC?.bvn) }}</dd>
           </div>
 
           <div v-if="formData.bankingKYC?.partnerships" class="md:col-span-2">
-            <dt class="text-gray-600">Oil & Gas Partnerships:</dt>
+            <dt class="text-gray-600">{{ $t('distributor.review.labels.partnerships') }}</dt>
             <dd class="font-medium text-gray-900">{{ formData.bankingKYC?.partnerships }}</dd>
           </div>
         </dl>
@@ -295,17 +300,17 @@
       <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
         <h4 class="font-semibold mb-3 flex items-center gap-2">
           <font-awesome-icon icon="file-alt" class="text-primary" />
-          Documents Uploaded
+          {{ $t('distributor.review.documents_title') }}
         </h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
           <div v-for="doc in documentsList" :key="doc.key"
             class="flex items-center justify-between p-2 bg-gray-50 rounded">
-            <span class="text-gray-700">{{ doc.label }}:</span>
+            <span class="text-gray-700">{{ $t(doc.labelKey) }}:</span>
             <span v-if="formData.productFocus?.documents?.[doc.key]" class="text-green-600">
-              <font-awesome-icon icon="check-circle" /> Uploaded
+              <font-awesome-icon icon="check-circle" /> {{ $t('distributor.common.uploaded') }}
             </span>
             <span v-else class="text-yellow-600">
-              <font-awesome-icon icon="exclamation-circle" /> Pending
+              <font-awesome-icon icon="exclamation-circle" /> {{ $t('distributor.common.pending') }}
             </span>
           </div>
         </div>
@@ -315,30 +320,30 @@
       <div class="border border-gray-200 rounded-lg p-4">
         <h4 class="font-semibold mb-3 flex items-center gap-2">
           <font-awesome-icon icon="lock" class="text-primary" />
-          Choose a Strong Password <span class="text-red-500">*</span>
+          {{ $t('distributor.password.title') }} <span class="text-red-500">*</span>
         </h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('distributor.password.password') }}</label>
             <input v-model="password" type="password" 
               class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" 
-              placeholder="Minimum 8 characters"
+              :placeholder="$t('distributor.password.password_placeholder')"
               required />
-            <p class="text-xs text-gray-500 mt-1">Must be at least 8 characters long</p>
+            <p class="text-xs text-gray-500 mt-1">{{ $t('distributor.password.password_hint') }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('distributor.password.confirm_password') }}</label>
             <input v-model="passwordConfirmation" type="password" 
               class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" 
-              placeholder="Re-enter password"
+              :placeholder="$t('distributor.password.confirm_password_placeholder')"
               required />
             <p v-if="password && passwordConfirmation && password !== passwordConfirmation" 
               class="text-xs text-red-500 mt-1">
-              Passwords do not match
+              {{ $t('distributor.password.passwords_no_match') }}
             </p>
             <p v-else-if="password && passwordConfirmation && password === passwordConfirmation" 
               class="text-xs text-green-600 mt-1">
-              <font-awesome-icon icon="check-circle" /> Passwords match
+              <font-awesome-icon icon="check-circle" /> {{ $t('distributor.password.passwords_match') }}
             </p>
           </div>
         </div>
@@ -348,9 +353,9 @@
       <div class="border border-gray-200 rounded-lg p-4">
         <h4 class="font-semibold mb-3 flex items-center gap-2">
           <font-awesome-icon icon="comment-alt" class="text-primary" />
-          Additional Notes (Optional)
+          {{ $t('distributor.notes.title') }}
         </h4>
-        <textarea v-model="additionalNotes" rows="3" placeholder="Any additional information you'd like to provide..."
+        <textarea v-model="additionalNotes" rows="3" :placeholder="$t('distributor.notes.placeholder')"
           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
       </div>
 
@@ -361,17 +366,13 @@
           <div class="text-sm">
             <p class="font-semibold mb-2 text-gray-900">
               <font-awesome-icon icon="file-contract" class="text-primary mr-2" />
-              Terms and Conditions Agreement <span class="text-red-500">*</span>
+              {{ $t('distributor.terms.title') }} <span class="text-red-500">*</span>
             </p>
             <p class="text-gray-700 leading-relaxed">
-              I hereby confirm that all information provided in this application is true and accurate
-              to the best of my knowledge. I understand that Fursa Energy may carry out verification
-              and reserve the right to reject or revoke distributorship if any information is found
-              to be false or misleading.
+              {{ $t('distributor.terms.p1') }}
             </p>
             <p class="text-gray-700 mt-2">
-              I also agree to comply with all Fursa Energy distributor policies, maintain the required
-              standards of service, and uphold the company's reputation in all business dealings.
+              {{ $t('distributor.terms.p2') }}
             </p>
           </div>
         </label>
@@ -383,9 +384,9 @@
       <div class="flex items-start gap-3">
         <font-awesome-icon icon="exclamation-triangle" class="text-red-600 mt-1" />
         <div>
-          <p class="font-semibold text-red-800">Missing Information</p>
+          <p class="font-semibold text-red-800">{{ $t('distributor.error.missing_info_title') }}</p>
           <p class="text-red-700 text-sm mt-1">
-            Please ensure all required fields are filled, passwords match (minimum 8 characters), and you have agreed to the terms and conditions.
+            {{ $t('distributor.error.missing_info_desc') }}
           </p>
         </div>
       </div>
@@ -395,6 +396,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   formData: {
@@ -417,11 +419,11 @@ const passwordConfirmation = ref('')
 
 // Document list for checking
 const documentsList = [
-  { key: 'cac', label: 'CAC Certificate' },
-  { key: 'form_c07', label: 'Form C07' },
-  { key: 'memart', label: 'MEMART' },
-  { key: 'tin', label: 'Business TIN' },
-  { key: 'referee', label: 'Letter of Introduction' }
+  { key: 'cac', labelKey: 'distributor.docs.cac' },
+  { key: 'form_c07', labelKey: 'distributor.docs.form_c07' },
+  { key: 'memart', labelKey: 'distributor.docs.memart' },
+  { key: 'tin', labelKey: 'distributor.docs.tin' },
+  { key: 'referee', labelKey: 'distributor.docs.referee' }
 ]
 
 // Computed property to check if form is valid
@@ -437,15 +439,17 @@ const isFormValid = computed(() => {
 })
 
 // Helper function to mask BVN
+const { t, locale } = useI18n()
+
 const maskBVN = (bvn) => {
-  if (!bvn) return 'N/A'
+  if (!bvn) return t('distributor.common.na')
   return `*******${bvn.slice(-4)}`
 }
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
+  if (!dateString) return t('distributor.common.na')
   const date = new Date(dateString)
-  return date.toLocaleDateString('en-NG', {
+  return date.toLocaleDateString(locale.value || 'en', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'

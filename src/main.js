@@ -83,6 +83,7 @@ import {
 import App from './App.vue'
 import router from './router'
 import './assets/styles/main.css'
+import { i18n } from '@/plugins/i18n'
 
 // Add icons to library
 library.add(
@@ -161,6 +162,7 @@ app.component('font-awesome-icon', FontAwesomeIcon)
 
 app.use(createPinia())
 app.use(router)
+app.use(i18n)
 app.use(Toast, {
   position: 'top-right',
   timeout: 3000,
@@ -177,9 +179,9 @@ app.use(Toast, {
 })
 
 app.use(VueLazyLoad, {
-  // Optional: default placeholder (you can use a spinner, blurred image, etc.)
-  loading: '../public/images/oil-droplet.gif',
-  error: '../public/images/oil-droplet.jpg'
+  // Optional: default placeholder (use public assets by absolute URL)
+  loading: '/images/oil-droplet.gif',
+  error: '/images/oil-droplet.jpg'
 })
 
 app.mount('#app')

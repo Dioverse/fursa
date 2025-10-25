@@ -9,14 +9,35 @@
 
                 <!-- Desktop Search Bar -->
                 <div class="hidden md:flex flex-1 max-w-md mx-6">
-                    <div class="relative w-full">
-                        <input v-model="searchQuery" type="text" placeholder="Search Products..."
+                    <div class="relative w-full" ref="searchRef">
+                        <input
+                            v-model="searchQuery"
+                            type="text"
+                            :placeholder="$t('header.search_placeholder') || 'Search Products...'"
                             class="w-full px-4 py-2 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                            @keyup.enter="handleSearch" />
+                            @keyup.enter="handleSearch"
+                            @input="onSearchInput"
+                            @keydown.esc.prevent="hideSuggestions"
+                        />
                         <button @click="handleSearch"
                             class="absolute right-1 top-1/2 -translate-y-1/2 bg-primary text-white px-3 py-1 rounded">
                             <font-awesome-icon icon="search" />
                         </button>
+
+                        <!-- Suggestions Dropdown -->
+                        <div v-if="showSuggestions && suggestions.length" class="absolute left-0 right-0 mt-2 bg-white border rounded-lg shadow-lg z-50">
+                            <ul class="max-h-72 overflow-y-auto py-2">
+                                <li v-for="item in suggestions" :key="item.id"
+                                    class="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-3"
+                                    @click="goToProduct(item)">
+                                    <img :src="getThumb(item)" alt="thumb" class="w-8 h-8 rounded object-cover bg-gray-100" @error="onImgError" />
+                                    <span class="text-sm text-gray-800 line-clamp-1">{{ item.name }}</span>
+                                </li>
+                            </ul>
+                            <div class="px-3 py-2 border-t bg-gray-50 text-right">
+                                <button class="text-sm text-primary hover:underline" @click="handleSearch">See all results</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -39,7 +60,7 @@
                         <button @click="toggleAccountMenu"
                             class="bg-primary text-white px-3 py-[9px] sm:py-[6px] rounded-md hover:bg-opacity-90 transition flex items-center gap-1.5 text-sm md:text-base">
                             <font-awesome-icon icon="circle-user" class="text-sm md:text-base" />
-                            <span class="hidden sm:inline">Account</span>
+                            <span class="hidden sm:inline">{{ $t('header.account') || 'Account' }}</span>
                             <font-awesome-icon :icon="showAccountMenu ? 'chevron-up' : 'chevron-down'"
                                 class="text-xs md:text-sm" />
                         </button>
@@ -52,21 +73,21 @@
                                     class="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 transition text-sm"
                                     @click="closeAccountMenu">
                                     <font-awesome-icon icon="tachometer-alt" class="text-gray-600" />
-                                    <span>Dashboard</span>
+                                    <span>{{ $t('header.dashboard') || 'Dashboard' }}</span>
                                 </RouterLink>
 
                                 <RouterLink to="/orders"
                                     class="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 transition text-sm"
                                     @click="closeAccountMenu">
                                     <font-awesome-icon icon="box" class="text-gray-600" />
-                                    <span>Orders</span>
+                                    <span>{{ $t('header.orders') || 'Orders' }}</span>
                                 </RouterLink>
 
-                                <RouterLink to="/wishlist"
+                                <RouterLink to="/dashboard/wishlist"
                                     class="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 transition text-sm"
                                     @click="closeAccountMenu">
                                     <font-awesome-icon icon="heart" class="text-red-500" />
-                                    <span>Wishlist</span>
+                                    <span>{{ $t('header.wishlist') || 'Wishlist' }}</span>
                                 </RouterLink>
 
                                 <hr class="my-1" />
@@ -74,7 +95,7 @@
                                 <button @click="logout"
                                     class="w-full text-left flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 transition text-sm">
                                     <font-awesome-icon icon="sign-out-alt" class="text-gray-600" />
-                                    <span>Logout</span>
+                                    <span>{{ $t('header.logout') || 'Logout' }}</span>
                                 </button>
                             </div>
                         </transition>
@@ -86,7 +107,7 @@
                     <RouterLink v-else to="/login"
                         class="bg-primary text-white px-4 py-2 rounded hover:bg-opacity-90 transition flex items-center gap-2">
                         <font-awesome-icon icon="user" />
-                        <span class="hidden md:inline">Login</span>
+                        <span class="hidden md:inline">{{ $t('header.login') || 'Login' }}</span>
                     </RouterLink>
 
                     <!-- Language Selector -->
@@ -129,23 +150,44 @@
                     <!-- Mobile Search -->
         <transition name="fade">
             <div v-if="mobileMenuOpen" class="md:hidden gap-1.5 px-2.5 md:py-1.5 py-3">
-                <div class="relative w-full bg-">
-                        <input v-model="searchQuery" type="text" placeholder="Search Products..."
-                            class="w-full px-4 py-2 pr-10 rounded-lg bg-black/50 focus:outline-none focus:ring-2 focus:ring-primary"
-                            @keyup.enter="handleSearch" />
-                        <button @click="handleSearch"
-                            class="absolute right-1 top-1/2 -translate-y-1/2 bg-primary text-white px-3 py-1 rounded">
-                            <font-awesome-icon icon="search" />
-                        </button>
+                <div class="relative w-full" ref="mobileSearchRef">
+                    <input
+                        v-model="searchQuery"
+                        type="text"
+                        :placeholder="$t('header.search_placeholder') || 'Search Products...'"
+                        class="w-full px-4 py-2 pr-10 rounded-lg bg-black/50 focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-white/80 text-white"
+                        @keyup.enter="handleSearch"
+                        @input="onSearchInput"
+                        @keydown.esc.prevent="hideSuggestions"
+                    />
+                    <button @click="handleSearch"
+                        class="absolute right-1 top-1/2 -translate-y-1/2 bg-primary text-white px-3 py-1 rounded">
+                        <font-awesome-icon icon="search" />
+                    </button>
+
+                    <!-- Suggestions (Mobile) -->
+                    <div v-if="showSuggestions && suggestions.length" class="absolute left-0 right-0 mt-2 bg-white border rounded-lg shadow-lg z-50">
+                        <ul class="max-h-72 overflow-y-auto py-2">
+                            <li v-for="item in suggestions" :key="item.id"
+                                class="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-3"
+                                @click="goToProduct(item)">
+                                <img :src="getThumb(item)" alt="thumb" class="w-8 h-8 rounded object-cover bg-gray-100" @error="onImgError" />
+                                <span class="text-sm text-gray-800 line-clamp-1">{{ item.name }}</span>
+                            </li>
+                        </ul>
+                        <div class="px-3 py-2 border-t bg-gray-50 text-right">
+                            <button class="text-sm text-primary hover:underline" @click="handleSearch">See all results</button>
+                        </div>
                     </div>
+                </div>
             </div>
         </transition>
   <!-- Navigation Links -->
   <ul
     class="flex flex-col md:flex-row md:items-center gap-[2px] md:gap-0.1 xl:gap-5 text-gray-700 text-[14px] font-medium"
   >
-    <li
-      v-for="link in navLinks"
+        <li
+            v-for="link in computedLinks"
       :key="link.to"
       class="group"
     >
@@ -158,7 +200,7 @@
           :icon="link.icon"
           class="text-gray-500 text-sm group-hover:text-primary transition-colors"
         />
-        <span class="truncate">{{ link.label }}</span>
+                <span class="truncate">{{ link.label }}</span>
       </RouterLink>
     </li>
   </ul>
@@ -169,7 +211,7 @@
     class="bg-primary text-white px-4 py-1.5 rounded-md hover:bg-primary/90 active:scale-[0.97] transition-all duration-200 flex items-center gap-1.5 text-sm md:text-[14px] w-full md:w-auto justify-center mt-2 md:mt-0"
   >
     <font-awesome-icon icon="truck" class="text-xs" />
-    <span class="flex nowrap">Distributor<span class="hidden sm:block">&nbsp;Registration</span></span>
+        <span class="flex nowrap">{{ $t('header.distributor') || 'Distributor' }}<span class="hidden sm:block">&nbsp;{{ $t('header.registration') || 'Registration' }}</span></span>
   </RouterLink>
 </div>
 
@@ -180,40 +222,84 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { getImageUrl } from '@/utils/helpers'
 import { useCartStore } from '@/stores/cart'
 import { useWishlistStore } from '@/stores/wishlist'
 import { useLanguageStore } from '@/stores/language'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const wishlistStore = useWishlistStore()
 const languageStore = useLanguageStore()
+const { t } = useI18n()
+// use $t from vue-i18n directly in template; provide computed fallbacks where needed
 
 const searchQuery = ref('')
+const suggestions = ref([])
+const showSuggestions = ref(false)
+const searchRef = ref(null)
+const mobileSearchRef = ref(null)
+let searchTimer = null
 const mobileMenuOpen = ref(false)
 const showLangMenu = ref(false)
 const windowWidth = ref(window.innerWidth)
 
-const navLinks = [
-    { to: '/', label: 'Home', icon: 'home' },
-    { to: '/shop', label: 'Shop', icon: 'shop' },
-    { to: '/about', label: 'About Us', icon: 'info-circle' },
-    { to: '/blog', label: 'Blog', icon: 'blog' },
-    { to: '/contact', label: 'Contact Us', icon: 'phone' },
-    { to: '/business', label: 'Buy For Business', icon: 'briefcase' },
-]
+const computedLinks = computed(() => [
+    { to: '/', label: t('header.nav.home') || 'Home', icon: 'home' },
+    { to: '/shop', label: t('header.nav.shop') || 'Shop', icon: 'shop' },
+    { to: '/about', label: t('header.nav.about') || 'About Us', icon: 'info-circle' },
+    { to: '/blog', label: t('header.nav.blog') || 'Blog', icon: 'blog' },
+    { to: '/contact', label: t('header.nav.contact') || 'Contact Us', icon: 'phone' },
+    // { to: '/business', label: t('header.nav.business') || 'Buy For Business', icon: 'briefcase' },
+])
 
 const handleSearch = () => {
-    if (searchQuery.value.trim()) {
-        router.push({ name: 'shop', query: { search: searchQuery.value } })
-        searchQuery.value = ''
-        mobileMenuOpen.value = false
+    const q = searchQuery.value.trim()
+    if (!q) return
+    router.push({ name: 'category-list', query: { name: q } })
+    hideSuggestions()
+    mobileMenuOpen.value = false
+}
+
+const onSearchInput = () => {
+    const q = searchQuery.value.trim()
+    if (searchTimer) clearTimeout(searchTimer)
+    if (q.length < 2) { suggestions.value = []; showSuggestions.value = false; return }
+    searchTimer = setTimeout(fetchSuggestions, 250)
+}
+
+const fetchSuggestions = async () => {
+    try {
+        const apiUrl = import.meta.env.VITE_API_BASE_URL
+        const url = `${apiUrl}/products?name=${encodeURIComponent(searchQuery.value.trim())}&per_page=5`
+        const res = await fetch(url)
+        if (!res.ok) throw new Error('Failed')
+        const json = await res.json()
+        suggestions.value = json?.data?.products?.data || []
+        showSuggestions.value = suggestions.value.length > 0
+    } catch (e) {
+        suggestions.value = []
+        showSuggestions.value = false
     }
 }
+
+const hideSuggestions = () => {
+    showSuggestions.value = false
+}
+
+const goToProduct = (item) => {
+    hideSuggestions()
+    mobileMenuOpen.value = false
+    router.push(`/product/${item.slug}`)
+}
+
+const getThumb = (item) => item?.images?.[0]?.path ? getImageUrl(item.images[0].path) : '/images/oil-droplet.jpg'
+const onImgError = (e) => { e.target.src = '/images/oil-droplet.jpg' }
 
 const showAccountMenu = ref(false)
 const accountMenuRef = ref(null)
@@ -242,6 +328,11 @@ const handleClickOutside = (e) => {
     ) {
         showAccountMenu.value = false
     }
+
+    // Close suggestions when clicking outside search boxes
+    const containers = [searchRef.value, mobileSearchRef.value]
+    const clickedInside = containers.some(c => c && c.contains(e.target))
+    if (!clickedInside) hideSuggestions()
 }
 
 const switchLang = (lang) => {
@@ -261,11 +352,6 @@ onBeforeUnmount(async () => {
 </script>
 
 <style scoped>
-.badge {
-    @apply bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center;
-}
-
-
 /* Smooth slide + fade transition */
 .slide-fade-enter-active,
 .slide-fade-leave-active {

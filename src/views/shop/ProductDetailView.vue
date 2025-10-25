@@ -148,8 +148,8 @@
                                 <font-awesome-icon v-for="i in 5" :key="i" icon="star"
                                     :class="i <= product.rating ? 'text-yellow-400' : 'text-gray-300'" />
                             </div>
-                            <span class="text-gray-600">({{ product.reviews }} reviews)</span>
-                            <span class="text-green-600">✓ In Stock</span>
+                            <span class="text-gray-600">{{ $t('shop.reviews_count', { count: product.reviews }) }}</span>
+                            <span class="text-green-600">✓ {{ $t('shop.in_stock') }}</span>
                         </div>
 
                         <div class="flex items-center space-x-2 line-clamp-1">
@@ -163,10 +163,10 @@
                         <div class="space-y-4 mb-6">
                             <p class="text-gray-600">{{ product.description }}</p>
                             <div v-if="product.sku">
-                                <span class="font-semibold">SKU:</span> {{ product.sku }}
+                                <span class="font-semibold">{{ $t('shop.sku_label') }}</span> {{ product.sku }}
                             </div>
                             <div v-if="product.category">
-                                <span class="font-semibold">Category:</span> {{ product.category }}
+                                <span class="font-semibold">{{ $t('shop.category_label') }}</span> {{ product.category }}
                             </div>
                         </div>
 
@@ -185,7 +185,7 @@
                                             d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                                     </svg>
                                 </div>
-                                <div v-else>Add to cart</div>
+                                <div v-else>{{ $t('shop.add_to_cart') }}</div>
                             </button>
 
                             <!-- Quantity Control -->
@@ -241,23 +241,23 @@
 
                         <!-- Features -->
                         <div class="border-t pt-6">
-                            <h3 class="font-semibold mb-4">Key Features:</h3>
+                            <h3 class="font-semibold mb-4">{{ $t('shop.key_features') }}</h3>
                             <ul class="space-y-2">
                                 <li class="flex items-start gap-2">
                                     <font-awesome-icon icon="check" class="text-green-600 mt-1" />
-                                    <span>Premium quality motor oil</span>
+                                    <span>{{ $t('shop.features.premium_quality') }}</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <font-awesome-icon icon="check" class="text-green-600 mt-1" />
-                                    <span>Suitable for all vehicle types</span>
+                                    <span>{{ $t('shop.features.all_vehicle_types') }}</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <font-awesome-icon icon="check" class="text-green-600 mt-1" />
-                                    <span>Extended engine protection</span>
+                                    <span>{{ $t('shop.features.extended_protection') }}</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <font-awesome-icon icon="check" class="text-green-600 mt-1" />
-                                    <span>Improved fuel efficiency</span>
+                                    <span>{{ $t('shop.features.fuel_efficiency') }}</span>
                                 </li>
                             </ul>
                         </div>
@@ -325,7 +325,7 @@
 
             <!-- Related Products -->
             <div v-if="!isLoading" class="mt-12">
-                <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-6">Related Products</h2>
+                <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-6">{{ $t('shop.related_products') }}</h2>
                 <ProductGrid :makeSwiper="true" :products="relatedProducts" />
             </div>
         </div>
@@ -337,7 +337,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
@@ -366,11 +367,13 @@ const isInWishlist = ref(false)
 const isLoading = ref(true)
 const currentImageIndex = ref(0)
 
-const tabs = [
-    { id: 'description', label: 'Description' },
-    { id: 'specifications', label: 'Specifications' },
-    { id: 'reviews', label: 'Reviews' }
-]
+const { t } = useI18n()
+
+const tabs = computed(() => ([
+    { id: 'description', label: t('shop.tabs.description') },
+    { id: 'specifications', label: t('shop.tabs.specifications') },
+    { id: 'reviews', label: t('shop.tabs.reviews') }
+]))
 
 const swiperInstance = ref()
 
@@ -407,11 +410,11 @@ const saveWishlist = () => {
     if (isInWishlist.value) {
         wishlistStore.remove(product.value.id)
         isInWishlist.value = false
-        toast.info(`${product.value.name} removed from wishlist`)
+        toast.info(t('shop.wishlist_removed', { name: product.value.name }))
     } else {
         wishlistStore.add(product.value)
         isInWishlist.value = true
-        toast.success(`${product.value.name} added to wishlist`)
+        toast.success(t('shop.wishlist_added', { name: product.value.name }))
     }
 }
 
@@ -464,7 +467,7 @@ onMounted(async () => {
             slug: p.slug,
             sku: p.sku,
             price: p.price,
-            category: p.category?.name || "Uncategorized",
+            category: p.category?.name || t('shop.uncategorized'),
             image: p.images[0]?.path,
             ...(p.discount
                 ? {
@@ -475,7 +478,7 @@ onMounted(async () => {
         }))
     } catch (error) {
         console.error('Error fetching product:', error)
-        toast.error('Failed to load product')
+        toast.error(t('shop.failed_to_load_product'))
     } finally {
         isLoading.value = false
     }

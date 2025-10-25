@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import languageService from '@/services/language.service'
+import i18n from '@/plugins/i18n'
 
 const allowedLanguages = [
   { code: 'en', name: 'English' , icon:'en.png' },
@@ -39,22 +39,14 @@ export const useLanguageStore = defineStore('language', () => {
     if (validCodes.includes(lang)) {
       current.value = lang
       localStorage.setItem('language', lang)
-      window.location.reload()
+      // Switch vue-i18n locale without reloading the page
+      i18n.global.locale.value = lang
     }
   }
 
-  async function getContent(name) {
-    loading.value = true
-    error.value = null
-    try {
-      const response = await languageService.getContent(name, current.value)
-      return response.data
-    } catch (err) {
-      error.value = err.response?.data?.message || 'Failed to fetch language content'
-      throw err
-    } finally {
-      loading.value = false
-    }
+  // Optional: expose current i18n messages for debugging or advanced use
+  function getMessages() {
+    return i18n.global.messages.value[current.value] || {}
   }
 
   return {
@@ -64,6 +56,6 @@ export const useLanguageStore = defineStore('language', () => {
     error,
     allowedLanguages,
     set,
-    getContent,
+    getMessages,
   }
 })

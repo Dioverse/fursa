@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white rounded-lg shadow-md overflow-hidden">
     <div class="px-6 py-4 border-b">
-      <h3 class="text-lg font-semibold">Recent Orders</h3>
+      <h3 class="text-lg font-semibold">{{ $t('dashboard.recent_orders.title') }}</h3>
     </div>
 
     <div class="overflow-x-auto">
@@ -12,16 +12,16 @@
               #
             </th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Date
+              {{ $t('dashboard.recent_orders.date') }}
             </th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status
+              {{ $t('dashboard.recent_orders.status') }}
             </th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Total
+              {{ $t('dashboard.recent_orders.total') }}
             </th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
+              {{ $t('dashboard.recent_orders.actions') }}
             </th>
           </tr>
         </thead>
@@ -56,7 +56,7 @@
             <!-- Total -->
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="text-sm text-gray-900">₦{{ order.total_amount.toFixed(2) }}</span>
-              <span class="text-xs text-gray-500 block">for {{ order.order_id }} items</span>
+              <span class="text-xs text-gray-500 block">{{ $t('dashboard.recent_orders.for_items', { count: order.order_id }) }}</span>
             </td>
 
             <!-- Action -->
@@ -74,14 +74,14 @@
 
       <!-- Empty State -->
       <div v-else class="min-h-[200px] flex justify-center items-center p-6 text-center text-gray-500">
-        No recent orders found.
+        {{ $t('dashboard.recent_orders.empty') }}
       </div>
     </div>
 
     <!-- Load More -->
     <div v-if="orders.length > 0" class="px-6 py-4 border-t">
       <button class="text-primary hover:underline flex items-center gap-2 mx-auto">
-        <span>Load More</span>
+        <span>{{ $t('dashboard.recent_orders.load_more') }}</span>
         <font-awesome-icon icon="arrow-right" />
       </button>
     </div>
@@ -90,6 +90,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   orders: {
@@ -99,6 +100,7 @@ const props = defineProps({
 })
 
 const router = useRouter()
+const { locale } = useI18n()
 
 const getStatusClass = (status) => {
   const classes = {
@@ -114,7 +116,7 @@ const getStatusClass = (status) => {
 const formatDate = (dateStr) => {
   if (!dateStr) return ''
   const date = new Date(dateStr)
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(locale.value || 'en', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',

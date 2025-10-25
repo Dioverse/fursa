@@ -8,18 +8,19 @@
                     <RouterLink :to="item.to"
                         class="flex items-center gap-3 px-3 py-2 md:px-4 md:py-3 rounded-lg hover:bg-gray-100 transition"
                         :class="{ 'bg-primary text-white': $route.path === item.to }">
-                        <font-awesome-icon :icon="item.icon" />
-                        <span>{{ item.label }}</span>
+                            <font-awesome-icon :icon="item.icon" />
+                            <span>{{ item.label }}</span>
                     </RouterLink>
                 </li>
                 <li>
                     <button @click="handleLogout"
                         class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 transition text-left">
                         <font-awesome-icon icon="sign-out" />
-                        <span>Log Out</span>
+                            <span>{{ $t('dashboard.sidebar.logout') }}</span>
                     </button>
                 </li>
             </ul>
+            
         </nav>
     </aside>
 
@@ -44,6 +45,28 @@
                     <span>{{ item.label }}</span>
                 </RouterLink>
             </div>
+            <!-- Language Switcher (Mobile) -->
+            <div class="px-4 pb-3">
+                <div class="relative" @keydown.escape="openLang = false" data-lang-dropdown>
+                    <button @click="openLang = !openLang"
+                            class="w-full flex items-center justify-between gap-2 px-3 py-2 border rounded-md bg-white hover:bg-gray-50">
+                        <div class="flex items-center gap-2">
+                            <img :src="`/images/language/${languageStore.currentLanguage.icon}`"
+                                 class="w-[18px] h-[14px] rounded" :alt="languageStore.currentLanguage.name">
+                            <span class="text-xs">{{ languageStore.currentLanguage.name }}</span>
+                        </div>
+                        <font-awesome-icon :icon="['fas','chevron-down']" class="text-gray-500 text-xs" />
+                    </button>
+                    <div v-if="openLang" class="absolute left-0 mt-2 w-full bg-white border rounded-md shadow-lg py-1 z-10">
+                        <a v-for="lang in languageStore.allowedLanguages" :key="lang.code" href="#"
+                           class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-xs"
+                           @click.prevent="switchLang(lang.code)">
+                            <img :src="`/images/language/${lang.icon}`" class="w-[18px] h-[14px] rounded" :alt="lang.name">
+                            <span>{{ lang.name }}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </transition>
 
@@ -55,18 +78,33 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
+import { useI18n } from 'vue-i18n'
+import { useLanguageStore } from '@/stores/language'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const toast = useToast()
+const { t } = useI18n()
+const languageStore = useLanguageStore()
+const openLang = ref(false)
+
+const onClickOutside = (e) => {
+    const el = e.target.closest('[data-lang-dropdown]')
+    if (!el) openLang.value = false
+}
+
+const switchLang = (lang) => {
+    languageStore.set(lang)
+    openLang.value = false
+}
 
 const handleLogout = () => {
     authStore.logout()
-    toast.success('Logged out successfully')
+    toast.success(t('dashboard.toasts.logged_out'))
     router.push('/')
 }
 
@@ -77,22 +115,22 @@ defineProps({
     },
 })
 
-// All menu links
-const fullLinks = [
-    { to: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
-    { to: '/dashboard/orders', icon: 'box', label: 'Orders' },
-    { to: '/dashboard/profile', icon: 'user', label: 'Profile' },
-    { to: '/dashboard/addresses', icon: 'map-marker-alt', label: 'Address' },
-    { to: '/dashboard/wishlist', icon: 'heart', label: 'Wishlist' },
-    { to: '/dashboard/settings', icon: 'cog', label: 'Settings' },
-]
+// All menu links (reactive to language changes)
+const fullLinks = computed(() => ([
+    { to: '/dashboard', icon: 'dashboard', label: t('dashboard.sidebar.dashboard') },
+    { to: '/dashboard/orders', icon: 'box', label: t('dashboard.sidebar.orders') },
+    { to: '/dashboard/profile', icon: 'user', label: t('dashboard.sidebar.profile') },
+    { to: '/dashboard/addresses', icon: 'map-marker-alt', label: t('dashboard.sidebar.address') },
+    { to: '/dashboard/wishlist', icon: 'heart', label: t('dashboard.sidebar.wishlist') },
+    // { to: '/dashboard/settings', icon: 'cog', label: t('dashboard.sidebar.settings') },
+]))
 
 const expanded = ref(false)
 const startY = ref(0)
 const deltaY = ref(0)
 
 const visibleLinks = computed(() =>
-    expanded.value ? fullLinks : fullLinks.slice(0, 4)
+    expanded.value ? fullLinks.value : fullLinks.value.slice(0, 4)
 )
 
 // Touch handlers
@@ -117,6 +155,14 @@ const onTouchEnd = (e) => {
 const toggleExpanded = () => {
     expanded.value = !expanded.value
 }
+
+onMounted(() => {
+    document.addEventListener('click', onClickOutside)
+})
+
+onBeforeUnmount(() => {
+    document.removeEventListener('click', onClickOutside)
+})
 </script>
 
 <style scoped>

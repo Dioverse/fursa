@@ -100,12 +100,16 @@ src/
 
 ### Environment Variables
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the project root (alongside `package.json`):
 
 ```env
 VITE_API_BASE_URL=https://api.example.com
 VITE_APP_TITLE=Your App Name
+# Optional: override brochure download URL. If unset, the app will use /brochure.pdf from public/
+VITE_BROCHURE_URL=https://cdn.example.com/files/mrs-brochure.pdf
 ```
+
+If you don't set `VITE_BROCHURE_URL`, place your brochure PDF at `public/brochure.pdf` so the Brochure component can serve it by default.
 
 ## Contributing
 

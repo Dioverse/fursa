@@ -14,7 +14,7 @@
       <!-- Quick View Button -->
       <button @click="quickView"
         class="absolute inset-0 bg-black bg-opacity-50 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-        <span class="bg-primary px-4 py-2 rounded">Quick View</span>
+        <span class="bg-primary px-4 py-2 rounded">{{ $t('shop.quick_view') }}</span>
       </button>
       <span v-if="product.discount"
         class="absolute top-2 right-2 bg-mprimary-500 text-white px-2 py-1 text-xs rounded font-semibold">
@@ -39,7 +39,7 @@
         <!-- Add To Cart -->
         <button v-if="!isInCart(product.id).value" @click="addToCart(product)" :disabled="loadingStates[product.id]"
           class="flex-1 bg-gold-500 text-white py-2 disabled:opacity-50 disabled:cursor-not-allowed rounded hover:bg-gold-100 hover:text-black text-xs font-semibold">
-          {{ loadingStates[product.id] ? 'Adding...' : 'Add to cart' }}
+          {{ loadingStates[product.id] ? $t('shop.adding') : $t('shop.add_to_cart') }}
         </button>
 
         <!-- Quantity Control -->

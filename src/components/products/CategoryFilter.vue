@@ -1,17 +1,17 @@
 <template>
   <!-- Price Filter -->
   <div class="bg-white border rounded-lg shadow-sm p-4 mb-12">
-    <h3 class="font-bold mb-4">🔎 Widget Price Filter</h3>
+    <h3 class="font-bold mb-4">🔎 {{ $t('shop.filters.price_filter') }}</h3>
     <div class="flex gap-2 items-center">
-      <input v-model.number="priceRange.min" type="number" placeholder="Min" class="w-20 px-2 py-1 border rounded">
+      <input v-model.number="priceRange.min" type="number" :placeholder="$t('shop.filters.min')" class="w-20 px-2 py-1 border rounded">
       <span>-</span>
-      <input v-model.number="priceRange.max" type="number" placeholder="Max" class="w-20 px-2 py-1 border rounded">
+      <input v-model.number="priceRange.max" type="number" :placeholder="$t('shop.filters.max')" class="w-20 px-2 py-1 border rounded">
     </div>
     <button 
       @click="applyPriceFilter"
       class="mt-4 w-full bg-primary text-white py-2 rounded hover:bg-primary-dark"
     >
-      Apply
+      {{ $t('shop.apply') }}
     </button>
   </div>
 
@@ -42,7 +42,7 @@
     </div>
 
     <button @click="clearFilters" class="mt-4 text-sm text-primary hover:underline">
-      Clear all filters
+      {{ $t('shop.clear_all_filters') }}
     </button>
   </div>
 </template>

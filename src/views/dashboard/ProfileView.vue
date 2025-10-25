@@ -1,14 +1,14 @@
 <template>
     <DashboardLayout>
         <div class="space-y-6">
-            <h1 class="lg:text-2xl md:text-xl text-lg font-bold">Account Details</h1>
+            <h1 class="lg:text-2xl md:text-xl text-lg font-bold">{{ $t('profile.title') }}</h1>
 
             <div class="bg-white rounded-lg shadow-md p-6">
                 <form @submit.prevent="updateProfile" class="space-y-6">
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">
-                                First Name
+                                {{ $t('profile.form.first_name') }}
                             </label>
                             <input v-model="form.firstName" type="text"
                                 class="w-full px-3 py-2 lg:px-4 lg:py-3 border text-xs lg:text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
@@ -16,7 +16,7 @@
 
                         <div>
                             <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">
-                                Last Name
+                                {{ $t('profile.form.last_name') }}
                             </label>
                             <input v-model="form.lastName" type="text"
                                 class="w-full px-3 py-2 lg:px-4 lg:py-3 border text-xs lg:text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
@@ -25,7 +25,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">
-                                Email Address
+                                {{ $t('profile.form.email') }}
                             </label>
                             <input v-model="form.email" type="email"
                                 class="w-full px-3 py-2 lg:px-4 lg:py-3 border text-xs lg:text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
@@ -33,7 +33,7 @@
 
                         <div>
                             <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">
-                                Phone Number
+                                {{ $t('profile.form.phone') }}
                             </label>
                             <input v-model="form.phone" type="tel"
                                 class="w-full px-3 py-2 lg:px-4 lg:py-3 border text-xs lg:text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
@@ -41,12 +41,12 @@
                     </div>
 
                     <div class="border-t pt-6">
-                        <h3 class="text-lg font-semibold mb-4">Change Password</h3>
+                        <h3 class="text-lg font-semibold mb-4">{{ $t('profile.password.title') }}</h3>
 
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">
-                                    Current Password
+                                    {{ $t('profile.password.current') }}
                                 </label>
                                 <input v-model="passwordForm.current" type="password"
                                     class="w-full px-3 py-2 lg:px-4 lg:py-3 border text-xs lg:text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
@@ -54,7 +54,7 @@
 
                             <div>
                                 <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">
-                                    New Password
+                                    {{ $t('profile.password.new') }}
                                 </label>
                                 <input v-model="passwordForm.new" type="password"
                                     class="w-full px-3 py-2 lg:px-4 lg:py-3 border text-xs lg:text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
@@ -62,7 +62,7 @@
 
                             <div>
                                 <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">
-                                    Confirm New Password
+                                    {{ $t('profile.password.confirm') }}
                                 </label>
                                 <input v-model="passwordForm.confirm" type="password"
                                     class="w-full px-3 py-2 lg:px-4 lg:py-3 border text-xs lg:text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
@@ -73,12 +73,12 @@
                     <div class="flex justify-end gap-4">
                         <button type="button" @click="resetForm"
                             class=" text-xs px-2 md:px-4 lg:px-6 py-2 md:py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-                            Cancel
+                            {{ $t('profile.buttons.cancel') }}
                         </button>
                         <button type="submit"
                             class=" text-xs px-2 md:px-4 lg:px-6 py-2 md:py-3 bg-primary text-white rounded-lg hover:bg-opacity-90 transition">
                             <font-awesome-icon icon="save" class="mr-2" />
-                            Save Changes
+                            {{ $t('profile.buttons.save_changes') }}
                         </button>
                     </div>
                 </form>
@@ -92,11 +92,13 @@ import { ref, computed, reactive } from 'vue'
 import { useToast } from 'vue-toastification'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useI18n } from 'vue-i18n'
 
 
 const toast = useToast()
 const authStore = useAuthStore()
 const user = computed(() => authStore.user)
+const { t } = useI18n()
 
 const form = reactive({
     firstName: user.value.first_name,
@@ -115,20 +117,20 @@ const updateProfile = () => {
     // Validate password if changing
     if (passwordForm.new) {
         if (passwordForm.new !== passwordForm.confirm) {
-            toast.error('New passwords do not match')
+            toast.error(t('profile.toasts.passwords_no_match'))
             return
         }
     }
 
-    toast.success('Profile updated successfully!')
+    toast.success(t('profile.toasts.updated_success'))
 }
 
 const resetForm = () => {
-    // Reset to original values
-    form.firstName = 'John'
-    form.lastName = 'Doe'
-    form.email = 'johndoe@gmail.com'
-    form.phone = '+234 XXX XXX XXXX'
+    // Reset to current user values
+    form.firstName = user.value.first_name
+    form.lastName = user.value.last_name
+    form.email = user.value.email
+    form.phone = user.value.phone
 
     passwordForm.current = ''
     passwordForm.new = ''

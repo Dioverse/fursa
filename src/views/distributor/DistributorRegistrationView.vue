@@ -3,7 +3,7 @@
         <div class="container mx-auto px-4 py-8">
             <div class="max-w-4xl mx-auto">
                 <div class="bg-white rounded-lg shadow-md p-8">
-                    <h1 class="text-3xl font-bold text-center mb-8">Distributor Registration</h1>
+                    <h1 class="text-3xl font-bold text-center mb-8">{{ $t('distributor.title') }}</h1>
 
                     <!-- Step Indicator -->
                     <StepIndicator :current-step="currentStep" :steps="steps" />
@@ -45,7 +45,7 @@
                             <div class="flex items-start gap-3">
                                 <font-awesome-icon icon="exclamation-triangle" class="text-red-600 mt-1" />
                                 <div>
-                                    <p class="font-semibold text-red-800">Validation Error</p>
+                                    <p class="font-semibold text-red-800">{{ $t('distributor.validation.error_title') }}</p>
                                     <p class="text-red-700 text-sm mt-1">{{ validationError }}</p>
                                 </div>
                             </div>
@@ -56,13 +56,13 @@
                             <button v-if="currentStep > 1" @click="previousStep" type="button"
                                 class="px-6 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition">
                                 <font-awesome-icon icon="arrow-left" class="mr-2" />
-                                Previous
+                                {{ $t('distributor.buttons.previous') }}
                             </button>
                             <div v-else></div>
 
                             <button v-if="currentStep < 6" @click="nextStep" type="button"
                                 class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-opacity-90 transition">
-                                Next
+                                {{ $t('distributor.buttons.next') }}
                                 <font-awesome-icon icon="arrow-right" class="ml-2" />
                             </button>
 
@@ -70,7 +70,7 @@
                                 class="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50">
                                 <font-awesome-icon v-if="submitting" icon="spinner" spin class="mr-2" />
                                 <font-awesome-icon v-else icon="check" class="mr-2" />
-                                Submit Application
+                                {{ $t('distributor.buttons.submit_application') }}
                             </button>
                         </div>
                     </form>
@@ -81,7 +81,8 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/auth'
@@ -97,20 +98,21 @@ import ReviewSubmit from '@/components/distributor/FormSections/ReviewSubmit.vue
 const router = useRouter()
 const toast = useToast()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 const currentStep = ref(1)
 const submitting = ref(false)
 const validationError = ref('')
 const reviewSubmitRef = ref(null)
 
-const steps = [
-    { number: 1, label: 'Business Info' },
-    { number: 2, label: 'Contact Person' },
-    { number: 3, label: 'Distribution' },
-    { number: 4, label: 'Product Focus' },
-    { number: 5, label: 'Banking & KYC' },
-    { number: 6, label: 'Review & Submit' }
-]
+const steps = computed(() => ([
+    { number: 1, label: t('distributor.steps.business_info') },
+    { number: 2, label: t('distributor.steps.contact_person') },
+    { number: 3, label: t('distributor.steps.distribution') },
+    { number: 4, label: t('distributor.steps.product_focus') },
+    { number: 5, label: t('distributor.steps.banking_kyc') },
+    { number: 6, label: t('distributor.steps.review_submit') }
+]))
 
 const step1Ref = ref(null)
 const step2Ref = ref(null)
@@ -133,27 +135,27 @@ const validateCurrentStep = () => {
         case 1:
             const businessInfo = step1Ref.value?.form
             if (!businessInfo?.company_name) {
-                validationError.value = 'Company Name is required'
+                validationError.value = t('distributor.validation.company_name_required')
                 return false
             }
             if (!businessInfo?.rc_number) {
-                validationError.value = 'RC Number is required'
+                validationError.value = t('distributor.validation.rc_number_required')
                 return false
             }
             if (!businessInfo?.email || !businessInfo.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-                validationError.value = 'Valid Email Address is required'
+                validationError.value = t('distributor.validation.email_required')
                 return false
             }
             if (!businessInfo?.office_phone) {
-                validationError.value = 'Office Phone Number is required'
+                validationError.value = t('distributor.validation.office_phone_required')
                 return false
             }
             if (!businessInfo?.company_type) {
-                validationError.value = 'Company Type is required'
+                validationError.value = t('distributor.validation.company_type_required')
                 return false
             }
             if (!businessInfo?.business_address) {
-                validationError.value = 'Business Address is required'
+                validationError.value = t('distributor.validation.business_address_required')
                 return false
             }
             break
@@ -161,27 +163,27 @@ const validateCurrentStep = () => {
         case 2:
             const contactPerson = step2Ref.value?.form
             if (!contactPerson?.contact_full_name) {
-                validationError.value = 'Contact Person Full Name is required'
+                validationError.value = t('distributor.validation.contact_full_name_required')
                 return false
             }
             if (!contactPerson?.contact_position) {
-                validationError.value = 'Position/Title is required'
+                validationError.value = t('distributor.validation.position_required')
                 return false
             }
             if (!contactPerson?.contact_mobile) {
-                validationError.value = 'Mobile Number is required'
+                validationError.value = t('distributor.validation.mobile_required')
                 return false
             }
             if (!contactPerson?.means_of_id) {
-                validationError.value = 'ID Type is required'
+                validationError.value = t('distributor.validation.id_type_required')
                 return false
             }
             if (!contactPerson?.id_number) {
-                validationError.value = 'ID Number is required'
+                validationError.value = t('distributor.validation.id_number_required')
                 return false
             }
             if (!contactPerson?.years_in_business) {
-                validationError.value = 'Years in Business is required'
+                validationError.value = t('distributor.validation.years_in_business_required')
                 return false
             }
             break
@@ -189,15 +191,15 @@ const validateCurrentStep = () => {
         case 3:
             const distCapacity = step3Ref.value?.form
             if (distCapacity?.has_warehouse === null) {
-                validationError.value = 'Please specify if you have a warehouse'
+                validationError.value = t('distributor.validation.has_warehouse_required')
                 return false
             }
             if (distCapacity?.has_vehicles === null) {
-                validationError.value = 'Please specify if you have distribution vehicles'
+                validationError.value = t('distributor.validation.has_vehicles_required')
                 return false
             }
             if (!distCapacity?.preferred_states || distCapacity.preferred_states.length === 0) {
-                validationError.value = 'Please select at least one preferred state'
+                validationError.value = t('distributor.validation.preferred_states_required')
                 return false
             }
             break
@@ -205,19 +207,23 @@ const validateCurrentStep = () => {
         case 4:
             const productFocus = step4Ref.value?.form
             if (!productFocus?.product_categories || productFocus.product_categories.length === 0) {
-                validationError.value = 'Please select at least one product category'
+                validationError.value = t('distributor.validation.product_categories_required')
+                return false
+            }
+            if (productFocus?.product_categories?.includes('other') && !productFocus?.other_specify) {
+                validationError.value = t('distributor.validation.other_specify_required')
                 return false
             }
             if (productFocus?.has_technical_knowledge === null) {
-                validationError.value = 'Please specify if you have technical knowledge'
+                validationError.value = t('distributor.validation.technical_knowledge_required')
                 return false
             }
             if (productFocus?.willing_to_train === null) {
-                validationError.value = 'Please specify if you are willing to take training'
+                validationError.value = t('distributor.validation.willing_to_train_required')
                 return false
             }
             if (!productFocus?.distribution_start_time) {
-                validationError.value = 'Please specify when you can commence distribution'
+                validationError.value = t('distributor.validation.distribution_start_time_required')
                 return false
             }
             break
@@ -225,19 +231,19 @@ const validateCurrentStep = () => {
         case 5:
             const bankingKYC = step5Ref.value?.form
             if (!bankingKYC?.bank_name) {
-                validationError.value = 'Bank Name is required'
+                validationError.value = t('distributor.validation.bank_name_required')
                 return false
             }
             if (!bankingKYC?.account_number || bankingKYC.account_number.length !== 10) {
-                validationError.value = 'Valid 10-digit Account Number is required'
+                validationError.value = t('distributor.validation.account_number_required')
                 return false
             }
             if (!bankingKYC?.account_name) {
-                validationError.value = 'Account Name is required'
+                validationError.value = t('distributor.validation.account_name_required')
                 return false
             }
             if (!bankingKYC?.bvn || bankingKYC.bvn.length !== 11) {
-                validationError.value = 'Valid 11-digit BVN is required'
+                validationError.value = t('distributor.validation.bvn_required')
                 return false
             }
             break
@@ -245,19 +251,19 @@ const validateCurrentStep = () => {
         case 6:
             const reviewData = reviewSubmitRef.value
             if (!reviewData?.agreed) {
-                validationError.value = 'You must agree to the terms and conditions'
+                validationError.value = t('distributor.validation.must_agree_terms')
                 return false
             }
             if (!reviewData?.password) {
-                validationError.value = 'Password is required'
+                validationError.value = t('distributor.validation.password_required')
                 return false
             }
             if (reviewData.password.length < 8) {
-                validationError.value = 'Password must be at least 8 characters'
+                validationError.value = t('distributor.validation.password_min')
                 return false
             }
             if (reviewData.password !== reviewData.passwordConfirmation) {
-                validationError.value = 'Passwords do not match'
+                validationError.value = t('distributor.validation.passwords_no_match')
                 return false
             }
             break
@@ -351,7 +357,7 @@ const handleSubmit = async () => {
         }
 
         await authStore.register(payload)
-        toast.success('Your distributor application has been submitted successfully!')
+        toast.success(t('distributor.toasts.submit_success'))
         router.push('/dashboard')
     } catch (error) {
         if (error.response?.status === 422) {
@@ -359,7 +365,7 @@ const handleSubmit = async () => {
             const firstError = Object.values(errors)[0][0]
             toast.error(firstError)
         } else {
-            toast.error(error.response?.data?.message || "Failed to submit application. Please try again.")
+            toast.error(error.response?.data?.message || t('distributor.toasts.submit_failed_generic'))
         }
     } finally {
         submitting.value = false

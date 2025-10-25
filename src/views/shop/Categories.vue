@@ -5,7 +5,7 @@
       <div class="bg-transparent border-b">
         <div class="max-w-7xl mx-auto px-4 py-3 text-sm text-gray-600">
           <div class="px-4">
-            Home &gt; Categories
+            {{ $t('header.nav.home') }} &gt; {{ $t('home.categories') }}
           </div>
         </div>
       </div>
@@ -13,20 +13,20 @@
         <!-- Loading State -->
         <div v-if="loading" class="loading-container">
           <div class="spinner"></div>
-          <p>Loading categories...</p>
+          <p>{{ $t('shop.loading_categories') }}</p>
         </div>
     
         <!-- Error State -->
         <div v-else-if="error" class="error-container">
           <p class="error-message">{{ error }}</p>
-          <button @click="fetchCategories" class="retry-btn">Retry</button>
+          <button @click="fetchCategories" class="retry-btn">{{ $t('shop.retry') }}</button>
         </div>
     
         <!-- Categories Display -->
         <div v-else class="categories-container">
     
           <div v-if="categories.length === 0" class="empty-state">
-            <p>No categories available at the moment.</p>
+            <p>{{ $t('shop.no_categories') }}</p>
           </div>
     
           <div v-else class="categories-grid">
@@ -50,7 +50,7 @@
                     {{ category.description }}
                   </p>
                   <span class="subcategories-count">
-                    {{ category.subcategories_count }} subcategories
+                    {{ $t('shop.subcategories_count', { count: category.subcategories_count }) }}
                   </span>
                 </div>
               </RouterLink>
@@ -70,7 +70,7 @@
                         {{ subcategory.description, 60 }}
                       </p>
                       <span class="products-count">
-                        {{ subcategory.products_count }} products
+                        {{ $t('shop.products_count', { count: subcategory.products_count }) }}
                       </span>
                     </div>
                     <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

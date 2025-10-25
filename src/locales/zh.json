@@ -1,0 +1,916 @@
+{
+  "header": {
+    "search_placeholder": "搜索产品...",
+    "account": "账户",
+    "dashboard": "仪表盘",
+    "orders": "订单",
+    "wishlist": "心愿单",
+    "logout": "退出登录",
+    "login": "登录",
+    "nav": {
+      "home": "首页",
+      "shop": "商店",
+      "about": "关于我们",
+      "blog": "博客",
+      "contact": "联系我们",
+      "business": "企业采购"
+    },
+    "distributor": "经销商",
+    "registration": "注册"
+  },
+  "home": {
+    "shop_now": "立即购买",
+    "become_distributor": "成为经销商",
+    "categories": "分类",
+    "popular_now": "热门推荐",
+    "view_more": "查看更多",
+    "about_us": "关于我们",
+    "learn_more": "了解更多",
+    "our_partners": "我们的合作伙伴",
+    "business_model": "业务类型与模式",
+    "b2b": "B2B（主要）",
+    "b2c": "B2C（发展中）",
+    "testimonials_title": "客户评价",
+    "our_blog": "我们的博客",
+    "hero_tagline": "以信任为基石，专注贸易，致力增长。",
+    "hero_title_html": "Fursa Energy 是一家尼日利亚<br class=\"hidden sm:block\">能源公司，并且是<br class=\"hidden sm:block\">MRS Lubricants 的官方 <span class=\"text-primary\">超级经销商</span>。",
+    "hero_image_alt": "MRS 润滑油",
+    "about_image_alt": "关于 Fursa Energy",
+    "about_p1": "Fursa Energy 是尼日利亚本土能源解决方案公司，也是 MRS Lubricants 的官方全国超级经销商。",
+    "about_p2": "凭借对非洲最大混配工厂之一的通道，Fursa 提供一系列高品质的润滑油、润滑脂和特种油，适用于工业及汽车领域。",
+    "ai_badge": "AI 引擎分析",
+    "ai_heading_html": "为您的发动机<br class=\"hidden md:block\" /><span class=\"text-[#FFD85E]\">找到最合适的机油</span>",
+    "ai_description": "回答几个关于车辆与驾驶习惯的快速问题。我们的 AI 将分析您的需求并推荐最合适的润滑油，助力引擎发挥最佳性能。",
+    "ai_start_assessment": "开始引擎评估",
+    "ai_view_products": "查看所有产品",
+    "ai_stat_time": "3 分钟",
+    "ai_stat_time_label": "快速评估",
+    "ai_stat_accuracy": "98%",
+    "ai_stat_accuracy_label": "准确率",
+    "ai_stat_customers": "5000+",
+    "ai_stat_customers_label": "满意客户",
+    "chairman_section_title": "董事长寄语",
+    "chairman_image_alt": "Fursa 董事长",
+    "chairman_title": "董事长寄语",
+    "chairman_p1": "在 FURSA，我们相信高品质机油不仅仅是产品，更是一种对性能、保护和可靠性的承诺。我们的使命是为车主、技师和企业提供真正值得信赖的润滑解决方案。",
+    "chairman_p2": "当您浏览我们的全合成、高里程和矿物油系列时，请相信每一款产品都承载着我们对卓越与客户满意的承诺。",
+    "chairman_p3": "感谢您成为 FURSA 旅程的一部分。",
+    "chairman_signature_html": "谨致问候，<br />董事长<br />FURSA",
+    "partners_desc": "Fursa Energy 与行业领军者合作，确保我们在各个服务区域提供高质量、可靠且覆盖广泛的产品与服务。",
+    "business_model_desc": "我们采用混合业务模式，既能服务大宗采购，也能满足日常消费者的需求。",
+    "b2b_desc": "为工业客户、运输公司、建筑企业和政府机构提供润滑油供应。",
+    "b2c_desc": "经销商、代理商、汽车维修店、技师、车队运营商以及通过电商平台的终端消费者。",
+    "testimonials_subtitle1": "我们为所提供的服务深感自豪，并对每一款产品负责。",
+    "testimonials_subtitle2": "阅读来自我们满意客户的真实评价。",
+    "testimonial1_text": "与 Fursa Energy 的合作彻底改变了我们的运营。其润滑油质量一流，交付始终可靠。更令人印象深刻的是其客户支持——响应迅速、专业可靠、真正关心我们的成功。我们减少了停机时间，提升了发动机性能，并收获了值得信赖的合作伙伴。",
+    "testimonial1_author_html": "Ahmed Bello，车队经理，<br>North Logistics Ltd",
+    "testimonial2_text": "与 Fursa Energy 的合作彻底改变了我们的运营。其润滑油质量一流，交付始终可靠。更令人印象深刻的是其客户支持——响应迅速、专业可靠、真正关心我们的成功。我们减少了停机时间，提升了发动机性能，并收获了值得信赖的合作伙伴。",
+    "testimonial2_author_html": "Ahmed Bello，车队经理，<br>North Logistics Ltd",
+    "testimonial3_text": "与 Fursa Energy 的合作彻底改变了我们的运营。其润滑油质量一流，交付始终可靠。更令人印象深刻的是其客户支持——响应迅速、专业可靠、真正关心我们的成功。我们减少了停机时间，提升了发动机性能，并收获了值得信赖的合作伙伴。",
+    "testimonial3_author_html": "Ahmed Bello，车队经理，<br>North Logistics Ltd",
+    "blog_card_title": "如何选择合适的机油：零售商需要了解什么。",
+    "blog_card_excerpt": "就发动机性能与寿命而言，机油至关重要。无论您是为客户提供建议还是为自己的车辆做选择，理解机油的作用并选择正确的类型都非常关键……",
+    "blog_posted_by": "发布者：Adams Farida",
+    "blog_date_sample": "2020年8月12日",
+    "why_choose": {
+      "title": "为何选择 Fursa Energy 作为可信赖的润滑油分销商",
+      "subtitle": "Fursa Energy 不仅是润滑油分销商，更是遍布尼日利亚企业的可信赖合作伙伴。依托非洲领先的混配工厂之一 MRS Lubricants，我们提供符合国际标准的高性能产品。",
+      "items": {
+        "facility": {
+          "title": "依托非洲最先进的润滑油混配设施之一",
+          "desc": "尖端技术确保卓越产品品质"
+        },
+        "quality": {
+          "title": "卓越的质量标准",
+          "desc": "所有产品均符合国际质量认证"
+        },
+        "infrastructure": {
+          "title": "强大的数字化基础设施",
+          "desc": "现代化的入驻流程与具竞争力的定价策略"
+        },
+        "support": {
+          "title": "一体化支持体系",
+          "desc": "为合作伙伴提供完整的营销与售后支持"
+        }
+      }
+    }
+  }
+  ,
+  "about": {
+    "hero_title": "关于 Fursa Energy",
+    "about_us": "关于我们",
+    "our_story": "我们的故事",
+    "story_tagline": "以信任为基石，专注贸易，致力于增长",
+    "vision": "愿景",
+    "mission": "使命",
+    "company": {
+      "p1": "Fursa Energy 是一家尼日利亚本土企业，专注于为汽车和工业领域提供高性能润滑油的分销、营销及研发。我们是 MRS Lubricants 的官方超级经销商，MRS 是非洲最知名的润滑油调配工厂之一，位于拉各斯 Apapa。",
+      "p2": "Fursa 在尼日利亚拥有广泛布局，致力于成为贸易、物流与供应的首选合作伙伴，提供一流润滑产品，减少摩擦、保护设备并提升运营效率。"
+    },
+    "story": {
+      "p1": "并非所有旅程都始于公路——我们的动力来自“燃料”。Fursa Energy 源于一个愿景：不仅仅是润滑油分销商，更是工业性能、经济赋能与可信贸易伙伴关系的推动者。",
+      "p2": "在可靠性常被忽视的市场中，Fursa 立志树立新标准——规模化提供高端润滑油，并打造让合作伙伴共同成长的商业生态。我们的核心是“运动”：引擎运转、经济上升、企业扩张。在 MRS Oil PLC（非洲最大润滑油调配厂之一）的支持下，Fursa Energy 自豪地为车辆、设备与工业提供世界级配方，推动发展。",
+      "p3": "从北方干线到南方沿海经济，我们不仅分销——更赋能经销商、分销商与机构的网络。我们所供应的每一滴油，都在书写创新、卓越与机遇的故事。Fursa 不仅是一家品牌——更是一场关于信任、贸易与增长的运动。"
+    },
+    "story_more": {
+      "p1": "启程上路，穿越风暴。当工作需要“不可能”时，生产力不能妥协。在非洲最严苛的环境中，我们打造持久表现。",
+      "p2": "Fursa 的现代配方拒绝将就。我们的产品以精密工程打造，为设备提供无与伦比的保护。从拉各斯到萨赫勒，产品矩阵覆盖非洲多样路况。",
+      "p3": "自北向南，自西部萨赫勒弧线至沿海城市，我们的专业为非洲道路量身定制。与我们合作，让可靠润滑助力企业前行。让我们共同推动非洲进步。"
+    },
+    "vision_desc": "成为西非最值得信赖且最具创新力的能源解决方案提供商，创造非凡价值并建立长期合作关系。",
+    "mission_desc": "提供高端润滑油与能源解决方案，以优质产品、卓越服务与可持续实践助力企业成长。",
+    "alt": {
+      "hero": "Fursa Energy 炼油厂横幅图",
+      "splash": "高端机油插画",
+      "brown": "Fursa 棕色品牌机油罐图"
+    }
+  }
+  ,
+  "faq": {
+    "title": "常见问题",
+    "subtitle": "了解关于我们的润滑油、分销流程、交付时间以及产品验证的常见问题解答。",
+    "any_questions": "还有问题吗？",
+    "contact": "联系方式：",
+    "business_hours": "营业时间：",
+    "mon_fri": "周一至周五：8:00 - 18:00",
+    "saturday": "周六：9:00 - 16:00",
+    "sunday": "周日：休息"
+  }
+  ,
+  "terms": {
+    "title": "条款与条件",
+    "effective_date": "生效日期：2024年1月1日",
+    "sections": {
+      "acceptance": "1. 条款接受",
+      "use_license": "2. 使用许可",
+      "product_info": "3. 产品信息",
+      "order_acceptance": "4. 订单接受",
+      "payment_terms": "5. 付款条款",
+      "shipping_delivery": "6. 运输与配送",
+      "returns_refunds": "7. 退货与退款",
+      "liability": "8. 责任限制",
+      "contact": "9. 联系方式"
+    }
+  },
+  "privacy": {
+    "title": "隐私政策",
+    "last_updated": "最后更新：2024年1月1日",
+    "sections": {
+      "introduction": "简介",
+      "information_we_collect": "我们收集的信息",
+      "personal_information": "个人信息",
+      "auto_information": "自动收集的信息",
+      "how_we_use": "我们如何使用您的信息",
+      "sharing": "信息共享",
+      "security": "数据安全",
+      "rights": "您的权利",
+      "cookies": "Cookie 政策",
+      "children": "未成年人隐私",
+      "changes": "本政策的变更",
+      "contact": "联系我们",
+      "contact_intro": "如对本隐私政策有疑问，请联系我们："
+    }
+  },
+  "notFound": {
+    "title": "抱歉！页面未找到",
+    "subtitle": "您访问的页面可能已被移动、删除或不存在。",
+    "home": "返回首页",
+    "visit_shop": "前往商店",
+    "need_help": "需要帮助？请联系我们：",
+    "call_us": "电话联系",
+    "email_us": "发送邮件",
+    "suggested": "您可能感兴趣",
+    "view_product": "查看产品"
+  },
+  "cart": {
+    "title": "购物车",
+    "loading": "正在加载您的购物车...",
+    "products": "商品",
+    "continue_shopping": "继续购物",
+    "clear_cart": "清空购物车",
+    "summary": "购物车摘要",
+    "empty": {
+      "title": "您的购物车是空的",
+      "subtitle": "看起来您还没有将任何商品加入购物车",
+      "cta": "开始购物"
+    },
+    "remove": "移除",
+    "remove_item": "从购物车移除 {name}",
+    "total": "合计",
+    "discount": "折扣",
+    "subtotal": "小计",
+    "proceed_to_checkout": "前往结算",
+    "we_accept": "我们支持：",
+    "toasts": {
+      "coupon_applied": "优惠券已成功应用！",
+      "coupon_invalid": "无效的优惠券代码",
+      "cart_empty": "您的购物车是空的",
+      "clear_confirm": "确定要清空购物车吗？"
+    }
+  },
+  "checkout": {
+    "initializing": "正在初始化结算",
+    "please_wait": "请稍候...",
+    "unavailable_some": "购物车中的部分商品缺货。",
+    "unavailable_failed": "结算初始化失败",
+  "remove_to_proceed": "请移除以下商品以继续：",
+  "items_unavailable_line": "{name}：请求 {requested}，可用 {available}",
+    "retry": "重试",
+    "error_title": "发生错误",
+    "title": "结算",
+    "no_address": "尚未保存地址",
+    "add_address_prompt": "请添加收货地址以便配送",
+    "add_address": "添加地址",
+    "shipping_address": "收货地址",
+    "add_new": "添加",
+    "default": "默认",
+    "aria": {
+      "select_shipping_for": "选择 {name} 为收货地址",
+      "default_address_badge": "这是您的默认地址"
+    },
+    "edit": "编辑",
+    "confirm_items": "支付前请确认购物车商品",
+    "ensure_correct": "请在完成购买前确认信息无误",
+    "estimated_delivery": "预计送达",
+  "select_payment": "选择支付方式",
+  "payment_options_legend": "支付方式选项",
+    "loading_gateway": "正在加载支付服务...",
+  "pay_with": "使用 {gateway} 支付",
+  "gateway_logo_alt": "{name} 标志",
+    "pay_now": "支付 ₦{amount}",
+    "processing": "处理中...",
+    "select_address_alert": "请选择收货地址以继续",
+    "select_method_alert": "请选择支付方式以继续",
+    "order_summary": "订单摘要",
+    "subtotal": "小计",
+    "original_price": "原价",
+    "saved": "已节省",
+    "shipping": "运费",
+    "tax": "税费",
+    "total": "合计",
+    "modal_add_title": "添加新地址",
+    "modal_edit_title": "编辑地址",
+    "full_name": "姓名",
+    "phone_number": "电话号码",
+    "country": "国家/地区",
+    "select_country": "选择国家/地区",
+    "state_province": "州/省",
+    "select_state_province": "选择州/省",
+    "city": "城市",
+    "postal_code": "邮编",
+    "address_line_1": "地址第一行",
+    "address_line_1_ph": "街道、楼号、门牌等",
+    "address_line_2": "地址第二行",
+    "address_line_2_ph": "公寓、楼层等",
+    "new_will_be_default": "新地址将设为默认",
+    "cancel": "取消",
+    "update_address": "更新地址",
+    "add_address_submit": "添加地址",
+    "delivery": {
+      "in_day": "{count} 天内。",
+      "in_days": "{min} - {max} 天内。"
+    },
+    "payment_title": "订单支付",
+    "payment_description": "完成您的订单支付",
+    "toasts": {
+      "init_failed": "初始化结账失败",
+      "countries_failed": "国家列表加载失败",
+      "states_failed": "州/省列表加载失败",
+      "select_payment_required": "请选择一种支付方式",
+      "default_address_updated": "默认地址已更新",
+      "default_address_update_failed": "默认地址更新失败",
+      "address_updated": "地址更新成功",
+      "address_added": "地址添加成功",
+      "fix_errors_below": "请修正以下错误",
+      "save_address_failed": "保存地址失败",
+      "gateway_not_loaded": "支付通道未加载",
+      "payment_cancelled": "支付已取消",
+      "payment_success": "支付成功！",
+      "payment_failed_or_cancelled": "支付失败或已取消",
+      "payment_failed": "支付失败",
+      "gateways_partial_load_warning": "部分支付通道加载失败"
+    },
+    "errors": {
+      "full_name_required": "姓名为必填项",
+      "phone_required": "电话号码为必填项",
+      "phone_invalid": "请输入有效的电话号码",
+      "phone_min_length": "电话号码至少需要 10 位数字",
+      "country_required": "国家为必选项",
+      "state_required": "州/省为必选项",
+      "city_required": "城市为必填项",
+      "address_line1_required": "地址第一行为必填项"
+    }
+  },
+  "blog": {
+    "related": "相关文章",
+    "share": "分享此文章：",
+    "facebook": "Facebook",
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
+    "comments": "评论（{count}）",
+    "leave_comment": "发表评论",
+    "your_name": "你的名字",
+    "your_email": "你的邮箱",
+    "your_comment": "你的评论",
+    "post_comment": "发表评论",
+    "comment_posted": "评论发布成功！",
+    "min_read": "阅读约 {minutes} 分钟"
+  }
+  ,
+  "footer": {
+    "company": "Fursa Energy",
+    "contact": {
+      "email": "info@fursaenergy.com",
+      "phone": "+2348028318302",
+      "address_line_1": "阿布贾 Wuse 2，Morija Close 4号",
+      "address_line_2": "拉各斯 Ikoyi，Parkview Estate，Olumo 街 6号"
+    },
+    "quick_links": "快速链接",
+    "help": "帮助",
+    "newsletter": "订阅我们的新闻",
+    "newsletter_cta": "订阅以获取我们的最新优惠！",
+    "email_placeholder": "输入您的邮箱...",
+    "subscribe_success": "订阅成功！",
+    "home": "首页",
+    "about": "关于我们",
+    "contact_us": "联系我们",
+    "shop": "商店",
+    "faq": "常见问题",
+    "terms": "条款与条件",
+    "privacy": "隐私政策",
+    "refund": "退款政策",
+    "copyright": "版权所有。"
+  }
+  ,
+  "auth": {
+    "common": { "or": "或" },
+    "login": {
+      "title": "登录 Fursa",
+      "email_label": "邮箱：",
+      "email_placeholder": "johndoe@gmail.com",
+      "password_label": "密码：",
+      "remember": "记住我",
+      "forgot_password": "忘记密码？",
+      "submit": "登录",
+      "loading": "正在登录...",
+      "no_account": "还没有账户？",
+      "register_link": "注册",
+      "success": "登录成功！",
+      "error_invalid": "账号或密码错误，请重试。"
+    },
+    "register": {
+      "sidebar_title": "你好，朋友！",
+      "sidebar_subtitle": "创建账户，随时随地浏览我们的产品。",
+      "title": "创建账户",
+      "have_account": "已经有账户？",
+      "login_link": "去登录",
+      "first_name_label": "名：",
+      "first_name_placeholder": "张",
+      "last_name_label": "姓：",
+      "last_name_placeholder": "三",
+      "email_label": "邮箱：",
+      "email_placeholder": "johndoe@gmail.com",
+      "phone_label": "手机号：",
+      "phone_placeholder": "08111111111",
+      "password_label": "密码：",
+      "confirm_password_label": "确认密码：",
+      "terms_html": "我同意<a href=\"/terms\" class=\"text-primary hover:underline\">服务条款</a>和<a href=\"/privacy\" class=\"text-primary hover:underline\">隐私政策</a>。",
+      "submit": "注册",
+      "loading": "正在注册...",
+      "passwords_no_match": "两次输入的密码不一致",
+      "success": "注册成功！请登录。",
+      "failed_generic": "注册失败，请重试。"
+    },
+    "validation": {
+      "user_required": "邮箱为必填项",
+      "user_invalid": "请输入有效的邮箱地址",
+      "password_required": "密码为必填项",
+      "password_min6": "密码长度至少为 6 个字符"
+    },
+    "social": {
+      "continue_google": "使用 Google 继续",
+      "continue_apple": "使用 Apple 继续",
+      "coming_soon": "即将推出！"
+    }
+  }
+  ,
+  "shop": {
+    "all_products": "全部产品",
+    "sidebar": { "categories": "类别" },
+    "hero": {
+      "slide1": {
+        "title": "下单。追踪。收货。",
+        "subtitle": "在尼日利亚全国安全寄送您的包裹。",
+        "cta": "开始使用"
+      },
+      "slide2": {
+        "title": "快速且可靠",
+        "subtitle": "我们安全、准时送达您的货物。",
+        "cta": "追踪包裹"
+      }
+    },
+    "featured": { "title": "精选产品", "empty": "暂无精选产品" },
+    "more": "更多",
+    "category_products": { "empty": "{name} 中暂无可用产品" },
+    "fetch_failed": "商店数据加载失败",
+    "retry": "重试",
+    "filters": {
+      "title": "筛选",
+      "search": "搜索",
+      "search_by_keywords": "按关键词搜索...",
+      "category": "分类",
+      "tags": "标签",
+      "clear_tags": "清除标签",
+      "price": "价格 ({currency})",
+      "min": "最低",
+      "max": "最高",
+      "price_filter": "价格筛选"
+    },
+    "sort_by": "排序方式",
+    "sort": {
+      "highest_price": "价格从高到低",
+      "lowest_price": "价格从低到高",
+      "featured": "推荐"
+    },
+    "filter": "筛选",
+    "showing_count": "显示（{count}/{total}）个产品",
+    "loading_products": "正在加载产品...",
+    "failed_to_load_products": "产品加载失败",
+    "no_products_match": "没有符合筛选条件的产品。",
+    "reset_filters": "重置筛选",
+    "reset": "重置",
+    "apply": "应用",
+    "featured_badge": "推荐产品",
+    "available_low_stock": "可用：{qty}（库存紧张）",
+    "available": "可用",
+    "add_to_cart": "加入购物车",
+    "adding": "正在加入...",
+    "loading_categories": "正在加载类别...",
+    "no_categories": "暂无类别",
+    "subcategories_count": "{count} 个子类别",
+    "products_count": "{count} 个产品",
+    "no_products_found": "未找到产品",
+    "quick_view": "快速预览",
+    "reviews_count": "（{count} 条评价）",
+    "in_stock": "有现货",
+    "sku_label": "SKU：",
+    "category_label": "类别：",
+    "key_features": "关键特性：",
+    "features": {
+      "premium_quality": "高品质机油",
+      "all_vehicle_types": "适用于所有车型",
+      "extended_protection": "延长发动机保护",
+      "fuel_efficiency": "提升燃油效率"
+    },
+    "related_products": "相关产品",
+    "wishlist_added": "已将 {name} 加入心愿单",
+    "wishlist_removed": "已将 {name} 从心愿单移除",
+    "uncategorized": "未分类",
+    "failed_to_load_product": "产品加载失败",
+    "tabs": {
+      "description": "描述",
+      "specifications": "规格",
+      "reviews": "评价"
+    }
+  }
+  ,
+  "wishlist": {
+    "title": "我的心愿单",
+    "empty": {
+      "title": "你的心愿单是空的",
+      "subtitle": "保存你喜欢的商品，稍后再购买"
+    },
+    "continue_shopping": "继续购物",
+    "remove": "移除",
+    "move_to_cart": "移至购物车",
+    "moved_to_cart": "商品已移至购物车",
+    "removed": "商品已从心愿单移除",
+    "remove_item_aria": "从心愿单移除 {name}"
+  }
+  ,
+  "dashboard": {
+    "welcome": "你好，{name}！",
+    "logout": "退出登录",
+    "intro": "在账户仪表盘，您可以查看最近订单、管理收货与账单地址，以及修改密码和账户信息。",
+    "stats": {
+      "in_cart": "购物车中的商品",
+      "in_wishlist": "心愿单中的商品",
+      "ordered": "已下单商品",
+      "ongoing": "进行中的订单"
+    },
+    "sidebar": {
+      "dashboard": "仪表盘",
+      "orders": "订单",
+      "profile": "个人资料",
+      "address": "地址",
+      "wishlist": "心愿单",
+      "settings": "设置",
+      "logout": "退出登录"
+    },
+    "recent_orders": {
+      "title": "最近订单",
+      "date": "日期",
+      "status": "状态",
+      "total": "合计",
+      "actions": "操作",
+      "for_items": "共 {count} 件商品",
+      "empty": "暂无最近订单。",
+      "load_more": "加载更多"
+    },
+    "toasts": {
+      "logged_out": "已成功退出登录"
+    }
+  }
+  ,
+  "cta": {
+    "secure_payment": {
+      "title": "安全支付网关",
+      "desc": "支持 48+ 支付渠道，保障您的安全"
+    },
+    "reviews": {
+      "title": "真实客户评价",
+      "desc": "在我们的平台查看经过验证的评价"
+    },
+    "support": {
+      "title": "7×24 小时客服支持",
+      "desc": "我们的支持团队随时为您服务"
+    },
+    "returns": {
+      "title": "便捷退货政策",
+      "desc": "若不满意，可无忧退货"
+    }
+  }
+  ,
+  "brochure": {
+    "title": "点击按钮下载 MRS 产品手册",
+    "download_label": "下载手册",
+    "download_aria": "下载 MRS 产品手册",
+    "note_default_path": "文件将从 /brochure.pdf 下载（可通过 VITE_BROCHURE_URL 覆盖）。"
+  }
+  ,
+  "contact": {
+    "title": "联系我们",
+    "hero_alt": "联系我们横幅图",
+    "have_question": "有问题吗？",
+    "intro_text": "需要帮助、合作洽谈或产品支持？给我们留言，我们将在 24 小时内回复。您也可以通过电话或邮件与我们联系。",
+    "full_name": "姓名",
+    "full_name_placeholder": "请输入您的姓名",
+    "last_name": "姓氏",
+    "last_name_placeholder": "请输入您的姓氏",
+    "email": "邮箱",
+    "email_placeholder": "请输入您的邮箱",
+    "message": "留言",
+    "message_placeholder": "在此填写您的留言",
+    "send_message": "发送留言",
+    "get_in_touch": "取得联系",
+    "get_in_touch_text": "想与我们联系？我们很乐意倾听。以下是我们的联系方式。",
+    "address1": "地址一",
+    "address2": "地址二",
+    "phone": "电话",
+    "map_title": "无法联系到我们？",
+    "map_subtitle": "请使用下方地图查找我们的办公地点",
+    "toast_success": "留言已成功发送！我们会尽快回复您。"
+  }
+  ,
+  "distributor": {
+    "title": "经销商注册",
+    "steps": {
+      "business_info": "企业信息",
+      "contact_person": "联系人",
+      "distribution": "分销信息",
+      "product_focus": "产品关注",
+      "banking_kyc": "银行与KYC",
+      "review_submit": "审核并提交"
+    },
+    "sections": {
+      "business_info": "第1部分：企业信息",
+      "contact_person": "第2部分：联系人信息",
+      "distribution_capacity": "第3部分：分销能力",
+      "product_focus": "第4部分：分销策略与产品关注",
+      "banking_kyc": "第5部分：银行与KYC信息",
+      "review_submit": "第6部分：审核并提交"
+    },
+    "business": {
+      "company_name": "公司名称",
+      "registered_name": "注册企业名称（如不同）",
+      "rc_number": "注册号（RC）",
+      "email": "电子邮箱",
+      "office_phone": "办公电话",
+      "company_type": "企业类型",
+      "select_type": "选择类型",
+      "types": {
+        "private_limited": "有限责任公司",
+        "public_limited": "股份有限公司",
+        "partnership": "合伙企业",
+        "sole_proprietorship": "个人独资"
+      },
+      "website": "公司网站（如有）",
+      "website_placeholder": "https://example.com",
+      "business_address": "公司地址"
+    },
+    "contact": {
+      "full_name": "姓名",
+      "position_title": "职位/头衔",
+      "position_placeholder": "例如：销售经理",
+      "mobile": "手机号码",
+      "mobile_placeholder": "+234 XXX XXX XXXX",
+      "means_of_id": "证件类型",
+      "select_id_type": "选择证件类型",
+      "id_types": {
+        "nin": "国家身份证（NIN）",
+        "drivers_license": "驾照",
+        "passport": "护照",
+        "voters_card": "选民证"
+      },
+      "id_number": "证件号码",
+      "id_number_placeholder": "请输入证件号码",
+      "years_in_business": "经营年限"
+    },
+    "distribution": {
+      "current_product_lines": "当前分销的产品线（如有）",
+      "current_product_lines_placeholder": "例如：电子产品、家用电器",
+      "monthly_capacity": "月度分销能力",
+      "monthly_capacity_placeholder": "例如：1000 件",
+      "regions_covered": "目前覆盖的地区",
+      "regions_covered_placeholder": "例如：拉各斯、奥贡、奥约",
+      "sales_staff": "销售人员数量",
+      "preferred_region": "首选地区",
+      "preferred_region_placeholder": "例如：拉各斯",
+      "has_warehouse": "是否有仓库或储存设施？",
+      "has_vehicles": "是否有分销车辆？",
+      "vehicle_details_label": "如有，请说明数量和类型：",
+      "vehicle_details_placeholder": "例如：2 辆丰田 Hilux，1 辆奔驰 Sprinter",
+      "preferred_states_label": "希望覆盖的州：",
+      "preferred_states_hint": "选择计划分销的所有州",
+      "states_selected": "已选择 {count} 个州"
+    },
+    "product_focus": {
+      "categories_question": "您最感兴趣的 Fursa/MRS 润滑油类别是哪些？（可多选）",
+      "categories": {
+        "automotive": "汽车",
+        "industrial": "工业",
+        "agricultural": "农业",
+        "marine": "船舶/海事",
+        "manufacturing": "制造业",
+        "commercial_fleet": "商业车队",
+        "motorcycle_small_engine": "摩托车/小型发动机",
+        "other": "其他"
+      },
+      "technical_knowledge_question": "您是否具备润滑油相关技术知识，或拥有具备该能力的团队？",
+      "training_question": "您是否愿意参加 Fursa 的产品培训？",
+      "distribution_start_question": "完成入驻后，您多久可以开始分销？",
+      "promo_question": "您是否愿意参与促销活动？",
+      "upload_title": "上传所需文件",
+      "choose_file": "选择文件",
+      "declaration_warning": "本人声明：上述信息据本人所知均真实、准确且完整。",
+      "declarant_name": "声明人姓名：",
+      "declarant_name_placeholder": "您的全名",
+      "declaration_date": "声明日期：",
+      "other_specify_label": "如选择“其他”，请注明",
+      "other_specify_placeholder": "请描述该类别"
+    },
+    "docs": {
+      "cac": "CAC 证书",
+      "cac_desc": "上传公司注册证书",
+      "form_c07": "表格 C07（董事名单）",
+      "form_c07_desc": "上传董事名单文件",
+      "memart": "MEMART",
+      "memart_desc": "水电煤等账单（办公地址，3 个月内）",
+      "tin": "企业税号（TIN）",
+      "tin_desc": "上传 TIN 证书",
+      "referee": "推荐人介绍信",
+      "referee_desc": "上传推荐信"
+    },
+    "banking": {
+      "banking_title": "银行与 KYC 信息",
+      "info_title": "所需银行信息",
+      "info_desc": "请提供准确的银行信息以便付款处理与审核验证。",
+      "bank_name": "银行名称",
+      "select_bank": "选择银行",
+      "account_number": "银行账号",
+      "account_number_placeholder": "0123456789",
+      "account_number_error": "账号必须为 10 位数字",
+      "account_name": "账户名",
+      "account_name_placeholder": "与银行登记一致",
+      "bvn": "联系人 BVN",
+      "bvn_placeholder": "12345678901",
+      "bvn_error": "BVN 必须为 11 位数字",
+      "bvn_hint": "您的银行验证号（11 位）",
+      "partnership_info_title": "合作信息",
+      "partnerships_label": "与油气公司的现有合作（如有）",
+      "partnerships_placeholder": "列出当前合作的油气公司（例如：Samsung、LG）",
+      "partnerships_hint": "若暂无合作，可留空",
+      "privacy_notice_title": "数据隐私声明",
+      "privacy_notice_desc": "所有提供的银行及个人信息将严格保密，仅用于验证与付款处理，并遵循相关数据保护规定。"
+    },
+    "review": {
+      "info_title": "请核对您的信息",
+      "info_desc": "在提交申请前，请确保所有信息准确无误。",
+      "business_info_title": "企业信息",
+      "contact_person_title": "联系人",
+      "distribution_capacity_title": "分销能力",
+      "product_focus_title": "分销策略与产品关注",
+      "banking_kyc_title": "银行与 KYC 信息",
+      "documents_title": "已上传的文件",
+      "labels": {
+        "company_name": "公司名称：",
+        "registered_name": "注册企业名称：",
+        "rc_number": "注册号：",
+        "company_type": "企业类型：",
+        "email": "电子邮箱：",
+        "office_phone": "办公电话：",
+        "website": "网站：",
+        "business_address": "公司地址：",
+        "full_name": "姓名：",
+        "position_title": "职位/头衔：",
+        "mobile_number": "手机号码：",
+        "years_in_business": "经营年限：",
+        "id_type": "证件类型：",
+        "id_number": "证件号码：",
+        "current_product_lines": "当前产品线：",
+        "monthly_capacity": "月度能力：",
+        "regions_covered": "覆盖地区：",
+        "sales_staff": "销售人员数量：",
+        "preferred_region": "首选地区：",
+        "has_warehouse": "有仓库：",
+        "has_vehicles": "有车辆：",
+        "vehicle_details": "车辆详情：",
+        "preferred_states_to_cover": "希望覆盖的州：",
+        "product_categories_interested": "感兴趣的产品类别：",
+        "technical_knowledge": "技术知识：",
+        "willing_to_train": "愿意培训：",
+        "distribution_start_date": "开始分销时间：",
+        "promo_participation": "参与促销：",
+        "declarant_name": "声明人：",
+        "declaration_date": "声明日期：",
+        "bank_name": "银行：",
+        "account_number": "账号：",
+        "account_name": "账户名：",
+        "bvn": "BVN：",
+        "partnerships": "油气合作："
+      }
+    },
+    "password": {
+      "title": "选择一个强密码",
+      "password": "密码",
+      "password_placeholder": "至少 8 个字符",
+      "password_hint": "至少 8 个字符",
+      "confirm_password": "确认密码",
+      "confirm_password_placeholder": "再次输入密码",
+      "passwords_no_match": "两次输入的密码不一致",
+      "passwords_match": "密码一致"
+    },
+    "notes": {
+      "title": "附加说明（可选）",
+      "placeholder": "您想补充的任何信息..."
+    },
+    "terms": {
+      "title": "条款与条件同意",
+      "p1": "本人确认本申请中提供的所有信息真实、准确且完整。本人理解 Fursa Energy 可能进行核验；如发现虚假或误导信息，公司保留拒绝或撤销经销资格的权利。",
+      "p2": "本人同意遵守 Fursa Energy 的经销商政策，保持所需服务标准，并在所有商业往来中维护公司的声誉。"
+    },
+    "error": {
+      "missing_info_title": "缺少信息",
+      "missing_info_desc": "请确保所有必填项已填写，密码一致且至少 8 个字符，并已同意条款与条件。"
+    },
+    "validation": {
+      "error_title": "验证错误",
+      "company_name_required": "公司名称为必填项",
+      "rc_number_required": "注册号为必填项",
+      "email_required": "需要有效的电子邮箱",
+      "office_phone_required": "办公电话为必填项",
+      "company_type_required": "企业类型为必选项",
+      "business_address_required": "公司地址为必填项",
+      "contact_full_name_required": "联系人姓名为必填项",
+      "position_required": "职位/头衔为必填项",
+      "mobile_required": "手机号码为必填项",
+      "id_type_required": "证件类型为必选项",
+      "id_number_required": "证件号码为必填项",
+      "years_in_business_required": "经营年限为必填项",
+      "has_warehouse_required": "请注明是否有仓库",
+      "has_vehicles_required": "请注明是否有分销车辆",
+      "preferred_states_required": "请至少选择一个州",
+      "product_categories_required": "请至少选择一个产品类别",
+      "technical_knowledge_required": "请注明是否具备技术知识",
+      "willing_to_train_required": "请注明是否愿意接受培训",
+      "distribution_start_time_required": "请注明可开始分销的时间",
+  "other_specify_required": "请选择“其他”时请注明具体类别",
+      "bank_name_required": "银行名称为必填项",
+      "account_number_required": "需要有效的 10 位银行账号",
+      "account_name_required": "账户名为必填项",
+      "bvn_required": "需要有效的 11 位 BVN",
+      "must_agree_terms": "您必须同意条款与条件",
+      "password_required": "密码为必填项",
+      "password_min": "密码至少需要 8 个字符",
+      "passwords_no_match": "两次输入的密码不一致"
+    },
+    "buttons": {
+      "previous": "上一步",
+      "next": "下一步",
+      "submit_application": "提交申请"
+    },
+    "toasts": {
+      "submit_success": "您的经销商申请已成功提交！",
+      "submit_failed_generic": "提交失败，请重试。"
+    },
+    "common": {
+      "yes": "是",
+      "no": "否",
+      "depends": "视安排而定",
+      "na": "不适用",
+      "none": "无",
+      "none_selected": "未选择",
+      "same_as_company_name": "同公司名称",
+      "uploaded": "已上传",
+      "pending": "待处理",
+      "years_suffix": "年"
+    }
+  },
+  "orders": {
+    "title": "我的订单",
+    "tabs": {
+      "all": "全部",
+      "processing": "处理中",
+      "shipped": "已发货",
+      "completed": "已完成",
+      "cancelled": "已取消"
+    },
+    "table": {
+      "order_id": "订单号",
+      "date": "日期",
+      "status": "状态",
+      "total": "总计",
+      "actions": "操作"
+    },
+    "status": {
+      "processing": "处理中",
+      "completed": "已完成",
+      "cancelled": "已取消",
+      "shipped": "已发货"
+    },
+    "for_items": "共 {count} 件商品",
+    "empty": "暂无订单。",
+    "pagination": {
+      "summary": "显示第 {from}–{to} 条，共 {total} 条订单"
+    },
+    "actions": {
+      "view": "查看",
+      "track": "追踪",
+      "reorder": "再次购买"
+    }
+  }
+  ,
+  "profile": {
+    "title": "个人资料",
+    "form": {
+      "first_name": "名",
+      "last_name": "姓",
+      "email": "邮箱",
+      "phone": "电话"
+    },
+    "password": {
+      "title": "更改密码",
+      "current": "当前密码",
+      "new": "新密码",
+      "confirm": "确认密码"
+    },
+    "buttons": {
+      "cancel": "取消",
+      "save_changes": "保存更改"
+    },
+    "toasts": {
+      "passwords_no_match": "两次输入的密码不一致",
+      "updated_success": "个人资料更新成功！"
+    }
+  }
+  ,
+  "addresses": {
+    "title": "我的地址",
+    "add_new": "添加新地址",
+    "empty": {
+      "title": "暂无地址",
+      "subtitle": "添加收货地址以便更快结算",
+      "cta": "添加地址"
+    },
+    "actions": {
+      "delete": "删除",
+      "set_default": "设为默认"
+    },
+    "modal": {
+      "title_add": "添加新地址"
+    },
+    "form": {
+      "set_as_default": "设为默认"
+    },
+    "submit": {
+      "saving": "保存中...",
+      "save_address": "保存地址"
+    },
+    "confirm_delete": "确定要删除此地址吗？",
+    "toasts": {
+      "fetch_failed": "获取地址失败！",
+      "delete_success": "地址删除成功！",
+      "delete_failed": "删除地址失败！"
+    }
+  }
+}

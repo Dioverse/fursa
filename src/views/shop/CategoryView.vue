@@ -4,7 +4,7 @@
       <!-- Breadcrumb -->
       <div class="bg-white border-b">
         <div class="max-w-7xl mx-auto px-4 py-3 text-sm text-gray-600">
-          Home
+          {{ $t('header.nav.home') }}
           <span v-if="categorySlug"> &gt;
             <RouterLink :to="`/c/${categorySlug}`" v-if="subcategorySlug">{{ categoryTitle }}</RouterLink>
             <span v-else>{{ categoryTitle }}</span>
@@ -21,15 +21,15 @@
               <div class="space-y-6">
                 <!-- Name Search -->
                 <div class="pb-6 border-b">
-                  <h3 class="font-bold text-lg mb-3">SEARCH</h3>
-                  <input type="text" placeholder="Search by keywords..."
+                  <h3 class="font-bold text-lg mb-3">{{ $t('shop.filters.search') }}</h3>
+                  <input type="text" :placeholder="$t('shop.filters.search_by_keywords')"
                     class="w-full px-2 py-1 border border-gray-300 rounded text-sm" v-model="filters.name"
                     @keyup.enter="state.currentPage = 1;" />
                 </div>
 
                 <!-- Categories -->
                 <div class="pb-6 border-b">
-                  <h3 class="font-bold mb-4">CATEGORY</h3>
+                  <h3 class="font-bold mb-4">{{ $t('shop.filters.category') }}</h3>
                   <div class="space-y-1">
                     <div class="group-relative">
                       <div @click="navigateToAllProducts()" :class="[
@@ -38,7 +38,7 @@
                       ]">
                         <div class="flex nowrap items-center">
                           <font-awesome-icon class="w-4 h-4" icon="bars" />&nbsp;
-                        <span>All Products</span>
+                        <span>{{ $t('shop.all_products') }}</span>
                         </div>
                       </div>
                     </div>
@@ -73,12 +73,12 @@
                 <!-- Tags Filter -->
                 <div class="pb-6 border-b">
                   <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-bold text-lg">TAGS</h3>
+                    <h3 class="font-bold text-lg">{{ $t('shop.filters.tags') }}</h3>
 
                     <button v-if="filters.selectedTags.length > 0"
                       @click="filters.selectedTags = []; state.currentPage = 1;"
                       class="mt-2 text-xs text-mprimary-600 hover:text-mprimary-700 font-semibold">
-                      Clear tags
+                      {{ $t('shop.filters.clear_tags') }}
                     </button>
                   </div>
                   <div class="space-y-2 max-h-48 overflow-y-auto">
@@ -93,13 +93,13 @@
 
                 <!-- Price Range -->
                 <div class="pb-6 border-b">
-                  <h3 class="font-bold text-lg mb-3">PRICE (₦)</h3>
+                  <h3 class="font-bold text-lg mb-3">{{ $t('shop.filters.price', { currency: '₦' }) }}</h3>
                   <div class="flex gap-2 mb-3">
-                    <input type="number" placeholder="Min"
+                    <input type="number" :placeholder="$t('shop.filters.min')"
                       class="w-full px-2 py-1 border border-gray-300 rounded text-sm" v-model.number="filters.minPrice"
                       @change="state.currentPage = 1;" />
                     <span>-</span>
-                    <input type="number" placeholder="Max"
+                    <input type="number" :placeholder="$t('shop.filters.max')"
                       class="w-full px-2 py-1 border border-gray-300 rounded text-sm" v-model.number="filters.maxPrice"
                       @change="state.currentPage = 1;" />
                   </div>
@@ -116,9 +116,9 @@
 
                 <!-- Sorting for Desktop -->
                 <div>
-                  <h3 class="font-bold text-lg mb-3">SORT BY</h3>
+                  <h3 class="font-bold text-lg mb-3">{{ $t('shop.sort_by') }}</h3>
                   <div class="space-y-2">
-                    <label v-for="(label, value) in sortOptions" :key="value"
+                    <label v-for="(label, value) in sortOptionsComputed" :key="value"
                       class="flex items-center gap-2 cursor-pointer text-sm">
                       <input type="radio" name="sort" class="w-4 h-4" @change="handleSort(value)" />
                       {{ label }}
@@ -137,13 +137,13 @@
                 <div class="relative">
                   <button @click="showSortDropdown = !showSortDropdown"
                     class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 lg:hidden">
-                    <span class="text-sm">Sort by</span>
+                    <span class="text-sm">{{ $t('shop.sort_by') }}</span>
                     <font-awesome-icon class="w-4 h-4" :icon="`chevron-${showSortDropdown ? 'up' : 'down'}`" />
                   </button>
 
                   <div v-if="showSortDropdown"
                     class="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded shadow-lg z-10 min-w-[200px]">
-                    <button v-for="(label, value) in sortOptions" :key="value"
+                    <button v-for="(label, value) in sortOptionsComputed" :key="value"
                       @click="handleSort(value); showSortDropdown = false"
                       class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm">
                       {{ label }}
@@ -154,7 +154,7 @@
                 <button @click="showMobileFilters = true"
                   class="lg:hidden flex items-center gap-2 px-4 py-2 border border-gray-300 rounded">
                   <font-awesome-icon class="w-4 h-4" icon="filter" />
-                  <span class="text-sm">Filter</span>
+                  <span class="text-sm">{{ $t('shop.filter') }}</span>
                 </button>
               </div>
             </div>
@@ -175,14 +175,13 @@
             <!-- Products Heading -->
             <div class="mb-4">
               <h2 id="page-header" class="lg:text-2xl md:text-xl text-lg font-bold text-gray-800 mb-2">{{ pageTitle }}</h2>
-              <p v-if="!loading && !loadingMore" class="text-sm text-gray-600">Showing ({{ products.length }} of {{
-                state.totalFound }}) products found</p>
+              <p v-if="!loading && !loadingMore" class="text-sm text-gray-600">{{ $t('shop.showing_count', { count: products.length, total: state.totalFound }) }}</p>
             </div>
 
             <!-- Loading State -->
             <div v-if="loading" class="text-center py-12">
               <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-mprimary-500" />
-              <p class="mt-4 text-gray-600">Loading products...</p>
+              <p class="mt-4 text-gray-600">{{ $t('shop.loading_products') }}</p>
             </div>
 
             <!-- Error State -->
@@ -190,7 +189,7 @@
               <p class="text-red-500">{{ error }}</p>
               <button @click="fetchProducts(1)"
                 class="mt-4 px-6 py-2 bg-mprimary-500 text-white rounded hover:bg-mprimary-600">
-                Retry
+                {{ $t('shop.retry') }}
               </button>
             </div>
 
@@ -242,9 +241,9 @@
                     <div v-if="product.stock_quantity" class="text-xs text-gray-600 line-clamp-1">
                       <span v-if="product.low_stock_threshold && product.stock_quantity <= product.low_stock_threshold"
                         class="text-red-500 font-semibold">
-                        Available: {{ product.stock_quantity }} (Low stock)
+                        {{ $t('shop.available_low_stock', { qty: product.stock_quantity }) }}
                       </span>
-                      <span v-else class="invisible">Available</span>
+                      <span v-else class="invisible">{{ $t('shop.available') }}</span>
                     </div>
                   </div>
 
@@ -262,7 +261,7 @@
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                           </svg>
                       </div>
-                      <div v-else>Add to cart</div>
+                      <div v-else>{{ $t('shop.add_to_cart') }}</div>
                     </button>
 
                     <!-- Quantity Control -->
@@ -323,10 +322,10 @@
             </div>
 
             <div v-if="!loading && !error && products.length === 0" class="text-center py-12">
-              <p class="text-gray-600">No products match your filters.</p>
+              <p class="text-gray-600">{{ $t('shop.no_products_match') }}</p>
               <button @click="resetFilters"
                 class="mt-4 px-6 py-2 bg-mprimary-500 text-white rounded hover:bg-mprimary-600">
-                Reset Filters
+                {{ $t('shop.reset_filters') }}
               </button>
             </div>
           </main>
@@ -339,7 +338,7 @@
         <div class="fixed inset-y-0 right-0 w-80 bg-white overflow-y-auto" @click.stop>
           <div class="p-4">
             <div class="flex justify-between items-center mb-4 pb-4 border-b">
-              <h3 class="font-bold text-lg">Filters</h3>
+              <h3 class="font-bold text-lg">{{ $t('shop.filters.title') }}</h3>
               <button @click="showMobileFilters = false">
                 <XIcon class="w-6 h-6" />
               </button>
@@ -348,14 +347,14 @@
             <div class="space-y-6">
               <!-- Name Search in Mobile -->
               <div class="pb-4 border-b">
-                <h3 class="font-bold text-lg mb-3">SEARCH</h3>
-                <input type="text" placeholder="Search by keywords..."
+                <h3 class="font-bold text-lg mb-3">{{ $t('shop.filters.search') }}</h3>
+                <input type="text" :placeholder="$t('shop.filters.search_by_keywords')"
                   class="w-full px-2 py-1 border border-gray-300 rounded text-sm" v-model="filters.name" />
               </div>
 
               <!-- Categories in Mobile -->
               <div class="pb-4 border-b">
-                <h3 class="font-bold mb-4">CATEGORY</h3>
+                <h3 class="font-bold mb-4">{{ $t('shop.filters.category') }}</h3>
                 <div class="space-y-1">
                   <div>
                     <div @click="navigateToAllProducts(); showMobileFilters = false" :class="[
@@ -364,7 +363,7 @@
                     ]">
                       <div class="flex nowrap items-center">
                         <font-awesome-icon class="w-4 h-4" icon="bars" />&nbsp;
-                      <span>All Products</span>
+                      <span>{{ $t('shop.all_products') }}</span>
                       </div>
                     </div>
                   </div>
@@ -395,11 +394,11 @@
               <!-- Tags Filter in Mobile -->
               <div class="pb-4 border-b">
                 <div class="flex items-center justify-between mb-3">
-                  <h3 class="font-bold text-lg">TAGS</h3>
+                  <h3 class="font-bold text-lg">{{ $t('shop.filters.tags') }}</h3>
 
-                  <button v-if="filters.selectedTags.length > 0" @click="filters.selectedTags = []"
+                    <button v-if="filters.selectedTags.length > 0" @click="filters.selectedTags = []"
                     class="mt-2 text-xs text-mprimary-600 hover:text-mprimary-700 font-semibold">
-                    Clear tags
+                    {{ $t('shop.filters.clear_tags') }}
                   </button>
                 </div>
                 <div class="space-y-2 max-h-48 overflow-y-auto">
@@ -413,12 +412,12 @@
 
               <!-- Price Range in Mobile -->
               <div class="pb-4 border-b">
-                <h3 class="font-bold text-lg mb-3">PRICE (₦)</h3>
+                <h3 class="font-bold text-lg mb-3">{{ $t('shop.filters.price', { currency: '₦' }) }}</h3>
                 <div class="flex gap-2 mb-3">
-                  <input type="number" placeholder="Min" class="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                  <input type="number" :placeholder="$t('shop.filters.min')" class="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                     v-model.number="filters.minPrice" />
                   <span>-</span>
-                  <input type="number" placeholder="Max" class="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                  <input type="number" :placeholder="$t('shop.filters.max')" class="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                     v-model.number="filters.maxPrice" />
                 </div>
                 <div class="space-y-2">
@@ -435,11 +434,11 @@
             <div class="flex gap-2 mt-6 pt-4 border-t">
               <button @click="resetFilters(); showMobileFilters = false"
                 class="flex-1 py-2 border border-gray-300 rounded hover:bg-gray-50">
-                Reset
+                {{ $t('shop.reset') }}
               </button>
               <button @click="state.currentPage = 1; showMobileFilters = false"
                 class="flex-1 py-2 bg-mprimary-500 text-white rounded hover:bg-mprimary-600">
-                Apply
+                {{ $t('shop.apply') }}
               </button>
             </div>
           </div>
@@ -451,6 +450,7 @@
 
 <script setup>
 import { reactive, ref, computed, onMounted, watch, nextTick } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useWishlistStore } from '@/stores/wishlist';
 import { useRoute, useRouter } from 'vue-router';
 import { addToCart, getCartQuantity, isInCart, onQuantityBlur, onQuantityEnter, toggleWishlist, updateQuantity, loadingStates } from '@/utils/neut';
@@ -518,11 +518,15 @@ const showSortDropdown = ref(false);
 const showMobileFilters = ref(false);
 const observerTarget = ref(null);
 
-const sortOptions = {
-  hp: 'Highest Price',
-  lp: 'Lowest Price',
-  if: 'Featured',
-};
+const { t } = useI18n();
+// Ensure default page title is localized
+state.pageTitle = t('shop.all_products');
+
+const sortOptionsComputed = computed(() => ({
+  hp: t('shop.sort.highest_price'),
+  lp: t('shop.sort.lowest_price'),
+  if: t('shop.sort.featured'),
+}));
 
 const priceRanges = [
   { label: '₦0 - ₦50,000', min: 0, max: 50000 },
@@ -582,7 +586,7 @@ const fetchProducts = async (page = 1, isLoadMore = false) => {
     const queryString = buildQueryParams(true);
     const res = await fetch(`${apiUrl}/products?${queryString}`);
 
-    if (!res.ok) throw new Error('Failed to fetch products');
+  if (!res.ok) throw new Error(t('shop.failed_to_load_products'));
 
     const response = await res.json();
 
@@ -609,7 +613,7 @@ const fetchProducts = async (page = 1, isLoadMore = false) => {
     state.loadingMore = false;
     state.error = null;
   } catch (err) {
-    state.error = 'Failed to load products';
+  state.error = t('shop.failed_to_load_products');
     state.loading = false;
     state.loadingMore = false;
     console.error('Fetch error:', err);
@@ -729,7 +733,7 @@ const changeRoute = (pass) => {
 const navigateToAllProducts = () => {
   selectedCategorySlug.value = null;
   selectedSubcategorySlug.value = null;
-  state.pageTitle = 'ALL PRODUCTS';
+  state.pageTitle = t('shop.all_products');
   state.currentPage = 1;
   resetFilters(false);
   changeRoute("");

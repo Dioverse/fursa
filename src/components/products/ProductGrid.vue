@@ -13,7 +13,7 @@
 
         <div v-else-if="products.length === 0" class="text-center py-12">
             <font-awesome-icon icon="box" size="3x" class="text-gray-400 mb-4" />
-            <p class="text-gray-600">No products found</p>
+            <p class="text-gray-600">{{ $t('shop.no_products_found') }}</p>
         </div>
 
         <div v-else class="">

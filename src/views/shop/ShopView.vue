@@ -1,6 +1,6 @@
 <template>
   <ShopLayout>
-    <div class="min-h-screen mx-auto bg-gray-50 container lg:px-20 px-3 bg-transparent">
+    <div class="min-h-screen mx-auto bg-gray-50 container lg:px-5 px-3 bg-transparent">
       <!-- Loading State -->
       <div v-if="loading" class="space-y-8 p-4">
         <!-- Hero Skeleton -->
@@ -67,7 +67,7 @@
             <div class="w-full md:w-56 hidden md:block xl:block bg-white shadow-md flex-shrink-0 rounded">
               <RouterLink :to="`/categories`"
                 class="flex items-center font-bold gap-3 p-2 bg-gray-100 rounded cursor-pointer transition-colors">
-                Categories
+                {{ $t('shop.sidebar.categories') }}
               </RouterLink>
               <hr>
               <div v-for="(category, index) in shopData.categories" :key="index" class="relative group"
@@ -151,9 +151,9 @@
         <section class="max-w-7xl mx-auto mb-4 md:mb-6 lg:mb-6 bg-white rounded">
           <div
             class="flex justify-between items-center mb-4 bg-gold-500 py-3 px-3 rounded text-sm md:text-lg lg:text-xl">
-            <h2 class="font-bold text-white">Featured Products</h2>
+            <h2 class="font-bold text-white">{{ $t('shop.featured.title') }}</h2>
             <RouterLink :to="`/c?sort_by=if`" class="text-white hover:underline inline-flex items-center">
-              More
+              {{ $t('shop.more') }}
               <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
               </svg>
@@ -161,7 +161,7 @@
           </div>
 
           <div v-if="shopData.featured_products.length < 1" class="w-full py-16 text-center">
-            <p class="text-gray-500 text-sm md:text-lg lg:text-lg">No featured products available</p>
+            <p class="text-gray-500 text-sm md:text-lg lg:text-lg">{{ $t('shop.featured.empty') }}</p>
           </div>
 
           <Swiper v-else :modules="[Navigation, FreeMode]" :pagination="{
@@ -211,7 +211,7 @@
             class="flex justify-between items-center mb-4 bg-gold-500 py-3 px-3 rounded text-sm md:text-lg lg:text-xl">
             <h2 class="md:lg:text-xl font-bold text-white">{{ category.name }}</h2>
             <RouterLink :to="`/c/${category.slug}`" class="text-white hover:underline inline-flex items-center">
-              More
+              {{ $t('shop.more') }}
               <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
               </svg>
@@ -219,7 +219,7 @@
           </div>
 
           <div v-if="category.products.length < 1" class="w-full py-16 text-center">
-            <p class="text-gray-500 text-xs md:text-sm lg:text-lg">No products available in {{ category.name }}</p>
+            <p class="text-gray-500 text-xs md:text-sm lg:text-lg">{{ $t('shop.category_products.empty', { name: category.name }) }}</p>
           </div>
 
           <Swiper v-else :modules="[Navigation, FreeMode]" :pagination="{
@@ -280,7 +280,7 @@
       <div v-if="error" class="max-w-7xl mx-auto px-4 py-20 text-center">
         <div class="text-red-500 text-xl mb-4">{{ error }}</div>
         <button @click="fetchShopData" class="bg-gold-500 text-white px-6 py-2 rounded hover:bg-gold-600">
-          Retry
+          {{ $t('shop.retry') }}
         </button>
       </div>
     </div>
@@ -288,7 +288,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Autoplay, Pagination, Navigation, FreeMode } from "swiper/modules";
@@ -308,6 +309,8 @@ const loading = ref(true);
 const error = ref(null);
 const hovered = ref(null);
 
+const { t } = useI18n();
+
 // Default grid (desktop)
 let cat_grid = 12;
 if (window.innerWidth <= 1024) {
@@ -323,33 +326,33 @@ const fetchShopData = async () => {
     const res = await fetch(`${apiUrl}/shop?featured_limit=12&products_per_category=12&cat_grid_limit=${cat_grid}`);
 
     if (!res.ok) {
-      throw new Error('Failed to fetch shop data');
+      throw new Error(t('shop.fetch_failed'));
     }
 
     const response = await res.json();
     shopData.value = response.data
   } catch (err) {
-    error.value = err.message;
+    error.value = err.message || t('shop.fetch_failed');
     console.error('Fetch error:', err);
   } finally {
     loading.value = false;
   }
 };
 
-const slides = [
+const slides = computed(() => [
   {
-    title: "Order. Track. Recieve.",
-    subtitle: "Send your packages securely anywhere in Nigeria.",
+    title: t('shop.hero.slide1.title'),
+    subtitle: t('shop.hero.slide1.subtitle'),
     image: "/images/oil-bg.png",
-    cta: { text: "Get Started", link: "#" },
+    cta: { text: t('shop.hero.slide1.cta'), link: "#" },
   },
   {
-    title: "Fast and Reliable",
-    subtitle: "We deliver your goods safely and on time.",
+    title: t('shop.hero.slide2.title'),
+    subtitle: t('shop.hero.slide2.subtitle'),
     image: "/images/hero-bg.png",
-    cta: { text: "Track Package", link: "#" },
+    cta: { text: t('shop.hero.slide2.cta'), link: "#" },
   },
-];
+]);
 
 onMounted(() => {
   fetchShopData();

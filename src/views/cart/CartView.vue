@@ -1,12 +1,12 @@
 <template>
   <ShopLayout :bgColor="`bg-white`">
     <div class="min-h-screen mx-auto bg-gray-50 container lg:px-20 px-3 bg-transparent">
-      <h1 class="text-3xl font-bold mb-8">Cart</h1>
+  <h1 class="text-3xl font-bold mb-8">{{ $t('cart.title') }}</h1>
 
       <!-- Loading -->
       <div v-if="cartStore.loading" class="text-center py-10">
         <font-awesome-icon icon="spinner" spin class="text-primary text-3xl" />
-        <p class="mt-3 text-gray-600">Loading your cart...</p>
+  <p class="mt-3 text-gray-600">{{ $t('cart.loading') }}</p>
       </div>
 
       <!-- Empty Cart -->
@@ -19,7 +19,7 @@
         <!-- Cart Items -->
         <div class="lg:col-span-2">
           <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold mb-4">Products</h2>
+            <h2 class="text-xl font-semibold mb-4">{{ $t('cart.products') }}</h2>
 
             <div class="divide-y">
               <CartItem
@@ -58,11 +58,11 @@
                 class="inline-flex items-center gap-2 text-primary hover:underline"
               >
                 <font-awesome-icon icon="arrow-left" />
-                <span>Continue Shopping</span>
+                <span>{{ $t('cart.continue_shopping') }}</span>
               </RouterLink>
 
               <button @click="clearCart" class="text-red-600 hover:underline">
-                Clear Cart
+                {{ $t('cart.clear_cart') }}
               </button>
             </div>
           </div>
@@ -70,7 +70,7 @@
 
         <!-- Cart Summary -->
         <div class="lg:col-span-1">
-          <CartSummary :title="`Cart Summary`" />
+          <CartSummary :title="$t('cart.summary')" />
         </div>
       </div>
     </div>
@@ -94,11 +94,13 @@ import CTA from '@/components/common/CTA.vue'
 import { useCartStore } from '@/stores/cart'
 import { useAuthStore } from '@/stores/auth'
 import ShopLayout from '@/layouts/ShopLayout.vue'
+import { useI18n } from 'vue-i18n'
 
 const cartStore = useCartStore()
 const authStore = useAuthStore()
 const toast = useToast()
 const couponCode = ref('')
+const { t } = useI18n()
 
 // // --- Apply Coupon ---
 // const applyCoupon = () => {
@@ -109,7 +111,7 @@ const couponCode = ref('')
 
 // --- Clear Cart ---
 const clearCart = () => {
-  if (confirm('Are you sure you want to clear your cart?')) {
+  if (confirm(t('cart.toasts.clear_confirm'))) {
     cartStore.clearCart()
   }
 }

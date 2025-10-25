@@ -1,7 +1,7 @@
 <template>
   <DashboardLayout>
     <div class="space-y-6">
-      <h1 class="lg:text-2xl md:text-xl text-lg font-bold">My Orders</h1>
+      <h1 class="lg:text-2xl md:text-xl text-lg font-bold">{{ $t('orders.title') }}</h1>
 
       <!-- Filter Tabs -->
       <div class="bg-white rounded-lg shadow-md p-4">
@@ -28,11 +28,11 @@
             <thead class="bg-gray-50">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order Id</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ $t('orders.table.order_id') }}</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ $t('orders.table.date') }}</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ $t('orders.table.status') }}</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ $t('orders.table.total') }}</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ $t('orders.table.actions') }}</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -55,7 +55,7 @@
                     class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                     :class="getStatusClass(order.status)"
                   >
-                    {{ order.status }}
+                    {{ getStatusText(order.status) }}
                   </span>
                 </td>
                 <td class="px-6 py-4">
@@ -63,20 +63,21 @@
                     ₦{{ Number(order.total_amount).toFixed(2) }}
                   </span>
                   <span class="text-xs text-gray-500 block">
-                    for {{ order.order_items_count || 0 }} items
+                    {{ $t('orders.for_items', { count: order.order_items_count || 0 }) }}
                   </span>
                 </td>
                 <td class="px-6 py-4 text-sm font-medium space-x-3">
-                  <button @click="viewOrder(order.order_id)" class="text-primary hover:text-opacity-80">
+                  <button @click="viewOrder(order.order_id)" class="text-primary hover:text-opacity-80" :title="$t('orders.actions.view')">
                     <font-awesome-icon icon="eye" />
                   </button>
-                  <button @click="trackOrder(order.order_id)" class="text-blue-600 hover:text-blue-800">
+                  <button @click="trackOrder(order.order_id)" class="text-blue-600 hover:text-blue-800" :title="$t('orders.actions.track')">
                     <font-awesome-icon icon="map-marker-alt" />
                   </button>
                   <button
                     v-if="order.status.toLowerCase() === 'completed'"
                     @click="reorder(order.id)"
                     class="text-green-600 hover:text-green-800"
+                    :title="$t('orders.actions.reorder')"
                   >
                     <font-awesome-icon icon="redo" />
                   </button>
@@ -87,19 +88,14 @@
 
           <!-- Empty State -->
           <div v-else class="p-6 text-center text-gray-500">
-            No orders found for this filter.
+            {{ $t('orders.empty') }}
           </div>
         </div>
 
         <!-- Pagination -->
         <div v-if="totalOrders > 0" class="px-6 py-4 border-t flex items-center justify-between">
           <div class="text-sm text-gray-600">
-            Showing
-            {{ (currentPage - 1) * perPage + 1 }}
-            to
-            {{ Math.min(currentPage * perPage, totalOrders) }}
-            of
-            {{ totalOrders }} orders
+            {{ $t('orders.pagination.summary', { from: (currentPage - 1) * perPage + 1, to: Math.min(currentPage * perPage, totalOrders), total: totalOrders }) }}
           </div>
           <div class="flex gap-2">
             <button
@@ -136,8 +132,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const { t, locale } = useI18n()
 const activeTab = ref('all')
 const currentPage = ref(1)
 const perPage = ref(10)
@@ -145,14 +143,17 @@ const orders = ref([])
 const loading = ref(false)
 const error = ref(null)
 
-// Tabs
-const tabs = ref([
-  { value: 'all', label: 'All Orders', count: 0 },
-  { value: 'processing', label: 'Processing', count: 0 },
-  { value: 'shipped', label: 'Shipped', count: 0 },
-  { value: 'completed', label: 'Completed', count: 0 },
-  { value: 'cancelled', label: 'Cancelled', count: 0 }
-])
+// Tabs (reactive to language changes)
+const tabs = computed(() => ([
+  { value: 'all', label: t('orders.tabs.all'), count: counts.value.all },
+  { value: 'processing', label: t('orders.tabs.processing'), count: counts.value.processing },
+  { value: 'shipped', label: t('orders.tabs.shipped'), count: counts.value.shipped },
+  { value: 'completed', label: t('orders.tabs.completed'), count: counts.value.completed },
+  { value: 'cancelled', label: t('orders.tabs.cancelled'), count: counts.value.cancelled }
+]))
+
+// Store per-tab counts separately so labels re-render cleanly
+const counts = ref({ all: 0, processing: 0, shipped: 0, completed: 0, cancelled: 0 })
 
 // Fetch Orders
 const fetchOrders = async () => {
@@ -170,12 +171,18 @@ const fetchOrders = async () => {
     orders.value = data.data || []
 
     // update tab counts
-    tabs.value.forEach(tab => {
-      tab.count =
-        tab.value === 'all'
-          ? orders.value.length
-          : orders.value.filter(order => order.status.toLowerCase() === tab.value).length
-    })
+    const map = { processing: 0, shipped: 0, completed: 0, cancelled: 0 }
+    for (const o of orders.value) {
+      const key = (o.status || '').toLowerCase()
+      if (map[key] !== undefined) map[key]++
+    }
+    counts.value = {
+      all: orders.value.length,
+      processing: map.processing,
+      shipped: map.shipped,
+      completed: map.completed,
+      cancelled: map.cancelled,
+    }
   } catch (err) {
     console.error(err)
     error.value = err.message
@@ -203,7 +210,8 @@ const paginatedOrders = computed(() => {
 // Helpers
 const formatDate = (dateStr) => {
   const date = new Date(dateStr)
-  return date.toLocaleDateString('en-US', {
+  const loc = locale.value || 'en'
+  return date.toLocaleDateString(loc, {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -218,6 +226,17 @@ const getStatusClass = (status) => {
     shipped: 'bg-blue-100 text-blue-800'
   }
   return classes[status?.toLowerCase()] || 'bg-gray-100 text-gray-800'
+}
+
+const getStatusText = (status) => {
+  const key = (status || '').toLowerCase()
+  const map = {
+    processing: t('orders.status.processing'),
+    completed: t('orders.status.completed'),
+    cancelled: t('orders.status.cancelled'),
+    shipped: t('orders.status.shipped'),
+  }
+  return map[key] || status
 }
 
 // Actions

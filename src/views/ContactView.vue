@@ -3,10 +3,10 @@
         <!-- Hero Section -->
         <section class="relative h-64 bg-gray-900">
             <div class="absolute inset-0">
-                <img src="/images/hero-img.png" alt="Contact Us" class="w-full h-full object-cover opacity-40">
+                <img src="/images/hero-img.png" :alt="$t('contact.hero_alt')" class="w-full h-full object-cover opacity-40">
             </div>
             <div class="relative container mx-auto px-4 h-full flex items-center justify-center">
-                <h1 class="text-5xl font-bold text-white text-center">Contact Us</h1>
+                <h1 class="text-5xl font-bold text-white text-center">{{ $t('contact.title') }}</h1>
             </div>
         </section>
 
@@ -16,56 +16,51 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
                     <!-- Left Side - Contact Info & Form -->
                     <div>
-                        <h2 class="text-3xl font-bold mb-6">Have a question?</h2>
-                        <p class="text-gray-600 mb-8">
-                            Need assistance, partnership inquiries, or need support?
-                            Contact us using the form below and our team will get back to
-                            you within 24 hours. You can also use the phone number provided
-                            or send us an email.
-                        </p>
+                        <h2 class="text-3xl font-bold mb-6">{{ $t('contact.have_question') }}</h2>
+                        <p class="text-gray-600 mb-8">{{ $t('contact.intro_text') }}</p>
 
                         <form @submit.prevent="handleSubmit" class="space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Full Name <span class="text-red-500">*</span>
+                                        {{ $t('contact.full_name') }} <span class="text-red-500">*</span>
                                     </label>
                                     <input v-model="form.fullName" type="text" required
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                        placeholder="Enter your full name">
+                                        :placeholder="$t('contact.full_name_placeholder')">
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Last Name <span class="text-red-500">*</span>
+                                        {{ $t('contact.last_name') }} <span class="text-red-500">*</span>
                                     </label>
                                     <input v-model="form.lastName" type="text" required
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                        placeholder="Enter your last name">
+                                        :placeholder="$t('contact.last_name_placeholder')">
                                 </div>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Email <span class="text-red-500">*</span>
+                                    {{ $t('contact.email') }} <span class="text-red-500">*</span>
                                 </label>
                                 <input v-model="form.email" type="email" required
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                    placeholder="Enter your Email">
+                                    :placeholder="$t('contact.email_placeholder')">
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Message <span class="text-red-500">*</span>
+                                    {{ $t('contact.message') }} <span class="text-red-500">*</span>
                                 </label>
                                 <textarea v-model="form.message" rows="5" required
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                    placeholder="Write your message here"></textarea>
+                                    :placeholder="$t('contact.message_placeholder')"></textarea>
                             </div>
 
                             <button type="submit"
                                 class="w-full md:w-auto px-8 py-3 bg-primary text-white rounded-lg hover:bg-opacity-90 transition">
-                                Send message
+                                {{ $t('contact.send_message') }}
                             </button>
                         </form>
                     </div>
@@ -73,41 +68,39 @@
                     <!-- Right Side - Get in Touch Box -->
                     <div>
                         <div class="bg-primary text-white rounded-lg p-8">
-                            <h3 class="lg:text-2xl md:text-xl text-lg font-bold mb-6">Get in touch</h3>
-                            <p class="mb-8 opacity-90">
-                                Want to get in touch? We'd love to hear from you. Here's how you can reach us.
-                            </p>
+                            <h3 class="lg:text-2xl md:text-xl text-lg font-bold mb-6">{{ $t('contact.get_in_touch') }}</h3>
+                            <p class="mb-8 opacity-90">{{ $t('contact.get_in_touch_text') }}</p>
 
                             <div class="space-y-6">
                                 <div>
-                                    <h4 class="font-semibold mb-2">Address 1</h4>
+                                    <h4 class="font-semibold mb-2">{{ $t('contact.address1') }}</h4>
                                     <p class="opacity-90">
                                         <font-awesome-icon icon="map-marker-alt" class="mr-2" />
-                                        4, Morija Close, Wuse 2, Abuja
+                                        {{ $t('footer.contact.address_line_1') }}
                                     </p>
                                 </div>
 
                                 <div>
-                                    <h4 class="font-semibold mb-2">Address 2</h4>
+                                    <h4 class="font-semibold mb-2">{{ $t('contact.address2') }}</h4>
                                     <p class="opacity-90">
                                         <font-awesome-icon icon="map-marker-alt" class="mr-2" />
-                                        Lagos Nigeria Block 6, Olumo Street, Parkview Estate, Ikoyi
+                                        {{ $t('footer.contact.address_line_2') }}
                                     </p>
                                 </div>
 
                                 <div>
-                                    <h4 class="font-semibold mb-2">Email</h4>
+                                    <h4 class="font-semibold mb-2">{{ $t('contact.email') }}</h4>
                                     <p class="opacity-90">
                                         <font-awesome-icon icon="envelope" class="mr-2" />
-                                        info@fursaenergy.com
+                                        {{ $t('footer.contact.email') }}
                                     </p>
                                 </div>
 
                                 <div>
-                                    <h4 class="font-semibold mb-2">Phone</h4>
+                                    <h4 class="font-semibold mb-2">{{ $t('contact.phone') }}</h4>
                                     <p class="opacity-90">
                                         <font-awesome-icon icon="phone" class="mr-2" />
-                                        +234 9-00-000-000
+                                        {{ $t('footer.contact.phone') }}
                                     </p>
                                 </div>
                             </div>
@@ -121,8 +114,8 @@
         <section class="py-16 bg-white">
             <div class="container mx-auto px-4">
                 <div class="text-center mb-8">
-                    <h3 class="lg:text-2xl md:text-xl text-lg font-bold mb-2">Can't get through us?</h3>
-                    <p class="text-gray-600">Locate our office Branch using the map below</p>
+                    <h3 class="lg:text-2xl md:text-xl text-lg font-bold mb-2">{{ $t('contact.map_title') }}</h3>
+                    <p class="text-gray-600">{{ $t('contact.map_subtitle') }}</p>
                 </div>
 
                 <div class="max-w-6xl mx-auto">
@@ -147,12 +140,14 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toastification'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import Brochure from '@/components/common/Brochure.vue'
 import CTA from '@/components/common/CTA.vue'
 
 const toast = useToast()
+const { t } = useI18n()
 
 const form = ref({
     fullName: '',
@@ -163,7 +158,7 @@ const form = ref({
 
 const handleSubmit = () => {
     // Handle form submission
-    toast.success('Message sent successfully! We\'ll get back to you soon.')
+    toast.success(t('contact.toast_success'))
     // Reset form
     form.value = {
         fullName: '',

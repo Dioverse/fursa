@@ -2,12 +2,8 @@
     <!-- Why Choose Us -->
     <section class="py-16">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-6">
-                Why Choose Fursa Energy as Your Trusted Lubricant Distributor
-            </h2>
-            <p class="text-center mb-12">
-                Fursa Energy is more than a lubricant distributor, we are a trusted partner for businesses across Nigeria. Backed by MRS Lubricants, one of Africa’s leading blending plants, we deliver high-performance products that meet global standards.
-            </p>
+            <h2 class="text-3xl font-bold text-center mb-6">{{ $t('home.why_choose.title') }}</h2>
+            <p class="text-center mb-12">{{ $t('home.why_choose.subtitle') }}</p>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <div v-for="feature in features" :key="feature.title" class="text-center">
                     <div
@@ -23,28 +19,32 @@
 </template>
 
 <script setup>
+    import { computed } from 'vue'
+    import { useI18n } from 'vue-i18n'
     import { faBuilding, faCertificate, faTruck, faHeadset } from '@fortawesome/free-solid-svg-icons'
 
-    const features = [
+    const { t } = useI18n()
+
+    const features = computed(() => ([
         {
-            icon: faBuilding,//'globe-africa' 
-            title: "Backed by Africa's most advanced lubricant blending facility",
-            description: 'State-of-the-art technology ensuring premium quality products'
+            icon: faBuilding,
+            title: t('home.why_choose.items.facility.title'),
+            description: t('home.why_choose.items.facility.desc')
         },
         {
             icon: faCertificate,
-            title: 'Premium Quality Standards',
-            description: 'All products meet international quality certifications'
+            title: t('home.why_choose.items.quality.title'),
+            description: t('home.why_choose.items.quality.desc')
         },
         {
             icon: faTruck,
-            title: 'Strong Digital Infrastructure',
-            description: 'Modern onboarding and competitive pricing strategies'
+            title: t('home.why_choose.items.infrastructure.title'),
+            description: t('home.why_choose.items.infrastructure.desc')
         },
         {
             icon: faHeadset,
-            title: 'Integrated Support System',
-            description: 'Complete marketing and after-sales support for partners'
+            title: t('home.why_choose.items.support.title'),
+            description: t('home.why_choose.items.support.desc')
         }
-    ]
+    ]))
 </script>

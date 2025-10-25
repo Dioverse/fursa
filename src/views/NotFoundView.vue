@@ -9,46 +9,43 @@
                     </div>
                 </div>
 
-                <h2 class="text-3xl font-bold text-gray-800 mb-4 mt-8">Oops! Page Not Found</h2>
-                <p class="text-gray-600 mb-8 max-w-md mx-auto">
-                    Looks like you've taken a wrong turn. The page you're looking for has been moved,
-                    deleted, or doesn't exist.
-                </p>
+                <h2 class="text-3xl font-bold text-gray-800 mb-4 mt-8">{{ $t('notFound.title') }}</h2>
+                <p class="text-gray-600 mb-8 max-w-md mx-auto">{{ $t('notFound.subtitle') }}</p>
 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <RouterLink to="/"
                         class="inline-flex items-center justify-center gap-2 bg-primary text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition">
                         <font-awesome-icon icon="home" />
-                        Go Back Home
+                        {{ $t('notFound.home') }}
                     </RouterLink>
 
                     <RouterLink to="/shop"
                         class="inline-flex items-center justify-center gap-2 border-2 border-primary text-primary px-6 py-3 rounded-lg hover:bg-primary hover:text-white transition">
                         <font-awesome-icon icon="shopping-cart" />
-                        Visit Shop
+                        {{ $t('notFound.visit_shop') }}
                     </RouterLink>
                 </div>
 
                 <div class="mt-12">
-                    <p class="text-gray-600 mb-4">Need help? Contact us:</p>
+                    <p class="text-gray-600 mb-4">{{ $t('notFound.need_help') }}</p>
                     <div class="flex justify-center gap-6">
                         <a href="tel:+2348028318302" class="text-primary hover:underline">
                             <font-awesome-icon icon="phone" class="mr-2" />
-                            Call Us
+                            {{ $t('notFound.call_us') }}
                         </a>
                         <a href="mailto:support@fursaenergy.com" class="text-primary hover:underline">
                             <font-awesome-icon icon="envelope" class="mr-2" />
-                            Email Us
+                            {{ $t('notFound.email_us') }}
                         </a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Suggested Products -->
+        <!-- Suggested Products 
         <section class="py-16 bg-white">
             <div class="container mx-auto px-4">
-                <h3 class="lg:text-2xl md:text-xl text-lg font-bold text-center mb-8">You Might Be Interested In</h3>
+                <h3 class="lg:text-2xl md:text-xl text-lg font-bold text-center mb-8">{{ $t('notFound.suggested') }}</h3>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
                     <div v-for="i in 4" :key="i"
                         class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
@@ -60,13 +57,13 @@
                             <p class="text-primary font-bold">₦145,000</p>
                             <RouterLink to="/shop"
                                 class="mt-3 block text-center bg-primary text-white py-2 rounded hover:bg-opacity-90 transition">
-                                View Product
+                                {{ $t('notFound.view_product') }}
                             </RouterLink>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </section> -->
     </DefaultLayout>
 </template>
 

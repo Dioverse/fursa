@@ -13,6 +13,10 @@ const productsService = {
     return api.get('/categories')
   },
 
+  async getDynamicCategories() {
+    return api.get('/cats?limit=7')
+  },
+
   async getCategory(slug) {
     return api.get(`/categories/${slug}`)
   },

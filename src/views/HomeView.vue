@@ -4,36 +4,32 @@
         <section class="relative bg-[#4B4A3F] text-white py-12 md:py-16 lg:py-16 overflow-hidden">
             <!-- Background overlay with oil pouring image -->
             <div class="absolute inset-0">
-                <img src="/public/images/oil-bg.png" alt="Oil pouring" class="w-full h-full object-cover opacity-70">
+                <img src="/images/oil-bg.png" alt="Oil pouring" class="w-full h-full object-cover opacity-70">
                 <div class="absolute inset-0 bg-black bg-opacity-40"></div>
             </div>
             <div class="container mx-auto px-4 relative rounded py-4 bg-black/20 md:bg-transparent lg:bg-transparent z-10 flex flex-col md:flex-row items-center">
 
                 <!-- Left Text -->
                 <div class="w-full md:w-1/2 space-y-4">
-                    <p class="text-sm z-50 relative">Built on Trust. Focused on Trade. Committed to Growth.</p>
-                    <h1 class="relative z-20 text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-bold leading-snug">
-                        Fursa Energy is a Nigerian<br class="hidden sm:block">
-                        energy company and the<br class="hidden sm:block">
-                        official <span class="text-primary">super distributor</span><br class="hidden sm:block">
-                        of MRS Lubricants.
+                    <p class="text-sm z-50 relative">{{ $t('home.hero_tagline') }}</p>
+                    <h1 class="relative z-20 text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-bold leading-snug" v-html="$t('home.hero_title_html')">
                     </h1>
                     <div class="flex flex-wrap gap-4 mt-8 z-50 relative">
                         <RouterLink to="/shop"
                             class="inline-flex items-center gap-2 bg-primary text-white text-sm sm:text-md px-3 py-2 md:px-5 md:py-2 lg:px-8 lg:py-3 rounded-lg hover:bg-opacity-90 transition">
-                            <span>Shop Now</span>
+                            <span>{{ $t('home.shop_now') || 'Shop Now' }}</span>
                             <font-awesome-icon icon="arrow-right" />
                         </RouterLink>
                         <RouterLink to="/distributor-registration"
                             class="inline-flex items-center gap-2 border-2 border-white text-gold-600 text-sm sm:text-md px-3 py-2 md:px-5 md:py-2 lg:px-8 lg:py-3 rounded-lg bg-white hover:opacity-80 transition">
-                            <span>Become a Distributor</span>
+                            <span>{{ $t('home.become_distributor') || 'Become a Distributor' }}</span>
                         </RouterLink>
                     </div>
                 </div>
 
                 <!-- Right Image -->
                 <div class="w-full md:w-1/2 mt-8 md:mt-0 flex justify-center">
-                    <img src="/public/images/lubricants.png" alt="MRS Lubricants" class="max-w-xs xxxs:w-[15rem] xxs:w-[15rem] md:max-w-md xs:left-[160px] xs:top-[0px] xs:absolute sm:absolute sm:left-[320px] sm:top-[0px] lg:relative lg:left-[0] sm:top-[0px]">
+                    <img src="/images/lubricants.png" :alt="$t('home.hero_image_alt')" class="max-w-xs xxxs:w-[15rem] xxs:w-[15rem] md:max-w-md xs:left-[160px] xs:top-[0px] xs:absolute sm:absolute sm:left-[320px] sm:top-[0px] lg:relative lg:left-[0] sm:top-[0px]">
                 </div>
             </div>
         </section>
@@ -42,11 +38,11 @@
         <!-- Categories Section -->
         <section class="py-16 bg-gray-50">
             <div class="container mx-auto px-4">
-                <h2 class="text-3xl font-bold text-center mb-12">Categories</h2>
+                <h2 class="text-3xl font-bold text-center mb-12">{{ $t('home.categories') || 'Categories' }}</h2>
                 <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-7 gap-6 justify-center justify-items-center">
                     <!-- Loading Skeleton -->
                     <template v-if="loading">
-                        <div v-for="n in 7" :key="n" class="text-center animate-pulse">
+                        <div v-for="n in 6" :key="n" class="text-center animate-pulse">
                             <div class="w-20 h-20 mx-auto mb-3 bg-gray-200 rounded-full shadow-md"></div>
                             <p class="h-4 bg-gray-200 rounded w-3/4 mx-auto"></p>
                         </div>
@@ -71,13 +67,13 @@
         <!-- Popular Products -->
         <section class="py-16">
             <div class="container mx-auto px-4">
-                <h2 class="grid text-2xl sm:text-2xl md:text-3xl lg:text-3xl font-bold text-center mb-12">Popular Now
+                <h2 class="grid text-2xl sm:text-2xl md:text-3xl lg:text-3xl font-bold text-center mb-12">{{ $t('home.popular_now') || 'Popular Now' }}
                 </h2>
                 <ProductGrid :products="popularProducts" :loading="loading" :makeSwiper="true" />
                 <div class="text-center mt-8">
                     <RouterLink to="/shop"
                         class="inline-flex items-center gap-2 p-2 rounded bg-gray-300 text-mprimary-600 hover:opacity-60">
-                        <span>View More</span>
+                        <span>{{ $t('home.view_more') || 'View More' }}</span>
                         <font-awesome-icon icon="arrow-right" />
                     </RouterLink>
                 </div>
@@ -91,24 +87,17 @@
 
                     <!-- Left: Image -->
                     <div class="flex justify-center lg:justify-start">
-                        <img src="/images/about-image.png" alt="About Fursa Energy" class="max-w-full">
+                        <img src="/images/about-image.png" :alt="$t('home.about_image_alt')" class="max-w-full">
                     </div>
 
                     <!-- Right: Text -->
                     <div class="text-white lg:pl-8">
-                        <h2 class="text-2xl font-semibold mb-4">About Us</h2>
-                        <p class="mb-4">
-                            Fursa Energy is a Nigerian-owned energy solutions company and the official national super
-                            distributor of MRS Lubricants.
-                        </p>
-                        <p class="mb-6">
-                            With access to one of Africa’s largest blending plants, Fursa offers a range of
-                            premium-grade
-                            lubricants, greases, and specialty oils tailored for industrial and automotive applications.
-                        </p>
+                        <h2 class="text-2xl font-semibold mb-4">{{ $t('home.about_us') || 'About Us' }}</h2>
+                        <p class="mb-4">{{ $t('home.about_p1') }}</p>
+                        <p class="mb-6">{{ $t('home.about_p2') }}</p>
                         <RouterLink to="/about"
                             class="inline-flex items-center gap-2 bg-white text-[#B49457] px-5 py-2 rounded hover:bg-gray-100 transition">
-                            <span>Learn More</span>
+                            <span>{{ $t('home.learn_more') || 'Learn More' }}</span>
                             <font-awesome-icon icon="arrow-right" />
                         </RouterLink>
                     </div>
@@ -128,49 +117,43 @@
                 <!-- Tagline Badge -->
                 <div class="inline-flex items-center px-3 py-1 bg-white bg-opacity-20 rounded-full text-xs mb-4">
                     <font-awesome-icon icon="bolt" class="mr-1 text-white" />
-                    AI-Powered Engine Analysis
+                    {{ $t('home.ai_badge') }}
                 </div>
 
                 <!-- Heading -->
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">
-                    Get to Know the Best Lube <br class="hidden md:block" />
-                    <span class="text-[#FFD85E]">for Your Engine</span>
+                <h2 class="text-3xl md:text-4xl font-bold mb-4" v-html="$t('home.ai_heading_html')">
                 </h2>
 
                 <!-- Description -->
-                <p class="text-base md:text-lg mb-8 max-w-3xl mx-auto">
-                    Answer a few quick questions about your vehicle and driving habits. Our AI will analyze your needs
-                    and
-                    recommend the perfect lubricant for optimal engine performance.
-                </p>
+                <p class="text-base md:text-lg mb-8 max-w-3xl mx-auto">{{ $t('home.ai_description') }}</p>
 
                 <!-- Buttons -->
                 <div class="flex flex-col md:flex-row gap-4 justify-center mb-10">
                     <button
                         class="bg-white text-[#B49457] px-6 py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-100 transition">
                         <font-awesome-icon icon="search" />
-                        Start Engine Assessment
+                        {{ $t('home.ai_start_assessment') }}
                     </button>
                     <button
                         class="border border-white px-6 py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-white hover:text-[#B49457] transition">
                         <font-awesome-icon icon="box" />
-                        View All Products
+                        {{ $t('home.ai_view_products') }}
                     </button>
                 </div>
 
                 <!-- Stats -->
                 <div class="grid grid-cols-3 gap-8 max-w-lg mx-auto text-white">
                     <div>
-                        <div class="text-xl font-bold">3 min</div>
-                        <div class="text-sm opacity-90">Quick Assessment</div>
+                        <div class="text-xl font-bold">{{ $t('home.ai_stat_time') }}</div>
+                        <div class="text-sm opacity-90">{{ $t('home.ai_stat_time_label') }}</div>
                     </div>
                     <div>
-                        <div class="text-xl font-bold">98%</div>
-                        <div class="text-sm opacity-90">Accuracy Rate</div>
+                        <div class="text-xl font-bold">{{ $t('home.ai_stat_accuracy') }}</div>
+                        <div class="text-sm opacity-90">{{ $t('home.ai_stat_accuracy_label') }}</div>
                     </div>
                     <div>
-                        <div class="text-xl font-bold">5000+</div>
-                        <div class="text-sm opacity-90">Happy Customers</div>
+                        <div class="text-xl font-bold">{{ $t('home.ai_stat_customers') }}</div>
+                        <div class="text-sm opacity-90">{{ $t('home.ai_stat_customers_label') }}</div>
                     </div>
                 </div>
 
@@ -181,35 +164,24 @@
         <section class="py-12">
             <div class="container mx-auto px-4">
                 <div class="container mx-auto px-4">
-                    <h2 class="text-3xl font-bold text-center mb-12">
-                        Message from the chairman
-                    </h2>
+                    <h2 class="text-3xl font-bold text-center mb-12">{{ $t('home.chairman_section_title') }}</h2>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-0 items-center">
 
                     <!-- Left: Image -->
                     <div class="flex justify-center lg:justify-start">
-                        <img src="../../public/images/fursa-chairman.jpg" alt="About Fursa Energy"
+                        <img src="/images/fursa-chairman.jpg" :alt="$t('home.chairman_image_alt')"
                             class="max-w-full rounded-lg">
                     </div>
 
                     <!-- Right: Text -->
                     <div class="text-black lg:pl-8">
-                        <h2 class="text-2xl font-semibold mb-4">Chairman's Message</h2>
-                        <p class="mb-4">
-                            At FURSA, we believe that quality engine oil is not just a product.
-                            it’s a promise of performance, protection, and reliability.
-                            Our mission is to provide motorists, mechanics, and businesses
-                            with oil solutions they can truly depend on.
-                        </p>
-                        <p class="mb-6">
-                            As you explore our range of fully synthetic, high-mileage, and conventional
-                            oils, know that each product is backed by our commitment to excellence and
-                            customer satisfaction.
-                        </p>
-                        <p class="mb-6">Thank you for being part of the FURSA journey.</p>
-                        <p class="mb-6">Sincerely, <br /> The Chairman <br /> FURSA</p>
+                        <h2 class="text-2xl font-semibold mb-4">{{ $t('home.chairman_title') }}</h2>
+                        <p class="mb-4">{{ $t('home.chairman_p1') }}</p>
+                        <p class="mb-6">{{ $t('home.chairman_p2') }}</p>
+                        <p class="mb-6">{{ $t('home.chairman_p3') }}</p>
+                        <p class="mb-6" v-html="$t('home.chairman_signature_html')"></p>
                     </div>
 
                 </div>
@@ -219,14 +191,8 @@
         <!-- Partners-->
         <section class="py-16">
             <div class="container mx-auto px-4">
-                <h2 class="text-3xl font-bold text-center mb-6">
-                    Our Strategic Partners
-                </h2>
-                <p class="text-center mb-6">
-                    Fursa Energy collaborates with industry leaders to ensure quality, reliability, and reach across
-                    every
-                    region we serve.
-                </p>
+                <h2 class="text-3xl font-bold text-center mb-6">{{ $t('home.our_partners') || 'Our Strategic Partners' }}</h2>
+                <p class="text-center mb-6">{{ $t('home.partners_desc') }}</p>
 
                 <!-- Flex wrap to center partners -->
                 <div class="flex flex-wrap justify-center gap-20">
@@ -243,10 +209,8 @@
         <section class="py-16 bg-[#b39250] text-white">
             <div class="container mx-auto px-4 text-center">
                 <!-- Heading -->
-                <h2 class="text-3xl font-bold mb-2">Business Type &amp; Model</h2>
-                <p class="mb-12 text-sm">
-                    We operate through a hybrid business model tailored to serve bulk buyers and everyday users alike.
-                </p>
+                <h2 class="text-3xl font-bold mb-2">{{ $t('home.business_model') || 'Business Type & Model' }}</h2>
+                <p class="mb-12 text-sm">{{ $t('home.business_model_desc') }}</p>
 
                 <!-- Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -256,12 +220,8 @@
                             <!-- <font-awesome-icon icon="industry" class="text-2xl text-primary" /> -->
                             <font-awesome-icon icon="shopping-cart" class="text-2xl text-primary" />
                             <div>
-                                <h3 class="font-semibold mb-2">B2B (Primary)</h3>
-                                <p class="text-sm text-gray-700">
-                                    Supply of lubricants to industrial clients, transport companies, construction firms,
-                                    and
-                                    government agencies.
-                                </p>
+                                <h3 class="font-semibold mb-2">{{ $t('home.b2b') || 'B2B (Primary)' }}</h3>
+                                <p class="text-sm text-gray-700">{{ $t('home.b2b_desc') }}</p>
                             </div>
                         </div>
                     </div>
@@ -271,11 +231,8 @@
                         <div class="flex items-start gap-4">
                             <font-awesome-icon icon="shopping-cart" class="text-2xl text-primary" />
                             <div>
-                                <h3 class="font-semibold mb-2">B2C (Emerging)</h3>
-                                <p class="text-sm text-gray-700">
-                                    Distributors, dealers, auto workshops, mechanics, fleet operators, and consumers via
-                                    e-commerce.
-                                </p>
+                                <h3 class="font-semibold mb-2">{{ $t('home.b2c') || 'B2C (Emerging)' }}</h3>
+                                <p class="text-sm text-gray-700">{{ $t('home.b2c_desc') }}</p>
                             </div>
                         </div>
                     </div>
@@ -287,48 +244,26 @@
         <section class="py-16 bg-white">
             <div class="container mx-auto px-4 text-center">
                 <!-- Heading -->
-                <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-2">See What Clients Are Saying</h2>
-                <p class="text-gray-700">
-                    We are very proud of the service we provide and stand by every product we carry.
-                </p>
-                <p class="text-gray-500 text-sm mb-12">
-                    Read our testimonials from our happy customers.
-                </p>
+                <h2 class="lg:text-2xl md:text-xl text-lg font-bold mb-2">{{ $t('home.testimonials_title') || 'See What Clients Are Saying' }}</h2>
+                <p class="text-gray-700">{{ $t('home.testimonials_subtitle1') }}</p>
+                <p class="text-gray-500 text-sm mb-12">{{ $t('home.testimonials_subtitle2') }}</p>
 
                 <!-- Testimonials -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <!-- Testimonial Card -->
                     <div class="bg-[#b39250] text-white rounded-lg shadow-lg p-6">
-                        <p class="text-sm mb-4">
-                            Working with Fursa Energy has completely transformed our operations.
-                            Their lubricant quality is top-tier, and their delivery is always reliable.
-                            What truly stands out is their customer support — responsive, knowledgeable,
-                            and genuinely invested in our success. We've cut downtime, improved engine
-                            performance, and gained a dependable partner in the process.
-                        </p>
-                        <h4 class="font-bold">Ahmed Bello, Fleet Manager,<br>North Logistics Ltd</h4>
+                        <p class="text-sm mb-4">{{ $t('home.testimonial1_text') }}</p>
+                        <h4 class="font-bold" v-html="$t('home.testimonial1_author_html')"></h4>
                     </div>
 
                     <div class="bg-[#b39250] text-white rounded-lg shadow-lg p-6">
-                        <p class="text-sm mb-4">
-                            Working with Fursa Energy has completely transformed our operations.
-                            Their lubricant quality is top-tier, and their delivery is always reliable.
-                            What truly stands out is their customer support — responsive, knowledgeable,
-                            and genuinely invested in our success. We've cut downtime, improved engine
-                            performance, and gained a dependable partner in the process.
-                        </p>
-                        <h4 class="font-bold">Ahmed Bello, Fleet Manager,<br>North Logistics Ltd</h4>
+                        <p class="text-sm mb-4">{{ $t('home.testimonial2_text') }}</p>
+                        <h4 class="font-bold" v-html="$t('home.testimonial2_author_html')"></h4>
                     </div>
 
                     <div class="bg-[#b39250] text-white rounded-lg shadow-lg p-6">
-                        <p class="text-sm mb-4">
-                            Working with Fursa Energy has completely transformed our operations.
-                            Their lubricant quality is top-tier, and their delivery is always reliable.
-                            What truly stands out is their customer support — responsive, knowledgeable,
-                            and genuinely invested in our success. We've cut downtime, improved engine
-                            performance, and gained a dependable partner in the process.
-                        </p>
-                        <h4 class="font-bold">Ahmed Bello, Fleet Manager,<br>North Logistics Ltd</h4>
+                        <p class="text-sm mb-4">{{ $t('home.testimonial3_text') }}</p>
+                        <h4 class="font-bold" v-html="$t('home.testimonial3_author_html')"></h4>
                     </div>
                 </div>
             </div>
@@ -338,7 +273,7 @@
         <section class="py-12 bg-primary">
             <div class="max-w-6xl mx-auto px-4 bg-primary">
                 <!-- Section Title -->
-                <h2 class="text-center text-2xl font-bold mb-10">Our Blog</h2>
+                <h2 class="text-center text-2xl font-bold mb-10">{{ $t('home.our_blog') || 'Our Blog' }}</h2>
 
                 <!-- Blog Cards Container -->
                 <div class="grid md:grid-cols-3 gap-8">
@@ -346,27 +281,18 @@
                     <!-- Card 1 -->
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden">
                         <div class="bg-blue-900 p-6 flex justify-center">
-                            <img src="../../public/images/engine-3d.png" alt="Engine" class="w-40 h-40 object-contain">
+                            <img src="/images/engine-3d.png" alt="Engine" class="w-40 h-40 object-contain">
                         </div>
                         <div class="p-6">
-                            <h3 class="text-lg font-semibold text-green-700 mb-3">
-                                Choosing the Right Engine Oil: What Retailers Need to Know.
-                            </h3>
-                            <p class="text-gray-700 text-sm mb-5">
-                                When it comes to engine performance and longevity, few things are more critical than
-                                engine oil.
-                                Whether you're a retailer guiding customers or a car owner trying to make the right
-                                decision for
-                                your vehicle, understanding the role of engine oil and choosing the right type is
-                                essential...
-                            </p>
+                            <h3 class="text-lg font-semibold text-green-700 mb-3">{{ $t('home.blog_card_title') }}</h3>
+                            <p class="text-gray-700 text-sm mb-5">{{ $t('home.blog_card_excerpt') }}</p>
                             <div class="flex items-center justify-between text-sm">
                                 <div>
-                                    <p class="font-medium">Posted by Adams Farida</p>
-                                    <p class="text-gray-500">12th Of August 2020</p>
+                                    <p class="font-medium">{{ $t('home.blog_posted_by') }}</p>
+                                    <p class="text-gray-500">{{ $t('home.blog_date_sample') }}</p>
                                 </div>
                                 <a href="#" class="text-yellow-600 font-medium flex items-center gap-1">
-                                    Learn More
+                                    {{ $t('home.learn_more') || 'Learn More' }}
                                     <span>→</span>
                                 </a>
                             </div>
@@ -376,27 +302,18 @@
                     <!-- Card 2 -->
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden">
                         <div class="bg-yellow-500 p-6 flex justify-center">
-                            <img src="../../public/images/engine-3d.png" alt="Engine" class="w-40 h-40 object-contain">
+                            <img src="/images/engine-3d.png" alt="Engine" class="w-40 h-40 object-contain">
                         </div>
                         <div class="p-6">
-                            <h3 class="text-lg font-semibold text-green-700 mb-3">
-                                Choosing the Right Engine Oil: What Retailers Need to Know.
-                            </h3>
-                            <p class="text-gray-700 text-sm mb-5">
-                                When it comes to engine performance and longevity, few things are more critical than
-                                engine oil.
-                                Whether you're a retailer guiding customers or a car owner trying to make the right
-                                decision for
-                                your vehicle, understanding the role of engine oil and choosing the right type is
-                                essential...
-                            </p>
+                            <h3 class="text-lg font-semibold text-green-700 mb-3">{{ $t('home.blog_card_title') }}</h3>
+                            <p class="text-gray-700 text-sm mb-5">{{ $t('home.blog_card_excerpt') }}</p>
                             <div class="flex items-center justify-between text-sm">
                                 <div>
-                                    <p class="font-medium">Posted by Adams Farida</p>
-                                    <p class="text-gray-500">12th Of August 2020</p>
+                                    <p class="font-medium">{{ $t('home.blog_posted_by') }}</p>
+                                    <p class="text-gray-500">{{ $t('home.blog_date_sample') }}</p>
                                 </div>
                                 <a href="#" class="text-yellow-600 font-medium flex items-center gap-1">
-                                    Learn More
+                                    {{ $t('home.learn_more') || 'Learn More' }}
                                     <span>→</span>
                                 </a>
                             </div>
@@ -406,27 +323,18 @@
                     <!-- Card 3 -->
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden">
                         <div class="bg-green-800 p-6 flex justify-center">
-                            <img src="../../public/images/engine-3d.png" alt="Engine" class="w-40 h-40 object-contain">
+                            <img src="/images/engine-3d.png" alt="Engine" class="w-40 h-40 object-contain">
                         </div>
                         <div class="p-6">
-                            <h3 class="text-lg font-semibold text-green-700 mb-3">
-                                Choosing the Right Engine Oil: What Retailers Need to Know.
-                            </h3>
-                            <p class="text-gray-700 text-sm mb-5">
-                                When it comes to engine performance and longevity, few things are more critical than
-                                engine oil.
-                                Whether you're a retailer guiding customers or a car owner trying to make the right
-                                decision for
-                                your vehicle, understanding the role of engine oil and choosing the right type is
-                                essential...
-                            </p>
+                            <h3 class="text-lg font-semibold text-green-700 mb-3">{{ $t('home.blog_card_title') }}</h3>
+                            <p class="text-gray-700 text-sm mb-5">{{ $t('home.blog_card_excerpt') }}</p>
                             <div class="flex items-center justify-between text-sm">
                                 <div>
-                                    <p class="font-medium">Posted by Adams Farida</p>
-                                    <p class="text-gray-500">12th Of August 2020</p>
+                                    <p class="font-medium">{{ $t('home.blog_posted_by') }}</p>
+                                    <p class="text-gray-500">{{ $t('home.blog_date_sample') }}</p>
                                 </div>
                                 <a href="#" class="text-yellow-600 font-medium flex items-center gap-1">
-                                    Learn More
+                                    {{ $t('home.learn_more') || 'Learn More' }}
                                     <span>→</span>
                                 </a>
                             </div>
@@ -491,7 +399,7 @@ const fetchCategories = async () => {
     caterror.value = null;
 
     try {
-        const response = await fetch(`${baseUrl}/cats?limit=6?random=true`);
+        const response = await fetch(`${baseUrl}/cats?limit=7&random=true`);
 
         if (!response.ok) {
             throw new Error(`Failed to fetch categories: ${response.statusText}`);

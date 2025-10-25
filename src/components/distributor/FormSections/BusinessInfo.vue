@@ -1,11 +1,11 @@
 <template>
     <div class="space-y-6">
-        <h3 class="text-xl font-semibold text-primary mb-4">Section 1: Business Information</h3>
+    <h3 class="text-xl font-semibold text-primary mb-4">{{ $t('distributor.sections.business_info') }}</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Company Name <span class="text-red-500">*</span>
+                    {{ $t('distributor.business.company_name') }} <span class="text-red-500">*</span>
                 </label>
                 <input v-model="form.company_name" type="text"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -14,7 +14,7 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Registered Business Name (if different)
+                    {{ $t('distributor.business.registered_name') }}
                 </label>
                 <input v-model="form.registered_name" type="text"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
@@ -24,7 +24,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    RC Number <span class="text-red-500">*</span>
+                    {{ $t('distributor.business.rc_number') }} <span class="text-red-500">*</span>
                 </label>
                 <input v-model="form.rc_number" type="text"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -33,7 +33,7 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address <span class="text-red-500">*</span>
+                    {{ $t('distributor.business.email') }} <span class="text-red-500">*</span>
                 </label>
                 <input v-model="form.email" type="email"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -42,7 +42,7 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Office Phone Number <span class="text-red-500">*</span>
+                    {{ $t('distributor.business.office_phone') }} <span class="text-red-500">*</span>
                 </label>
                 <input v-model="form.office_phone" type="tel"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -53,31 +53,31 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Company Type <span class="text-red-500">*</span>
+                    {{ $t('distributor.business.company_type') }} <span class="text-red-500">*</span>
                 </label>
                 <select v-model="form.company_type"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required>
-                    <option value="">Select Type</option>
-                    <option value="Private Limited">Private Limited</option>
-                    <option value="Public Limited">Public Limited</option>
-                    <option value="Partnership">Partnership</option>
-                    <option value="Sole Proprietorship">Sole Proprietorship</option>
+                    <option value="">{{ $t('distributor.business.select_type') }}</option>
+                    <option value="Private Limited">{{ $t('distributor.business.types.private_limited') }}</option>
+                    <option value="Public Limited">{{ $t('distributor.business.types.public_limited') }}</option>
+                    <option value="Partnership">{{ $t('distributor.business.types.partnership') }}</option>
+                    <option value="Sole Proprietorship">{{ $t('distributor.business.types.sole_proprietorship') }}</option>
                 </select>
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Website (if any)
+                    {{ $t('distributor.business.website') }}
                 </label>
-                <input v-model="form.website" type="url" placeholder="https://example.com"
+                <input v-model="form.website" type="url" :placeholder="$t('distributor.business.website_placeholder')"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
             </div>
         </div>
 
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-                Business Address <span class="text-red-500">*</span>
+                {{ $t('distributor.business.business_address') }} <span class="text-red-500">*</span>
             </label>
             <textarea v-model="form.business_address" rows="3"
                 class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"

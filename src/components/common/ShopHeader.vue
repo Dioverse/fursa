@@ -11,7 +11,7 @@
                 <!-- Search Bar -->
                 <div class="flex-1 max-w-md mx-4 md:mx-8">
                     <div class="relative">
-                        <input v-model="searchQuery" type="text" placeholder="Search Products..."
+            <input v-model="searchQuery" type="text" :placeholder="$t('header.search_placeholder') || 'Search Products...'"
                             class="w-full px-4 py-2 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             @keyup.enter="handleSearch">
                         <button @click="handleSearch"
@@ -34,16 +34,16 @@
                     </RouterLink>
 
 
-                    <RouterLink v-if="authStore.isAuthenticated" to="/dashboard"
+          <RouterLink v-if="authStore.isAuthenticated" to="/dashboard"
                         class="bg-primary text-white px-4 py-2 rounded hover:bg-opacity-90 transition flex items-center gap-2">
                         <font-awesome-icon icon="user-circle" />
-                        <span class="hidden md:inline">Account</span>
+            <span class="hidden md:inline">{{ $t('header.account') || 'Account' }}</span>
                     </RouterLink>
 
-                    <RouterLink v-else to="/login"
+          <RouterLink v-else to="/login"
                         class="bg-primary text-white px-4 py-2 rounded hover:bg-opacity-90 transition flex items-center gap-2">
                         <font-awesome-icon icon="user" />
-                        <span class="hidden md:inline">Login</span>
+            <span class="hidden md:inline">{{ $t('header.login') || 'Login' }}</span>
                     </RouterLink>
 
                     <!-- Language Selector -->
@@ -158,7 +158,5 @@ const switchLang = (lang) => {
 
 
 <style scoped>
-.badge {
-    @apply bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center;
-}
+/* removed unused .badge class to avoid Tailwind @apply lint warning */
 </style>

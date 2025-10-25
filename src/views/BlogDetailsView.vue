@@ -10,7 +10,7 @@
                 <div class="text-white max-w-3xl">
                     <div class="flex items-center gap-4 mb-4">
                         <span class="bg-primary px-3 py-1 rounded text-sm">{{ post.category?.name }}</span>
-                        <span class="opacity-75">{{ post?.readTime }} min read</span>
+                        <span class="opacity-75">{{ $t('blog.min_read', { minutes: post?.readTime }) }}</span>
                     </div>
                     <h1 class="text-4xl md:text-5xl font-bold mb-4">{{ post.title }}</h1>
                     <div class="flex items-center gap-6">
@@ -52,22 +52,22 @@
 
                             <!-- Share Section -->
                             <div class="border-t border-b py-6 my-8">
-                                <p class="font-semibold mb-4">Share this article:</p>
+                                <p class="font-semibold mb-4">{{ $t('blog.share') }}</p>
                                 <div class="flex gap-4">
                                     <button
                                         class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
                                         <font-awesome-icon :icon="['fab', 'facebook']" />
-                                        Facebook
+                                        {{ $t('blog.facebook') }}
                                     </button>
                                     <button
                                         class="flex items-center gap-2 px-4 py-2 bg-blue-400 text-white rounded hover:bg-blue-500 transition">
                                         <font-awesome-icon :icon="['fab', 'twitter']" />
-                                        Twitter
+                                        {{ $t('blog.twitter') }}
                                     </button>
                                     <button
                                         class="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800 transition">
                                         <font-awesome-icon :icon="['fab', 'linkedin']" />
-                                        LinkedIn
+                                        {{ $t('blog.linkedin') }}
                                     </button>
                                 </div>
                             </div>
@@ -92,7 +92,7 @@
 
                         <!-- Related Posts -->
                         <div class="bg-white rounded-lg shadow-md p-6">
-                            <h3 class="text-lg font-bold mb-4">Related Articles</h3>
+                            <h3 class="text-lg font-bold mb-4">{{ $t('blog.related') }}</h3>
                             <div class="space-y-4">
                                 <article v-for="related in relatedPosts" :key="related.id" class="group">
                                     <RouterLink :to="`/blog/${related.id}`" class="flex gap-3">
@@ -122,26 +122,26 @@
         <section class="py-16 bg-gray-50">
             <div class="container mx-auto px-4">
                 <div class="max-w-3xl mx-auto">
-                    <h3 class="lg:text-2xl md:text-xl text-lg font-bold mb-8">Comments ({{ comments.length }})</h3>
+                    <h3 class="lg:text-2xl md:text-xl text-lg font-bold mb-8">{{ $t('blog.comments', { count: comments.length }) }}</h3>
 
                     <!-- Comment Form -->
                     <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                        <h4 class="font-semibold mb-4">Leave a Comment</h4>
+                        <h4 class="font-semibold mb-4">{{ $t('blog.leave_comment') }}</h4>
                         <form @submit.prevent="submitComment" class="space-y-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input v-model="commentForm.name" type="text" placeholder="Your Name"
+                                <input v-model="commentForm.name" type="text" :placeholder="$t('blog.your_name')"
                                     class="px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                     required>
-                                <input v-model="commentForm.email" type="email" placeholder="Your Email"
+                                <input v-model="commentForm.email" type="email" :placeholder="$t('blog.your_email')"
                                     class="px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                     required>
                             </div>
-                            <textarea v-model="commentForm.message" rows="4" placeholder="Your Comment"
+                            <textarea v-model="commentForm.message" rows="4" :placeholder="$t('blog.your_comment')"
                                 class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                 required></textarea>
                             <button type="submit"
                                 class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition">
-                                Post Comment
+                                {{ $t('blog.post_comment') }}
                             </button>
                         </form>
                     </div>
@@ -177,6 +177,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { IMG_URL } from '@/utils/urls'
 import { usePostStore } from '@/stores/posts'
 import { useRoute } from 'vue-router'
@@ -195,6 +196,7 @@ const postsStore = usePostStore()
 const postLoading = ref(postsStore.loading)
 const post = ref([])
 const relatedPosts = ref([])
+const { t } = useI18n()
 
 // fetch posts and filters
 const loadPostDetails = async () => {
@@ -202,8 +204,8 @@ const loadPostDetails = async () => {
     post.value = []
     postLoading.value = true
     const res = await postsStore.fetchPostDetails(slug)
-    post.value = res.post || res.post || []
-    relatedPosts.value = res.related || res.related || []
+    post.value = res.post || []
+    relatedPosts.value = res.related || []
   } catch (err) {
     console.error('Error fetching posts:', err)
   } finally {
@@ -307,7 +309,7 @@ const submitComment = () => {
         message: commentForm.value.message
     })
 
-    toast.success('Comment posted successfully!')
+    toast.success(t('blog.comment_posted'))
 
     // Reset form
     commentForm.value = {
@@ -324,25 +326,8 @@ const submitComment = () => {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    line-clamp: 2;
 }
 
-.prose h2 {
-    @apply text-2xl font-bold mt-8 mb-4;
-}
-
-.prose h3 {
-    @apply text-xl font-semibold mt-6 mb-3;
-}
-
-.prose p {
-    @apply mb-4 text-gray-700 leading-relaxed;
-}
-
-.prose ul {
-    @apply list-disc ml-6 mb-4 space-y-2;
-}
-
-.prose ol {
-    @apply list-decimal ml-6 mb-4 space-y-2;
-}
+/* Removed Tailwind @apply rules to satisfy linter; rely on default prose styles */
 </style>

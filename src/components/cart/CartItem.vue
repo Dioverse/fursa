@@ -20,8 +20,9 @@
             </div>
         </div>
         <div class="flex items-center gap-4 py-4 border-b justify-between">
-            <button @click="removeItem(item.product.id)" class="p-2 text-red-500 rounded text-sm hover:text-red-700 hover:bg-red-300 transition">
-                <font-awesome-icon icon="trash" /> Remove
+            <button @click="removeItem(item.product.id)" class="p-2 text-red-500 rounded text-sm hover:text-red-700 hover:bg-red-300 transition"
+                :aria-label="$t('cart.remove_item', { name: item.product.name })">
+                <font-awesome-icon icon="trash" /> {{ $t('cart.remove') }}
             </button>
             <div class="flex items-center rounded overflow-hidden w-max">
                 <!-- Decrement -->

@@ -9,7 +9,7 @@
         </template>
 
         <div class="w-full max-w-md mx-auto">
-            <h2 class="text-3xl font-bold text-primary mb-8">Sign in to Fursa</h2>
+            <h2 class="text-3xl font-bold text-primary mb-8">{{ $t('auth.login.title') }}</h2>
 
             <LoginForm @submit="handleLogin" />
 
@@ -18,16 +18,16 @@
                     <div class="w-full border-t border-gray-300"></div>
                 </div>
                 <div class="relative flex justify-center text-sm">
-                    <span class="px-2 bg-white text-gray-500">Or</span>
+                    <span class="px-2 bg-white text-gray-500">{{ $t('auth.common.or') }}</span>
                 </div>
             </div>
 
             <SocialLogin />
 
             <p class="text-center mt-8 text-gray-600">
-                Don't have an account?
+                {{ $t('auth.login.no_account') }}
                 <RouterLink to="/register" class="text-primary font-semibold hover:underline">
-                    Register
+                    {{ $t('auth.login.register_link') }}
                 </RouterLink>
             </p>
         </div>
@@ -41,21 +41,23 @@ import AuthLayout from '@/layouts/AuthLayout.vue'
 import LoginForm from '@/components/auth/LoginForm.vue'
 import SocialLogin from '@/components/auth/SocialLogin.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const toast = useToast()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 const handleLogin = async (credentials) => {
     try {
         await authStore.login(credentials)
-        toast.success('Login successful!')
+        toast.success(t('auth.login.success'))
 
         // Check if there's a redirect URL
         const redirectTo = router.currentRoute.value.query.redirect || '/dashboard'
         router.push(redirectTo)
     } catch (error) {
-        toast.error(error.response?.data?.errors?.user[0] || 'Invalid login credentials. Please try again.')
+        toast.error(error.response?.data?.errors?.user?.[0] || t('auth.login.error_invalid'))
     }
 }
 

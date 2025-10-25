@@ -1,0 +1,916 @@
+{
+  "header": {
+    "search_placeholder": "Rechercher des produits...",
+    "account": "Compte",
+    "dashboard": "Tableau de bord",
+    "orders": "Commandes",
+    "wishlist": "Favoris",
+    "logout": "Déconnexion",
+    "login": "Connexion",
+    "nav": {
+      "home": "Accueil",
+      "shop": "Boutique",
+      "about": "À propos",
+      "blog": "Blog",
+      "contact": "Contact",
+      "business": "Acheter pour l'entreprise"
+    },
+    "distributor": "Distributeur",
+    "registration": "Inscription"
+  },
+  "home": {
+    "shop_now": "Acheter maintenant",
+    "become_distributor": "Devenir distributeur",
+    "categories": "Catégories",
+    "popular_now": "Populaire maintenant",
+    "view_more": "Voir plus",
+    "about_us": "À propos de nous",
+    "learn_more": "En savoir plus",
+    "our_partners": "Nos partenaires",
+    "business_model": "Type et modèle d'entreprise",
+    "b2b": "B2B (Principal)",
+    "b2c": "B2C (Émergent)",
+    "testimonials_title": "Ce que disent les clients",
+    "our_blog": "Notre blog",
+    "hero_tagline": "Fondé sur la confiance. Centré sur le commerce. Engagé pour la croissance.",
+    "hero_title_html": "Fursa Energy est une <br class=\"hidden sm:block\">entreprise énergétique nigériane et le<br class=\"hidden sm:block\"> <span class=\"text-primary\">super distributeur</span><br class=\"hidden sm:block\"> officiel des lubrifiants MRS.",
+    "hero_image_alt": "Lubrifiants MRS",
+    "about_image_alt": "À propos de Fursa Energy",
+    "about_p1": "Fursa Energy est une société nigériane de solutions énergétiques et le super distributeur national officiel des lubrifiants MRS.",
+    "about_p2": "Grâce à l’accès à l’une des plus grandes usines de mélange d’Afrique, Fursa propose une gamme de lubrifiants, graisses et huiles spécialisées de qualité supérieure, adaptés aux applications industrielles et automobiles.",
+    "ai_badge": "Analyse du moteur par IA",
+    "ai_heading_html": "Découvrez le meilleur lubrifiant <br class=\"hidden md:block\" /><span class=\"text-[#FFD85E]\">pour votre moteur</span>",
+    "ai_description": "Répondez à quelques questions rapides sur votre véhicule et vos habitudes de conduite. Notre IA analysera vos besoins et recommandera le lubrifiant idéal pour des performances optimales.",
+    "ai_start_assessment": "Lancer l’évaluation moteur",
+    "ai_view_products": "Voir tous les produits",
+    "ai_stat_time": "3 min",
+    "ai_stat_time_label": "Évaluation rapide",
+    "ai_stat_accuracy": "98%",
+    "ai_stat_accuracy_label": "Taux de précision",
+    "ai_stat_customers": "5000+",
+    "ai_stat_customers_label": "Clients satisfaits",
+    "chairman_section_title": "Message du président",
+    "chairman_image_alt": "Président de Fursa",
+    "chairman_title": "Message du président",
+    "chairman_p1": "Chez FURSA, nous pensons que l’huile moteur de qualité n’est pas qu’un produit : c’est une promesse de performance, de protection et de fiabilité. Notre mission est de fournir aux automobilistes, mécaniciens et entreprises des solutions lubrifiantes sur lesquelles ils peuvent vraiment compter.",
+    "chairman_p2": "En parcourant notre gamme d’huiles entièrement synthétiques, haute kilométrage et conventionnelles, sachez que chaque produit est soutenu par notre engagement envers l’excellence et la satisfaction client.",
+    "chairman_p3": "Merci de faire partie de l’aventure FURSA.",
+    "chairman_signature_html": "Cordialement,<br />Le Président<br />FURSA",
+    "partners_desc": "Fursa Energy collabore avec des leaders du secteur pour garantir qualité, fiabilité et couverture dans toutes les régions que nous desservons.",
+    "business_model_desc": "Nous opérons avec un modèle hybride conçu pour servir à la fois les gros acheteurs et les utilisateurs du quotidien.",
+    "b2b_desc": "Fourniture de lubrifiants aux clients industriels, sociétés de transport, entreprises de construction et agences gouvernementales.",
+    "b2c_desc": "Distributeurs, revendeurs, ateliers automobiles, mécaniciens, gestionnaires de flotte et consommateurs via l’e‑commerce.",
+    "testimonials_subtitle1": "Nous sommes très fiers du service que nous offrons et assumons la qualité de chaque produit.",
+    "testimonials_subtitle2": "Lisez les témoignages de nos clients satisfaits.",
+    "testimonial1_text": "Travailler avec Fursa Energy a complètement transformé nos opérations. La qualité de leurs lubrifiants est de premier ordre et leurs livraisons sont toujours fiables. Ce qui ressort vraiment, c’est leur support client — réactif, compétent et véritablement engagé dans notre réussite. Nous avons réduit les temps d’arrêt, amélioré les performances des moteurs et gagné un partenaire fiable.",
+    "testimonial1_author_html": "Ahmed Bello, Responsable de flotte,<br>North Logistics Ltd",
+    "testimonial2_text": "Travailler avec Fursa Energy a complètement transformé nos opérations. La qualité de leurs lubrifiants est de premier ordre et leurs livraisons sont toujours fiables. Ce qui ressort vraiment, c’est leur support client — réactif, compétent et véritablement engagé dans notre réussite. Nous avons réduit les temps d’arrêt, amélioré les performances des moteurs et gagné un partenaire fiable.",
+    "testimonial2_author_html": "Ahmed Bello, Responsable de flotte,<br>North Logistics Ltd",
+    "testimonial3_text": "Travailler avec Fursa Energy a complètement transformé nos opérations. La qualité de leurs lubrifiants est de premier ordre et leurs livraisons sont toujours fiables. Ce qui ressort vraiment, c’est leur support client — réactif, compétent et véritablement engagé dans notre réussite. Nous avons réduit les temps d’arrêt, amélioré les performances des moteurs et gagné un partenaire fiable.",
+    "testimonial3_author_html": "Ahmed Bello, Responsable de flotte,<br>North Logistics Ltd",
+    "blog_card_title": "Choisir la bonne huile moteur : ce que les détaillants doivent savoir.",
+    "blog_card_excerpt": "En matière de performance et de longévité du moteur, peu de choses sont plus cruciales que l’huile moteur. Que vous guidiez des clients ou que vous choisissiez pour votre propre véhicule, comprendre le rôle de l’huile et sélectionner le bon type est essentiel…",
+    "blog_posted_by": "Publié par Adams Farida",
+    "blog_date_sample": "12 août 2020",
+    "why_choose": {
+      "title": "Pourquoi choisir Fursa Energy comme distributeur de lubrifiants de confiance",
+      "subtitle": "Fursa Energy est plus qu’un distributeur de lubrifiants : nous sommes un partenaire de confiance pour les entreprises à travers le Nigéria. Avec l’appui de MRS Lubricants, l’une des principales usines de mélange en Afrique, nous livrons des produits haute performance conformes aux normes internationales.",
+      "items": {
+        "facility": {
+          "title": "Soutenue par l’une des usines de mélange les plus avancées d’Afrique",
+          "desc": "Technologie de pointe garantissant des produits de qualité supérieure"
+        },
+        "quality": {
+          "title": "Normes de qualité premium",
+          "desc": "Tous les produits répondent aux certifications internationales de qualité"
+        },
+        "infrastructure": {
+          "title": "Infrastructure numérique solide",
+          "desc": "Processus d’intégration moderne et stratégies tarifaires compétitives"
+        },
+        "support": {
+          "title": "Système de support intégré",
+          "desc": "Marketing complet et assistance après-vente pour nos partenaires"
+        }
+      }
+    }
+  }
+  ,
+  "about": {
+    "hero_title": "À propos de Fursa Energy",
+    "about_us": "À propos de nous",
+    "our_story": "Notre histoire",
+    "story_tagline": "Fondé sur la confiance, axé sur le commerce, engagé pour la croissance",
+    "vision": "Vision",
+    "mission": "Mission",
+    "company": {
+      "p1": "Fursa Energy est une entreprise nigériane spécialisée dans la distribution, le marketing et le développement de lubrifiants haute performance pour les secteurs automobile et industriel. Nous sommes le super distributeur officiel de MRS Lubricants, l'une des usines de mélange les plus réputées d'Afrique, située à Apapa, Lagos.",
+      "p2": "Présente dans tout le Nigéria, Fursa se positionne comme le partenaire de référence pour le commerce, la logistique et l'approvisionnement en lubrifiants de premier ordre, conçus pour réduire la friction, protéger les machines et améliorer l'efficacité opérationnelle."
+    },
+    "story": {
+      "p1": "Tous les voyages ne commencent pas sur la route — mais le nôtre est guidé par ce qui l’alimente. Fursa Energy est née d’une vision : être plus qu’un simple distributeur de lubrifiants, devenir un catalyseur de performance industrielle, d’autonomisation économique et de partenariats commerciaux fiables à travers l’Afrique.",
+      "p2": "Sur un marché où la fiabilité est souvent reléguée au second plan, Fursa a relevé le standard — livrer des lubrifiants premium à grande échelle tout en construisant un écosystème commercial où les partenaires prospèrent. Au cœur de notre histoire : le mouvement — moteurs qui tournent, économies qui s’élèvent, entreprises qui grandissent. Soutenue par MRS Oil PLC — l’une des plus grandes usines de mélange d’Afrique — Fursa Energy fournit des formulations de classe mondiale pour propulser véhicules, machines et industries qui font avancer le progrès.",
+      "p3": "Des routes du Nord aux économies côtières du Sud, nous ne faisons pas que distribuer — nous outillons un réseau de revendeurs, distributeurs et institutions avec les moyens de réussir. Chaque goutte livrée alimente une histoire plus vaste d’innovation, d’excellence et d’opportunités. Fursa n’est pas seulement une marque — c’est un mouvement de confiance, de commerce et de croissance en action."
+    },
+    "story_more": {
+      "p1": "Commencer sur la route. Traverser la tempête. Lorsque le travail exige l’impossible, la productivité ne doit pas faiblir. Dans les conditions les plus difficiles d’Afrique, nous construisons des performances qui durent.",
+      "p2": "Les mélanges modernes de Fursa refusent tout compromis. Nos produits sont conçus avec précision pour une protection inégalée des machines. Des rues animées de Lagos aux pistes du Sahel, notre gamme couvre les spécificités du terrain africain.",
+      "p3": "Des villes du Nord aux côtes du Sud, jusqu’à l’arc sahélien, notre expertise est adaptée aux routes africaines. Partenaires de confiance pour des lubrifiants qui font avancer votre entreprise. Faisons progresser l’Afrique — ensemble."
+    },
+    "vision_desc": "Être le fournisseur de solutions énergétiques le plus fiable et innovant d’Afrique de l’Ouest, offrant une valeur exceptionnelle et bâtissant des partenariats durables.",
+    "mission_desc": "Fournir des lubrifiants premium et des solutions énergétiques, en soutenant les entreprises avec des produits de qualité, un service d’excellence et des pratiques durables qui stimulent la croissance.",
+    "alt": {
+      "hero": "Image héro raffinerie Fursa Energy",
+      "splash": "Illustration d’huile premium",
+      "brown": "Visuel bidon marron Fursa"
+    }
+  }
+  ,
+  "faq": {
+    "title": "Foire aux questions",
+    "subtitle": "Trouvez des réponses aux questions fréquentes sur nos lubrifiants, la distribution, la livraison et la vérification des produits.",
+    "any_questions": "Des questions ?",
+    "contact": "Contact :",
+    "business_hours": "Heures d'ouverture :",
+    "mon_fri": "Lundi - Vendredi : 8h00 - 18h00",
+    "saturday": "Samedi : 9h00 - 16h00",
+    "sunday": "Dimanche : Fermé"
+  }
+  ,
+  "terms": {
+    "title": "Conditions générales",
+    "effective_date": "Date d'effet : 1 janvier 2024",
+    "sections": {
+      "acceptance": "1. Acceptation des conditions",
+      "use_license": "2. Licence d'utilisation",
+      "product_info": "3. Informations sur les produits",
+      "order_acceptance": "4. Acceptation des commandes",
+      "payment_terms": "5. Conditions de paiement",
+      "shipping_delivery": "6. Expédition et livraison",
+      "returns_refunds": "7. Retours et remboursements",
+      "liability": "8. Limitation de responsabilité",
+      "contact": "9. Coordonnées"
+    }
+  },
+  "privacy": {
+    "title": "Politique de confidentialité",
+    "last_updated": "Dernière mise à jour : 1 janvier 2024",
+    "sections": {
+      "introduction": "Introduction",
+      "information_we_collect": "Informations que nous collectons",
+      "personal_information": "Informations personnelles",
+      "auto_information": "Informations collectées automatiquement",
+      "how_we_use": "Comment nous utilisons vos informations",
+      "sharing": "Partage des informations",
+      "security": "Sécurité des données",
+      "rights": "Vos droits",
+      "cookies": "Politique relative aux cookies",
+      "children": "Confidentialité des enfants",
+      "changes": "Modifications de cette politique",
+      "contact": "Contactez-nous",
+      "contact_intro": "Pour toute question concernant cette politique de confidentialité :"
+    }
+  },
+  "notFound": {
+    "title": "Oups ! Page introuvable",
+    "subtitle": "Il semble que vous vous soyez égaré. La page que vous recherchez a été déplacée, supprimée ou n'existe pas.",
+    "home": "Retour à l'accueil",
+    "visit_shop": "Visiter la boutique",
+    "need_help": "Besoin d'aide ? Contactez-nous :",
+    "call_us": "Nous appeler",
+    "email_us": "Nous écrire",
+    "suggested": "Vous pourriez être intéressé par",
+    "view_product": "Voir le produit"
+  },
+  "cart": {
+    "title": "Panier",
+    "loading": "Chargement de votre panier...",
+    "products": "Produits",
+    "continue_shopping": "Continuer vos achats",
+    "clear_cart": "Vider le panier",
+    "summary": "Récapitulatif du panier",
+    "empty": {
+      "title": "Votre panier est vide",
+      "subtitle": "Il semble que vous n'ayez encore rien ajouté à votre panier",
+      "cta": "Commencer vos achats"
+    },
+    "remove": "Supprimer",
+    "remove_item": "Supprimer {name} du panier",
+    "total": "Total",
+    "discount": "Remise",
+    "subtotal": "Sous-total",
+    "proceed_to_checkout": "Passer au paiement",
+    "we_accept": "Nous acceptons :",
+    "toasts": {
+      "coupon_applied": "Coupon appliqué avec succès !",
+      "coupon_invalid": "Code promo invalide",
+      "cart_empty": "Votre panier est vide",
+      "clear_confirm": "Êtes-vous sûr de vouloir vider votre panier ?"
+    }
+  },
+  "checkout": {
+    "initializing": "Initialisation du paiement",
+    "please_wait": "Veuillez patienter...",
+    "unavailable_some": "Certains articles de votre panier sont en rupture de stock.",
+    "unavailable_failed": "L'initialisation de la commande a échoué",
+  "remove_to_proceed": "Veuillez retirer ces articles pour continuer :",
+  "items_unavailable_line": "{name} : Demandés {requested}, Disponibles {available}",
+    "retry": "Réessayer",
+    "error_title": "Une erreur s'est produite",
+    "title": "Paiement",
+    "no_address": "Aucune adresse enregistrée",
+    "add_address_prompt": "Ajoutez une adresse de livraison pour recevoir votre commande",
+    "add_address": "Ajouter une adresse",
+    "shipping_address": "Adresse de livraison",
+    "add_new": "Ajouter",
+    "default": "Par défaut",
+    "aria": {
+      "select_shipping_for": "Sélectionner {name} comme adresse de livraison",
+      "default_address_badge": "Ceci est votre adresse par défaut"
+    },
+    "edit": "Modifier",
+    "confirm_items": "Confirmez les articles avant le paiement",
+    "ensure_correct": "Assurez-vous que tout est correct avant de finaliser votre achat",
+    "estimated_delivery": "Livraison estimée",
+    "select_payment": "Sélectionnez un mode de paiement",
+    "payment_options_legend": "Options de mode de paiement",
+    "loading_gateway": "Chargement du service...",
+    "pay_with": "Payer avec {gateway}",
+    "gateway_logo_alt": "Logo {name}",
+    "pay_now": "Payer ₦{amount}",
+    "processing": "Traitement...",
+    "select_address_alert": "Veuillez sélectionner une adresse de livraison",
+    "select_method_alert": "Veuillez sélectionner un mode de paiement",
+    "order_summary": "Récapitulatif de la commande",
+    "subtotal": "Sous-total",
+    "original_price": "Prix d'origine",
+    "saved": "Économisé",
+    "shipping": "Livraison",
+    "tax": "Taxe",
+    "total": "Total",
+    "modal_add_title": "Ajouter une adresse",
+    "modal_edit_title": "Modifier l'adresse",
+    "full_name": "Nom complet",
+    "phone_number": "Numéro de téléphone",
+    "country": "Pays",
+    "select_country": "Sélectionner un pays",
+    "state_province": "État/Province",
+    "select_state_province": "Sélectionner un État & une Province",
+    "city": "Ville",
+    "postal_code": "Code postal",
+    "address_line_1": "Adresse ligne 1",
+    "address_line_1_ph": "Rue, bâtiment, numéro, etc.",
+    "address_line_2": "Adresse ligne 2",
+    "address_line_2_ph": "Appartement, étage, etc.",
+    "new_will_be_default": "La nouvelle adresse sera définie par défaut",
+    "cancel": "Annuler",
+    "update_address": "Mettre à jour l'adresse",
+    "add_address_submit": "Ajouter l'adresse",
+    "delivery": {
+      "in_day": "Dans {count} jour.",
+      "in_days": "Dans {min} - {max} jours."
+    },
+    "payment_title": "Paiement de la commande",
+    "payment_description": "Finalisez le paiement de votre commande",
+    "toasts": {
+      "init_failed": "Échec de l'initialisation du paiement",
+      "countries_failed": "Échec du chargement des pays",
+      "states_failed": "Échec du chargement des États/Provinces",
+      "select_payment_required": "Veuillez sélectionner un mode de paiement",
+      "default_address_updated": "Adresse par défaut mise à jour",
+      "default_address_update_failed": "Échec de la mise à jour de l'adresse par défaut",
+      "address_updated": "Adresse mise à jour avec succès",
+      "address_added": "Adresse ajoutée avec succès",
+      "fix_errors_below": "Veuillez corriger les erreurs ci-dessous",
+      "save_address_failed": "Échec de l'enregistrement de l'adresse",
+      "gateway_not_loaded": "Service de paiement non chargé",
+      "payment_cancelled": "Paiement annulé",
+      "payment_success": "Paiement réussi !",
+      "payment_failed_or_cancelled": "Paiement échoué ou annulé",
+      "payment_failed": "Échec du paiement",
+      "gateways_partial_load_warning": "Certains services de paiement n'ont pas pu être chargés"
+    },
+    "errors": {
+      "full_name_required": "Le nom complet est requis",
+      "phone_required": "Le numéro de téléphone est requis",
+      "phone_invalid": "Veuillez saisir un numéro de téléphone valide",
+      "phone_min_length": "Le numéro de téléphone doit comporter au moins 10 chiffres",
+      "country_required": "Le pays est requis",
+      "state_required": "L'État/Province est requis",
+      "city_required": "La ville est requise",
+      "address_line1_required": "La première ligne d'adresse est requise"
+    }
+  },
+  "blog": {
+    "related": "Articles similaires",
+    "share": "Partager cet article :",
+    "facebook": "Facebook",
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
+    "comments": "Commentaires ({count})",
+    "leave_comment": "Laisser un commentaire",
+    "your_name": "Votre nom",
+    "your_email": "Votre e-mail",
+    "your_comment": "Votre commentaire",
+    "post_comment": "Publier",
+    "comment_posted": "Commentaire publié avec succès !",
+    "min_read": "{minutes} min de lecture"
+  }
+  ,
+  "footer": {
+    "company": "Fursa Energy",
+    "contact": {
+      "email": "info@fursaenergy.com",
+      "phone": "+2348028318302",
+      "address_line_1": "4, Morija Close, Wuse 2, Abuja",
+      "address_line_2": "6, Olumo Street, Parkview Estate, Ikoyi, Lagos"
+    },
+    "quick_links": "Liens rapides",
+    "help": "Aide",
+    "newsletter": "Notre newsletter",
+    "newsletter_cta": "Abonnez-vous pour recevoir nos dernières offres !",
+    "email_placeholder": "Entrez votre e-mail...",
+    "subscribe_success": "Abonnement à la newsletter réussi !",
+    "home": "Accueil",
+    "about": "À propos",
+    "contact_us": "Contact",
+    "shop": "Boutique",
+    "faq": "FAQ",
+    "terms": "Conditions générales",
+    "privacy": "Politique de confidentialité",
+    "refund": "Politique de remboursement",
+    "copyright": "Tous droits réservés."
+  }
+  ,
+  "auth": {
+    "common": { "or": "Ou" },
+    "login": {
+      "title": "Se connecter à Fursa",
+      "email_label": "Adresse e‑mail :",
+      "email_placeholder": "johndoe@gmail.com",
+      "password_label": "Mot de passe :",
+      "remember": "Se souvenir de moi",
+      "forgot_password": "Mot de passe oublié ?",
+      "submit": "Connexion",
+      "loading": "Connexion en cours...",
+      "no_account": "Pas de compte ?",
+      "register_link": "S’inscrire",
+      "success": "Connexion réussie !",
+      "error_invalid": "Identifiants invalides. Veuillez réessayer."
+    },
+    "register": {
+      "sidebar_title": "Bonjour, ami(e) !",
+      "sidebar_subtitle": "Créez un compte et parcourez nos produits en toute simplicité.",
+      "title": "Créer un compte",
+      "have_account": "Vous avez déjà un compte ?",
+      "login_link": "Se connecter",
+      "first_name_label": "Prénom :",
+      "first_name_placeholder": "Jean",
+      "last_name_label": "Nom :",
+      "last_name_placeholder": "Dupont",
+      "email_label": "Adresse e‑mail :",
+      "email_placeholder": "johndoe@gmail.com",
+      "phone_label": "Numéro de téléphone :",
+      "phone_placeholder": "08111111111",
+      "password_label": "Mot de passe :",
+      "confirm_password_label": "Confirmer le mot de passe :",
+      "terms_html": "J’accepte les <a href=\"/terms\" class=\"text-primary hover:underline\">Conditions générales</a> et j’adhère à la <a href=\"/privacy\" class=\"text-primary hover:underline\">Politique de confidentialité</a>.",
+      "submit": "S’inscrire",
+      "loading": "Inscription en cours...",
+      "passwords_no_match": "Les mots de passe ne correspondent pas",
+      "success": "Inscription réussie ! Veuillez vous connecter.",
+      "failed_generic": "L’inscription a échoué. Veuillez réessayer."
+    },
+    "validation": {
+      "user_required": "L’e‑mail est requis",
+      "user_invalid": "Veuillez saisir une adresse e‑mail valide",
+      "password_required": "Le mot de passe est requis",
+      "password_min6": "Le mot de passe doit comporter au moins 6 caractères"
+    },
+    "social": {
+      "continue_google": "Continuer avec Google",
+      "continue_apple": "Continuer avec Apple",
+      "coming_soon": "Bientôt disponible !"
+    }
+  }
+  ,
+  "shop": {
+    "all_products": "Tous les produits",
+    "sidebar": { "categories": "Catégories" },
+    "hero": {
+      "slide1": {
+        "title": "Commander. Suivre. Recevoir.",
+        "subtitle": "Envoyez vos colis en toute sécurité partout au Nigéria.",
+        "cta": "Commencer"
+      },
+      "slide2": {
+        "title": "Rapide et fiable",
+        "subtitle": "Nous livrons vos marchandises en toute sécurité et à temps.",
+        "cta": "Suivre un colis"
+      }
+    },
+    "featured": { "title": "Produits vedettes", "empty": "Aucun produit vedette disponible" },
+    "more": "Plus",
+    "category_products": { "empty": "Aucun produit disponible dans {name}" },
+    "fetch_failed": "Échec du chargement des données de la boutique",
+    "retry": "Réessayer",
+    "filters": {
+      "title": "Filtres",
+      "search": "RECHERCHE",
+      "search_by_keywords": "Rechercher par mots-clés...",
+      "category": "CATÉGORIE",
+      "tags": "ÉTIQUETTES",
+      "clear_tags": "Effacer les étiquettes",
+      "price": "PRIX ({currency})",
+      "min": "Min",
+      "max": "Max",
+      "price_filter": "Filtre de prix"
+    },
+    "sort_by": "Trier par",
+    "sort": {
+      "highest_price": "Prix le plus élevé",
+      "lowest_price": "Prix le plus bas",
+      "featured": "En vedette"
+    },
+    "filter": "Filtrer",
+    "showing_count": "Affichage ({count} sur {total}) produits trouvés",
+    "loading_products": "Chargement des produits...",
+    "failed_to_load_products": "Échec du chargement des produits",
+    "no_products_match": "Aucun produit ne correspond à vos filtres.",
+    "reset_filters": "Réinitialiser les filtres",
+    "reset": "Réinitialiser",
+    "apply": "Appliquer",
+    "featured_badge": "Produit en vedette",
+    "available_low_stock": "Disponible : {qty} (Stock faible)",
+    "available": "Disponible",
+    "add_to_cart": "Ajouter au panier",
+    "adding": "Ajout...",
+    "loading_categories": "Chargement des catégories...",
+    "no_categories": "Aucune catégorie disponible pour le moment.",
+    "subcategories_count": "{count} sous-catégories",
+    "products_count": "{count} produits",
+    "no_products_found": "Aucun produit trouvé",
+    "quick_view": "Aperçu rapide",
+    "reviews_count": "({count} avis)",
+    "in_stock": "En stock",
+    "sku_label": "SKU :",
+    "category_label": "Catégorie :",
+    "key_features": "Caractéristiques clés :",
+    "features": {
+      "premium_quality": "Huile moteur de qualité supérieure",
+      "all_vehicle_types": "Convient à tous les types de véhicules",
+      "extended_protection": "Protection prolongée du moteur",
+      "fuel_efficiency": "Améliore l’efficacité énergétique"
+    },
+    "related_products": "Produits associés",
+    "wishlist_added": "{name} ajouté aux favoris",
+    "wishlist_removed": "{name} retiré des favoris",
+    "uncategorized": "Sans catégorie",
+    "failed_to_load_product": "Échec du chargement du produit",
+    "tabs": {
+      "description": "Description",
+      "specifications": "Spécifications",
+      "reviews": "Avis"
+    }
+  }
+  ,
+  "wishlist": {
+    "title": "Mes favoris",
+    "empty": {
+      "title": "Votre liste de favoris est vide",
+      "subtitle": "Enregistrez des articles pour les acheter plus tard"
+    },
+    "continue_shopping": "Continuer vos achats",
+    "remove": "Retirer",
+    "move_to_cart": "Ajouter au panier",
+    "moved_to_cart": "Article ajouté au panier",
+    "removed": "Article retiré des favoris",
+    "remove_item_aria": "Retirer {name} des favoris"
+  }
+  ,
+  "dashboard": {
+    "welcome": "Bonjour {name} !",
+    "logout": "Se déconnecter",
+    "intro": "Depuis votre tableau de bord, vous pouvez consulter vos commandes récentes, gérer vos adresses de livraison et de facturation, et modifier votre mot de passe et vos informations de compte.",
+    "stats": {
+      "in_cart": "Produit dans le panier",
+      "in_wishlist": "Produit dans les favoris",
+      "ordered": "Produit commandé",
+      "ongoing": "Commande en cours"
+    },
+    "sidebar": {
+      "dashboard": "Tableau de bord",
+      "orders": "Commandes",
+      "profile": "Profil",
+      "address": "Adresse",
+      "wishlist": "Favoris",
+      "settings": "Paramètres",
+      "logout": "Se déconnecter"
+    },
+    "recent_orders": {
+      "title": "Commandes récentes",
+      "date": "Date",
+      "status": "Statut",
+      "total": "Total",
+      "actions": "Actions",
+      "for_items": "pour {count} article(s)",
+      "empty": "Aucune commande récente.",
+      "load_more": "Charger plus"
+    },
+    "toasts": {
+      "logged_out": "Déconnexion réussie"
+    }
+  }
+  ,
+  "cta": {
+    "secure_payment": {
+      "title": "Passerelles de paiement sécurisées",
+      "desc": "48+ passerelles pour garantir votre sécurité"
+    },
+    "reviews": {
+      "title": "Avis clients authentiques",
+      "desc": "Découvrez des avis vérifiés sur nos plateformes"
+    },
+    "support": {
+      "title": "Support client 24/7",
+      "desc": "Notre équipe est toujours disponible pour vous"
+    },
+    "returns": {
+      "title": "Politique de retour facile",
+      "desc": "Si vous n’êtes pas satisfait, retour simple et sans tracas"
+    }
+  }
+  ,
+  "brochure": {
+    "title": "Cliquez sur le bouton pour télécharger la brochure produit MRS",
+    "download_label": "Télécharger la brochure",
+    "download_aria": "Télécharger la brochure produit MRS",
+    "note_default_path": "Le fichier sera téléchargé depuis /brochure.pdf (configurez VITE_BROCHURE_URL pour remplacer)."
+  }
+  ,
+  "contact": {
+    "title": "Contact",
+    "hero_alt": "Image d’en-tête – Nous contacter",
+    "have_question": "Une question ?",
+    "intro_text": "Besoin d’aide, d’un partenariat ou d’un support produit ? Envoyez‑nous un message et notre équipe vous répondra sous 24 heures. Vous pouvez aussi nous joindre par téléphone ou par e‑mail.",
+    "full_name": "Nom complet",
+    "full_name_placeholder": "Entrez votre nom complet",
+    "last_name": "Nom de famille",
+    "last_name_placeholder": "Entrez votre nom de famille",
+    "email": "E‑mail",
+    "email_placeholder": "Entrez votre e‑mail",
+    "message": "Message",
+    "message_placeholder": "Écrivez votre message ici",
+    "send_message": "Envoyer le message",
+    "get_in_touch": "Entrer en contact",
+    "get_in_touch_text": "Vous souhaitez nous contacter ? Nous serons ravis d’échanger avec vous. Voici comment nous joindre.",
+    "address1": "Adresse 1",
+    "address2": "Adresse 2",
+    "phone": "Téléphone",
+    "map_title": "Vous n’arrivez pas à nous joindre ?",
+    "map_subtitle": "Trouvez notre bureau à l’aide de la carte ci‑dessous",
+    "toast_success": "Message envoyé avec succès ! Nous vous répondrons très prochainement."
+  }
+  ,
+  "distributor": {
+    "title": "Inscription Distributeur",
+    "steps": {
+      "business_info": "Infos entreprise",
+      "contact_person": "Contact",
+      "distribution": "Distribution",
+      "product_focus": "Produits ciblés",
+      "banking_kyc": "Banque & KYC",
+      "review_submit": "Vérifier & Envoyer"
+    },
+    "sections": {
+      "business_info": "Section 1 : Informations sur l’entreprise",
+      "contact_person": "Section 2 : Personne de contact",
+      "distribution_capacity": "Section 3 : Capacité de distribution",
+      "product_focus": "Section 4 : Stratégie de distribution & Produits ciblés",
+      "banking_kyc": "Section 5 : Informations bancaires & KYC",
+      "review_submit": "Section 6 : Vérification & Envoi"
+    },
+    "business": {
+      "company_name": "Nom de l’entreprise",
+      "registered_name": "Dénomination sociale (si différente)",
+      "rc_number": "Numéro RC",
+      "email": "Adresse e‑mail",
+      "office_phone": "Téléphone du bureau",
+      "company_type": "Type d’entreprise",
+      "select_type": "Sélectionner le type",
+      "types": {
+        "private_limited": "Société à responsabilité limitée",
+        "public_limited": "Société anonyme",
+        "partnership": "Partenariat",
+        "sole_proprietorship": "Entreprise individuelle"
+      },
+      "website": "Site web (le cas échéant)",
+      "website_placeholder": "https://exemple.com",
+      "business_address": "Adresse professionnelle"
+    },
+    "contact": {
+      "full_name": "Nom complet",
+      "position_title": "Poste/Fonction",
+      "position_placeholder": "ex. : Responsable des ventes",
+      "mobile": "Téléphone mobile",
+      "mobile_placeholder": "+234 XXX XXX XXXX",
+      "means_of_id": "Type de pièce d’identité",
+      "select_id_type": "Sélectionner un type de pièce",
+      "id_types": {
+        "nin": "Carte nationale d’identité (NIN)",
+        "drivers_license": "Permis de conduire",
+        "passport": "Passeport",
+        "voters_card": "Carte d’électeur"
+      },
+      "id_number": "Numéro d’identification",
+      "id_number_placeholder": "Entrez votre numéro d’identification",
+      "years_in_business": "Année(s) d’activité"
+    },
+    "distribution": {
+      "current_product_lines": "Gamme(s) de produits actuellement distribuées (le cas échéant)",
+      "current_product_lines_placeholder": "ex. : Électronique, Électroménager",
+      "monthly_capacity": "Capacité de distribution mensuelle",
+      "monthly_capacity_placeholder": "ex. : 1000 unités",
+      "regions_covered": "Régions actuellement couvertes",
+      "regions_covered_placeholder": "ex. : Lagos, Ogun, Oyo",
+      "sales_staff": "Nombre de commerciaux",
+      "preferred_region": "Région préférée",
+      "preferred_region_placeholder": "ex. : Lagos",
+      "has_warehouse": "Entrepôt ou installation de stockage existant ?",
+      "has_vehicles": "Disposez‑vous de véhicules de distribution ?",
+      "vehicle_details_label": "Si oui, précisez le nombre et le type :",
+      "vehicle_details_placeholder": "ex. : 2 Toyota Hilux, 1 Mercedes‑Benz Sprinter",
+      "preferred_states_label": "États préférés que vous souhaitez couvrir :",
+      "preferred_states_hint": "Sélectionnez tous les États où vous prévoyez distribuer",
+      "states_selected": "{count} État(s) sélectionné(s)"
+    },
+    "product_focus": {
+      "categories_question": "Dans quelle catégorie de lubrifiants Fursa/MRS êtes‑vous le plus intéressé ? (Cochez tout ce qui s’applique)",
+      "categories": {
+        "automotive": "Automobile",
+        "industrial": "Industriel",
+        "agricultural": "Agricole",
+        "marine": "Marine",
+        "manufacturing": "Fabrication",
+        "commercial_fleet": "Flotte commerciale",
+        "motorcycle_small_engine": "Moto/Petit moteur",
+        "other": "Autre"
+      },
+      "technical_knowledge_question": "Avez‑vous des connaissances techniques sur les lubrifiants ou une équipe qui en a ?",
+      "training_question": "Êtes‑vous disposé à suivre une formation produit par Fursa ?",
+      "distribution_start_question": "Dans quel délai pouvez‑vous commencer la distribution après l’intégration ?",
+      "promo_question": "Souhaitez‑vous participer aux activités promotionnelles ?",
+      "upload_title": "Télécharger les documents requis",
+      "choose_file": "Choisir un fichier",
+      "declaration_warning": "Je déclare que les informations fournies ci‑dessus sont exactes et complètes au meilleur de ma connaissance.",
+      "declarant_name": "Nom du déclarant :",
+      "declarant_name_placeholder": "Votre nom complet",
+      "declaration_date": "Date de la déclaration :",
+      "other_specify_label": "Si Autre, précisez",
+      "other_specify_placeholder": "Décrivez la catégorie"
+    },
+    "docs": {
+      "cac": "Certificat CAC",
+      "cac_desc": "Téléversez votre certificat d’immatriculation",
+      "form_c07": "Formulaire C07 (liste des administrateurs)",
+      "form_c07_desc": "Téléversez la liste de vos administrateurs",
+      "memart": "MEMART",
+      "memart_desc": "Facture de service public (adresse du bureau, moins de 3 mois)",
+      "tin": "Numéro d’identification fiscale (TIN)",
+      "tin_desc": "Téléversez votre certificat TIN",
+      "referee": "Lettre de recommandation d’un référent",
+      "referee_desc": "Téléversez la lettre du référent"
+    },
+    "banking": {
+      "banking_title": "Informations bancaires & KYC",
+      "info_title": "Informations bancaires requises",
+      "info_desc": "Fournissez des coordonnées bancaires exactes pour le traitement des paiements et la vérification.",
+      "bank_name": "Nom de la banque",
+      "select_bank": "Sélectionnez votre banque",
+      "account_number": "Numéro de compte",
+      "account_number_placeholder": "0123456789",
+      "account_number_error": "Le numéro de compte doit comporter exactement 10 chiffres",
+      "account_name": "Nom du titulaire du compte",
+      "account_name_placeholder": "Tel qu’enregistré auprès de la banque",
+      "bvn": "BVN de la personne de contact",
+      "bvn_placeholder": "12345678901",
+      "bvn_error": "Le BVN doit comporter exactement 11 chiffres",
+      "bvn_hint": "Votre Bank Verification Number (11 chiffres)",
+      "partnership_info_title": "Informations sur les partenariats",
+      "partnerships_label": "Partenariats actuels avec des entreprises pétrolières & gazières (le cas échéant)",
+      "partnerships_placeholder": "Listez les entreprises pétrolières & gazières partenaires (ex. : Samsung, LG)",
+      "partnerships_hint": "Laissez vide si vous n’avez aucun partenariat en cours",
+      "privacy_notice_title": "Avis de confidentialité des données",
+      "privacy_notice_desc": "Toutes les informations bancaires et personnelles seront traitées de manière confidentielle et utilisées uniquement aux fins de vérification et de paiement conformément aux lois applicables."
+    },
+    "review": {
+      "info_title": "Veuillez vérifier vos informations",
+      "info_desc": "Assurez‑vous que toutes les informations sont exactes avant de soumettre votre demande.",
+      "business_info_title": "Informations sur l’entreprise",
+      "contact_person_title": "Personne de contact",
+      "distribution_capacity_title": "Capacité de distribution",
+      "product_focus_title": "Stratégie de distribution & Produits ciblés",
+      "banking_kyc_title": "Informations bancaires & KYC",
+      "documents_title": "Documents téléchargés",
+      "labels": {
+        "company_name": "Nom de l’entreprise :",
+        "registered_name": "Dénomination sociale :",
+        "rc_number": "Numéro RC :",
+        "company_type": "Type d’entreprise :",
+        "email": "E‑mail :",
+        "office_phone": "Téléphone du bureau :",
+        "website": "Site web :",
+        "business_address": "Adresse professionnelle :",
+        "full_name": "Nom complet :",
+        "position_title": "Poste/Fonction :",
+        "mobile_number": "Mobile :",
+        "years_in_business": "Années d’activité :",
+        "id_type": "Type d’ID :",
+        "id_number": "Numéro d’ID :",
+        "current_product_lines": "Gammes actuelles :",
+        "monthly_capacity": "Capacité mensuelle :",
+        "regions_covered": "Régions couvertes :",
+        "sales_staff": "Nombre de commerciaux :",
+        "preferred_region": "Région préférée :",
+        "has_warehouse": "Entrepôt existant :",
+        "has_vehicles": "Véhicules de distribution :",
+        "vehicle_details": "Détails des véhicules :",
+        "preferred_states_to_cover": "États à couvrir :",
+        "product_categories_interested": "Catégories de produits d’intérêt :",
+        "technical_knowledge": "Connaissances techniques :",
+        "willing_to_train": "Disposé à se former :",
+        "distribution_start_date": "Date de démarrage :",
+        "promo_participation": "Participation aux promotions :",
+        "declarant_name": "Nom du déclarant :",
+        "declaration_date": "Date de déclaration :",
+        "bank_name": "Banque :",
+        "account_number": "N° de compte :",
+        "account_name": "Titulaire du compte :",
+        "bvn": "BVN :",
+        "partnerships": "Partenariats pétroliers & gaziers :"
+      }
+    },
+    "password": {
+      "title": "Choisissez un mot de passe robuste",
+      "password": "Mot de passe",
+      "password_placeholder": "Minimum 8 caractères",
+      "password_hint": "Doit comporter au moins 8 caractères",
+      "confirm_password": "Confirmer le mot de passe",
+      "confirm_password_placeholder": "Saisissez à nouveau le mot de passe",
+      "passwords_no_match": "Les mots de passe ne correspondent pas",
+      "passwords_match": "Les mots de passe correspondent"
+    },
+    "notes": {
+      "title": "Notes supplémentaires (facultatif)",
+      "placeholder": "Toute information supplémentaire que vous souhaitez fournir..."
+    },
+    "terms": {
+      "title": "Accord sur les termes et conditions",
+      "p1": "Je confirme que toutes les informations fournies dans cette demande sont exactes et fidèles à ma connaissance. Je comprends que Fursa Energy peut procéder à des vérifications et se réserve le droit de refuser ou de révoquer la distribution si des informations s’avèrent fausses ou trompeuses.",
+      "p2": "J’accepte également de respecter toutes les politiques de distributeur de Fursa Energy, de maintenir les standards requis de service et de préserver la réputation de l’entreprise dans toutes les opérations commerciales."
+    },
+    "error": {
+      "missing_info_title": "Informations manquantes",
+      "missing_info_desc": "Veuillez vous assurer que tous les champs requis sont remplis, que les mots de passe correspondent (minimum 8 caractères) et que vous avez accepté les termes et conditions."
+    },
+    "validation": {
+      "error_title": "Erreur de validation",
+      "company_name_required": "Le nom de l’entreprise est requis",
+      "rc_number_required": "Le numéro RC est requis",
+      "email_required": "Une adresse e‑mail valide est requise",
+      "office_phone_required": "Le numéro de téléphone du bureau est requis",
+      "company_type_required": "Le type d’entreprise est requis",
+      "business_address_required": "L’adresse professionnelle est requise",
+      "contact_full_name_required": "Le nom complet du contact est requis",
+      "position_required": "Le poste/fonction est requis",
+      "mobile_required": "Le numéro de mobile est requis",
+      "id_type_required": "Le type d’ID est requis",
+      "id_number_required": "Le numéro d’ID est requis",
+      "years_in_business_required": "L’ancienneté d’activité est requise",
+      "has_warehouse_required": "Veuillez préciser si vous disposez d’un entrepôt",
+      "has_vehicles_required": "Veuillez préciser si vous disposez de véhicules de distribution",
+      "preferred_states_required": "Veuillez sélectionner au moins un État",
+      "product_categories_required": "Veuillez sélectionner au moins une catégorie de produits",
+      "technical_knowledge_required": "Veuillez indiquer si vous avez des connaissances techniques",
+      "willing_to_train_required": "Veuillez indiquer si vous acceptez la formation",
+      "distribution_start_time_required": "Veuillez indiquer quand vous pouvez commencer la distribution",
+  "other_specify_required": "Veuillez préciser la catégorie ‘Autre’",
+      "bank_name_required": "Le nom de la banque est requis",
+      "account_number_required": "Un numéro de compte valide à 10 chiffres est requis",
+      "account_name_required": "Le nom du titulaire du compte est requis",
+      "bvn_required": "Un BVN valide à 11 chiffres est requis",
+      "must_agree_terms": "Vous devez accepter les termes et conditions",
+      "password_required": "Le mot de passe est requis",
+      "password_min": "Le mot de passe doit comporter au moins 8 caractères",
+      "passwords_no_match": "Les mots de passe ne correspondent pas"
+    },
+    "buttons": {
+      "previous": "Précédent",
+      "next": "Suivant",
+      "submit_application": "Soumettre la demande"
+    },
+    "toasts": {
+      "submit_success": "Votre demande de distributeur a été soumise avec succès !",
+      "submit_failed_generic": "Échec de l’envoi de la demande. Veuillez réessayer."
+    },
+    "common": {
+      "yes": "Oui",
+      "no": "Non",
+      "depends": "Selon l’arrangement",
+      "na": "N/A",
+      "none": "Aucun",
+      "none_selected": "Aucune sélection",
+      "same_as_company_name": "Identique au nom de l’entreprise",
+      "uploaded": "Téléversé",
+      "pending": "En attente",
+      "years_suffix": "an(s)"
+    }
+  },
+  "orders": {
+    "title": "Mes commandes",
+    "tabs": {
+      "all": "Toutes",
+      "processing": "En cours de traitement",
+      "shipped": "Expédiées",
+      "completed": "Terminées",
+      "cancelled": "Annulées"
+    },
+    "table": {
+      "order_id": "ID de commande",
+      "date": "Date",
+      "status": "Statut",
+      "total": "Total",
+      "actions": "Actions"
+    },
+    "status": {
+      "processing": "En cours de traitement",
+      "completed": "Terminée",
+      "cancelled": "Annulée",
+      "shipped": "Expédiée"
+    },
+    "for_items": "pour {count} article(s)",
+    "empty": "Aucune commande trouvée.",
+    "pagination": {
+      "summary": "Affichage de {from} à {to} sur {total} commandes"
+    },
+    "actions": {
+      "view": "Voir",
+      "track": "Suivre",
+      "reorder": "Commander à nouveau"
+    }
+  }
+  ,
+  "profile": {
+    "title": "Mon profil",
+    "form": {
+      "first_name": "Prénom",
+      "last_name": "Nom de famille",
+      "email": "E‑mail",
+      "phone": "Téléphone"
+    },
+    "password": {
+      "title": "Changer le mot de passe",
+      "current": "Mot de passe actuel",
+      "new": "Nouveau mot de passe",
+      "confirm": "Confirmer le mot de passe"
+    },
+    "buttons": {
+      "cancel": "Annuler",
+      "save_changes": "Enregistrer les modifications"
+    },
+    "toasts": {
+      "passwords_no_match": "Les mots de passe ne correspondent pas",
+      "updated_success": "Profil mis à jour avec succès !"
+    }
+  }
+  ,
+  "addresses": {
+    "title": "Mes adresses",
+    "add_new": "Ajouter une adresse",
+    "empty": {
+      "title": "Aucune adresse trouvée",
+      "subtitle": "Ajoutez votre adresse de livraison pour accélérer le paiement",
+      "cta": "Ajouter une adresse"
+    },
+    "actions": {
+      "delete": "Supprimer",
+      "set_default": "Définir par défaut"
+    },
+    "modal": {
+      "title_add": "Ajouter une nouvelle adresse"
+    },
+    "form": {
+      "set_as_default": "Définir comme adresse par défaut"
+    },
+    "submit": {
+      "saving": "Enregistrement...",
+      "save_address": "Enregistrer l’adresse"
+    },
+    "confirm_delete": "Êtes‑vous sûr de vouloir supprimer cette adresse ?",
+    "toasts": {
+      "fetch_failed": "Échec du chargement des adresses !",
+      "delete_success": "Adresse supprimée avec succès !",
+      "delete_failed": "Échec de la suppression de l’adresse !"
+    }
+  }
+}
