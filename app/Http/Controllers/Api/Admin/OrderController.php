@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
+    private $allowedStatusesUpdate = ['processing','shipping','shipped','out for delivery','delivered','cancelled'];
     /**
      * Display a listing of the resource.
      */
@@ -113,7 +114,7 @@ class OrderController extends Controller
                     }
                 ]);
             },
-        ]);
+        ])->find($id);
 
         if (!$order) {
             return response()->json(['message' => "Order not found."], 404);
@@ -122,6 +123,7 @@ class OrderController extends Controller
         return response()->json([
             'message' => "Order details retrieved successfully.",
             'data' => $order,
+            'allowedStatuses' => $this->allowedStatusesUpdate
         ]);
     }
 
@@ -162,7 +164,7 @@ class OrderController extends Controller
 
             // Only allow these statuses from admin side
             $request->validate([
-                'status' => ['required','string',"in:processing,shipping,shipped,out for delivery,delivered,cancelled,failed"],
+                'status' => ['required','string',"in:".implode(",", $this->allowedStatusesUpdate)],
                 'notify' => ['required','boolean']
             ]);
 
