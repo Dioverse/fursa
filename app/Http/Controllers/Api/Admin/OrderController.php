@@ -105,7 +105,7 @@ class OrderController extends Controller
     public function show(string $id): JsonResponse
     {
         $order = Order::with([
-            'user:id,first_name,last_name,email,role','payment',
+            'user:id,first_name,last_name,email,role','payment:order_id,user_id,status,reason,payment_gateway,payment_method,transaction_reference,amount,paid_at,refund_status,refunded_at',
             'statusHstry:id,order_id,status,changed_by,created_at',
             'orderItem' => function ($q) {
                 $q->with([
