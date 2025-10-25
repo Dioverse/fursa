@@ -18,7 +18,7 @@
       </button>
       <span v-if="product.discount"
         class="absolute top-2 right-2 bg-mprimary-500 text-white px-2 py-1 text-xs rounded font-semibold">
-        {{ discountLabel(product) }}
+        {{ discountLabel(product) }}&nbsp;off
       </span>
     </div>
 

@@ -4,13 +4,15 @@ import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [vue()],
-  base: './',
+  base: '/',
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
     },
   },
   server: {
+    host: '0.0.0.0', // This makes Vite listen on all network interfaces
+    port: 5173,
     proxy: {
       '/api': {
         target: 'https://back.fursaenergy.com/public/api',

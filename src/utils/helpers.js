@@ -59,8 +59,8 @@ export const getDisplayPrice = (product) => {
 export const discountLabel = (product) => {
   const d = product.discount;
   if (!d) return '';
-  if (d.type === 'percentage') return `${d.value}% off`;
-  return `₦${d.value} off`;
+  if (d.type === 'percentage') return `${d.value}%`;
+  return `₦${d.value}`;
 };
 
 /**

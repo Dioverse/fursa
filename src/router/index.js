@@ -38,7 +38,7 @@ const TermsView = () => import('@/views/TermsView.vue')
 const PrivacyView = () => import('@/views/PrivacyView.vue')
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(import.meta.env.VITE_BASE_URL),
   routes: [
     {
       path: '/',
@@ -254,6 +254,11 @@ router.beforeEach((to, from, next) => {
 
   const isAuthenticated = authStore.isAuthenticated
   const isVerified = authStore.user?.email_verified_at !== null
+
+  if ((to.name === 'verify' || to.name === 'email.verify') && isVerified) {
+    toast.info('Your email is already verified.')
+    return next({ name: 'dashboard' }) // redirect verified users
+  }
 
   // Always allow verification routes
   if (to.name === 'verify' || to.name === 'email.verify') {

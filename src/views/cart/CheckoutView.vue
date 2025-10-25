@@ -147,7 +147,7 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <!-- Payment Section -->
               <div class="lg:col-span-2 space-y-6">
                 <div class="bg-white rounded-lg shadow-md p-6">
@@ -201,7 +201,7 @@
                 <div class="bg-white rounded-lg shadow-md p-6 sticky top-20">
                   <h3 class="text-sm lg:text-lg md:text-lg font-semibold mb-6">{{ $t('checkout.order_summary') }}</h3>
 
-                  <div class="border-t pt-4 space-y-3 text-xs lg:text-sm md:text-sm">
+                  <div class="border-t pt-4 space-y-3 text-xs sm:text-sm md:text-sm lg:text-sm">
                     <!-- Subtotal -->
                     <div class="flex justify-between font-bold">
                       <span class="text-gray-600">{{ $t('checkout.subtotal') }}</span>

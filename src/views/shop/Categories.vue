@@ -3,9 +3,15 @@
     <div class="min-h-screen mx-auto bg-gray-50 container lg:px-20 bg-transparent">
       <!-- BREADCRUMB -->
       <div class="bg-transparent border-b">
+<<<<<<< Updated upstream
         <div class="max-w-7xl mx-auto px-4 py-3 text-sm text-gray-600">
           <div class="px-4">
             {{ $t('header.nav.home') }} &gt; {{ $t('home.categories') }}
+=======
+        <div class="sm:container md:container lg:container max-w-7xl mx-auto px-4 py-3 text-sm text-gray-600">
+          <div class="">
+            Home &gt; Categories
+>>>>>>> Stashed changes
           </div>
         </div>
       </div>

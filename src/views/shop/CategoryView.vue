@@ -3,8 +3,13 @@
     <div class="xs:px-[clamp(2rem,4vw,4rem)] xxs:px-0 min-h-screen bg-gray-50">
       <!-- Breadcrumb -->
       <div class="bg-white border-b">
+<<<<<<< Updated upstream
         <div class="max-w-7xl mx-auto px-4 py-3 text-sm text-gray-600">
           {{ $t('header.nav.home') }}
+=======
+        <div class="sm:container md:container lg:container max-w-7xl mx-auto px-4 py-3 text-sm text-gray-600">
+          Home
+>>>>>>> Stashed changes
           <span v-if="categorySlug"> &gt;
             <RouterLink :to="`/c/${categorySlug}`" v-if="subcategorySlug">{{ categoryTitle }}</RouterLink>
             <span v-else>{{ categoryTitle }}</span>
@@ -13,18 +18,24 @@
         </div>
       </div>
 
-      <div class="max-w-7xl mx-auto px-4 py-6">
+      <div class="sm:container md:container lg:container max-w-7xl mx-auto px-4 py-6">
         <div class="flex gap-6">
           <!-- Desktop Sidebar -->
           <aside class="hidden lg:block w-64 flex-shrink-0">
-            <div class="overflow-y-auto max-h-[calc(100vh-6rem)] bg-white rounded-lg shadow-sm p-4 sticky top-24">
+            <div class="overflow-y-auto max-h-[calc(100vh-10rem)] bg-white rounded-lg shadow-sm p-4 sticky top-36">
               <div class="space-y-6">
                 <!-- Name Search -->
                 <div class="pb-6 border-b">
+<<<<<<< Updated upstream
                   <h3 class="font-bold text-lg mb-3">{{ $t('shop.filters.search') }}</h3>
                   <input type="text" :placeholder="$t('shop.filters.search_by_keywords')"
                     class="w-full px-2 py-1 border border-gray-300 rounded text-sm" v-model="filters.name"
                     @keyup.enter="state.currentPage = 1;" />
+=======
+                  <h3 class="font-bold text-lg mb-3">SEARCH</h3>
+                  <input type="text" placeholder="Search by keywords..." v-model="filters.name"
+                    class="w-full px-2 py-1 border border-gray-300 rounded text-sm" @keyup="filterManip" />
+>>>>>>> Stashed changes
                 </div>
 
                 <!-- Categories -->
@@ -38,7 +49,11 @@
                       ]">
                         <div class="flex nowrap items-center">
                           <font-awesome-icon class="w-4 h-4" icon="bars" />&nbsp;
+<<<<<<< Updated upstream
                         <span>{{ $t('shop.all_products') }}</span>
+=======
+                          <span>All Products</span>
+>>>>>>> Stashed changes
                         </div>
                       </div>
                     </div>
@@ -49,7 +64,7 @@
                       ]">
                         <div class="flex nowrap items-center">
                           <font-awesome-icon class="w-4 h-4" :icon="cat.icon" />&nbsp;
-                        <span>{{ cat.name }}</span>
+                          <span>{{ cat.name }}</span>
                         </div>
                       </div>
 
@@ -125,6 +140,7 @@
                     </label>
                   </div>
                 </div>
+                <br><br>
               </div>
             </div>
           </aside>
@@ -159,6 +175,15 @@
               </div>
             </div>
 
+            <!-- Products Heading -->
+            <div class="mb-4">
+              <h2 id="page-header" class="lg:text-2xl md:text-xl text-lg font-bold text-gray-800 mb-2">{{ pageTitle }}
+                <small v-if="selectedSubcategorySlug">{{ selectedCategorySlug }}</small></h2>
+              <p v-if="!loading && !loadingMore" class="text-sm text-gray-600">Showing ({{ products.length }} of {{
+                state.totalFound }}) products found</p>
+            </div>
+
+
             <!-- Active Filters Display -->
             <div v-if="filters.selectedTags.length > 0" class="mb-4">
               <div class="flex flex-wrap gap-2">
@@ -166,18 +191,21 @@
                   class="inline-flex items-center gap-1 px-3 py-1 bg-mprimary-100 text-mprimary-700 rounded-full text-sm">
                   <span class="capitalize">{{ tag }}</span>
                   <button @click="removeTag(tag)" class="hover:text-mprimary-900">
-                    <XIcon class="w-4 h-4" />
+                    <font-awesome-icon icon="times" />
                   </button>
                 </span>
               </div>
             </div>
 
+<<<<<<< Updated upstream
             <!-- Products Heading -->
             <div class="mb-4">
               <h2 id="page-header" class="lg:text-2xl md:text-xl text-lg font-bold text-gray-800 mb-2">{{ pageTitle }}</h2>
               <p v-if="!loading && !loadingMore" class="text-sm text-gray-600">{{ $t('shop.showing_count', { count: products.length, total: state.totalFound }) }}</p>
             </div>
 
+=======
+>>>>>>> Stashed changes
             <!-- Loading State -->
             <div v-if="loading" class="text-center py-12">
               <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-mprimary-500" />
@@ -196,41 +224,45 @@
             <!-- Products Grid -->
             <div>
               <div v-if="!loading && !error"
-                class="grid grid-cols-2 xxs:grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
+                class="grid grid-cols-2 xxs:grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
                 <div v-for="product in products" :key="product.id"
                   class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow relative">
-                  <RouterLink :to="`/product/${product.slug}`" class="relative">
+                  <RouterLink :to="`/product/${product.slug}`" class="relative block">
                     <!-- Product Image -->
                     <img :src="getImageUrl(product.images[0].path)" :alt="product.name"
                       class="w-full h-48 object-cover bg-gray-200" @error="handleImageError" />
 
-                    <!-- Featured Icon -->
-                    <div v-if="product.is_featured" class="absolute top-2 left-2 text-white rounded-full p-1 shadow-md"
-                      title="Featured Product">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="#d4942a" class="w-4 h-4" viewBox="0 0 24 24">
-                        <path
-                          d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 7.1-1.01L12 2z" />
-                      </svg>
-                    </div>
+                    <!-- Top Badges -->
+                    <div class="absolute top-2 left-2 right-2 flex justify-between items-start z-10">
+                      <!-- Featured Icon (Left) -->
+                      <div v-if="product.is_featured" class="bg-white/90 backdrop-blur-sm rounded-full p-1 shadow-md"
+                        title="Featured Product">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="#d4942a" class="w-4 h-4" viewBox="0 0 24 24">
+                          <path
+                            d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 7.1-1.01L12 2z" />
+                        </svg>
+                      </div>
 
-                    <!-- Discount Badge -->
-                    <span v-if="product.discount"
-                      class="absolute top-2 right-2 bg-mprimary-500 text-white px-2 py-1 text-xs rounded font-semibold">
-                      {{ discountLabel(product) }}
-                    </span>
+                      <!-- Discount Badge (Right, Always Aligned) -->
+                      <span v-if="product.discount"
+                        class="bg-orange-500 text-white px-2 py-1 text-[11px] rounded font-semibold shadow-md ml-auto">
+                        {{ discountLabel(product) }}&nbsp;off
+                      </span>
+                    </div>
                   </RouterLink>
 
                   <!-- Product Details -->
                   <div class="px-4 pt-4">
-                    <h3 class="text-sm text-gray-800 mb-2 line-clamp-1" :title="product.name">
-                      <RouterLink :to="`/product/${product.slug}`">{{ product.name }}</RouterLink>
+                    <h3 class="text-xs text-gray-800 mb-2 line-clamp-1" :title="product.name">
+                      <RouterLink :to="`/product/${product.slug}`"><strong>{{ product.name }}</strong></RouterLink>
                     </h3>
-                    <p class="text-xs text-gray-500 mb-2 line-clamp-1 cursor-pointer" :title="product.short_description">
+                    <p class="text-xs text-gray-500 mb-2 line-clamp-1 cursor-pointer"
+                      :title="product.short_description">
                       {{ product.short_description }}
                     </p>
 
                     <div>
-                      <span class="text-lg font-bold text-gray-900">
+                      <span class="text-xs sm:text-sm font-bold text-gray-900">
                         ₦ {{ getDisplayPrice(product) }}
                       </span>
                       <span v-if="product.discount" class="text-sm text-gray-400 line-through ml-2">
@@ -240,8 +272,13 @@
 
                     <div v-if="product.stock_quantity" class="text-xs text-gray-600 line-clamp-1">
                       <span v-if="product.low_stock_threshold && product.stock_quantity <= product.low_stock_threshold"
+<<<<<<< Updated upstream
                         class="text-red-500 font-semibold">
                         {{ $t('shop.available_low_stock', { qty: product.stock_quantity }) }}
+=======
+                        class="text-[11px] text-red-500 font-semibold">
+                        Available: {{ product.stock_quantity }} (Low stock)
+>>>>>>> Stashed changes
                       </span>
                       <span v-else class="invisible">{{ $t('shop.available') }}</span>
                     </div>
@@ -255,20 +292,21 @@
                       class="flex-1 bg-gold-500 text-white py-2 disabled:opacity-50 disabled:cursor-not-allowed rounded hover:bg-gold-100 hover:text-black text-sm font-semibold">
                       <div v-if="loadingStates[product.id]" class="flex justify-center">
                         <svg class="animate-spin h-4 w-4 text-gold-600" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                            </circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                          </svg>
+                          viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                          </circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
                       </div>
                       <div v-else>{{ $t('shop.add_to_cart') }}</div>
                     </button>
 
                     <!-- Quantity Control -->
                     <div v-else class="flex items-center rounded overflow-hidden w-max">
-                      <button :dd="getCartQuantity(product.id).value" :disabled="getCartQuantity(product.id).value <= 1 || loadingStates[product.id]"
+                      <button :dd="getCartQuantity(product.id).value"
+                        :disabled="getCartQuantity(product.id).value <= 1 || loadingStates[product.id]"
                         @click="updateQuantity(product, getCartQuantity(product.id).value - 1)"
-                        class="px-[14px] py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
+                        class="px-[14px] py-1.5 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
                         -
                       </button>
 
@@ -291,7 +329,7 @@
 
                       <button :disabled="loadingStates[product.id]"
                         @click="updateQuantity(product, getCartQuantity(product.id).value + 1)"
-                        class="px-3 py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
+                        class="px-3 py-1.5 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
                         +
                       </button>
                     </div>
@@ -363,7 +401,11 @@
                     ]">
                       <div class="flex nowrap items-center">
                         <font-awesome-icon class="w-4 h-4" icon="bars" />&nbsp;
+<<<<<<< Updated upstream
                       <span>{{ $t('shop.all_products') }}</span>
+=======
+                        <span>All Products</span>
+>>>>>>> Stashed changes
                       </div>
                     </div>
                   </div>
@@ -375,7 +417,7 @@
                     ]">
                       <div class="flex nowrap items-center">
                         <font-awesome-icon class="w-4 h-4" :icon="cat.icon" />&nbsp;
-                      <span>{{ cat.name }}</span>
+                        <span>{{ cat.name }}</span>
                       </div>
                     </div>
                     <div v-if="cat.subcategories && cat.subcategories.length > 0" class="ml-4 space-y-1 mt-1">
@@ -449,13 +491,18 @@
 </template>
 
 <script setup>
+<<<<<<< Updated upstream
 import { reactive, ref, computed, onMounted, watch, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
+=======
+import { reactive, ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
+>>>>>>> Stashed changes
 import { useWishlistStore } from '@/stores/wishlist';
 import { useRoute, useRouter } from 'vue-router';
 import { addToCart, getCartQuantity, isInCart, onQuantityBlur, onQuantityEnter, toggleWishlist, updateQuantity, loadingStates } from '@/utils/neut';
 import { getImageUrl, handleImageError, getBasePrice, getDisplayPrice, discountLabel, priceToLocale } from '@/utils/helpers';
 import DefaultLayout from '@/layouts/DefaultLayout.vue';
+import { cancelableFetch } from '@/utils/fetchWithCancel';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -539,6 +586,7 @@ const priceRanges = [
 const wishlistStore = useWishlistStore();
 
 const removeTag = (tag) => {
+  console.log(tag);
   filters.selectedTags = filters.selectedTags.filter(t => t !== tag);
   state.currentPage = 1;
 };
@@ -576,23 +624,35 @@ const buildQueryParams = (n) => {
 };
 
 // Fetch products from API
-const fetchProducts = async (page = 1, isLoadMore = false) => {
+const fetchProducts = async (page = 1, isLoadMore = false, debounceMs = 0) => {
   try {
     if (!isLoadMore) state.loading = true;
     else state.loadingMore = true;
 
     state.currentPage = page;
-
     const queryString = buildQueryParams(true);
-    const res = await fetch(`${apiUrl}/products?${queryString}`);
+    const url = `${apiUrl}/products?${queryString}`;
 
+<<<<<<< Updated upstream
   if (!res.ok) throw new Error(t('shop.failed_to_load_products'));
+=======
+    // Use debounce for filter changes (debounceMs > 0), immediate for pagination
+    const response = debounceMs > 0
+      ? await cancelableFetch.debounceAndFetch(url, {}, debounceMs)
+      : await cancelableFetch.fetchWithCancel(url);
+>>>>>>> Stashed changes
 
-    const response = await res.json();
+    // If response is null, the request was cancelled - don't update state
+    if (response === null) {
+      state.loading = false;
+      state.loadingMore = false;
+      return;
+    }
 
     const newProducts = response.data.products.data || [];
     const hasMore = response.data.products.current_page < response.data.products.last_page;
-    state.totalFound = response.data.products.total
+    state.totalFound = response.data.products.total;
+
     if (isLoadMore) {
       state.products = [...state.products, ...newProducts];
     } else {
@@ -613,12 +673,52 @@ const fetchProducts = async (page = 1, isLoadMore = false) => {
     state.loadingMore = false;
     state.error = null;
   } catch (err) {
+<<<<<<< Updated upstream
   state.error = t('shop.failed_to_load_products');
+=======
+    // Only set error if it wasn't cancelled
+    if (err.name !== 'AbortError') {
+      state.error = 'Failed to load products';
+      console.error('Fetch error:', err);
+    }
+>>>>>>> Stashed changes
     state.loading = false;
     state.loadingMore = false;
-    console.error('Fetch error:', err);
   }
 };
+
+// Watch for filter changes with debounce
+watch(
+  [filters, selectedCategorySlug, selectedSubcategorySlug],
+  () => {
+    if (!isInitialized.value) return;
+    const queryString = buildQueryParams(false);
+    const newUrl = `${window.location.pathname}?${queryString}`;
+    window.history.replaceState({}, '', newUrl);
+
+    // Pass debounce delay for filter changes (300ms)
+    fetchProducts(1, false, 300);
+  },
+  { deep: true }
+);
+
+// Enhanced filterManip function with debounce
+const filterManip = (e) => {
+  // Cancel any pending request and debounce timer
+  cancelableFetch.cancel();
+
+  // Set the input value immediately for UX
+  filters.name = e.target.value;
+  state.currentPage = 1;
+
+  // Fetch with 700ms debounce
+  fetchProducts(1, false, 700);
+};
+
+// Cleanup on component unmount
+onBeforeUnmount(() => {
+  cancelableFetch.cancel();
+});
 
 const isInitialized = ref(false);
 
@@ -671,17 +771,7 @@ onMounted(async () => {
   nextTick(() => setupObserver());
 });
 
-watch(
-  [filters, selectedCategorySlug, selectedSubcategorySlug],
-  () => {
-    if (!isInitialized.value) return;
-    const queryString = buildQueryParams(false);
-    const newUrl = `${window.location.pathname}?${queryString}`;
-    window.history.replaceState({}, '', newUrl);
-    fetchProducts(1);
-  },
-  { deep: true }
-);
+
 
 const readable = slug =>
   slug ? slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''

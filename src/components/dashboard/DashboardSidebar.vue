@@ -25,10 +25,10 @@
     </aside>
 
     <!-- Mobile Bottom Sheet -->
-    <transition name="slide-up" class="container mx-auto px-4 shadow-2xl">
+    <transition name="slide-up" v-if="authStore.token" :ddd="authStore.token" class="container mx-auto px-4 shadow-2xl">
         <div class="block sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-2xl rounded-t-2xl z-50 transition-all duration-300 ease-out"
             :class="expanded ? 'h-[15rem]' : 'h-[5rem]'" @touchstart.passive="onTouchStart"
-            @touchmove.self.prevent="onTouchMove" @touchend="onTouchEnd">
+            @touchmove.prevent="onTouchMove" @touchend="onTouchEnd">
             <!-- Handle (clickable) -->
             <div class="flex justify-center py-2 cursor-pointer active:scale-95 transition-transform"
                 @click.stop="toggleExpanded">
@@ -36,10 +36,10 @@
             </div>
 
             <!-- Menu Links -->
-            <div class="flex flex-wrap justify-around items-center px-3 transition-all duration-500 overflow-hidden"
-                :class="{ 'h-[12rem]': expanded, 'h-[3rem]': !expanded }">
+            <div class="flex flex-wrap items-center px-3 transition-all duration-500 overflow-hidden"
+                :class="{ 'h-[12rem] justify-start': expanded, 'h-[3rem] justify-around': !expanded }">
                 <RouterLink v-for="(item, i) in visibleLinks" :key="i" :to="item.to"
-                    class="flex flex-col items-center justify-center text-gray-600 hover:text-primary transition text-xs w-[20%] mb-3"
+                    class="flex flex-col items-center justify-center text-gray-600 hover:text-primary transition text-xs w-[25%] mb-3"
                     :class="{ 'text-primary': $route.path === item.to }" @click.stop>
                     <font-awesome-icon :icon="item.icon" class="text-lg mb-1" />
                     <span>{{ item.label }}</span>
@@ -71,7 +71,7 @@
     </transition>
 
     <!-- Overlay -->
-    <transition name="fade">
+    <transition name="fade" v-if="authStore.token">
         <div v-if="expanded" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 sm:hidden"
             @click="expanded = false"></div>
     </transition>

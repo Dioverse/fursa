@@ -1,0 +1,915 @@
+{
+  "header": {
+    "search_placeholder": "ابحث عن المنتجات...",
+    "account": "الحساب",
+    "dashboard": "لوحة التحكم",
+    "orders": "الطلبات",
+    "wishlist": "المفضلة",
+    "logout": "تسجيل الخروج",
+    "login": "تسجيل الدخول",
+    "nav": {
+      "home": "الرئيسية",
+      "shop": "المتجر",
+      "about": "من نحن",
+      "blog": "المدونة",
+      "contact": "اتصل بنا",
+      "business": "الشراء للشركات"
+    },
+    "distributor": "الموزع",
+    "registration": "التسجيل"
+  },
+  "home": {
+    "shop_now": "تسوق الآن",
+    "become_distributor": "كن موزعًا",
+    "categories": "الفئات",
+    "popular_now": "الأكثر رواجًا",
+    "view_more": "عرض المزيد",
+    "about_us": "من نحن",
+    "learn_more": "اعرف المزيد",
+    "our_partners": "شركاؤنا",
+    "business_model": "نوع ونموذج العمل",
+    "b2b": "B2B (رئيسي)",
+    "b2c": "B2C (قيد التطوير)",
+    "testimonials_title": "آراء العملاء",
+    "our_blog": "مدونتنا",
+    "hero_tagline": "نبني على الثقة. نركز على التجارة. نلتزم بالنمو.",
+    "hero_title_html": "فورسا إنيرجي شركة<br class=\"hidden sm:block\">طاقة نيجيرية وهي<br class=\"hidden sm:block\"> <span class=\"text-primary\">الموزع الرئيسي</span><br class=\"hidden sm:block\"> الرسمي لزيوت MRS.",
+    "hero_image_alt": "زيوت MRS",
+    "about_image_alt": "عن فورسا إنيرجي",
+    "about_p1": "فورسا إنيرجي شركة حلول طاقة نيجيرية والموزع الوطني الرئيسي الرسمي لزيوت MRS.",
+    "about_p2": "بفضل الوصول إلى إحدى أكبر محطات الخلط في إفريقيا، تقدم فورسا مجموعة من الزيوت والشحوم والزيوت المتخصصة عالية الجودة للتطبيقات الصناعية والسيارات.",
+    "ai_badge": "تحليل المحرك بالذكاء الاصطناعي",
+    "ai_heading_html": "تعرّف على أفضل زيت <br class=\"hidden md:block\" /><span class=\"text-[#FFD85E]\">لمحركك</span>",
+    "ai_description": "أجب عن بعض الأسئلة السريعة حول سيارتك وعادات قيادتك. سيقوم الذكاء الاصطناعي لدينا بتحليل احتياجاتك والتوصية بالزيت الأنسب لأفضل أداء للمحرك.",
+    "ai_start_assessment": "بدء تقييم المحرك",
+    "ai_view_products": "عرض كل المنتجات",
+    "ai_stat_time": "3 دقائق",
+    "ai_stat_time_label": "تقييم سريع",
+    "ai_stat_accuracy": "98%",
+    "ai_stat_accuracy_label": "نسبة الدقة",
+    "ai_stat_customers": "+5000",
+    "ai_stat_customers_label": "عملاء سعداء",
+    "chairman_section_title": "رسالة من رئيس مجلس الإدارة",
+    "chairman_image_alt": "رئيس فورسا",
+    "chairman_title": "رسالة رئيس مجلس الإدارة",
+    "chairman_p1": "في FURSA نؤمن بأن زيت المحرك عالي الجودة ليس مجرد منتج، بل هو وعد بالأداء والحماية والموثوقية. رسالتنا هي تزويد السائقين والميكانيكيين والشركات بحلول زيوت يمكنهم الاعتماد عليها حقًا.",
+    "chairman_p2": "أثناء استكشافك لمجموعة زيوتنا الاصطناعية كليًا وعالية الكيلومترات والتقليدية، اعلم أن كل منتج مدعوم بالتزامنا بالتميز ورضا العملاء.",
+    "chairman_p3": "شكرًا لكونك جزءًا من رحلة FURSA.",
+    "chairman_signature_html": "مع خالص التحية،<br />رئيس مجلس الإدارة<br />FURSA",
+    "partners_desc": "تتعاون فورسا إنيرجي مع رواد الصناعة لضمان الجودة والموثوقية والوصول في جميع المناطق التي نخدمها.",
+    "business_model_desc": "نعمل وفق نموذج هجين مصمم لخدمة المشترين بالجملة والمستخدمين اليوميين على حد سواء.",
+    "b2b_desc": "توريد الزيوت لعملاء الصناعة وشركات النقل وشركات البناء والجهات الحكومية.",
+    "b2c_desc": "الموزعون والوكلاء وورش السيارات والميكانيكيون ومشغلو الأساطيل والمستهلكون عبر التجارة الإلكترونية.",
+    "testimonials_subtitle1": "نحن فخورون جدًا بالخدمة التي نقدمها ونضمن جودة كل منتج نقدمه.",
+    "testimonials_subtitle2": "اقرأ شهادات عملائنا السعداء.",
+    "testimonial1_text": "العمل مع فورسا إنيرجي غيّر عملياتنا بالكامل. جودة زيوتهم من الدرجة الأولى وتسليمهم دائمًا موثوق. ما يميّزهم حقًا هو دعم العملاء — سريع الاستجابة، ذو خبرة، ومهتم فعلًا بنجاحنا. قللنا وقت التعطل، حسّنا أداء المحرك، وكسبنا شريكًا يعتمد عليه.",
+    "testimonial1_author_html": "أحمد بيلو، مدير أسطول،<br>North Logistics Ltd",
+    "testimonial2_text": "العمل مع فورسا إنيرجي غيّر عملياتنا بالكامل. جودة زيوتهم من الدرجة الأولى وتسليمهم دائمًا موثوق. ما يميّزهم حقًا هو دعم العملاء — سريع الاستجابة، ذو خبرة، ومهتم فعلًا بنجاحنا. قللنا وقت التعطل، حسّنا أداء المحرك، وكسبنا شريكًا يعتمد عليه.",
+    "testimonial2_author_html": "أحمد بيلو، مدير أسطول،<br>North Logistics Ltd",
+    "testimonial3_text": "العمل مع فورسا إنيرجي غيّر عملياتنا بالكامل. جودة زيوتهم من الدرجة الأولى وتسليمهم دائمًا موثوق. ما يميّزهم حقًا هو دعم العملاء — سريع الاستجابة، ذو خبرة، ومهتم فعلًا بنجاحنا. قللنا وقت التعطل، حسّنا أداء المحرك، وكسبنا شريكًا يعتمد عليه.",
+    "testimonial3_author_html": "أحمد بيلو، مدير أسطول،<br>North Logistics Ltd",
+    "blog_card_title": "اختيار زيت المحرك المناسب: ما الذي يجب على تجار التجزئة معرفته.",
+    "blog_card_excerpt": "عند الحديث عن أداء المحرك وعمره الافتراضي، لا شيء أهم من زيت المحرك. سواء كنت ترشد العملاء أو تختار لسيارتك، فإن فهم دور الزيت واختيار النوع المناسب أمر أساسي…",
+    "blog_posted_by": "نُشر بواسطة Adams Farida",
+    "blog_date_sample": "12 أغسطس 2020",
+    "why_choose": {
+      "title": "لماذا تختار فورسا إنيرجي كموزع موثوق لزيوت التشحيم",
+      "subtitle": "فورسا إنيرجي أكثر من مجرد موزع للزيوت؛ نحن شريك موثوق للأعمال في جميع أنحاء نيجيريا. بدعم من MRS Lubricants، إحدى أبرز محطات الخلط في إفريقيا، نقدم منتجات عالية الأداء تلبي المعايير العالمية.",
+      "items": {
+        "facility": {
+          "title": "مدعومون بإحدى أكثر مرافق خلط الزيوت تقدمًا في إفريقيا",
+          "desc": "تقنيات متطورة تضمن منتجات بجودة ممتازة"
+        },
+        "quality": {
+          "title": "معايير جودة متميزة",
+          "desc": "جميع المنتجات تلبي الشهادات الدولية للجودة"
+        },
+        "infrastructure": {
+          "title": "بنية تحتية رقمية قوية",
+          "desc": "انضمام حديث واستراتيجيات تسعير تنافسية"
+        },
+        "support": {
+          "title": "نظام دعم متكامل",
+          "desc": "تسويق كامل ودعم ما بعد البيع للشركاء"
+        }
+      }
+    }
+  }
+  ,
+  "about": {
+    "hero_title": "عن شركة فورسا إنيرجي",
+    "about_us": "من نحن",
+    "our_story": "قصتنا",
+    "story_tagline": "نبني على الثقة، نركز على التجارة، ونلتزم بالنمو",
+    "vision": "الرؤية",
+    "mission": "الرسالة",
+    "company": {
+      "p1": "فورسا إنرجي شركة نيجيرية متخصصة في توزيع وتسويق وتطوير زيوت التشحيم عالية الأداء للتطبيقات الصناعية والخصائص. نحن الموزع الرئيسي الرسمي لشركة MRS Lubricants، إحدى أبرز منشآت مزج الزيوت في أفريقيا، وتقع في أبابا – لاغوس.",
+      "p2": "بفضل حضور قوي في جميع أنحاء نيجيريا، تتموضع فورسا كشريك موثوق للتجارة واللوجستيات وتوريد زيوت تشحيم من الطراز الأول، مصممة لتقليل الاحتكاك وحماية المعدات وتعزيز الكفاءة التشغيلية."
+    },
+    "story": {
+      "p1": "لا تبدأ كل الرحلات على الطرق المفتوحة — لكن رحلتنا يقودها ما يغذّيها. وُلدت فورسا إنرجي من رؤية: أن نكون أكثر من مجرد موزّع لزيوت التشحيم، بل محركًا للأداء الصناعي والتمكين الاقتصادي وشراكات تجارية موثوقة عبر أفريقيا.",
+      "p2": "في سوقٍ غالبًا ما تتراجع فيه الموثوقية، رفعت فورسا المعايير — حيث نوفر زيوتًا متميزة على نطاق واسع ونبني منظومة تجارية يزدهر فيها الشركاء. في قلب قصتنا حركة: محركات تدور، واقتصادات تنهض، وأعمال تتوسع. وبدعم من MRS Oil PLC — إحدى أكبر منشآت مزج الزيوت في أفريقيا — تقدّم فورسا إنرجي تركيبات عالمية المستوى لتمكين المركبات والآلات والصناعات التي تقود التقدم.",
+      "p3": "من طرق الشمال إلى اقتصادات الجنوب الساحلية، لا نكتفي بالتوزيع — بل نمكّن شبكة من الوكلاء والموزعين والمؤسسات بالأدوات اللازمة للنجاح. كل قطرة نوردها تغذي قصة أكبر من الابتكار والتميّز والفرص. فورسا ليست مجرد علامة تجارية — إنها حركة ثقة وتجارة ونمو."
+    },
+    "story_more": {
+      "p1": "انطلق وواصل المسير. تخطَّ العواصف. عندما يتطلب العملُ المستحيلَ، يجب ألا تتراجع الإنتاجية. في أقسى بيئات أفريقيا، نبني أداءً يدوم.",
+      "p2": "تركيبات فورسا الحديثة لا تقبل البدائل المتواضعة. منتجاتنا شريك هندسي دقيق لحماية لا تُضاهى للمعدات. من شوارع لاغوس إلى طرق الساحل والصحراء، يغطي ملفّ منتجاتنا تضاريس أفريقيا الفريدة.",
+      "p3": "من مدن الشمال إلى سواحل الجنوب، مرورًا بقوس الساحل والصحراء في الغرب — خِبرتنا مصمّمة لطرقات أفريقيا. كُن شريكنا بزيوت تشحيم تُبقي الأعمال في حركة. لندفع التقدم في أفريقيا معًا."
+    },
+    "vision_desc": "أن نكون المزود الأكثر موثوقية وابتكارًا لحلول الطاقة في غرب أفريقيا، نقدّم قيمة استثنائية ونبني شراكات تدوم.",
+    "mission_desc": "تقديم زيوت تشحيم وحلول طاقة متميزة، ودعم الأعمال بمنتجات عالية الجودة وخدمة متميزة وممارسات مستدامة تقود النمو والتنمية.",
+    "alt": {
+      "hero": "صورة رئيسية لمصفاة فورسا إنرجي",
+      "splash": "صورة زيت متميزة",
+      "brown": "صورة عبوة فورسا باللون البني"
+    }
+  }
+  ,
+  "faq": {
+    "title": "الأسئلة الشائعة",
+    "subtitle": "اطلع على إجابات لأكثر الأسئلة شيوعًا حول زيوت التشحيم لدينا، وعمليات التوزيع، ومدة التوصيل، والتحقق من المنتجات.",
+    "any_questions": "هل لديك أسئلة؟",
+    "contact": "التواصل:",
+    "business_hours": "ساعات العمل:",
+    "mon_fri": "الاثنين - الجمعة: 8:00 ص - 6:00 م",
+    "saturday": "السبت: 9:00 ص - 4:00 م",
+    "sunday": "الأحد: مغلق"
+  }
+  ,
+  "terms": {
+    "title": "الشروط والأحكام",
+    "effective_date": "تاريخ السريان: 1 يناير 2024",
+    "sections": {
+      "acceptance": "1. قبول الشروط",
+      "use_license": "2. ترخيص الاستخدام",
+      "product_info": "3. معلومات المنتج",
+      "order_acceptance": "4. قبول الطلبات",
+      "payment_terms": "5. شروط الدفع",
+      "shipping_delivery": "6. الشحن والتسليم",
+      "returns_refunds": "7. المرتجعات والاسترداد",
+      "liability": "8. تحديد المسؤولية",
+      "contact": "9. معلومات الاتصال"
+    }
+  },
+  "privacy": {
+    "title": "سياسة الخصوصية",
+    "last_updated": "آخر تحديث: 1 يناير 2024",
+    "sections": {
+      "introduction": "مقدمة",
+      "information_we_collect": "المعلومات التي نجمعها",
+      "personal_information": "المعلومات الشخصية",
+      "auto_information": "المعلومات المجمعة تلقائيًا",
+      "how_we_use": "كيفية استخدام معلوماتك",
+      "sharing": "مشاركة المعلومات",
+      "security": "أمن البيانات",
+      "rights": "حقوقك",
+      "cookies": "سياسة ملفات تعريف الارتباط",
+      "children": "خصوصية الأطفال",
+      "changes": "التغييرات على هذه السياسة",
+      "contact": "اتصل بنا",
+      "contact_intro": "إذا كانت لديك أسئلة حول سياسة الخصوصية هذه، يرجى الاتصال بنا:"
+    }
+  },
+  "notFound": {
+    "title": "عذرًا! الصفحة غير موجودة",
+    "subtitle": "يبدو أنك انتقلت إلى مكان خاطئ. الصفحة التي تبحث عنها قد تم نقلها أو حذفها أو أنها غير موجودة.",
+    "home": "العودة إلى الرئيسية",
+    "visit_shop": "زيارة المتجر",
+    "need_help": "تحتاج مساعدة؟ اتصل بنا:",
+    "call_us": "اتصل بنا",
+    "email_us": "راسلنا",
+    "suggested": "قد يعجبك أيضًا",
+    "view_product": "عرض المنتج"
+  },
+  "cart": {
+    "title": "سلة التسوق",
+    "loading": "جارٍ تحميل سلة التسوق...",
+    "products": "المنتجات",
+    "continue_shopping": "متابعة التسوق",
+    "clear_cart": "إفراغ السلة",
+    "summary": "ملخص السلة",
+    "empty": {
+      "title": "سلة التسوق فارغة",
+      "subtitle": "يبدو أنك لم تضف أي منتجات إلى سلة التسوق بعد",
+      "cta": "ابدأ التسوق"
+    },
+    "remove": "إزالة",
+    "remove_item": "إزالة {name} من السلة",
+    "total": "الإجمالي",
+    "discount": "الخصم",
+    "subtotal": "المجموع الفرعي",
+    "proceed_to_checkout": "المتابعة للدفع",
+    "we_accept": "نقبل:",
+    "toasts": {
+      "coupon_applied": "تم تطبيق القسيمة بنجاح!",
+      "coupon_invalid": "رمز القسيمة غير صالح",
+      "cart_empty": "سلة التسوق فارغة",
+      "clear_confirm": "هل أنت متأكد أنك تريد إفراغ سلة التسوق؟"
+    }
+  },
+  "checkout": {
+    "initializing": "جاري تهيئة الدفع",
+    "please_wait": "يرجى الانتظار...",
+    "unavailable_some": "بعض العناصر في سلة التسوق غير متوفرة.",
+    "unavailable_failed": "فشل تهيئة عملية الدفع",
+  "remove_to_proceed": "يرجى إزالة هذه العناصر للمتابعة:",
+  "items_unavailable_line": "{name}: المطلوب {requested}، المتوفر {available}",
+    "retry": "إعادة المحاولة",
+    "error_title": "حدث خطأ",
+    "title": "الدفع",
+    "no_address": "لا توجد عناوين محفوظة",
+    "add_address_prompt": "أضف عنوان شحن حتى نتمكن من توصيل طلبك",
+    "add_address": "إضافة عنوان",
+    "shipping_address": "عنوان الشحن",
+    "add_new": "إضافة",
+    "default": "افتراضي",
+    "aria": {
+      "select_shipping_for": "اختر {name} كعنوان للشحن",
+      "default_address_badge": "هذا هو عنوانك الافتراضي"
+    },
+    "edit": "تعديل",
+    "confirm_items": "تأكيد عناصر السلة قبل الدفع",
+    "ensure_correct": "تأكد من صحة المعلومات قبل إتمام الشراء",
+    "estimated_delivery": "موعد التسليم المتوقع",
+    "select_payment": "اختر طريقة الدفع",
+    "payment_options_legend": "خيارات طريقة الدفع",
+    "loading_gateway": "جارٍ تحميل بوابة الدفع...",
+    "pay_with": "ادفع عبر {gateway}",
+    "gateway_logo_alt": "شعار {name}",
+    "pay_now": "ادفع ₦{amount}",
+    "processing": "جارٍ المعالجة...",
+    "select_address_alert": "يرجى اختيار عنوان الشحن للمتابعة",
+    "select_method_alert": "يرجى اختيار طريقة الدفع للمتابعة",
+    "order_summary": "ملخص الطلب",
+    "subtotal": "المجموع الفرعي",
+    "original_price": "السعر الأصلي",
+    "saved": "تم التوفير",
+    "shipping": "الشحن",
+    "tax": "الضريبة",
+    "total": "الإجمالي",
+    "modal_add_title": "إضافة عنوان جديد",
+    "modal_edit_title": "تعديل العنوان",
+    "full_name": "الاسم الكامل",
+    "phone_number": "رقم الهاتف",
+    "country": "الدولة",
+    "select_country": "اختر الدولة",
+    "state_province": "الولاية/المقاطعة",
+    "select_state_province": "اختر الولاية والمقاطعة",
+    "city": "المدينة",
+    "postal_code": "الرمز البريدي",
+    "address_line_1": "العنوان سطر 1",
+    "address_line_1_ph": "اسم الشارع، المبنى، رقم المنزل، إلخ",
+    "address_line_2": "العنوان سطر 2",
+    "address_line_2_ph": "الشقة، الطابق، إلخ",
+    "new_will_be_default": "سيتم تعيين العنوان الجديد كافتراضي",
+    "cancel": "إلغاء",
+    "update_address": "تحديث العنوان",
+    "add_address_submit": "إضافة العنوان",
+    "delivery": {
+      "in_day": "خلال {count} يوم.",
+      "in_days": "خلال {min} - {max} أيام."
+    },
+    "payment_title": "دفع الطلب",
+    "payment_description": "أكمل دفع طلبك",
+    "toasts": {
+      "init_failed": "فشل تهيئة عملية الدفع",
+      "countries_failed": "فشل تحميل قائمة الدول",
+      "states_failed": "فشل تحميل الولايات/المقاطعات",
+      "select_payment_required": "يرجى اختيار طريقة دفع",
+      "default_address_updated": "تم تحديث العنوان الافتراضي",
+      "default_address_update_failed": "فشل تحديث العنوان الافتراضي",
+      "address_updated": "تم تحديث العنوان بنجاح",
+      "address_added": "تمت إضافة العنوان بنجاح",
+      "fix_errors_below": "يرجى تصحيح الأخطاء أدناه",
+      "save_address_failed": "فشل حفظ العنوان",
+      "gateway_not_loaded": "بوابة الدفع غير محملة",
+      "payment_cancelled": "تم إلغاء الدفع",
+      "payment_success": "تم الدفع بنجاح!",
+      "payment_failed_or_cancelled": "فشل الدفع أو تم إلغاؤه",
+      "payment_failed": "فشل الدفع",
+      "gateways_partial_load_warning": "تعذر تحميل بعض بوابات الدفع"
+    },
+    "errors": {
+      "full_name_required": "الاسم الكامل مطلوب",
+      "phone_required": "رقم الهاتف مطلوب",
+      "phone_invalid": "يرجى إدخال رقم هاتف صالح",
+      "phone_min_length": "يجب أن يكون رقم الهاتف 10 أرقام على الأقل",
+      "country_required": "الدولة مطلوبة",
+      "state_required": "الولاية/المقاطعة مطلوبة",
+      "city_required": "المدينة مطلوبة",
+      "address_line1_required": "العنوان سطر 1 مطلوب"
+    }
+  },
+  "blog": {
+    "related": "مقالات ذات صلة",
+    "share": "شارك هذه المقالة:",
+    "facebook": "فيسبوك",
+    "twitter": "تويتر",
+    "linkedin": "لينكدإن",
+    "comments": "التعليقات ({count})",
+    "leave_comment": "اترك تعليقًا",
+    "your_name": "اسمك",
+    "your_email": "بريدك الإلكتروني",
+    "your_comment": "تعليقك",
+    "post_comment": "إرسال التعليق",
+    "comment_posted": "تم نشر التعليق بنجاح!",
+    "min_read": "قراءة {minutes} دقيقة"
+  }
+  ,
+  "footer": {
+    "company": "فورسا إنيرجي",
+    "contact": {
+      "email": "info@fursaenergy.com",
+      "phone": "+2348028318302",
+      "address_line_1": "4، موريا كلوز، ووسي 2، أبوجا",
+      "address_line_2": "6، شارع أولومو، باركفيو إستيت، إيكويي، لاغوس"
+    },
+    "quick_links": "روابط سريعة",
+    "help": "المساعدة",
+    "newsletter": "النشرة البريدية",
+    "newsletter_cta": "اشترك لتصلك أحدث عروضنا!",
+    "email_placeholder": "أدخل بريدك الإلكتروني...",
+    "subscribe_success": "تم الاشتراك في النشرة البريدية بنجاح!",
+    "home": "الرئيسية",
+    "about": "من نحن",
+    "contact_us": "اتصل بنا",
+    "shop": "المتجر",
+    "faq": "الأسئلة الشائعة",
+    "terms": "الشروط والأحكام",
+    "privacy": "سياسة الخصوصية",
+    "refund": "سياسة الاسترداد",
+    "copyright": "جميع الحقوق محفوظة."
+  }
+  ,
+  "auth": {
+    "common": { "or": "أو" },
+    "login": {
+      "title": "تسجيل الدخول إلى Fursa",
+      "email_label": "البريد الإلكتروني:",
+      "email_placeholder": "johndoe@gmail.com",
+      "password_label": "كلمة المرور:",
+      "remember": "تذكرني",
+      "forgot_password": "هل نسيت كلمة المرور؟",
+      "submit": "تسجيل الدخول",
+      "loading": "جارٍ تسجيل الدخول...",
+      "no_account": "ليس لديك حساب؟",
+      "register_link": "إنشاء حساب",
+      "success": "تم تسجيل الدخول بنجاح!",
+      "error_invalid": "بيانات تسجيل الدخول غير صحيحة. حاول مرة أخرى."
+    },
+    "register": {
+      "sidebar_title": "مرحبًا!",
+      "sidebar_subtitle": "أنشئ حسابًا وتصفح منتجاتنا بكل سهولة.",
+      "title": "إنشاء حساب",
+      "have_account": "هل لديك حساب بالفعل؟",
+      "login_link": "تسجيل الدخول",
+      "first_name_label": "الاسم الأول:",
+      "first_name_placeholder": "محمد",
+      "last_name_label": "اسم العائلة:",
+      "last_name_placeholder": "أحمد",
+      "email_label": "البريد الإلكتروني:",
+      "email_placeholder": "johndoe@gmail.com",
+      "phone_label": "رقم الهاتف:",
+      "phone_placeholder": "08111111111",
+      "password_label": "كلمة المرور:",
+      "confirm_password_label": "تأكيد كلمة المرور:",
+      "terms_html": "أوافق على <a href=\"/terms\" class=\"text-primary hover:underline\">الشروط والأحكام</a> و <a href=\"/privacy\" class=\"text-primary hover:underline\">سياسة الخصوصية</a>.",
+      "submit": "إنشاء حساب",
+      "loading": "جارٍ إنشاء الحساب...",
+      "passwords_no_match": "كلمتا المرور غير متطابقتين",
+      "success": "تم إنشاء الحساب بنجاح! الرجاء تسجيل الدخول.",
+      "failed_generic": "فشل إنشاء الحساب. حاول مرة أخرى."
+    },
+    "validation": {
+      "user_required": "البريد الإلكتروني مطلوب",
+      "user_invalid": "يرجى إدخال بريد إلكتروني صالح",
+      "password_required": "كلمة المرور مطلوبة",
+      "password_min6": "يجب أن تكون كلمة المرور 6 أحرف على الأقل"
+    },
+    "social": {
+      "continue_google": "المتابعة باستخدام Google",
+      "continue_apple": "المتابعة باستخدام Apple",
+      "coming_soon": "قريبًا!"
+    }
+  }
+  ,
+  "shop": {
+    "all_products": "كل المنتجات",
+    "sidebar": { "categories": "التصنيفات" },
+    "hero": {
+      "slide1": {
+        "title": "اطلب. تتبع. استلم.",
+        "subtitle": "أرسل طرودك بأمان إلى أي مكان في نيجيريا.",
+        "cta": "ابدأ الآن"
+      },
+      "slide2": {
+        "title": "سريع وموثوق",
+        "subtitle": "نقوم بتسليم بضاعتك بأمان وفي الوقت المحدد.",
+        "cta": "تتبع الشحنة"
+      }
+    },
+    "featured": { "title": "المنتجات المميزة", "empty": "لا توجد منتجات مميزة متاحة" },
+    "more": "المزيد",
+    "category_products": { "empty": "لا توجد منتجات متاحة في {name}" },
+    "fetch_failed": "فشل تحميل بيانات المتجر",
+    "retry": "إعادة المحاولة",
+    "filters": {
+      "title": "عوامل التصفية",
+      "search": "بحث",
+      "search_by_keywords": "ابحث بالكلمات المفتاحية...",
+      "category": "التصنيف",
+      "tags": "الوسوم",
+      "clear_tags": "مسح الوسوم",
+      "price": "السعر ({currency})",
+      "min": "أدنى",
+      "max": "أقصى",
+      "price_filter": "مرشح السعر"
+    },
+    "sort_by": "ترتيب حسب",
+    "sort": {
+      "highest_price": "الأعلى سعراً",
+      "lowest_price": "الأقل سعراً",
+      "featured": "المميزة"
+    },
+    "filter": "تصفية",
+    "showing_count": "عرض ({count} من {total}) من المنتجات",
+    "loading_products": "جارٍ تحميل المنتجات...",
+    "failed_to_load_products": "فشل تحميل المنتجات",
+    "no_products_match": "لا توجد منتجات مطابقة لمرشحاتك.",
+    "reset_filters": "إعادة تعيين المرشحات",
+    "reset": "إعادة تعيين",
+    "apply": "تطبيق",
+    "featured_badge": "منتج مميز",
+    "available_low_stock": "المتوفر: {qty} (كمية منخفضة)",
+    "available": "متوفر",
+    "add_to_cart": "أضف إلى السلة",
+    "adding": "جارٍ الإضافة...",
+    "loading_categories": "جارٍ تحميل التصنيفات...",
+    "no_categories": "لا توجد تصنيفات حالياً.",
+    "subcategories_count": "{count} تصنيفات فرعية",
+    "products_count": "{count} منتجات",
+    "no_products_found": "لم يتم العثور على منتجات",
+    "quick_view": "معاينة سريعة",
+    "reviews_count": "({count} مراجعات)",
+    "in_stock": "متوفر في المخزون",
+    "sku_label": "رمز المنتج:",
+    "category_label": "الفئة:",
+    "key_features": "الميزات الرئيسية:",
+    "features": {
+      "premium_quality": "زيت محرك عالي الجودة",
+      "all_vehicle_types": "مناسب لجميع أنواع المركبات",
+      "extended_protection": "حماية ممتدة للمحرك",
+      "fuel_efficiency": "تحسين كفاءة الوقود"
+    },
+    "related_products": "منتجات ذات صلة",
+    "wishlist_added": "تمت إضافة {name} إلى المفضلة",
+    "wishlist_removed": "تمت إزالة {name} من المفضلة",
+    "uncategorized": "غير مصنّف",
+    "failed_to_load_product": "فشل تحميل المنتج",
+    "tabs": {
+      "description": "الوصف",
+      "specifications": "المواصفات",
+      "reviews": "المراجعات"
+    }
+  }
+  ,
+  "wishlist": {
+    "title": "قائمة المفضلة",
+    "empty": {
+      "title": "قائمة المفضلة فارغة",
+      "subtitle": "احفظ المنتجات التي تعجبك لشرائها لاحقًا"
+    },
+    "continue_shopping": "متابعة التسوق",
+    "remove": "إزالة",
+    "move_to_cart": "نقل إلى السلة",
+    "moved_to_cart": "تم نقل المنتج إلى السلة",
+    "removed": "تمت إزالة المنتج من المفضلة",
+    "remove_item_aria": "إزالة {name} من المفضلة"
+  }
+  ,
+  "dashboard": {
+    "welcome": "مرحبًا {name}!",
+    "logout": "تسجيل الخروج",
+    "intro": "من لوحة حسابك يمكنك عرض طلباتك الأخيرة، وإدارة عناوين الشحن والفوترة، وتعديل كلمة المرور وتفاصيل حسابك.",
+    "stats": {
+      "in_cart": "منتج في السلة",
+      "in_wishlist": "منتج في المفضلة",
+      "ordered": "منتجات تم طلبها",
+      "ongoing": "طلبات قيد التنفيذ"
+    },
+    "sidebar": {
+      "dashboard": "لوحة التحكم",
+      "orders": "الطلبات",
+      "profile": "الملف الشخصي",
+      "address": "العنوان",
+      "wishlist": "المفضلة",
+      "settings": "الإعدادات",
+      "logout": "تسجيل الخروج"
+    },
+    "recent_orders": {
+      "title": "الطلبات الأخيرة",
+      "date": "التاريخ",
+      "status": "الحالة",
+      "total": "الإجمالي",
+      "actions": "الإجراءات",
+      "for_items": "لعدد {count} عنصر",
+      "empty": "لا توجد طلبات حديثة.",
+      "load_more": "تحميل المزيد"
+    },
+    "toasts": {
+      "logged_out": "تم تسجيل الخروج بنجاح"
+    }
+  }
+  ,
+  "cta": {
+    "secure_payment": {
+      "title": "دفع آمن",
+      "desc": "نقبل البطاقات الرئيسية وبوابات الدفع"
+    },
+    "reviews": {
+      "title": "موثوق من آلاف العملاء",
+      "desc": "تقييمات ومراجعات حقيقية"
+    },
+    "support": {
+      "title": "دعم على مدار الساعة",
+      "desc": "نحن هنا عندما تحتاج إلينا"
+    },
+    "returns": {
+      "title": "إرجاع سهل",
+      "desc": "سياسة إرجاع مرنة"
+    }
+  },
+  "brochure": {
+    "title": "تنزيل كتيّب MRS",
+    "download_label": "تنزيل الكتيّب",
+    "download_aria": "تنزيل الكتيّب بصيغة PDF",
+    "note_default_path": "إذا لم يبدأ التنزيل، افتح الملف مباشرة: /brochure.pdf"
+  }
+  ,
+  "contact": {
+    "title": "تواصل معنا",
+    "hero_alt": "صورة رأس الصفحة — تواصل معنا",
+    "have_question": "هل لديك سؤال؟",
+    "intro_text": "تحتاج مساعدة، ترغب في شراكة، أو تحتاج دعمًا لمنتج؟ أرسل لنا رسالة وسنعاود الرد خلال 24 ساعة. يمكنك أيضًا التواصل عبر الهاتف أو البريد الإلكتروني.",
+    "full_name": "الاسم الكامل",
+    "full_name_placeholder": "أدخل اسمك الكامل",
+    "last_name": "اسم العائلة",
+    "last_name_placeholder": "أدخل اسم العائلة",
+    "email": "البريد الإلكتروني",
+    "email_placeholder": "أدخل بريدك الإلكتروني",
+    "message": "الرسالة",
+    "message_placeholder": "اكتب رسالتك هنا",
+    "send_message": "إرسال الرسالة",
+    "get_in_touch": "تواصل معنا",
+    "get_in_touch_text": "هل ترغب بالتواصل؟ يسعدنا سماعك. إليك طرق الوصول إلينا.",
+    "address1": "العنوان 1",
+    "address2": "العنوان 2",
+    "phone": "الهاتف",
+    "map_title": "لا تستطيع الوصول إلينا؟",
+    "map_subtitle": "اعثر على مقرّنا باستخدام الخريطة أدناه",
+    "toast_success": "تم إرسال رسالتك بنجاح! سنعود إليك قريبًا."
+  }
+  ,
+  "distributor": {
+    "title": "تسجيل الموزع",
+    "steps": {
+      "business_info": "معلومات الشركة",
+      "contact_person": "الشخص المسؤول",
+      "distribution": "التوزيع",
+      "product_focus": "تركيز المنتجات",
+      "banking_kyc": "البيانات البنكية وKYC",
+      "review_submit": "مراجعة وإرسال"
+    },
+    "sections": {
+      "business_info": "القسم 1: معلومات الشركة",
+      "contact_person": "القسم 2: الشخص المسؤول",
+      "distribution_capacity": "القسم 3: القدرة على التوزيع",
+      "product_focus": "القسم 4: استراتيجية التوزيع وتركيز المنتجات",
+      "banking_kyc": "القسم 5: المعلومات البنكية وKYC",
+      "review_submit": "القسم 6: المراجعة والإرسال"
+    },
+    "business": {
+      "company_name": "اسم الشركة",
+      "registered_name": "الاسم التجاري المسجل (إن وُجد اختلاف)",
+      "rc_number": "رقم RC",
+      "email": "البريد الإلكتروني",
+      "office_phone": "هاتف المكتب",
+      "company_type": "نوع الشركة",
+      "select_type": "اختر النوع",
+      "types": {
+        "private_limited": "شركة محدودة المسؤولية",
+        "public_limited": "شركة مساهمة",
+        "partnership": "شراكة",
+        "sole_proprietorship": "ملكية فردية"
+      },
+      "website": "الموقع الإلكتروني (إن وُجد)",
+      "website_placeholder": "https://example.com",
+      "business_address": "عنوان الشركة"
+    },
+    "contact": {
+      "full_name": "الاسم الكامل",
+      "position_title": "المنصب/المسمى الوظيفي",
+      "position_placeholder": "مثال: مدير المبيعات",
+      "mobile": "رقم الجوال",
+      "mobile_placeholder": "+234 XXX XXX XXXX",
+      "means_of_id": "نوع الهوية",
+      "select_id_type": "اختر نوع الهوية",
+      "id_types": {
+        "nin": "الهوية الوطنية (NIN)",
+        "drivers_license": "رخصة القيادة",
+        "passport": "جواز السفر",
+        "voters_card": "بطاقة الناخب"
+      },
+      "id_number": "رقم الهوية",
+      "id_number_placeholder": "أدخل رقم الهوية",
+      "years_in_business": "عدد سنوات العمل"
+    },
+    "distribution": {
+      "current_product_lines": "خطوط المنتجات الموزعة حاليًا (إن وجدت)",
+      "current_product_lines_placeholder": "مثال: إلكترونيات، أجهزة منزلية",
+      "monthly_capacity": "القدرة الشهرية على التوزيع",
+      "monthly_capacity_placeholder": "مثال: 1000 وحدة",
+      "regions_covered": "المناطق المغطاة حاليًا",
+      "regions_covered_placeholder": "مثال: لاغوس، أوغن، أويو",
+      "sales_staff": "عدد موظفي المبيعات",
+      "preferred_region": "المنطقة المفضلة",
+      "preferred_region_placeholder": "مثال: لاغوس",
+      "has_warehouse": "هل لديك مستودع أو مرافق تخزين؟",
+      "has_vehicles": "هل لديك مركبات للتوزيع؟",
+      "vehicle_details_label": "إن كانت الإجابة نعم، اذكر العدد والنوع:",
+      "vehicle_details_placeholder": "مثال: 2 تويوتا Hilux، 1 مرسيدس Sprinter",
+      "preferred_states_label": "الولايات المفضلة التي ترغب بتغطيتها:",
+      "preferred_states_hint": "اختر جميع الولايات التي تنوي التوزيع فيها",
+      "states_selected": "تم اختيار {count} ولاية"
+    },
+    "product_focus": {
+      "categories_question": "أي فئات من زيوت Fursa/MRS تهمك؟ (اختر كل ما ينطبق)",
+      "categories": {
+        "automotive": "السيارات",
+        "industrial": "الصناعي",
+        "agricultural": "الزراعي",
+        "marine": "البحري",
+        "manufacturing": "التصنيع",
+        "commercial_fleet": "الأسطول التجاري",
+        "motorcycle_small_engine": "الدراجات النارية/المحركات الصغيرة",
+        "other": "أخرى"
+      },
+      "technical_knowledge_question": "هل لديك أو لدى فريقك معرفة تقنية بالزيوت؟",
+      "training_question": "هل ترغب في حضور تدريب المنتجات من فورسا؟",
+      "distribution_start_question": "كم المدة المتوقعة لبدء التوزيع بعد الانضمام؟",
+      "promo_question": "هل ترغب بالمشاركة في الأنشطة الترويجية؟",
+      "upload_title": "تحميل المستندات المطلوبة",
+      "choose_file": "اختيار ملف",
+      "declaration_warning": "أقرّ بأن المعلومات المذكورة أعلاه صحيحة وكاملة حسب علمي.",
+      "declarant_name": "اسم المصرّح:",
+      "declarant_name_placeholder": "اكتب اسمك الكامل",
+      "declaration_date": "تاريخ التصريح:",
+      "other_specify_label": "إن اخترت (أخرى)، يرجى التحديد",
+      "other_specify_placeholder": "صف الفئة"
+    },
+    "docs": {
+      "cac": "شهادة CAC",
+      "cac_desc": "قم برفع شهادة التأسيس",
+      "form_c07": "النموذج C07 (قائمة المدراء)",
+      "form_c07_desc": "قم برفع مستند قائمة المدراء",
+      "memart": "MEMART",
+      "memart_desc": "فاتورة خدمات (عنوان المكتب، لا يتجاوز 3 أشهر)",
+      "tin": "رقم التعريف الضريبي (TIN)",
+      "tin_desc": "قم برفع شهادة TIN",
+      "referee": "خطاب تعريف من جهة مرجعية",
+      "referee_desc": "قم برفع خطاب المرجع"
+    },
+    "banking": {
+      "banking_title": "المعلومات البنكية وKYC",
+      "info_title": "المعلومات البنكية المطلوبة",
+      "info_desc": "يرجى تقديم بيانات بنكية دقيقة لأغراض الدفع والتحقق.",
+      "bank_name": "اسم البنك",
+      "select_bank": "اختر البنك",
+      "account_number": "رقم الحساب",
+      "account_number_placeholder": "0123456789",
+      "account_number_error": "يجب أن يتكون رقم الحساب من 10 أرقام بالضبط",
+      "account_name": "اسم صاحب الحساب",
+      "account_name_placeholder": "كما هو مسجل لدى البنك",
+      "bvn": "BVN للشخص المسؤول",
+      "bvn_placeholder": "12345678901",
+      "bvn_error": "يجب أن يتكون BVN من 11 رقمًا بالضبط",
+      "bvn_hint": "رقم التحقق البنكي الخاص بك (11 رقمًا)",
+      "partnership_info_title": "معلومات الشراكات",
+      "partnerships_label": "الشراكات الحالية مع شركات النفط والغاز (إن وجدت)",
+      "partnerships_placeholder": "اذكر شركات النفط والغاز التي تتعاون معها (مثال: Samsung، LG)",
+      "partnerships_hint": "اتركه فارغًا إذا لم تكن هناك شراكات",
+      "privacy_notice_title": "إشعار خصوصية البيانات",
+      "privacy_notice_desc": "ستُعامل جميع المعلومات البنكية والشخصية بسرية ولن تُستخدم إلا لأغراض التحقق ومعالجة المدفوعات وفق اللوائح المعمول بها."
+    },
+    "review": {
+      "info_title": "يرجى مراجعة بياناتك",
+      "info_desc": "تأكد من صحة جميع المعلومات قبل إرسال طلبك.",
+      "business_info_title": "معلومات الشركة",
+      "contact_person_title": "الشخص المسؤول",
+      "distribution_capacity_title": "قدرة التوزيع",
+      "product_focus_title": "استراتيجية التوزيع وتركيز المنتجات",
+      "banking_kyc_title": "المعلومات البنكية وKYC",
+      "documents_title": "المستندات المرفوعة",
+      "labels": {
+        "company_name": "اسم الشركة:",
+        "registered_name": "الاسم القانوني:",
+        "rc_number": "رقم RC:",
+        "company_type": "نوع الشركة:",
+        "email": "البريد الإلكتروني:",
+        "office_phone": "هاتف المكتب:",
+        "website": "الموقع:",
+        "business_address": "عنوان الشركة:",
+        "full_name": "الاسم الكامل:",
+        "position_title": "المنصب/المسمى:",
+        "mobile_number": "رقم الجوال:",
+        "years_in_business": "سنوات العمل:",
+        "id_type": "نوع الهوية:",
+        "id_number": "رقم الهوية:",
+        "current_product_lines": "الخطوط الحالية:",
+        "monthly_capacity": "القدرة الشهرية:",
+        "regions_covered": "المناطق المغطاة:",
+        "sales_staff": "عدد موظفي المبيعات:",
+        "preferred_region": "المنطقة المفضلة:",
+        "has_warehouse": "يوجد مستودع:",
+        "has_vehicles": "توجد مركبات:",
+        "vehicle_details": "تفاصيل المركبات:",
+        "preferred_states_to_cover": "الولايات المراد تغطيتها:",
+        "product_categories_interested": "الفئات محل الاهتمام:",
+        "technical_knowledge": "معرفة تقنية:",
+        "willing_to_train": "رغبة في التدريب:",
+        "distribution_start_date": "تاريخ بدء التوزيع:",
+        "promo_participation": "المشاركة الترويجية:",
+        "declarant_name": "اسم المصرّح:",
+        "declaration_date": "تاريخ التصريح:",
+        "bank_name": "اسم البنك:",
+        "account_number": "رقم الحساب:",
+        "account_name": "صاحب الحساب:",
+        "bvn": "BVN:",
+        "partnerships": "شراكات النفط والغاز:"
+      }
+    },
+    "password": {
+      "title": "اختر كلمة مرور قوية",
+      "password": "كلمة المرور",
+      "password_placeholder": "8 أحرف على الأقل",
+      "password_hint": "يجب ألا تقل عن 8 أحرف",
+      "confirm_password": "تأكيد كلمة المرور",
+      "confirm_password_placeholder": "أعد إدخال كلمة المرور",
+      "passwords_no_match": "كلمتا المرور غير متطابقتين",
+      "passwords_match": "كلمتا المرور متطابقتان"
+    },
+    "notes": {
+      "title": "ملاحظات إضافية (اختياري)",
+      "placeholder": "أي معلومات إضافية ترغب بتقديمها..."
+    },
+    "terms": {
+      "title": "الموافقة على الشروط والأحكام",
+      "p1": "أُقرّ بأن جميع المعلومات الواردة في هذا الطلب صحيحة ودقيقة حسب علمي. أفهم أن فورسا إنيرجي قد تقوم بعمليات تحقق، ولها الحق في رفض أو إلغاء الوكالة إذا تبيّن أن المعلومات مضللة أو غير صحيحة.",
+      "p2": "كما أوافق على الالتزام بجميع سياسات موزعي فورسا إنيرجي، والحفاظ على معايير الخدمة المطلوبة، وصون سمعة الشركة في جميع التعاملات."
+    },
+    "error": {
+      "missing_info_title": "بيانات ناقصة",
+      "missing_info_desc": "يرجى التأكد من تعبئة جميع الحقول المطلوبة، وتطابق كلمتي المرور (بحد أدنى 8 أحرف)، والموافقة على الشروط والأحكام."
+    },
+    "validation": {
+      "error_title": "خطأ في التحقق",
+      "company_name_required": "اسم الشركة مطلوب",
+      "rc_number_required": "رقم RC مطلوب",
+      "email_required": "البريد الإلكتروني الصحيح مطلوب",
+      "office_phone_required": "هاتف المكتب مطلوب",
+      "company_type_required": "نوع الشركة مطلوب",
+      "business_address_required": "عنوان الشركة مطلوب",
+      "contact_full_name_required": "اسم الشخص المسؤول مطلوب",
+      "position_required": "المنصب/المسمى مطلوب",
+      "mobile_required": "رقم الجوال مطلوب",
+      "id_type_required": "نوع الهوية مطلوب",
+      "id_number_required": "رقم الهوية مطلوب",
+      "years_in_business_required": "سنوات العمل مطلوبة",
+      "has_warehouse_required": "يرجى تحديد ما إذا كان يوجد مستودع",
+      "has_vehicles_required": "يرجى تحديد ما إذا كانت توجد مركبات توزيع",
+      "preferred_states_required": "يرجى اختيار ولاية واحدة على الأقل",
+      "product_categories_required": "يرجى اختيار فئة منتجات واحدة على الأقل",
+      "technical_knowledge_required": "يرجى تحديد وجود معرفة تقنية",
+      "willing_to_train_required": "يرجى تحديد الرغبة في التدريب",
+      "distribution_start_time_required": "يرجى تحديد موعد بدء التوزيع",
+  "other_specify_required": "يرجى تحديد الفئة عند اختيار (أخرى)",
+      "bank_name_required": "اسم البنك مطلوب",
+      "account_number_required": "رقم حساب صالح من 10 أرقام مطلوب",
+      "account_name_required": "اسم صاحب الحساب مطلوب",
+      "bvn_required": "BVN صالح من 11 رقمًا مطلوب",
+      "must_agree_terms": "يجب الموافقة على الشروط والأحكام",
+      "password_required": "كلمة المرور مطلوبة",
+      "password_min": "يجب ألا تقل كلمة المرور عن 8 أحرف",
+      "passwords_no_match": "كلمتا المرور غير متطابقتين"
+    },
+    "buttons": {
+      "previous": "السابق",
+      "next": "التالي",
+      "submit_application": "إرسال الطلب"
+    },
+    "toasts": {
+      "submit_success": "تم إرسال طلب الموزع بنجاح!",
+      "submit_failed_generic": "فشل إرسال الطلب. يرجى المحاولة مرة أخرى."
+    },
+    "common": {
+      "yes": "نعم",
+      "no": "لا",
+      "depends": "حسب الترتيب",
+      "na": "غير متاح",
+      "none": "لا يوجد",
+      "none_selected": "لم يتم الاختيار",
+      "same_as_company_name": "مطابق لاسم الشركة",
+      "uploaded": "تم الرفع",
+      "pending": "قيد الانتظار",
+      "years_suffix": "سنة/سنوات"
+    }
+  },
+  "orders": {
+    "title": "طلباتي",
+    "tabs": {
+      "all": "الكل",
+      "processing": "قيد المعالجة",
+      "shipped": "تم الشحن",
+      "completed": "مكتمل",
+      "cancelled": "ملغي"
+    },
+    "table": {
+      "order_id": "رقم الطلب",
+      "date": "التاريخ",
+      "status": "الحالة",
+      "total": "الإجمالي",
+      "actions": "الإجراءات"
+    },
+    "status": {
+      "processing": "قيد المعالجة",
+      "completed": "مكتمل",
+      "cancelled": "ملغي",
+      "shipped": "تم الشحن"
+    },
+    "for_items": "لـ {count} منتج",
+    "empty": "لا توجد طلبات.",
+    "pagination": {
+      "summary": "عرض {from}–{to} من {total} طلبًا"
+    },
+    "actions": {
+      "view": "عرض",
+      "track": "تتبُّع",
+      "reorder": "إعادة الطلب"
+    }
+  }
+  ,
+  "profile": {
+    "title": "الملف الشخصي",
+    "form": {
+      "first_name": "الاسم الأول",
+      "last_name": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف"
+    },
+    "password": {
+      "title": "تغيير كلمة المرور",
+      "current": "كلمة المرور الحالية",
+      "new": "كلمة المرور الجديدة",
+      "confirm": "تأكيد كلمة المرور"
+    },
+    "buttons": {
+      "cancel": "إلغاء",
+      "save_changes": "حفظ التغييرات"
+    },
+    "toasts": {
+      "passwords_no_match": "كلمتا المرور غير متطابقتين",
+      "updated_success": "تم تحديث الملف الشخصي بنجاح!"
+    }
+  }
+  ,
+  "addresses": {
+    "title": "عناويني",
+    "add_new": "إضافة عنوان جديد",
+    "empty": {
+      "title": "لا توجد عناوين",
+      "subtitle": "أضف عنوان الشحن لتسريع عملية الدفع",
+      "cta": "إضافة عنوان"
+    },
+    "actions": {
+      "delete": "حذف",
+      "set_default": "تعيين كافتراضي"
+    },
+    "modal": {
+      "title_add": "إضافة عنوان جديد"
+    },
+    "form": {
+      "set_as_default": "تعيين كافتراضي"
+    },
+    "submit": {
+      "saving": "جارٍ الحفظ...",
+      "save_address": "حفظ العنوان"
+    },
+    "confirm_delete": "هل أنت متأكد من حذف هذا العنوان؟",
+    "toasts": {
+      "fetch_failed": "فشل جلب العناوين!",
+      "delete_success": "تم حذف العنوان بنجاح!",
+      "delete_failed": "فشل حذف العنوان!"
+    }
+  }
+}

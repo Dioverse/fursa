@@ -1,7 +1,12 @@
 <template>
   <DashboardLayout>
+<<<<<<< Updated upstream
     <div class="space-y-6">
       <h1 class="lg:text-2xl md:text-xl text-lg font-bold">{{ $t('orders.title') }}</h1>
+=======
+    <div class="w-full space-y-6 text-sm md:text-md">
+      <h1 class="lg:text-2xl md:text-xl text-lg font-bold">My Orders</h1>
+>>>>>>> Stashed changes
 
       <!-- Filter Tabs -->
       <div class="bg-white rounded-lg shadow-md p-4">
@@ -87,8 +92,13 @@
           </table>
 
           <!-- Empty State -->
+<<<<<<< Updated upstream
           <div v-else class="p-6 text-center text-gray-500">
             {{ $t('orders.empty') }}
+=======
+          <div v-else class="flex justify-center items-center p-6 text-center text-gray-500 min-h-[200px]">
+            No orders found for this filter.
+>>>>>>> Stashed changes
           </div>
         </div>
 

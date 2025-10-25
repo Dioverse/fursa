@@ -1,7 +1,12 @@
 <template>
   <ShopLayout :bgColor="`bg-white`">
+<<<<<<< Updated upstream
     <div class="min-h-screen mx-auto bg-gray-50 container lg:px-20 px-3 bg-transparent">
   <h1 class="text-3xl font-bold mb-8">{{ $t('cart.title') }}</h1>
+=======
+    <div class="min-h-screen mx-auto bg-gray-50 sm:container md:container lg:container lg:px-20 px-3 bg-transparent">
+      <h1 class="text-3xl font-bold my-8">Cart</h1>
+>>>>>>> Stashed changes
 
       <!-- Loading -->
       <div v-if="cartStore.loading" class="text-center py-10">

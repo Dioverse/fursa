@@ -39,6 +39,7 @@ export const useCartStore = defineStore('cart', () => {
     },
     { deep: true },
   )
+
   // --- COMPUTED ---
   const itemCount = computed(() =>
     items.value.reduce((total, i) => total + (toNumber(i.quantity) || 0), 0),
@@ -151,12 +152,24 @@ export const useCartStore = defineStore('cart', () => {
   // Automatically load local cart on store initialization
   initFromLocal()
 
+  // --- DETECT NETWORK ERROR ---
+  function isNetworkError(error) {
+    return (
+      error instanceof TypeError &&
+      (error.message.includes('Failed to fetch') ||
+        error.message.includes('NetworkError') ||
+        error.message.includes('timeout'))
+    )
+  }
 
   // --- API HELPER ---
   async function callApi(endpoint, payload = null, method = 'POST') {
     if (!token()) return null
 
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
+
       const res = await fetch(`${API_BASE}${endpoint}`, {
         method,
         headers: {
@@ -164,7 +177,10 @@ export const useCartStore = defineStore('cart', () => {
           Authorization: `Bearer ${token()}`,
         },
         body: payload ? JSON.stringify(payload) : undefined,
+        signal: controller.signal,
       })
+
+      clearTimeout(timeoutId)
 
       const data = await res.json()
       if (!res.ok) throw new Error(data.message || 'API error')
@@ -176,7 +192,20 @@ export const useCartStore = defineStore('cart', () => {
 
       return data
     } catch (err) {
+      if (err.name === 'AbortError') {
+        console.error('❌ API request timeout')
+        toast.error('Request timeout. Check your connection and try again.')
+        return null
+      }
+
+      if (isNetworkError(err)) {
+        console.error('❌ Network error:', err.message)
+        toast.error('Network error. Check connection and try again.')
+        return null
+      }
+
       console.error('❌ API call failed:', err)
+      toast.error(err.message || 'An error occurred. Try again.')
       return null
     }
   }
@@ -190,6 +219,12 @@ export const useCartStore = defineStore('cart', () => {
       if (token()) {
         const payload = { cart: [{ product_id: product.id, quantity: qty }] }
         const data = await callApi('/carts', payload, 'POST')
+        
+        if (data === null) {
+          // Network error already handled in toast within callApi
+          return
+        }
+
         if (data?.cart) {
           // Cart is already updated in callApi via updateCartFromResponse
           toast.success(`Product added to cart`)
@@ -212,36 +247,11 @@ export const useCartStore = defineStore('cart', () => {
           }),
         )
       }
-      // if (existing) {
-      //   existing.quantity += qty
-      // } else {
-      //   items.value.push(
-      //     normalizeItem({
-      //       id: product.id,
-      //       product_id: product.id,
-      //       quantity: qty,
-      //       product: {
-      //         id: product.id,
-      //         name: product.name,
-      //         price: Number(product.price),
-      //         sku: product.sku || '',
-      //         images: product.images || [],
-      //         stock_quantity: product.stock_quantity,
-      //         ...(product.discount
-      //           ? {
-      //               discount: product.discount,
-      //               discounted_price: toNumber(product.discounted_price),
-      //             }
-      //           : { discount: null }),
-      //       },
-      //     }),
-      //   )
-      // }
       saveCart()
       toast.success(`Product added to cart`)
     } catch (err) {
       console.error(err)
-      toast.error('Could not add item to cart. Please try again.')
+      toast.error('Could not add item. Please try again.')
     }
   }
 
@@ -252,6 +262,12 @@ export const useCartStore = defineStore('cart', () => {
 
     if (token()) {
       const data = await callApi('/carts/rm', { product_id: productId }, 'DELETE')
+      
+      if (data === null) {
+        // Network error already handled in toast within callApi
+        return
+      }
+
       if (data?.cart) {
         // Cart is already updated in callApi via updateCartFromResponse
         toast.success(`${itemName} removed from cart`)
@@ -286,6 +302,15 @@ export const useCartStore = defineStore('cart', () => {
     // --- Remote first ---
     if (token()) {
       const data = await callApi('/carts/update', { product_id: productId, quantity }, 'PATCH')
+      
+      if (data === null) {
+        // Network error already handled in toast within callApi
+        if (e?.innerText !== undefined) {
+          e.innerText = item.quantity
+        }
+        return
+      }
+
       if (data?.cart) {
         // Cart is already updated in callApi via updateCartFromResponse
         toast.success(`Updated product quantity`)
@@ -303,14 +328,22 @@ export const useCartStore = defineStore('cart', () => {
   async function clearCart() {
     if (token()) {
       const data = await callApi('/carts/clear', {}, 'POST')
+      
+      if (data === null) {
+        // Network error already handled in toast within callApi
+        return
+      }
+
       if (data?.cart) {
+        discount.value = 0
+        couponCode.value = ''
         toast.success(`Cart cleared successfully`)
         return
       }
-    } else {
-      items.value = []
-      saveCart()
     }
+
+    items.value = []
+    saveCart()
     discount.value = 0
     couponCode.value = ''
   }
@@ -357,12 +390,16 @@ export const useCartStore = defineStore('cart', () => {
           quantity: i.quantity,
         })),
       }
-      await callApi('/carts', payload, 'POST')
+      const data = await callApi('/carts', payload, 'POST')
+      
+      if (data === null) {
+        // Network error already handled in toast within callApi
+        return
+      }
+
       // Cart is already updated in callApi via updateCartFromResponse
       // Clear local storage after syncing
       localStorage.removeItem('cart')
-      // Fetch server cart to ensure we have the latest
-      // await fetchCartFromServer()
     } catch (err) {
       console.error('Cart sync failed:', err)
     }

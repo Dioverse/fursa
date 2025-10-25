@@ -1,6 +1,10 @@
 <template>
   <ShopLayout>
+<<<<<<< Updated upstream
     <div class="min-h-screen mx-auto bg-gray-50 container lg:px-5 px-3 bg-transparent">
+=======
+    <div class="min-h-screen mx-auto bg-gray-50 sm:container lg:px-20 px-3 bg-transparent">
+>>>>>>> Stashed changes
       <!-- Loading State -->
       <div v-if="loading" class="space-y-8 p-4">
         <!-- Hero Skeleton -->
@@ -150,8 +154,13 @@
         <!-- Featured Products Section -->
         <section class="max-w-7xl mx-auto mb-4 md:mb-6 lg:mb-6 bg-white rounded">
           <div
+<<<<<<< Updated upstream
             class="flex justify-between items-center mb-4 bg-gold-500 py-3 px-3 rounded text-sm md:text-lg lg:text-xl">
             <h2 class="font-bold text-white">{{ $t('shop.featured.title') }}</h2>
+=======
+            class="flex justify-between items-center mb-4 bg-secondary py-3 px-3 rounded text-sm md:text-lg lg:text-xl">
+            <h2 class="font-bold text-white">Featured Products</h2>
+>>>>>>> Stashed changes
             <RouterLink :to="`/c?sort_by=if`" class="text-white hover:underline inline-flex items-center">
               {{ $t('shop.more') }}
               <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,7 +217,7 @@
         <div v-for="(category, idx) in shopData.categories_with_products" :key="category.id"
           class="max-w-7xl mx-auto mb-4 md:mb-6 lg:mb-6">
           <div
-            class="flex justify-between items-center mb-4 bg-gold-500 py-3 px-3 rounded text-sm md:text-lg lg:text-xl">
+            class="flex justify-between items-center mb-4 bg-secondary py-3 px-3 rounded text-sm md:text-lg lg:text-xl">
             <h2 class="md:lg:text-xl font-bold text-white">{{ category.name }}</h2>
             <RouterLink :to="`/c/${category.slug}`" class="text-white hover:underline inline-flex items-center">
               {{ $t('shop.more') }}

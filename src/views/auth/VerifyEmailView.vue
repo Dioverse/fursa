@@ -26,7 +26,7 @@ onMounted(async () => {
       router.push('/dashboard')
     }, 2000)
   } catch (err) {
-    error.value = "Verification failed or link expired."
+    error.value = "Verification link invalid or expired."
   } finally {
     loading.value = false
   }

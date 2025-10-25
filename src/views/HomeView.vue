@@ -7,7 +7,8 @@
                 <img src="/images/oil-bg.png" alt="Oil pouring" class="w-full h-full object-cover opacity-70">
                 <div class="absolute inset-0 bg-black bg-opacity-40"></div>
             </div>
-            <div class="container mx-auto px-4 relative rounded py-4 bg-black/20 md:bg-transparent lg:bg-transparent z-10 flex flex-col md:flex-row items-center">
+            <div
+                class="container mx-auto px-4 relative rounded py-4 bg-black/20 md:bg-transparent lg:bg-transparent z-10 flex flex-col md:flex-row items-center">
 
                 <!-- Left Text -->
                 <div class="w-full md:w-1/2 space-y-4">
@@ -29,7 +30,12 @@
 
                 <!-- Right Image -->
                 <div class="w-full md:w-1/2 mt-8 md:mt-0 flex justify-center">
+<<<<<<< Updated upstream
                     <img src="/images/lubricants.png" :alt="$t('home.hero_image_alt')" class="max-w-xs xxxs:w-[15rem] xxs:w-[15rem] md:max-w-md xs:left-[160px] xs:top-[0px] xs:absolute sm:absolute sm:left-[320px] sm:top-[0px] lg:relative lg:left-[0] sm:top-[0px]">
+=======
+                    <img src="/public/images/lubricants.png" alt="MRS Lubricants"
+                        class="max-w-xs xxxs:w-[15rem] xxs:w-[15rem] md:max-w-md xs:left-[160px] xs:top-[0px] xs:absolute sm:absolute sm:left-[320px] sm:top-[0px] lg:relative lg:left-[0] sm:top-[0px]">
+>>>>>>> Stashed changes
                 </div>
             </div>
         </section>
@@ -38,29 +44,43 @@
         <!-- Categories Section -->
         <section class="py-16 bg-gray-50">
             <div class="container mx-auto px-4">
+<<<<<<< Updated upstream
                 <h2 class="text-3xl font-bold text-center mb-12">{{ $t('home.categories') || 'Categories' }}</h2>
                 <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-7 gap-6 justify-center justify-items-center">
                     <!-- Loading Skeleton -->
                     <template v-if="loading">
                         <div v-for="n in 6" :key="n" class="text-center animate-pulse">
+=======
+                <h2 class="grid text-2xl sm:text-2xl md:text-3xl lg:text-3xl font-bold text-center mb-12">Categories
+                </h2>
+                <!-- Loading Skeleton -->
+                <template v-if="loading">
+                    <div class="flex justify-center gap-10 place-items-center" :style="{ placeItems: center }">
+
+                        <div v-for="n in 4" :key="n" class="text-center animate-pulse">
+>>>>>>> Stashed changes
                             <div class="w-20 h-20 mx-auto mb-3 bg-gray-200 rounded-full shadow-md"></div>
                             <p class="h-4 bg-gray-200 rounded w-3/4 mx-auto"></p>
                         </div>
-                    </template>
-
+                    </div>
+                </template>
+                <div v-else
+                    class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-6 place-items-center"
+                    :style="{ placeItems: center }">
                     <!-- Real Categories -->
-                    <template v-else>
-                        <div v-for="category in categories" :key="category.id" class="text-center group cursor-pointer"
-                            @click="goToCategory(category.slug)">
-                            <div
-                                class="w-20 h-20 mx-auto mb-3 bg-white rounded-full shadow-md group-hover:shadow-lg transition flex items-center justify-center">
-                                <font-awesome-icon :icon="category.icon" size="2x" class="text-primary" />
-                            </div>
-                            <p class="text-sm font-medium">{{ category.name }}</p>
+                    <div v-if="categories.length === 0" class="text-center group py-12">
+                        <font-awesome-icon icon="box" size="3x" class="text-gray-400 mb-4" />
+                        <p class="text-gray-600">No categories found</p>
+                    </div>
+                    <div v-else v-for="category in categories" :key="category.id"
+                        class="text-center group cursor-pointer" @click="goToCategory(category.slug)">
+                        <div
+                            class="w-20 h-20 mx-auto mb-3 bg-white rounded-full shadow-md group-hover:shadow-lg transition flex items-center justify-center">
+                            <font-awesome-icon :icon="category.icon" size="2x" class="text-primary" />
                         </div>
-                    </template>
+                        <p class="text-sm font-medium">{{ category.name }}</p>
+                    </div>
                 </div>
-
             </div>
         </section>
 
@@ -391,11 +411,10 @@ const loading = ref(false)
 // ]
 
 const categories = ref([]);
-const catloading = ref(false);
 const caterror = ref(null);
 
 const fetchCategories = async () => {
-    catloading.value = true;
+    loading.value = true;
     caterror.value = null;
 
     try {
@@ -411,7 +430,7 @@ const fetchCategories = async () => {
         caterror.value = err.message || 'Failed to load categories. Please try again.';
         console.error('Error fetching categories:', err);
     } finally {
-        catloading.value = false;
+        loading.value = false;
     }
 };
 
