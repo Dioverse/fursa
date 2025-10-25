@@ -875,10 +875,11 @@
     },
     "buttons": {
       "cancel": "إلغاء",
-      "save_changes": "حفظ التغييرات"
+      "save_changes": "تحديث كلمة المرور"
     },
     "toasts": {
-      "passwords_no_match": "كلمتا المرور غير متطابقتين",
+      "fill_all_password_fields": "املأ الحقول المطلوبة",
+      "passwords_no_match": "كلمات المرور غير متطابقة",
       "updated_success": "تم تحديث الملف الشخصي بنجاح!"
     }
   }

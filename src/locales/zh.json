@@ -876,10 +876,11 @@
     },
     "buttons": {
       "cancel": "取消",
-      "save_changes": "保存更改"
+      "save_changes": "更新密码"
     },
     "toasts": {
-      "passwords_no_match": "两次输入的密码不一致",
+      "fill_all_password_fields": "填写必填字段",
+      "passwords_no_match": "密码不匹配",
       "updated_success": "个人资料更新成功！"
     }
   }

@@ -897,9 +897,10 @@
     },
     "buttons": {
       "cancel": "Cancel",
-      "save_changes": "Save Changes"
+      "save_changes": "Update Password"
     },
     "toasts": {
+      "fill_all_password_fields": "Fill in required fields",
       "passwords_no_match": "Passwords do not match",
       "updated_success": "Profile updated successfully!"
     }

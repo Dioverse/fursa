@@ -8,26 +8,26 @@
                     <RouterLink :to="item.to"
                         class="flex items-center gap-3 px-3 py-2 md:px-4 md:py-3 rounded-lg hover:bg-gray-100 transition"
                         :class="{ 'bg-primary text-white': $route.path === item.to }">
-                            <font-awesome-icon :icon="item.icon" />
-                            <span>{{ item.label }}</span>
+                        <font-awesome-icon :icon="item.icon" />
+                        <span>{{ item.label }}</span>
                     </RouterLink>
                 </li>
                 <li>
                     <button @click="handleLogout"
                         class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 transition text-left">
                         <font-awesome-icon icon="sign-out" />
-                            <span>{{ $t('dashboard.sidebar.logout') }}</span>
+                        <span>{{ $t('dashboard.sidebar.logout') }}</span>
                     </button>
                 </li>
             </ul>
-            
+
         </nav>
     </aside>
 
     <!-- Mobile Bottom Sheet -->
     <transition name="slide-up" v-if="authStore.token" :ddd="authStore.token" class="container mx-auto px-4 shadow-2xl">
         <div class="block sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-2xl rounded-t-2xl z-50 transition-all duration-300 ease-out"
-            :class="expanded ? 'h-[15rem]' : 'h-[5rem]'" @touchstart.passive="onTouchStart"
+            :class="expanded ? 'h-[16rem]' : 'h-[5rem]'" @touchstart.passive="onTouchStart"
             @touchmove.prevent="onTouchMove" @touchend="onTouchEnd">
             <!-- Handle (clickable) -->
             <div class="flex justify-center py-2 cursor-pointer active:scale-95 transition-transform"
@@ -49,19 +49,21 @@
             <div class="px-4 pb-3">
                 <div class="relative" @keydown.escape="openLang = false" data-lang-dropdown>
                     <button @click="openLang = !openLang"
-                            class="w-full flex items-center justify-between gap-2 px-3 py-2 border rounded-md bg-white hover:bg-gray-50">
+                        class="w-full flex items-center justify-between gap-2 px-3 py-2 border rounded-md bg-white hover:bg-gray-50">
                         <div class="flex items-center gap-2">
                             <img :src="`/images/language/${languageStore.currentLanguage.icon}`"
-                                 class="w-[18px] h-[14px] rounded" :alt="languageStore.currentLanguage.name">
+                                class="w-[18px] h-[14px] rounded" :alt="languageStore.currentLanguage.name">
                             <span class="text-xs">{{ languageStore.currentLanguage.name }}</span>
                         </div>
-                        <font-awesome-icon :icon="['fas','chevron-down']" class="text-gray-500 text-xs" />
+                        <font-awesome-icon :icon="['fas', 'chevron-down']" class="text-gray-500 text-xs" />
                     </button>
-                    <div v-if="openLang" class="absolute left-0 mt-2 w-full bg-white border rounded-md shadow-lg py-1 z-10">
+                    <div v-if="openLang"
+                        class="absolute left-0 bottom-full mb-2 w-full bg-white border rounded-md shadow-lg py-1 z-10">
                         <a v-for="lang in languageStore.allowedLanguages" :key="lang.code" href="#"
-                           class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-xs"
-                           @click.prevent="switchLang(lang.code)">
-                            <img :src="`/images/language/${lang.icon}`" class="w-[18px] h-[14px] rounded" :alt="lang.name">
+                            class="flex items-center gap-2 px-3 py-2 text-gray-600 hover:bg-gray-50 text-xs"
+                            @click.prevent="switchLang(lang.code)">
+                            <img :src="`/images/language/${lang.icon}`" class="w-[18px] h-[14px] rounded"
+                                :alt="lang.name">
                             <span>{{ lang.name }}</span>
                         </a>
                     </div>

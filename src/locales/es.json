@@ -875,9 +875,10 @@
     },
     "buttons": {
       "cancel": "Cancelar",
-      "save_changes": "Guardar cambios"
+      "save_changes": "Actualizar Contraseña"
     },
     "toasts": {
+      "fill_all_password_fields": "Rellene los campos obligatorios",
       "passwords_no_match": "Las contraseñas no coinciden",
       "updated_success": "¡Perfil actualizado correctamente!"
     }

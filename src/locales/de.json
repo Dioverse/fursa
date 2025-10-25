@@ -876,9 +876,10 @@
     },
     "buttons": {
       "cancel": "Abbrechen",
-      "save_changes": "Änderungen speichern"
+      "save_changes": "Passwort aktualisieren"
     },
     "toasts": {
+      "fill_all_password_fields": "Erforderliche Felder ausfüllen",
       "passwords_no_match": "Passwörter stimmen nicht überein",
       "updated_success": "Profil erfolgreich aktualisiert!"
     }

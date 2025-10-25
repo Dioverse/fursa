@@ -5,14 +5,11 @@ import router from '@/router'
 import { useToast } from 'vue-toastification'
 import { useCartStore } from '@/stores/cart'
 
-
-
 export const useAuthStore = defineStore('auth', () => {
-
   state: () => ({
     user: null,
-    token: localStorage.getItem("token") || null,
-  });
+    token: localStorage.getItem('token') || null,
+  })
 
   const toast = useToast()
   const user = ref(null)
@@ -31,8 +28,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
-
-      const response = await authService.login(credentials);
+      const response = await authService.login(credentials)
       token.value = response.data.token
       user.value = response.data.user
       localStorage.setItem('token', token.value)
@@ -52,7 +48,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
-      const response = await authService.register(userData);
+      const response = await authService.register(userData)
       return response
     } catch (err) {
       error.value = err.response?.data?.message || 'Registration failed'
@@ -66,7 +62,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
-      const response = await authService.forgotPassword(userData);
+      const response = await authService.forgotPassword(userData)
       return response
     } catch (err) {
       error.value = err.response?.data?.message || 'Request failed'
@@ -80,7 +76,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
-      const response = await authService.resetPassword(userData);
+      const response = await authService.resetPassword(userData)
       return response
     } catch (err) {
       error.value = err.response?.data?.message || 'Request failed'
@@ -89,7 +85,6 @@ export const useAuthStore = defineStore('auth', () => {
       loading.value = false
     }
   }
-  
 
   function logout() {
     user.value = null
@@ -137,6 +132,23 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function updatePassword(passwordData) {
+    loading.value = true
+    try {
+      // Simulate API call (replace this mock with real API endpoint)
+      const response = await api.post('/change-password', passwordData)
+
+      toast.success('Password updated successfully')
+      return response
+    } catch (err) {
+      error.value = err.response?.data?.message || 'Password update failed'
+      toast.error(error.value)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     user,
     token,
@@ -149,5 +161,6 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     checkAuth,
     updateProfile,
+    updatePassword
   }
 })

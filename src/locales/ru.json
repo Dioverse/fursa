@@ -875,9 +875,10 @@
     },
     "buttons": {
       "cancel": "Отмена",
-      "save_changes": "Сохранить изменения"
+      "save_changes": "Обновить пароль"
     },
     "toasts": {
+      "fill_all_password_fields": "Заполните обязательные поля",
       "passwords_no_match": "Пароли не совпадают",
       "updated_success": "Профиль успешно обновлен!"
     }
