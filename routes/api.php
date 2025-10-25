@@ -37,14 +37,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('register', [AuthController::class, 'register']);
 Route::get('login', function () {
-    return response()->json([
-        'redirect' => "unauthenticated",
-        'message' => "Unauthenticated"
-    ], 401);
+    return response()->json(['redirect' => "unauthenticated",'message' => "Unauthenticated"], 401);
 })->name("login");
 Route::post('login', [AuthController::class, 'login']);
 Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('reset-password', [AuthController::class, 'resetPassword']);
+Route::middleware('auth:api')->post('/auth/admin/refresh', [AuthController::class, 'refresh']);
 
 // Route::get('reset-password/{token}', function (string $token, Request $request) {
 //     $frontendUrl = config('app.frontend_url').'/reset-password';
