@@ -67,7 +67,7 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
 
 
         Route::apiResource('admin', AdminController::class);
-        Route::get('profile-details', function (Request $request) {
+        Route::get('admin/profile-details', function (Request $request) {
             return $request->user();
         });
 
@@ -155,7 +155,7 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
     });
 
     // Distributor-only routes
-    Route::prefix('distributor')->group(function () {
+    Route::prefix('distributor')->middleware('role:distributor')->group(function () {
         Route::get('profile-details', [ProfileController::class, 'show']);
         Route::post('profile-update', [ProfileController::class, 'update'])->middleware('ensurerejected');
         Route::post('profile-document-upload', [ProfileController::class, 'updateDocuments'])->middleware('ensurerejected');
