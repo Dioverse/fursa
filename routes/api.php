@@ -170,7 +170,7 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
     });
 
     Route::post('/change-password', [AuthController::class, 'changePassword'])->middleware('throttle:2,1');
-
+    
     // Shared routes for all authenticated users
     Route::apiResource('carts', CartController::class)->only(['index','store']);
     Route::delete('carts/rm', [CartController::class, 'unSetItem']);
