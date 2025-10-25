@@ -20,51 +20,80 @@
 
       <div class="bg-white p-4 rounded-lg shadow">
         <div class="text-sm text-gray-500">Completed</div>
-        <div class="mt-2 text-2xl font-semibold">{{ statusCounts.completed || 0 }}</div>
+        <div class="mt-2 text-2xl font-semibold">{{ statusCounts.confirmed || 0 }}</div>
       </div>
     </div>
 
     <!-- Filters -->
     <div class="bg-white p-4 rounded-lg shadow">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
         <div>
-          <label class="block text-sm text-gray-600">Search</label>
-          <input v-model="filters.q" @input="onSearchInput"
+          <label class="block text-sm text-gray-600">Search by Name</label>
+          <input v-model="filters.order_user_search" @input="onSearchInput"
             class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:ring-primary-500 focus:border-primary-500"
-            placeholder="Customer name, email or order id" />
+            placeholder="Order ID, customer last name..." />
         </div>
 
         <div>
           <label class="block text-sm text-gray-600">Status</label>
           <select v-model="filters.status"
             class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:ring-primary-500 focus:border-primary-500">
-            <option value="">All</option>
+            <option value="">All Statuses</option>
             <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
             <option value="processing">Processing</option>
-            <option value="completed">Completed</option>
+            <option value="shipping">Shipping</option>
+            <option value="shipped">Shipped</option>
+            <option value="out for delivery">Out for Delivery</option>
+            <option value="delivered">Delivered</option>
             <option value="cancelled">Cancelled</option>
-            <option value="refunded">Refunded</option>
+            <option value="failed">Failed</option>
+            <option value="expired">Expired</option>
           </select>
         </div>
 
         <div>
-          <label class="block text-sm text-gray-600">From</label>
-          <input type="date" v-model="filters.from_date"
-            class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:ring-primary-500 focus:border-primary-500" />
+          <label class="block text-sm text-gray-600">Min Amount (₦)</label>
+          <input type="number" v-model="filters.min_amount" @input="debouncedSearch"
+            class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:ring-primary-500 focus:border-primary-500"
+            placeholder="0" min="0" />
         </div>
 
         <div>
-          <label class="block text-sm text-gray-600">To</label>
-          <input type="date" v-model="filters.to_date"
-            class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:ring-primary-500 focus:border-primary-500" />
+          <label class="block text-sm text-gray-600">Max Amount (₦)</label>
+          <input type="number" v-model="filters.max_amount" @input="debouncedSearch"
+            class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:ring-primary-500 focus:border-primary-500"
+            placeholder="No limit" min="0" />
+        </div>
+      </div>
+
+      <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+        <div>
+          <label class="block text-sm text-gray-600">Sort By</label>
+          <select v-model="filters.sort_by"
+            class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:ring-primary-500 focus:border-primary-500">
+            <option value="created_at">Date Created</option>
+            <option value="order_id">Order ID</option>
+            <option value="total_amount">Amount</option>
+            <option value="status">Status</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm text-gray-600">Order</label>
+          <select v-model="filters.sort_order"
+            class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:ring-primary-500 focus:border-primary-500">
+            <option value="desc">Descending</option>
+            <option value="asc">Ascending</option>
+          </select>
         </div>
       </div>
 
       <div class="mt-4 flex items-center space-x-2">
         <button @click="applyFilters"
-          class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600">Apply</button>
+          class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700">Apply</button>
         <button @click="clearFilters"
-          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white">Clear</button>
+          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">Clear</button>
       </div>
     </div>
 
@@ -93,33 +122,50 @@ import { onMounted, reactive, computed } from 'vue'
 
 const ordersStore = useOrdersStore()
 
-// Filters
-const filters = reactive({ q: '', status: '', from_date: '', to_date: '' })
+// Filters matching backend API
+const filters = reactive({
+  order_user_search: '',
+  status: '',
+  min_amount: '',
+  max_amount: '',
+  sort_by: 'created_at',
+  sort_order: 'desc'
+})
+
 let searchTimer = null
 
 const fetchWithFilters = (page = 1) => {
   const params = { page }
-  if (filters.q) params.q = filters.q
+  if (filters.order_user_search) params.order_user_search = filters.order_user_search
   if (filters.status) params.status = filters.status
-  if (filters.from_date) params.from_date = filters.from_date
-  if (filters.to_date) params.to_date = filters.to_date
+  if (filters.min_amount) params.min_amount = filters.min_amount
+  if (filters.max_amount) params.max_amount = filters.max_amount
+  if (filters.sort_by) params.sort_by = filters.sort_by
+  if (filters.sort_order) params.sort_order = filters.sort_order
   return ordersStore.fetchOrders(params).catch(() => { })
 }
 
 const applyFilters = () => fetchWithFilters(1)
+
 const clearFilters = () => {
-  filters.q = ''
+  filters.order_user_search = ''
   filters.status = ''
-  filters.from_date = ''
-  filters.to_date = ''
+  filters.min_amount = ''
+  filters.max_amount = ''
+  filters.sort_by = 'created_at'
+  filters.sort_order = 'desc'
   fetchWithFilters(1)
 }
 
-const onSearchInput = () => {
+const debouncedSearch = () => {
   if (searchTimer) clearTimeout(searchTimer)
   searchTimer = setTimeout(() => {
     fetchWithFilters(1)
-  }, 450)
+  }, 500)
+}
+
+const onSearchInput = () => {
+  debouncedSearch()
 }
 
 const handlePageChange = (page) => {
@@ -134,22 +180,23 @@ onMounted(() => {
 const totalOrders = computed(() => Number(ordersStore.pagination?.total ?? (Array.isArray(ordersStore.orders) ? ordersStore.orders.length : 0)))
 const totalRevenue = computed(() => {
   if (!Array.isArray(ordersStore.orders)) return 0
-  return ordersStore.orders.reduce((acc, o) => acc + (parseFloat(o?.total || o?.total_amount || 0) || 0), 0)
+  return ordersStore.orders.reduce((acc, o) => acc + (parseFloat(o?.total_amount || o?.total || 0) || 0), 0)
 })
 const statusCounts = computed(() => {
-  const counts = { pending: 0, completed: 0, cancelled: 0 }
+  const counts = { pending: 0, confirmed: 0, cancelled: 0, delivered: 0 }
   if (!Array.isArray(ordersStore.orders)) return counts
   ordersStore.orders.forEach((o) => {
     const s = (o?.status || '').toLowerCase()
-    if (s.includes('pending')) counts.pending++
-    else if (s.includes('completed')) counts.completed++
-    else if (s.includes('cancel')) counts.cancelled++
+    if (s === 'pending') counts.pending++
+    else if (s === 'confirmed' || s === 'processing' || s === 'shipped') counts.confirmed++
+    else if (s === 'cancelled') counts.cancelled++
+    else if (s === 'delivered') counts.delivered++
   })
   return counts
 })
 
 const formatCurrency = (v) => {
-  if (v == null) return '0'
-  return Number(v).toLocaleString(undefined, { style: 'currency', currency: 'NGN' })
+  if (v == null) return '₦0'
+  return Number(v).toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })
 }
 </script>
