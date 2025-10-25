@@ -167,7 +167,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       isLoading.value = true
       // Backend exposes this under the admin namespace
-      const response = await api.get('/admin/profile-details')
+      const response = await api.get('auth/admin/profile-details')
 
       user.value = response.data.user
       permissions.value = response.data.permissions || []
