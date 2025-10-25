@@ -527,6 +527,21 @@ class AuthController extends Controller
         }
     }
 
+    public function refresh(Request $request)
+    {
+        $user = $request->user();
+
+        // Delete the old token
+        $request->user()->currentAccessToken()->delete();
+
+        // Create a new one
+        $newToken = $user->createToken('admin_token')->plainTextToken;
+
+        return response()->json([
+            'token' => $newToken,
+        ]);
+    }
+
     public function logout(Request $request): JsonResponse
     {
         if ($request->user()) {
@@ -539,5 +554,5 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'No active session.',
         ], 401);
-    }  
+    } 
 }
