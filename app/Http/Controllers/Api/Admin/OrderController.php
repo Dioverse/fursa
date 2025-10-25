@@ -28,16 +28,26 @@ class OrderController extends Controller
         // --- Filtering ---
 
         // Filter by user first_name or last_name
-        if ($request->filled('order_user_search')) {
-            $searchTerm = '%' . $request->input('order_user_search') . '%';
+        if ($request->filled('user_name_search')) {
+            $searchTerm = '%' . $request->input('user_name_search') . '%';
             $query->whereHas('user', function ($q) use ($searchTerm) {
                 $q->where('first_name', 'LIKE', $searchTerm)
                 ->orWhere('last_name', 'LIKE', $searchTerm);
             });
         }
 
+        // Filter by order_id (non-numeric)
+        if ($request->filled('order_id_search')) {
+            $searchTerm = '%' . $request->input('order_id_search') . '%';
+            $query->where('order_id', 'LIKE', $searchTerm);
+        }
+
         // Filter by status
-        $allowedStatuses = ['pending','confirmed','processing','shipping','shipped','out for delivery','delivered','cancelled','failed','expired'];
+        $allowedStatuses = [
+            'pending','confirmed','processing','shipping','shipped',
+            'out for delivery','delivered','cancelled','failed','expired'
+        ];
+
         if ($request->filled('status') && in_array($request->input('status'), $allowedStatuses)) {
             $query->where('status', $request->input('status'));
         }
@@ -46,6 +56,7 @@ class OrderController extends Controller
         if ($request->filled('min_amount') && is_numeric($request->min_amount)) {
             $query->where('total_amount', '>=', $request->min_amount);
         }
+
         if ($request->filled('max_amount') && is_numeric($request->max_amount)) {
             $query->where('total_amount', '<=', $request->max_amount);
         }
@@ -55,6 +66,7 @@ class OrderController extends Controller
         $sortOrder = $request->query('sort_order', 'desc');
 
         $allowedSortColumns = ['order_id', 'total_amount', 'status', 'created_at'];
+
         if (in_array($sortBy, $allowedSortColumns)) {
             $query->orderBy($sortBy, $sortOrder);
         } else {
@@ -75,6 +87,7 @@ class OrderController extends Controller
             ],
         ]);
     }
+
 
 
     /**
