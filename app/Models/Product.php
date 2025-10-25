@@ -133,6 +133,11 @@ class Product extends Model implements AuditableContract
             ->orWhereHas('parent'); // Include subcategory's parent
     }
 
+    public function firstImage()
+    {
+        return $this->hasOne(ProductImage::class)->select('id', 'product_id', 'image_path');
+    }
+
     /**
      * Helper attribute to get the parent category object
      */
