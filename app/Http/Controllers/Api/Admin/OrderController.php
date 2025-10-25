@@ -103,7 +103,17 @@ class OrderController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $order = Order::with(['user:id,first_name,last_name,email,role','statusHstry:id,order_id,status,changed_by,created_at,orderItem.product'])->find($id);
+        $order = Order::with([
+            'user:id,first_name,last_name,email,role',
+            'statusHstry:id,order_id,status,changed_by,created_at',
+            'orderItem' => function ($q) {
+                $q->with([
+                    'product' => function ($p) {
+                        $p->with(['firstImage:id,product_id,image_path']);
+                    }
+                ]);
+            },
+        ]);
 
         if (!$order) {
             return response()->json(['message' => "Order not found."], 404);
