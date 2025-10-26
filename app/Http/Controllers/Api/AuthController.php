@@ -229,14 +229,14 @@ class AuthController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role !== 'customer' || empty($user->email_verified_at)) {
-            return response()->json([
-                'message' => 'Only verified customers can apply to become distributors.'
-            ], 403);
-        }
         if ($user->role == 'distributor') {
             return response()->json([
                 'message' => 'Check dashboard for application response.'
+            ], 403);
+        }
+        if ($user->role !== 'customer' || empty($user->email_verified_at)) {
+            return response()->json([
+                'message' => 'Only verified customers can apply to become distributors.'
             ], 403);
         }
         $fields = ["email"=>"required|email","phone"=>"required|string|max:20", ...$this->getDistributorValidationRules()];
