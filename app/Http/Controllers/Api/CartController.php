@@ -208,7 +208,7 @@ class CartController extends Controller
         $cart = $user->cart()->firstOrCreate(['user_id' => $user->id]);
 
         // 2. Handle empty input
-        if (empty($cartData)) {
+        if (!is_array($cartData) || empty($cartData)) {
             return $this->cartWithRelations($cart)->cartItems;
         }
 
