@@ -239,29 +239,34 @@ class AuthController extends Controller
                 'message' => 'Only verified customers can apply to become distributors.'
             ], 403);
         }
-        $fields = ["email"=>"required|email","phone"=>"required|string|max:20", ...$this->getDistributorValidationRules()];
+        $fields = [
+            'email' => 'required|email',
+            'phone' => 'required|string|max:20',
+            ...$this->getDistributorValidationRules(),
+        ];
+        $emailChanged = $user->email !== $request->email;
+        $phoneChanged = $user->phone !== $request->phone;
+        if ($emailChanged) {
+            $fields['email'] .= '|unique:users,email';
+        }
+        if ($phoneChanged) {
+            $fields['phone'] .= '|unique:users,phone';
+        }
         
-        $check = $user->email != $request->email;
-        $phonecheck = $user->email != $request->email;
-        $validFields = $check ? ["email"=>"required|email|unique:users,email", ...$fields] : $fields;
-        $validFields = $phonecheck ? ["phone"=>"required|string|max:20|unique:users,phone", ...$validFields] : $fields;
+
         try {
             // Validate distributor-specific fields
-            $validatedData = Validator::make(
-                $request->all(),
-                $validFields
-            )->validate();
+            $validatedData = Validator::make($request->all(), $fields)->validate();
 
             // Use transaction to ensure consistency
-            $result = DB::transaction(function () use ($user, $validatedData, $request, $check) {
+            $result = DB::transaction(function () use ($user, $validatedData, $request, $emailChanged) {
                 // Create distributor profile
                 $this->createDistributorProfile($user, $validatedData, $request, $request->email);
                 $toUpdate = [
                     'role' => 'distributor',
                     'status' => 'pending'
                 ];
-                if ($check) {
-                    print_r($request->email);
+                if ($emailChanged) {
                     $toUpdate['email_verified_at'] = null;
                     $toUpdate['email'] = $request->email;
                     $user->tokens()->delete();
@@ -271,7 +276,7 @@ class AuthController extends Controller
                 return $user;
             });
 
-            if ($check) {
+            if ($emailChanged) {
                 $link = $this->getVerificationLink($result->id,$result->email);
                 notify('EMAIL_VERIFY', $result, [
                     "name" => $result->first_name, "verification_link" => $link
