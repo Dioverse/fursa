@@ -58,6 +58,20 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function distributorApplication(userData) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await authService.distributorApplication(userData)
+      return response
+    } catch (err) {
+      error.value = err.response?.data?.message || 'Application failed'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function forgotPassword(userData) {
     loading.value = true
     error.value = null
@@ -158,6 +172,7 @@ export const useAuthStore = defineStore('auth', () => {
     userFullName,
     login,
     register,
+    distributorApplication,
     logout,
     checkAuth,
     updateProfile,

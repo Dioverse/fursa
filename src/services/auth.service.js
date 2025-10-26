@@ -9,6 +9,10 @@ const authService = {
     return api.post('/register', userData)
   },
 
+  async distributorApplication(userData) {
+    return api.post('/distributor-pplication', userData)
+  },
+
   async logout() {
     return api.post('/logout')
   },

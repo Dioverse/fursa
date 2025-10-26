@@ -320,7 +320,7 @@ const handleSubmit = async () => {
             last_name: authStore.user?.last_name,
             email: authStore.user?.email,
             phone: authStore.user?.phone,
-            role: 'customer',
+            role: 'distributor',
             
             // Password
             password: reviewSubmitRef.value.password,
@@ -356,7 +356,8 @@ const handleSubmit = async () => {
             delete payload.product_categories
         }
 
-        await authStore.register(payload)
+        if (authStore.token) { await authStore.distributorApplication(payload) }
+        else { await authStore.register(payload) }
         toast.success(t('distributor.toasts.submit_success'))
         router.push('/dashboard')
     } catch (error) {
