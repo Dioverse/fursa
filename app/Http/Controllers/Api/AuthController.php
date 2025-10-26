@@ -509,7 +509,7 @@ class AuthController extends Controller
 
         // 5. Refresh the cart model to ensure all relations (cartItems) are up-to-date
         // before returning the collection of items.
-        return $cart->refresh()->cartItems;
+        return collect($cart->cartItems);
     }
 
     public function emailVerify(Request $request, $id, $hash): JsonResponse
