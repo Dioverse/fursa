@@ -169,7 +169,7 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
         Route::post('set-default-address/{id}', [ShippingAddressController::class, 'setDefaultAddress']);
     });
     Route::middleware('role:customer')->group(function () {
-        Route::post('distributor-apply', [AuthController::class, 'upgradeToDistributor']);
+        Route::post('distributor-pplication', [AuthController::class, 'upgradeToDistributor']);
     });
 
     Route::post('/change-password', [AuthController::class, 'changePassword'])->middleware('throttle:2,1');
