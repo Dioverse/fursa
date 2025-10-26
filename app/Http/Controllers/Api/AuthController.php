@@ -402,10 +402,6 @@ class AuthController extends Controller
                     'user' => [trans('auth.failed')],
                 ]);
             }
-
-            if ($user->role === 'distributor') {
-                $user->load('distributor');
-            }
             
             // 5. Credentials are valid, create an API token
             $token = $user->createToken('api-token')->plainTextToken;
@@ -420,6 +416,13 @@ class AuthController extends Controller
                 "name" => $user->first_name, "ipAddress" => $ipAddress, "loginTime" => $loginTime
             ], ["email"],true);
 
+            if ($request->cart && !empty($request->cart) && is_array($request->cart)) {
+                $this->syncUserCart($user, $request->cart);
+            }
+
+            if ($user->role === 'distributor') {
+                $user->load('distributor');
+            }
             // 8. Return success response with user data and the token
             return response()->json([
                 'message' => 'Login successful.',
@@ -441,6 +444,70 @@ class AuthController extends Controller
                 'error' => 'Please try again later.',
             ], 500);
         }
+    }
+
+    protected function syncUserCart(User $user, array $cartData): \Illuminate\Support\Collection
+    {
+        // 1. Ensure the user has a cart, creating it if necessary.
+        $cart = $user->cart()->firstOrCreate([
+            'user_id' => $user->id,
+        ]);
+
+        $productIds = collect($cartData)->pluck('product_id');
+
+        // 2. Fetch all existing items for the relevant products in one query.
+        $existingItems = $cart->cartItems()
+            ->whereIn('product_id', $productIds)
+            ->get()
+            ->keyBy('product_id');
+
+        $toInsert = [];
+        $toUpdate = [];
+
+        // 3. Separate items into update and insert arrays.
+        foreach ($cartData as $item) {
+            $productId = $item['product_id'];
+            $quantity  = $item['quantity'];
+
+            if ($existingItems->has($productId)) {
+                // Item exists: Prepare for update (directly modify the model instance)
+                $existingItem = $existingItems[$productId];
+                
+                // Only update if the quantity has actually changed
+                if ((int)$existingItem->quantity !== (int)$quantity) {
+                     $existingItem->quantity = $quantity;
+                     $toUpdate[] = $existingItem;
+                }
+            } else {
+                // Item does not exist: Prepare for batch insert
+                $toInsert[] = [
+                    'cart_id'    => $cart->id,
+                    'product_id' => $productId,
+                    'quantity'   => $quantity,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+        
+        // 4. Execute persistence operations within a transaction.
+        DB::transaction(function () use ($toUpdate, $toInsert, $cart) {
+            // Batch update existing items (uses individual saves, better suited for smaller updates)
+            if (!empty($toUpdate)) {
+                foreach ($toUpdate as $item) {
+                    $item->save();
+                }
+            }
+            
+            // Batch create new items (efficient single query)
+            if (!empty($toInsert)) {
+                $cart->cartItems()->insert($toInsert);
+            }
+        });
+
+        // 5. Refresh the cart model to ensure all relations (cartItems) are up-to-date
+        // before returning the collection of items.
+        return $cart->refresh()->cartItems;
     }
 
     public function emailVerify(Request $request, $id, $hash): JsonResponse
