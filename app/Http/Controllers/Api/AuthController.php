@@ -153,7 +153,7 @@ class AuthController extends Controller
         $distributorData['user_id'] = $user->id;
         $distributorData['email'] = $email ?? $user->email;
         
-        return Distributor::updateOrCreate(['user_id'=>$user->id],$distributorData);
+        return Distributor::create($distributorData);
     }
     
     private function handleFileUploads(array $distributorData, Request $request, int $userId): array
