@@ -45,7 +45,7 @@ return new class extends Migration
 
             // Distribution Strategy
             $table->json('product_categories')->nullable(); // automotive, industrial, etc.
-            $table->boolean('willing_to_train')->default(false);
+            $table->string('willing_to_train');
             $table->boolean('has_technical_knowledge')->default(false);
             $table->string('distribution_start_time')->nullable(); // e.g. Immediately
 

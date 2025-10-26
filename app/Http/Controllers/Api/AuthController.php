@@ -93,7 +93,7 @@ class AuthController extends Controller
             // Distribution Strategy
             'product_categories' => 'required|array',
             'product_categories.*' => 'required|string|max:120',
-            'willing_to_train' => 'required|boolean',
+            'willing_to_train' => 'required|string|max:50',
             'has_technical_knowledge' => 'required|boolean',
             'distribution_start_time' => 'required|string|max:100',
             
