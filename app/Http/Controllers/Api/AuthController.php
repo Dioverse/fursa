@@ -229,9 +229,9 @@ class AuthController extends Controller
 {
     $user = auth()->user(); // Ensure customer is logged in
 
-    if ($user->role !== 'customer') {
+    if ($user->role !== 'customer' || empty($user->email_verified_at)) {
         return response()->json([
-            'message' => 'Only customers can apply to become distributors.'
+            'message' => 'Only verified customers can apply to become distributors.'
         ], 403);
     }
 
@@ -254,7 +254,7 @@ class AuthController extends Controller
             ]);
             return $user;
         });
-        
+
         $link = $this->getVerificationLink($result->id,$result->email);
         notify('EMAIL_VERIFY', $result, [
                 "name" => $result->first_name, "verification_link" => $link
