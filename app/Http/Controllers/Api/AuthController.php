@@ -92,7 +92,7 @@ class AuthController extends Controller
             
             // Distribution Strategy
             'product_categories' => 'required|array',
-            'product_categories.*' => 'required|string|max:100|exists:categories,id',
+            'product_categories.*' => 'required|string|max:120',
             'willing_to_train' => 'required|boolean',
             'has_technical_knowledge' => 'required|boolean',
             'distribution_start_time' => 'required|string|max:100',
@@ -127,7 +127,7 @@ class AuthController extends Controller
     
     private function createUser(array $validatedData, string $role): User
     {
-        return User::create([
+        return User::create(attributes: [
             'first_name' => $validatedData['first_name'],
             'last_name' => $validatedData['last_name'],
             'email' => $validatedData['email'],
@@ -226,60 +226,60 @@ class AuthController extends Controller
     }
 
     public function upgradeToDistributor(Request $request): JsonResponse
-{
-    $user = auth()->user(); // Ensure customer is logged in
+    {
+        $user = auth()->user(); // Ensure customer is logged in
 
-    if ($user->role !== 'customer' || empty($user->email_verified_at)) {
-        return response()->json([
-            'message' => 'Only verified customers can apply to become distributors.'
-        ], 403);
-    }
+        if ($user->role !== 'customer' || empty($user->email_verified_at)) {
+            return response()->json([
+                'message' => 'Only verified customers can apply to become distributors.'
+            ], 403);
+        }
 
-    try {
-        // Validate distributor-specific fields
-        $validatedData = Validator::make(
-            $request->all(),
-            $this->getDistributorValidationRules()
-        )->validate();
+        try {
+            // Validate distributor-specific fields
+            $validatedData = Validator::make(
+                $request->all(),
+                $this->getDistributorValidationRules()
+            )->validate();
 
-        // Use transaction to ensure consistency
-        $result = DB::transaction(function () use ($user, $validatedData, $request) {
-            // Create distributor profile
-            $this->createDistributorProfile($user, $validatedData, $request);
+            // Use transaction to ensure consistency
+            $result = DB::transaction(function () use ($user, $validatedData, $request) {
+                // Create distributor profile
+                $this->createDistributorProfile($user, $validatedData, $request);
 
-            // Update user role and status
-            $user->update([
-                'role' => 'distributor',
-                'status' => 'pending'
+                // Update user role and status
+                $user->update([
+                    'role' => 'distributor',
+                    'status' => 'pending'
+                ]);
+                return $user;
+            });
+
+            $link = $this->getVerificationLink($result->id,$result->email);
+            notify('EMAIL_VERIFY', $result, [
+                    "name" => $result->first_name, "verification_link" => $link
+                ], ['email'], false);
+            return response()->json([
+                'message' => 'Your application to become a distributor has been submitted. Please wait for approval.'
+            ], 200);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (Exception $e) {
+            Log::error('Upgrade to distributor failed: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'trace' => $e->getTraceAsString()
             ]);
-            return $user;
-        });
 
-        $link = $this->getVerificationLink($result->id,$result->email);
-        notify('EMAIL_VERIFY', $result, [
-                "name" => $result->first_name, "verification_link" => $link
-            ], ['email'], false);
-        return response()->json([
-            'message' => 'Your application to become a distributor has been submitted. Please wait for approval.'
-        ], 200);
-
-    } catch (ValidationException $e) {
-        return response()->json([
-            'message' => 'Validation failed.',
-            'errors' => $e->errors(),
-        ], 422);
-    } catch (Exception $e) {
-        Log::error('Upgrade to distributor failed: ' . $e->getMessage(), [
-            'user_id' => $user->id,
-            'trace' => $e->getTraceAsString()
-        ]);
-
-        return response()->json([
-            'message' => 'Application failed. Please try again.',
-            'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
-        ], 500);
+            return response()->json([
+                'message' => 'Application failed. Please try again.',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+            ], 500);
+        }
     }
-}
 
 
     public function register(Request $request): JsonResponse
