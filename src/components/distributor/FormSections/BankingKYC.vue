@@ -1,4 +1,4 @@
-<!-- BankingKYC -->
+<!-- BankingKYC with Store -->
 <template>
     <div class="space-y-6">
     <h3 class="text-xl font-semibold text-primary mb-4">{{ $t('distributor.sections.banking_kyc') }}</h3>
@@ -20,7 +20,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     {{ $t('distributor.banking.bank_name') }} <span class="text-red-500">*</span>
                 </label>
-                <select v-model="form.bank_name"
+                <select v-model="distributorStore.formData.bankingKYC.bank_name"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required>
                     <option value="">{{ $t('distributor.banking.select_bank') }}</option>
@@ -32,7 +32,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     {{ $t('distributor.banking.account_number') }} <span class="text-red-500">*</span>
                 </label>
-                <input v-model="form.account_number" type="text" maxlength="10" :placeholder="$t('distributor.banking.account_number_placeholder')"
+                <input v-model="distributorStore.formData.bankingKYC.account_number" type="text" maxlength="10" :placeholder="$t('distributor.banking.account_number_placeholder')"
                     @input="validateAccountNumber"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required>
@@ -45,7 +45,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     {{ $t('distributor.banking.account_name') }} <span class="text-red-500">*</span>
                 </label>
-                <input v-model="form.account_name" type="text" :placeholder="$t('distributor.banking.account_name_placeholder')"
+                <input v-model="distributorStore.formData.bankingKYC.account_name" type="text" :placeholder="$t('distributor.banking.account_name_placeholder')"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required>
             </div>
@@ -54,7 +54,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     {{ $t('distributor.banking.bvn') }} <span class="text-red-500">*</span>
                 </label>
-                <input v-model="form.bvn" type="text" maxlength="11" :placeholder="$t('distributor.banking.bvn_placeholder')"
+                <input v-model="distributorStore.formData.bankingKYC.bvn" type="text" maxlength="11" :placeholder="$t('distributor.banking.bvn_placeholder')"
                     @input="validateBVN"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     required>
@@ -73,7 +73,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     {{ $t('distributor.banking.partnerships_label') }}
                 </label>
-                <textarea v-model="form.partnerships" rows="3"
+                <textarea v-model="distributorStore.formData.bankingKYC.partnerships" rows="3"
                     :placeholder="$t('distributor.banking.partnerships_placeholder')"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
                 <p class="text-xs text-gray-500 mt-1">{{ $t('distributor.banking.partnerships_hint') }}</p>
@@ -95,8 +95,12 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
+import { useDistributorFormStore } from '@/stores/distributorForm'
 import { useI18n } from 'vue-i18n'
+
+const distributorStore = useDistributorFormStore()
+const { t } = useI18n()
 
 const nigerianBanks = [
     'Access Bank',
@@ -127,21 +131,12 @@ const nigerianBanks = [
 
 const accountNumberError = ref('')
 const bvnError = ref('')
-const { t } = useI18n()
-
-const form = reactive({
-    bank_name: '',
-    account_number: '',
-    account_name: '',
-    bvn: '',
-    partnerships: ''
-})
 
 const validateAccountNumber = (event) => {
     const value = event.target.value
-    form.account_number = value.replace(/\D/g, '')
+    distributorStore.formData.bankingKYC.account_number = value.replace(/\D/g, '')
     
-    if (form.account_number && form.account_number.length !== 10) {
+    if (distributorStore.formData.bankingKYC.account_number && distributorStore.formData.bankingKYC.account_number.length !== 10) {
         accountNumberError.value = t('distributor.banking.account_number_error')
     } else {
         accountNumberError.value = ''
@@ -150,14 +145,14 @@ const validateAccountNumber = (event) => {
 
 const validateBVN = (event) => {
     const value = event.target.value
-    form.bvn = value.replace(/\D/g, '')
+    distributorStore.formData.bankingKYC.bvn = value.replace(/\D/g, '')
     
-    if (form.bvn && form.bvn.length !== 11) {
+    if (distributorStore.formData.bankingKYC.bvn && distributorStore.formData.bankingKYC.bvn.length !== 11) {
         bvnError.value = t('distributor.banking.bvn_error')
     } else {
         bvnError.value = ''
     }
 }
 
-defineExpose({ form })
+defineExpose({ form: distributorStore.formData.bankingKYC })
 </script>

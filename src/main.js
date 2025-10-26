@@ -78,6 +78,10 @@ import {
   faFileContract,
   faUniversity,
   faCommentAlt,
+  faPenFancy,
+  faFileUpload,
+  faFilePdf,
+  faIdCard,
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -110,6 +114,10 @@ library.add(
   faInfoCircle,
   faBlog,
   faCommentAlt,
+  faPenFancy,
+  faFileUpload,
+  faFilePdf,
+  faIdCard,
   faPhone,
   faBriefcase,
   faShieldAlt,

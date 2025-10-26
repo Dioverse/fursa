@@ -1,4 +1,4 @@
-<!-- ProductFocus -->
+<!-- ProductFocus with Store -->
 <template>
     <div class="space-y-6">
     <h3 class="text-xl font-semibold text-primary mb-4">{{ $t('distributor.sections.product_focus') }}</h3>
@@ -11,17 +11,17 @@
             <div v-else class="grid grid-cols-2 md:grid-cols-3 gap-3">
                 <label v-for="cat in categories" :key="cat.value"
                     class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                    <input v-model="form.product_categories" type="checkbox" :value="cat.value"
+                    <input v-model="distributorStore.formData.productFocus.product_categories" type="checkbox" :value="cat.value"
                         class="rounded border-gray-300 text-primary focus:ring-primary">
                     <span class="truncate">{{ cat.label }}</span>
                 </label>
             </div>
             <p v-if="categoriesError" class="text-xs text-red-600 mt-2">{{ categoriesError }}</p>
-            <div v-if="form.product_categories.includes('other')" class="mt-3">
+            <div v-if="distributorStore.formData.productFocus.product_categories.includes('other')" class="mt-3">
                 <label class="block text-sm font-medium text-gray-700 mb-1">
                     {{ $t('distributor.product_focus.other_specify_label') }}
                 </label>
-                <input v-model="form.other_specify" type="text" :placeholder="$t('distributor.product_focus.other_specify_placeholder')"
+                <input v-model="distributorStore.formData.productFocus.other_specify" type="text" :placeholder="$t('distributor.product_focus.other_specify_placeholder')"
                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
             </div>
         </div>
@@ -32,12 +32,12 @@
             </label>
             <div class="flex gap-6">
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input v-model="form.has_technical_knowledge" type="radio" :value="1"
+                    <input v-model="distributorStore.formData.productFocus.has_technical_knowledge" type="radio" :value="1"
                         class="text-primary focus:ring-primary">
                     <span>{{ $t('distributor.common.yes') }}</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input v-model="form.has_technical_knowledge" type="radio" :value="0"
+                    <input v-model="distributorStore.formData.productFocus.has_technical_knowledge" type="radio" :value="0"
                         class="text-primary focus:ring-primary">
                     <span>{{ $t('distributor.common.no') }}</span>
                 </label>
@@ -50,15 +50,15 @@
             </label>
             <div class="flex gap-6">
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input v-model="form.willing_to_train" type="radio" :value="1" class="text-primary focus:ring-primary">
+                    <input v-model="distributorStore.formData.productFocus.willing_to_train" type="radio" :value="1" class="text-primary focus:ring-primary">
                     <span>{{ $t('distributor.common.yes') }}</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input v-model="form.willing_to_train" type="radio" :value="0" class="text-primary focus:ring-primary">
+                    <input v-model="distributorStore.formData.productFocus.willing_to_train" type="radio" :value="0" class="text-primary focus:ring-primary">
                     <span>{{ $t('distributor.common.no') }}</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input v-model="form.willing_to_train" type="radio" value="depends" class="text-primary focus:ring-primary">
+                    <input v-model="distributorStore.formData.productFocus.willing_to_train" type="radio" value="depends" class="text-primary focus:ring-primary">
                     <span>{{ $t('distributor.common.depends') }}</span>
                 </label>
             </div>
@@ -68,7 +68,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">
                 {{ $t('distributor.product_focus.distribution_start_question') }} <span class="text-red-500">*</span>
             </label>
-            <input v-model="form.distribution_start_time" type="date"
+            <input v-model="distributorStore.formData.productFocus.distribution_start_time" type="date"
                 class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 required>
         </div>
@@ -79,11 +79,11 @@
             </label>
             <div class="flex gap-6">
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input v-model="form.promo_participation" type="radio" value="Yes" class="text-primary focus:ring-primary">
+                    <input v-model="distributorStore.formData.productFocus.promo_participation" type="radio" value="Yes" class="text-primary focus:ring-primary">
                     <span>{{ $t('distributor.common.yes') }}</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input v-model="form.promo_participation" type="radio" value="No" class="text-primary focus:ring-primary">
+                    <input v-model="distributorStore.formData.productFocus.promo_participation" type="radio" value="No" class="text-primary focus:ring-primary">
                     <span>{{ $t('distributor.common.no') }}</span>
                 </label>
             </div>
@@ -117,9 +117,9 @@
                             </div>
                         </label>
                     </div>
-                    <div v-if="form.documents[doc.name]" class="text-sm text-green-600 mt-2">
+                    <div v-if="distributorStore.formData.productFocus.documents[doc.name]" class="text-sm text-green-600 mt-2">
                         <font-awesome-icon icon="check-circle" />
-                        {{ form.documents[doc.name].name }}
+                        {{ distributorStore.formData.productFocus.documents[doc.name].name }}
                     </div>
                     <div v-if="uploadErrors[doc.name]" class="text-sm text-red-600 mt-2">
                         <font-awesome-icon icon="exclamation-circle" />
@@ -153,9 +153,9 @@
                         </div>
                     </label>
                 </div>
-                <div v-if="form.documents['signature']" class="text-sm text-green-600 mt-2">
+                <div v-if="distributorStore.formData.productFocus.documents['signature']" class="text-sm text-green-600 mt-2">
                     <font-awesome-icon icon="check-circle" />
-                    {{ form.documents['signature'].name }}
+                    {{ distributorStore.formData.productFocus.documents['signature'].name }}
                 </div>
                 <div v-if="uploadErrors['signature']" class="text-sm text-red-600 mt-2">
                     <font-awesome-icon icon="exclamation-circle" />
@@ -178,7 +178,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         {{ $t('distributor.product_focus.declarant_name') }} <span class="text-red-500">*</span>
                     </label>
-                    <input v-model="form.declarant_name" type="text" :placeholder="$t('distributor.product_focus.declarant_name_placeholder')"
+                    <input v-model="distributorStore.formData.productFocus.declarant_name" type="text" :placeholder="$t('distributor.product_focus.declarant_name_placeholder')"
                         class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                         required>
                 </div>
@@ -187,7 +187,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         {{ $t('distributor.product_focus.declaration_date') }} <span class="text-red-500">*</span>
                     </label>
-                    <input v-model="form.declaration_date" type="date"
+                    <input v-model="distributorStore.formData.productFocus.declaration_date" type="date"
                         class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                         required>
                 </div>
@@ -197,11 +197,13 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import { useDistributorFormStore } from '@/stores/distributorForm'
 import productsService from '@/services/products.service.js'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toastification'
 
+const distributorStore = useDistributorFormStore()
 const { t } = useI18n()
 const toast = useToast()
 
@@ -244,19 +246,6 @@ const documents = [
     }
 ]
 
-const form = reactive({
-    product_categories: [],
-    has_technical_knowledge: null,
-    willing_to_train: null,
-    distribution_start_time: '',
-    promo_participation: '',
-    documents: {},
-    declarant_name: '',
-    declaration_date: new Date().toISOString().split('T')[0],
-    other_specify: '',
-    product_categories_display: []
-})
-
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 
 const handleFileUpload = (event, docName) => {
@@ -264,7 +253,7 @@ const handleFileUpload = (event, docName) => {
     uploadErrors.value[docName] = ''
 
     if (!file) {
-        delete form.documents[docName]
+        delete distributorStore.formData.productFocus.documents[docName]
         return
     }
 
@@ -281,7 +270,7 @@ const handleFileUpload = (event, docName) => {
         return
     }
 
-    form.documents[docName] = file
+    distributorStore.formData.productFocus.documents[docName] = file
     toast.info(`${docName.toUpperCase()} uploaded successfully`)
 }
 
@@ -302,7 +291,7 @@ const loadCategories = async () => {
 
         categories.value = mapped
         labelsMap.value = mapped.reduce((acc, it) => { acc[it.value] = it.label; return acc }, {})
-        form.product_categories_display = (form.product_categories || []).map(v => labelsMap.value[v] || v)
+        distributorStore.formData.productFocus.product_categories_display = (distributorStore.formData.productFocus.product_categories || []).map(v => labelsMap.value[v] || v)
     } catch (e) {
         console.error('Failed to load categories', e)
         categoriesError.value = 'Failed to load categories.'
@@ -317,9 +306,9 @@ const loadCategories = async () => {
 
 onMounted(loadCategories)
 
-watch(() => form.product_categories, (vals) => {
-    form.product_categories_display = (vals || []).map(v => labelsMap.value[v] || v)
+watch(() => distributorStore.formData.productFocus.product_categories, (vals) => {
+    distributorStore.formData.productFocus.product_categories_display = (vals || []).map(v => labelsMap.value[v] || v)
 }, { deep: true })
 
-defineExpose({ form })
+defineExpose({ form: distributorStore.formData.productFocus })
 </script>

@@ -1,4 +1,4 @@
-<!-- ReviewSubmit -->
+<!-- ReviewSubmit with Store -->
 <template>
   <div class="space-y-6">
   <h3 class="text-xl font-semibold text-primary mb-4">{{ $t('distributor.sections.review_submit') }}</h3>
@@ -314,6 +314,33 @@
               <font-awesome-icon icon="exclamation-circle" /> {{ $t('distributor.common.pending') }}
             </span>
           </div>
+          <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+            <span class="text-gray-700">Utility Bill:</span>
+            <span v-if="formData.businessInfo?.documents?.utility_bill" class="text-green-600">
+              <font-awesome-icon icon="check-circle" /> {{ $t('distributor.common.uploaded') }}
+            </span>
+            <span v-else class="text-yellow-600">
+              <font-awesome-icon icon="exclamation-circle" /> {{ $t('distributor.common.pending') }}
+            </span>
+          </div>
+          <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+            <span class="text-gray-700">ID Document:</span>
+            <span v-if="formData.contactPerson?.id_of_contact" class="text-green-600">
+              <font-awesome-icon icon="check-circle" /> {{ $t('distributor.common.uploaded') }}
+            </span>
+            <span v-else class="text-yellow-600">
+              <font-awesome-icon icon="exclamation-circle" /> {{ $t('distributor.common.pending') }}
+            </span>
+          </div>
+          <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+            <span class="text-gray-700">Signature:</span>
+            <span v-if="formData.productFocus?.documents?.signature" class="text-green-600">
+              <font-awesome-icon icon="check-circle" /> {{ $t('distributor.common.uploaded') }}
+            </span>
+            <span v-else class="text-yellow-600">
+              <font-awesome-icon icon="exclamation-circle" /> {{ $t('distributor.common.pending') }}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -397,21 +424,11 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useDistributorFormStore } from '@/stores/distributorForm'
 import { useI18n } from 'vue-i18n'
 
-const props = defineProps({
-  formData: {
-    type: Object,
-    required: true,
-    default: () => ({
-      businessInfo: {},
-      contactPerson: {},
-      distributionCapacity: {},
-      productFocus: {},
-      bankingKYC: {}
-    })
-  }
-})
+const distributorStore = useDistributorFormStore()
+const formData = distributorStore.formData
 
 const agreed = ref(false)
 const additionalNotes = ref('')
@@ -430,9 +447,9 @@ const documentsList = [
 // Computed property to check if form is valid
 const isFormValid = computed(() => {
   return agreed.value &&
-    props.formData.businessInfo?.company_name &&
-    props.formData.contactPerson?.contact_full_name &&
-    props.formData.bankingKYC?.bank_name &&
+    formData.businessInfo?.company_name &&
+    formData.contactPerson?.contact_full_name &&
+    formData.bankingKYC?.bank_name &&
     password.value &&
     password.value.length >= 8 &&
     passwordConfirmation.value &&
