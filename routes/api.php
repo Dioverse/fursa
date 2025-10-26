@@ -168,9 +168,9 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
         Route::apiResource('shipping-address', ShippingAddressController::class);
         Route::post('set-default-address/{id}', [ShippingAddressController::class, 'setDefaultAddress']);
     });
-    Route::middleware('role:customer')->group(function () {
-        Route::post('distributor-pplication', [AuthController::class, 'upgradeToDistributor']);
-    });
+    Route::post('distributor-pplication', [AuthController::class, 'upgradeToDistributor']);
+    // Route::middleware('role:customer')->group(function () {
+    // });
 
     Route::post('/change-password', [AuthController::class, 'changePassword'])->middleware('throttle:2,1');
     
