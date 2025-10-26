@@ -243,7 +243,7 @@ class AuthController extends Controller
         
         $check = $user->email != $request->email;
         $phonecheck = $user->email != $request->email;
-        $validFields = $check ? ["email"=>"required|email|unique:users,email"] : $fields;
+        $validFields = $check ? ["email"=>"required|email|unique:users,email", ...$fields] : $fields;
         $validFields = $phonecheck ? ["phone"=>"required|string|max:20|unique:users,phone", ...$validFields] : $fields;
         try {
             // Validate distributor-specific fields
