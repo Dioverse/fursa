@@ -89,35 +89,82 @@
             </div>
         </div>
 
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-4">
-                {{ $t('distributor.product_focus.upload_title') }}
-            </label>
+        <!-- Required Documents Section -->
+        <div class="border-t pt-6">
+            <h4 class="font-semibold text-gray-800 mb-4">
+                <font-awesome-icon icon="file-upload" class="text-primary mr-2" />
+                {{ $t('distributor.product_focus.upload_title') }} <span class="text-red-500">*</span>
+            </h4>
+            <p class="text-sm text-gray-600 mb-4">All documents are required for application submission.</p>
+            
             <div class="space-y-4">
-                <div v-for="doc in documents" :key="doc.name" class="border-2 border-dashed rounded-lg p-4">
+                <div v-for="doc in documents" :key="doc.name" 
+                    class="border-2 border-dashed rounded-lg p-4"
+                    :class="{ 'border-red-300 bg-red-50': uploadErrors[doc.name] }">
                     <div class="flex items-center justify-between">
-                        <div>
-                            <p class="font-medium">{{ $t(doc.labelKey) }}</p>
+                        <div class="flex-1">
+                            <p class="font-medium">{{ $t(doc.labelKey) }} <span class="text-red-500">*</span></p>
                             <p class="text-sm text-gray-500">{{ $t(doc.descriptionKey) }}</p>
+                            <p class="text-xs text-gray-400 mt-1">{{ doc.accept }}</p>
                         </div>
                         <label class="cursor-pointer">
                             <input type="file" :accept="doc.accept" @change="handleFileUpload($event, doc.name)"
                                 class="hidden">
                             <div
-                                class="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded hover:bg-gray-200 transition">
+                                class="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded hover:bg-gray-200 transition whitespace-nowrap ml-4">
                                 <font-awesome-icon icon="upload" />
                                 <span>{{ $t('distributor.product_focus.choose_file') }}</span>
                             </div>
                         </label>
                     </div>
-                    <p v-if="form.documents[doc.name]" class="text-sm text-green-600 mt-2">
+                    <div v-if="form.documents[doc.name]" class="text-sm text-green-600 mt-2">
                         <font-awesome-icon icon="check-circle" />
                         {{ form.documents[doc.name].name }}
-                    </p>
+                    </div>
+                    <div v-if="uploadErrors[doc.name]" class="text-sm text-red-600 mt-2">
+                        <font-awesome-icon icon="exclamation-circle" />
+                        {{ uploadErrors[doc.name] }}
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- Signature Section -->
+        <div class="border-t pt-6">
+            <h4 class="font-semibold text-gray-800 mb-4">
+                <font-awesome-icon icon="pen-fancy" class="text-primary mr-2" />
+                {{ $t('distributor.product_focus.signature_title') }} <span class="text-red-500">*</span>
+            </h4>
+            <p class="text-sm text-gray-600 mb-3">Please upload an image of your signature or a scanned signature document.</p>
+            
+            <div class="border-2 border-dashed rounded-lg p-4"
+                :class="{ 'border-red-300 bg-red-50': uploadErrors['signature'] }">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <p class="font-medium">Signature Document <span class="text-red-500">*</span></p>
+                        <p class="text-sm text-gray-500">Accepted formats: PDF, JPG, PNG (Max 5MB)</p>
+                    </div>
+                    <label class="cursor-pointer">
+                        <input type="file" accept=".pdf,.jpg,.jpeg,.png" @change="handleFileUpload($event, 'signature')"
+                            class="hidden">
+                        <div class="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded hover:bg-gray-200 transition whitespace-nowrap ml-4">
+                            <font-awesome-icon icon="upload" />
+                            <span>{{ $t('distributor.product_focus.choose_file') }}</span>
+                        </div>
+                    </label>
+                </div>
+                <div v-if="form.documents['signature']" class="text-sm text-green-600 mt-2">
+                    <font-awesome-icon icon="check-circle" />
+                    {{ form.documents['signature'].name }}
+                </div>
+                <div v-if="uploadErrors['signature']" class="text-sm text-red-600 mt-2">
+                    <font-awesome-icon icon="exclamation-circle" />
+                    {{ uploadErrors['signature'] }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Declaration Section -->
         <div class="border-t pt-6">
             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
                 <p class="text-sm">
@@ -129,7 +176,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        {{ $t('distributor.product_focus.declarant_name') }}
+                        {{ $t('distributor.product_focus.declarant_name') }} <span class="text-red-500">*</span>
                     </label>
                     <input v-model="form.declarant_name" type="text" :placeholder="$t('distributor.product_focus.declarant_name_placeholder')"
                         class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -138,7 +185,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        {{ $t('distributor.product_focus.declaration_date') }}
+                        {{ $t('distributor.product_focus.declaration_date') }} <span class="text-red-500">*</span>
                     </label>
                     <input v-model="form.declaration_date" type="date"
                         class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -162,37 +209,38 @@ const categories = ref([])
 const loadingCategories = ref(false)
 const categoriesError = ref('')
 const labelsMap = ref({})
+const uploadErrors = ref({})
 
 const documents = [
     {
         name: 'cac',
         labelKey: 'distributor.docs.cac',
         descriptionKey: 'distributor.docs.cac_desc',
-        accept: '.pdf,.jpg,.png'
+        accept: 'PDF, JPG, PNG'
     },
     {
         name: 'form_c07',
         labelKey: 'distributor.docs.form_c07',
         descriptionKey: 'distributor.docs.form_c07_desc',
-        accept: '.pdf,.jpg,.png'
+        accept: 'PDF, JPG, PNG'
     },
     {
         name: 'memart',
         labelKey: 'distributor.docs.memart',
         descriptionKey: 'distributor.docs.memart_desc',
-        accept: '.pdf,.jpg,.png'
+        accept: 'PDF, JPG, PNG'
     },
     {
         name: 'tin',
         labelKey: 'distributor.docs.tin',
         descriptionKey: 'distributor.docs.tin_desc',
-        accept: '.pdf,.jpg,.png'
+        accept: 'PDF, JPG, PNG'
     },
     {
         name: 'referee',
         labelKey: 'distributor.docs.referee',
         descriptionKey: 'distributor.docs.referee_desc',
-        accept: '.pdf,.jpg,.png'
+        accept: 'PDF, JPG, PNG'
     }
 ]
 
@@ -206,15 +254,35 @@ const form = reactive({
     declarant_name: '',
     declaration_date: new Date().toISOString().split('T')[0],
     other_specify: '',
-    // display labels for review step
     product_categories_display: []
 })
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+
 const handleFileUpload = (event, docName) => {
     const file = event.target.files[0]
-    if (file) {
-        form.documents[docName] = file
+    uploadErrors.value[docName] = ''
+
+    if (!file) {
+        delete form.documents[docName]
+        return
     }
+
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+        uploadErrors.value[docName] = `File size must be less than 5MB. Your file is ${(file.size / 1024 / 1024).toFixed(2)}MB`
+        return
+    }
+
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png']
+    if (!allowedTypes.includes(file.type)) {
+        uploadErrors.value[docName] = 'Only PDF, JPG, and PNG files are allowed'
+        return
+    }
+
+    form.documents[docName] = file
+    toast.info(`${docName.toUpperCase()} uploaded successfully`)
 }
 
 const loadCategories = async () => {
@@ -230,18 +298,14 @@ const loadCategories = async () => {
               }))
             : []
 
-        // Append synthetic "Other" option at the end
         mapped.push({ value: 'other', label: t('distributor.product_focus.categories.other') })
 
         categories.value = mapped
-        // prepare label map for quick lookup
         labelsMap.value = mapped.reduce((acc, it) => { acc[it.value] = it.label; return acc }, {})
-        // refresh display labels if there are preselected values (unlikely on first load)
         form.product_categories_display = (form.product_categories || []).map(v => labelsMap.value[v] || v)
     } catch (e) {
         console.error('Failed to load categories', e)
         categoriesError.value = 'Failed to load categories.'
-        // still provide Other to allow progression
         const fallback = [{ value: 'other', label: t('distributor.product_focus.categories.other') }]
         categories.value = fallback
         labelsMap.value = { other: fallback[0].label }
@@ -253,7 +317,6 @@ const loadCategories = async () => {
 
 onMounted(loadCategories)
 
-// Keep display labels in sync
 watch(() => form.product_categories, (vals) => {
     form.product_categories_display = (vals || []).map(v => labelsMap.value[v] || v)
 }, { deep: true })

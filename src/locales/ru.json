@@ -320,7 +320,7 @@
   "footer": {
     "company": "Fursa Energy",
     "contact": {
-      "email": "info@@fursaenergy.com",
+      "email": "info@fursaenergy.com",
       "phone": "+2348028318302",
       "address_line_1": "Нигерия, Абуджа, Вусе 2, Мориджа клоуз, 4",
       "address_line_2": "Нигерия, Лагос, Икойи, Парквью, улица Олумо, 6"
@@ -655,6 +655,7 @@
         "motorcycle_small_engine": "Мотоцикл/малый двигатель",
         "other": "Другое"
       },
+      "signature_title": "Télécharger la signature",
       "technical_knowledge_question": "Есть ли у вас или у вашей команды технические знания о смазочных материалах?",
       "training_question": "Готовы ли вы пройти продуктовое обучение от Fursa?",
       "distribution_start_question": "Как скоро после онбординга вы сможете начать дистрибуцию?",

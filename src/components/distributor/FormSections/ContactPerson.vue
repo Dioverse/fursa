@@ -67,11 +67,54 @@
                     required>
             </div>
         </div>
+
+        <!-- ID Document Upload -->
+        <div class="border-t pt-6">
+            <h4 class="font-semibold text-gray-800 mb-4">
+                <font-awesome-icon icon="id-card" class="text-primary mr-2" />
+                ID Document Upload <span class="text-red-500">*</span>
+            </h4>
+            <p class="text-sm text-gray-600 mb-4">Upload a clear scan or photo of the ID selected above (NIN, Driver's License, Passport, or Voter's Card).</p>
+            
+            <div class="border-2 border-dashed rounded-lg p-6"
+                :class="{ 'border-red-300 bg-red-50': idUploadError }">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex-1">
+                        <p class="font-medium">{{ form.means_of_id || 'Select ID Type First' }}</p>
+                        <p class="text-sm text-gray-500 mt-1">Accepted formats: PDF, JPG, PNG (Max 5MB)</p>
+                    </div>
+                    <label class="cursor-pointer">
+                        <input type="file" accept=".pdf,.jpg,.jpeg,.png" 
+                            @change="handleIdUpload"
+                            class="hidden"
+                            :disabled="!form.means_of_id">
+                        <div :class="{ 'opacity-50 cursor-not-allowed': !form.means_of_id }"
+                            class="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded hover:bg-gray-200 transition whitespace-nowrap">
+                            <font-awesome-icon icon="upload" />
+                            <span>Upload ID</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div v-if="form.id_of_contact" class="text-sm text-green-600 mt-4">
+                    <font-awesome-icon icon="check-circle" />
+                    {{ form.id_of_contact.name }}
+                </div>
+                <div v-if="idUploadError" class="text-sm text-red-600 mt-4">
+                    <font-awesome-icon icon="exclamation-circle" />
+                    {{ idUploadError }}
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
+const idUploadError = ref('')
 
 const form = reactive({
     contact_full_name: '',
@@ -79,8 +122,39 @@ const form = reactive({
     contact_mobile: '',
     means_of_id: '',
     id_number: '',
-    years_in_business: ''
+    years_in_business: '',
+    id_of_contact: null
 })
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+
+const handleIdUpload = (event) => {
+    const file = event.target.files[0]
+    idUploadError.value = ''
+
+    if (!file) {
+        form.id_of_contact = null
+        return
+    }
+
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+        idUploadError.value = `File size must be less than 5MB. Your file is ${(file.size / 1024 / 1024).toFixed(2)}MB`
+        form.id_of_contact = null
+        return
+    }
+
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png']
+    if (!allowedTypes.includes(file.type)) {
+        idUploadError.value = 'Only PDF, JPG, and PNG files are allowed'
+        form.id_of_contact = null
+        return
+    }
+
+    form.id_of_contact = file
+    toast.info('ID document uploaded successfully')
+}
 
 defineExpose({ form })
 </script>

@@ -319,7 +319,7 @@
   "footer": {
     "company": "Fursa Energy",
     "contact": {
-      "email": "info@@fursaenergy.com",
+      "email": "info@fursaenergy.com",
       "phone": "+2348028318302",
       "address_line_1": "4, Morija Close, Wuse 2, Abuja",
       "address_line_2": "6, Olumo Street, Parkview Estate, Ikoyi, Lagos"
@@ -655,6 +655,7 @@
         "motorcycle_small_engine": "Motocicleta/Motor pequeño",
         "other": "Otro"
       },
+      "signature_title": "Subir firma",
       "technical_knowledge_question": "¿Tienes conocimientos técnicos sobre lubricantes o un equipo que los tenga?",
       "training_question": "¿Estás dispuesto a tomar capacitación de producto con Fursa?",
       "distribution_start_question": "¿Qué tan pronto puedes comenzar la distribución después del onboarding?",

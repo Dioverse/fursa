@@ -9,13 +9,13 @@ const authService = {
     return api.post('/register', userData)
   },
 
-  async distributorApplication(userData) {
+  async distributorApplication(payload) {
     if (payload instanceof FormData) {
     // Don't set Content-Type header - let browser handle it
-    return axios.post('/endpoint', payload)
+    return api.post('/distributor-pplication', payload)
     } else {
         // JSON request
-        return axios.post('/endpoint', payload, {
+        return api.post('/distributor-pplication', payload, {
             headers: { 'Content-Type': 'application/json' }
         })
     }

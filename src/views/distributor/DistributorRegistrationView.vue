@@ -9,7 +9,8 @@
                     <StepIndicator :current-step="currentStep" :steps="steps" />
 
                     <!-- Form Content -->
-                    <form @submit.prevent="handleSubmit" class="mt-8">
+                    <!-- <form @submit.prevent="handleSubmit" class="mt-8"> -->
+                    <form @submit.prevent="handleSubmit" novalidate class="mt-8">
                         <!-- Step 1: Business Information -->
                         <div v-show="currentStep === 1">
                             <BusinessInfo ref="step1Ref" />
@@ -128,148 +129,179 @@ const formData = reactive({
     bankingKYC: {}
 })
 
+// Updated validateCurrentStep function in Distributor.vue
+
 const validateCurrentStep = () => {
     validationError.value = ''
     
-    switch (currentStep.value) {
-        case 1:
-            const businessInfo = step1Ref.value?.form
-            if (!businessInfo?.company_name) {
-                validationError.value = t('distributor.validation.company_name_required')
-                return false
+    // Add a small delay to ensure DOM is ready
+    if (typeof window !== 'undefined') {
+        requestAnimationFrame(() => {
+            const firstInvalidInput = document.querySelector('input:invalid, select:invalid, textarea:invalid')
+            if (firstInvalidInput && firstInvalidInput.offsetParent !== null) {
+                // Only focus if element is visible
+                try {
+                    firstInvalidInput.focus()
+                } catch (e) {
+                    console.warn('Could not focus input:', e)
+                }
             }
-            if (!businessInfo?.rc_number) {
-                validationError.value = t('distributor.validation.rc_number_required')
-                return false
-            }
-            if (!businessInfo?.email || !businessInfo.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-                validationError.value = t('distributor.validation.email_required')
-                return false
-            }
-            if (!businessInfo?.office_phone) {
-                validationError.value = t('distributor.validation.office_phone_required')
-                return false
-            }
-            if (!businessInfo?.company_type) {
-                validationError.value = t('distributor.validation.company_type_required')
-                return false
-            }
-            if (!businessInfo?.business_address) {
-                validationError.value = t('distributor.validation.business_address_required')
-                return false
-            }
-            break
-
-        case 2:
-            const contactPerson = step2Ref.value?.form
-            if (!contactPerson?.contact_full_name) {
-                validationError.value = t('distributor.validation.contact_full_name_required')
-                return false
-            }
-            if (!contactPerson?.contact_position) {
-                validationError.value = t('distributor.validation.position_required')
-                return false
-            }
-            if (!contactPerson?.contact_mobile) {
-                validationError.value = t('distributor.validation.mobile_required')
-                return false
-            }
-            if (!contactPerson?.means_of_id) {
-                validationError.value = t('distributor.validation.id_type_required')
-                return false
-            }
-            if (!contactPerson?.id_number) {
-                validationError.value = t('distributor.validation.id_number_required')
-                return false
-            }
-            if (!contactPerson?.years_in_business) {
-                validationError.value = t('distributor.validation.years_in_business_required')
-                return false
-            }
-            break
-
-        case 3:
-            const distCapacity = step3Ref.value?.form
-            if (distCapacity?.has_warehouse === null) {
-                validationError.value = t('distributor.validation.has_warehouse_required')
-                return false
-            }
-            if (distCapacity?.has_vehicles === null) {
-                validationError.value = t('distributor.validation.has_vehicles_required')
-                return false
-            }
-            if (!distCapacity?.preferred_states || distCapacity.preferred_states.length === 0) {
-                validationError.value = t('distributor.validation.preferred_states_required')
-                return false
-            }
-            break
-
-        case 4:
-            const productFocus = step4Ref.value?.form
-            if (!productFocus?.product_categories || productFocus.product_categories.length === 0) {
-                validationError.value = t('distributor.validation.product_categories_required')
-                return false
-            }
-            if (productFocus?.product_categories?.includes('other') && !productFocus?.other_specify) {
-                validationError.value = t('distributor.validation.other_specify_required')
-                return false
-            }
-            if (productFocus?.has_technical_knowledge === null) {
-                validationError.value = t('distributor.validation.technical_knowledge_required')
-                return false
-            }
-            if (productFocus?.willing_to_train === null) {
-                validationError.value = t('distributor.validation.willing_to_train_required')
-                return false
-            }
-            if (!productFocus?.distribution_start_time) {
-                validationError.value = t('distributor.validation.distribution_start_time_required')
-                return false
-            }
-            break
-
-        case 5:
-            const bankingKYC = step5Ref.value?.form
-            if (!bankingKYC?.bank_name) {
-                validationError.value = t('distributor.validation.bank_name_required')
-                return false
-            }
-            if (!bankingKYC?.account_number || bankingKYC.account_number.length !== 10) {
-                validationError.value = t('distributor.validation.account_number_required')
-                return false
-            }
-            if (!bankingKYC?.account_name) {
-                validationError.value = t('distributor.validation.account_name_required')
-                return false
-            }
-            if (!bankingKYC?.bvn || bankingKYC.bvn.length !== 11) {
-                validationError.value = t('distributor.validation.bvn_required')
-                return false
-            }
-            break
-
-        case 6:
-            const reviewData = reviewSubmitRef.value
-            if (!reviewData?.agreed) {
-                validationError.value = t('distributor.validation.must_agree_terms')
-                return false
-            }
-            if (!reviewData?.password) {
-                validationError.value = t('distributor.validation.password_required')
-                return false
-            }
-            if (reviewData.password.length < 8) {
-                validationError.value = t('distributor.validation.password_min')
-                return false
-            }
-            if (reviewData.password !== reviewData.passwordConfirmation) {
-                validationError.value = t('distributor.validation.passwords_no_match')
-                return false
-            }
-            break
+        })
     }
     
+    // switch (currentStep.value) {
+    //     case 1:
+    //         const businessInfo = step1Ref.value?.form
+    //         if (!businessInfo?.company_name?.trim()) {
+    //             validationError.value = t('distributor.validation.company_name_required')
+    //             return false
+    //         }
+    //         if (!businessInfo?.rc_number?.trim()) {
+    //             validationError.value = t('distributor.validation.rc_number_required')
+    //             return false
+    //         }
+    //         if (!businessInfo?.email || !businessInfo.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+    //             validationError.value = t('distributor.validation.email_required')
+    //             return false
+    //         }
+    //         if (!businessInfo?.office_phone?.trim()) {
+    //             validationError.value = t('distributor.validation.office_phone_required')
+    //             return false
+    //         }
+    //         if (!businessInfo?.company_type) {
+    //             validationError.value = t('distributor.validation.company_type_required')
+    //             return false
+    //         }
+    //         if (!businessInfo?.business_address?.trim()) {
+    //             validationError.value = t('distributor.validation.business_address_required')
+    //             return false
+    //         }
+    //         break
+
+    //     case 2:
+    //         const contactPerson = step2Ref.value?.form
+    //         if (!contactPerson?.contact_full_name?.trim()) {
+    //             validationError.value = t('distributor.validation.contact_full_name_required')
+    //             return false
+    //         }
+    //         if (!contactPerson?.contact_position?.trim()) {
+    //             validationError.value = t('distributor.validation.position_required')
+    //             return false
+    //         }
+    //         if (!contactPerson?.contact_mobile?.trim()) {
+    //             validationError.value = t('distributor.validation.mobile_required')
+    //             return false
+    //         }
+    //         if (!contactPerson?.means_of_id) {
+    //             validationError.value = t('distributor.validation.id_type_required')
+    //             return false
+    //         }
+    //         if (!contactPerson?.id_number?.trim()) {
+    //             validationError.value = t('distributor.validation.id_number_required')
+    //             return false
+    //         }
+    //         if (!contactPerson?.years_in_business) {
+    //             validationError.value = t('distributor.validation.years_in_business_required')
+    //             return false
+    //         }
+    //         break
+
+    //     case 3:
+    //         const distCapacity = step3Ref.value?.form
+    //         if (distCapacity?.has_warehouse === null || distCapacity?.has_warehouse === undefined) {
+    //             validationError.value = t('distributor.validation.has_warehouse_required')
+    //             return false
+    //         }
+    //         if (distCapacity?.has_vehicles === null || distCapacity?.has_vehicles === undefined) {
+    //             validationError.value = t('distributor.validation.has_vehicles_required')
+    //             return false
+    //         }
+    //         if (!distCapacity?.preferred_states || distCapacity.preferred_states.length === 0) {
+    //             validationError.value = t('distributor.validation.preferred_states_required')
+    //             return false
+    //         }
+    //         break
+
+    //     case 4:
+    //         const productFocus = step4Ref.value?.form
+    //         if (!productFocus?.product_categories || productFocus.product_categories.length === 0) {
+    //             validationError.value = t('distributor.validation.product_categories_required')
+    //             return false
+    //         }
+    //         if (productFocus?.product_categories?.includes('other') && !productFocus?.other_specify?.trim()) {
+    //             validationError.value = t('distributor.validation.other_specify_required')
+    //             return false
+    //         }
+    //         if (productFocus?.has_technical_knowledge === null || productFocus?.has_technical_knowledge === undefined) {
+    //             validationError.value = t('distributor.validation.technical_knowledge_required')
+    //             return false
+    //         }
+    //         if (productFocus?.willing_to_train === null || productFocus?.willing_to_train === undefined) {
+    //             validationError.value = t('distributor.validation.willing_to_train_required')
+    //             return false
+    //         }
+    //         if (!productFocus?.distribution_start_time?.trim()) {
+    //             validationError.value = t('distributor.validation.distribution_start_time_required')
+    //             return false
+    //         }
+    //         // Validate at least one document is uploaded
+    //         const docs = productFocus?.documents || {}
+    //         const requiredDocs = ['cac', 'form_c07', 'memart', 'tin', 'referee']
+    //         const hasAllDocs = requiredDocs.every(doc => docs[doc])
+    //         if (!hasAllDocs) {
+    //             validationError.value = t('distributor.validation.all_documents_required')
+    //             return false
+    //         }
+    //         break
+
+    //     case 5:
+    //         const bankingKYC = step5Ref.value?.form
+    //         if (!bankingKYC?.bank_name) {
+    //             validationError.value = t('distributor.validation.bank_name_required')
+    //             return false
+    //         }
+    //         if (!bankingKYC?.account_number || bankingKYC.account_number.length !== 10) {
+    //             validationError.value = t('distributor.validation.account_number_required')
+    //             return false
+    //         }
+    //         if (!bankingKYC?.account_name?.trim()) {
+    //             validationError.value = t('distributor.validation.account_name_required')
+    //             return false
+    //         }
+    //         if (!bankingKYC?.bvn || bankingKYC.bvn.length !== 11) {
+    //             validationError.value = t('distributor.validation.bvn_required')
+    //             return false
+    //         }
+    //         break
+
+    //     case 6:
+    //         const reviewData = reviewSubmitRef.value
+    //         if (!reviewData?.agreed) {
+    //             validationError.value = t('distributor.validation.must_agree_terms')
+    //             return false
+    //         }
+    //         if (!reviewData?.password?.trim()) {
+    //             validationError.value = t('distributor.validation.password_required')
+    //             return false
+    //         }
+    //         if (reviewData.password.length < 8) {
+    //             validationError.value = t('distributor.validation.password_min')
+    //             return false
+    //         }
+    //         if (reviewData.password !== reviewData.passwordConfirmation) {
+    //             validationError.value = t('distributor.validation.passwords_no_match')
+    //             return false
+    //         }
+    //         break
+    // }
+    
     return true
+}
+
+// Add this helper function to safely trim and validate strings
+const safeValue = (val) => {
+    if (typeof val === 'string') return val.trim()
+    return val
 }
 
 const nextStep = () => {
@@ -306,6 +338,8 @@ const previousStep = () => {
     }
 }
 
+// Updated handleSubmit function for Distributor.vue
+
 const handleSubmit = async () => {
     if (!validateCurrentStep()) {
         return
@@ -330,22 +364,42 @@ const handleSubmit = async () => {
 
         // Business Information
         Object.keys(formData.businessInfo).forEach(key => {
-            if (formData.businessInfo[key] !== null && formData.businessInfo[key] !== undefined) {
-                formDataObj.append(key, formData.businessInfo[key])
+            const value = formData.businessInfo[key]
+            
+            // Handle utility bill file separately
+            if (key === 'utility_bill') return
+            
+            if (value !== null && value !== undefined && value !== '') {
+                formDataObj.append(key, value)
             }
         })
 
+        // Utility bill document
+        if (formData.businessInfo.utility_bill instanceof File) {
+            formDataObj.append('utility_bill', formData.businessInfo.utility_bill)
+        }
+
         // Contact Person
         Object.keys(formData.contactPerson).forEach(key => {
-            if (formData.contactPerson[key] !== null && formData.contactPerson[key] !== undefined) {
-                formDataObj.append(key, formData.contactPerson[key])
+            const value = formData.contactPerson[key]
+            
+            // Handle ID file separately
+            if (key === 'id_of_contact') return
+            
+            if (value !== null && value !== undefined && value !== '') {
+                formDataObj.append(key, value)
             }
         })
+
+        // Contact ID document
+        if (formData.contactPerson.id_of_contact instanceof File) {
+            formDataObj.append('id_of_contact', formData.contactPerson.id_of_contact)
+        }
 
         // Distribution Capacity
         Object.keys(formData.distributionCapacity).forEach(key => {
             const value = formData.distributionCapacity[key]
-            if (value !== null && value !== undefined) {
+            if (value !== null && value !== undefined && value !== '') {
                 if (Array.isArray(value)) {
                     // For arrays, append with [] suffix for Laravel
                     value.forEach(v => formDataObj.append(`${key}[]`, v))
@@ -362,7 +416,7 @@ const handleSubmit = async () => {
             // Skip documents object - handle separately below
             if (key === 'documents') return
             
-            if (value !== null && value !== undefined) {
+            if (value !== null && value !== undefined && value !== '') {
                 if (Array.isArray(value)) {
                     value.forEach(v => formDataObj.append(`${key}[]`, v))
                 } else {
@@ -371,13 +425,14 @@ const handleSubmit = async () => {
             }
         })
 
-        // Handle file uploads with proper field name mapping
+        // Handle required document file uploads with proper field name mapping
         const fileFieldMap = {
             'cac': 'cac_certificate',
             'form_c07': 'form_co7',
             'memart': 'memart',
             'tin': 'tin_certificate',
-            'referee': 'referee_letter'
+            'referee': 'referee_letter',
+            'signature': 'signature'
         }
 
         const documents = formData.productFocus.documents || {}
@@ -393,13 +448,18 @@ const handleSubmit = async () => {
 
         // Banking & KYC
         Object.keys(formData.bankingKYC).forEach(key => {
-            if (formData.bankingKYC[key] !== null && formData.bankingKYC[key] !== undefined) {
-                formDataObj.append(key, formData.bankingKYC[key])
+            const value = formData.bankingKYC[key]
+            if (value !== null && value !== undefined && value !== '') {
+                formDataObj.append(key, value)
             }
         })
 
-        // TODO: You may also need to handle signature and utility_bill files
-        // Add them to the fileFieldMap if they exist in ProductFocus component
+        // Log FormData contents for debugging (remove in production)
+        if (false) { // Set to true to debug
+            for (let [key, value] of formDataObj.entries()) {
+                console.log(`${key}:`, value instanceof File ? `File: ${value.name}` : value)
+            }
+        }
 
         // Send request
         if (authStore.token) {
@@ -411,10 +471,12 @@ const handleSubmit = async () => {
         toast.success(t('distributor.toasts.submit_success'))
         router.push('/dashboard')
     } catch (error) {
+        console.error('Submission error:', error)
         if (error.response?.status === 422) {
             const errors = error.response.data.errors
-            const firstError = Object.values(errors)[0][0]
-            toast.error(firstError)
+            const firstErrorKey = Object.keys(errors)[0]
+            const firstError = errors[firstErrorKey][0]
+            toast.error(`${firstErrorKey}: ${firstError}`)
         } else {
             toast.error(error.response?.data?.message || t('distributor.toasts.submit_failed_generic'))
         }
