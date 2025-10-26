@@ -1,3 +1,4 @@
+<!-- BankingKYC -->
 <template>
     <div class="space-y-6">
     <h3 class="text-xl font-semibold text-primary mb-4">{{ $t('distributor.sections.banking_kyc') }}</h3>
