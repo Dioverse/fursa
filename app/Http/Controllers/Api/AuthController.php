@@ -396,7 +396,6 @@ class AuthController extends Controller
 
             // 3. Find the user by the determined login field
             $user = User::where($loginField, $loginValue)->first();
-            
             // 4. Verify user existence and password
             if (!$user || !Hash::check($password, $user->password)) {
                 throw ValidationException::withMessages([
