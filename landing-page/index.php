@@ -33,7 +33,7 @@
                                 </div>
                                 <div class="contact-now-box-content">
                                     <h3>Call Us</h3>
-                                    <p><a href="tel:+123468963">+234-XXX-000-0000</a></p>
+                                    <p><a href="tel:+123468963">+2348028318302</a></p>
                                 </div>
                             </div>
                             <!-- Contact Now Box End -->

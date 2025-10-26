@@ -22,7 +22,7 @@
                         <div class="about-footer-contact">
                             <a href="tel:123468963">
                             <i class="fa-solid fa-phone fa-lg"></i>
-                                +234-XXX-000-0000
+                                +2348028318302
                             </a>
                             <a href="mailto:info@domain.com">
                                 <i class="fas fa-envelope fa-lg "></i>
