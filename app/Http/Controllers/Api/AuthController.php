@@ -261,6 +261,7 @@ class AuthController extends Controller
                     'status' => 'pending'
                 ];
                 if ($check) {
+                    print_r($request->email);
                     $toUpdate['email_verified_at'] = null;
                     $toUpdate['email'] = $request->email;
                     $user->tokens()->delete();
