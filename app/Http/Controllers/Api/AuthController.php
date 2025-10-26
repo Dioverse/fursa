@@ -416,8 +416,9 @@ class AuthController extends Controller
                 "name" => $user->first_name, "ipAddress" => $ipAddress, "loginTime" => $loginTime
             ], ["email"],true);
 
+            $cart = [];
             if ($request->cart && !empty($request->cart) && is_array($request->cart)) {
-                $this->syncUserCart($user, $request->cart);
+                $cart = $this->syncUserCart($user, $request->cart);
             }
 
             if ($user->role === 'distributor') {
@@ -429,6 +430,7 @@ class AuthController extends Controller
                 'user' => $user,
                 'token' => $token,
                 'token_type' => 'Bearer',
+                'cart' => $cart
             ], 200);
 
         } catch (ValidationException $e) {
