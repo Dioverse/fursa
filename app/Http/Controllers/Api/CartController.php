@@ -204,13 +204,13 @@ class CartController extends Controller
 
     public function syncUserCart(User $user, array $cartData): \Illuminate\Support\Collection
     {
-        // 1. Handle empty input
-        if (empty($cartData)) {
-            return collect();
-        }
-
-        // 2. Ensure the user has a cart
+        // 1. Ensure the user has a cart
         $cart = $user->cart()->firstOrCreate(['user_id' => $user->id]);
+
+        // 2. Handle empty input
+        if (empty($cartData)) {
+            return $this->cartWithRelations($cart)->cartItems;
+        }
 
         $productIds = collect($cartData)
             ->pluck('product_id')
