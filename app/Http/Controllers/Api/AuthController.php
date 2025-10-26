@@ -254,7 +254,8 @@ class AuthController extends Controller
             ]);
             return $user;
         });
-
+        
+        $link = $this->getVerificationLink($result->id,$result->email);
         notify('EMAIL_VERIFY', $result, [
                 "name" => $result->first_name, "verification_link" => $link
             ], ['email'], false);
