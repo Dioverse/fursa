@@ -225,6 +225,61 @@ class AuthController extends Controller
         return rtrim(config('app.frontend_url'), '/') . '/' . config('app.frontend_verify_path') . '?' . $finalQuery;
     }
 
+    public function upgradeToDistributor(Request $request): JsonResponse
+{
+    $user = auth()->user(); // Ensure customer is logged in
+
+    if ($user->role !== 'customer') {
+        return response()->json([
+            'message' => 'Only customers can apply to become distributors.'
+        ], 403);
+    }
+
+    try {
+        // Validate distributor-specific fields
+        $validatedData = Validator::make(
+            $request->all(),
+            $this->getDistributorValidationRules()
+        )->validate();
+
+        // Use transaction to ensure consistency
+        $result = DB::transaction(function () use ($user, $validatedData, $request) {
+            // Create distributor profile
+            $this->createDistributorProfile($user, $validatedData, $request);
+
+            // Update user role and status
+            $user->update([
+                'role' => 'distributor',
+                'status' => 'pending'
+            ]);
+            return $user;
+        });
+
+        notify('EMAIL_VERIFY', $result, [
+                "name" => $result->first_name, "verification_link" => $link
+            ], ['email'], false);
+        return response()->json([
+            'message' => 'Your application to become a distributor has been submitted. Please wait for approval.'
+        ], 200);
+
+    } catch (ValidationException $e) {
+        return response()->json([
+            'message' => 'Validation failed.',
+            'errors' => $e->errors(),
+        ], 422);
+    } catch (Exception $e) {
+        Log::error('Upgrade to distributor failed: ' . $e->getMessage(), [
+            'user_id' => $user->id,
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        return response()->json([
+            'message' => 'Application failed. Please try again.',
+            'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+        ], 500);
+    }
+}
+
 
     public function register(Request $request): JsonResponse
     {
