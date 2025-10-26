@@ -880,7 +880,7 @@
     "toasts": {
       "fill_all_password_fields": "املأ الحقول المطلوبة",
       "passwords_no_match": "كلمات المرور غير متطابقة",
-      "updated_success": "تم تحديث الملف الشخصي بنجاح!"
+      "password_updated": "تم تحديث كلمة المرور بنجاح!"
     }
   }
   ,

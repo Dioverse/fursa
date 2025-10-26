@@ -57,11 +57,7 @@ const handleLogin = async (credentials) => {
         const redirectTo = router.currentRoute.value.query.redirect || '/dashboard'
         router.push(redirectTo)
     } catch (error) {
-<<<<<<< Updated upstream
         toast.error(error.response?.data?.errors?.user?.[0] || t('auth.login.error_invalid'))
-=======
-        toast.error(error.response?.data?.errors?.user[0] || 'Please check your network and try again.')
->>>>>>> Stashed changes
     }
 }
 

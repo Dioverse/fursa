@@ -881,7 +881,7 @@
     "toasts": {
       "fill_all_password_fields": "Erforderliche Felder ausfüllen",
       "passwords_no_match": "Passwörter stimmen nicht überein",
-      "updated_success": "Profil erfolgreich aktualisiert!"
+      "password_updated": "Passwort erfolgreich aktualisiert!"
     }
   }
   ,

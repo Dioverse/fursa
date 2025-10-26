@@ -5,7 +5,6 @@
 
       <!-- READ-ONLY USER INFO -->
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-lg font-semibold mb-4">{{ $t('profile.details') }}</h3>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-3">
           <div v-for="(value, label) in userFields" :key="label">

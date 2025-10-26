@@ -881,7 +881,7 @@
     "toasts": {
       "fill_all_password_fields": "填写必填字段",
       "passwords_no_match": "密码不匹配",
-      "updated_success": "个人资料更新成功！"
+      "password_updated": "密码更新成功！"
     }
   }
   ,

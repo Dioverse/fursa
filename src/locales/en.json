@@ -902,7 +902,7 @@
     "toasts": {
       "fill_all_password_fields": "Fill in required fields",
       "passwords_no_match": "Passwords do not match",
-      "updated_success": "Profile updated successfully!"
+      "password_updated": "Password updated successfully!"
     }
   }
   ,
