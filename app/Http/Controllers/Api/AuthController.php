@@ -411,6 +411,7 @@ class AuthController extends Controller
 
     public function forgotPassword(Request $request)
     {
+        print_r($request->email);
         $request->validate([
             'email' => 'required|email',
         ]);
@@ -551,7 +552,7 @@ class AuthController extends Controller
             'message' => 'Password updated successfully.'
         ]);
     }
-    
+
     public function refresh(Request $request)
     {
         $user = $request->user();
