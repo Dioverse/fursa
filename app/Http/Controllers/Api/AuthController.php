@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Api\CartController;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -418,7 +419,8 @@ class AuthController extends Controller
 
             $cart = [];
             if ($request->cart && !empty($request->cart) && is_array($request->cart)) {
-                $cart = $this->syncUserCart($user, $request->cart);
+                $cart = new CartController();
+                $cart->syncUserCart($user, $request->cart);
             }
 
             if ($user->role === 'distributor') {
@@ -448,70 +450,6 @@ class AuthController extends Controller
         }
     }
 
-    protected function syncUserCart(User $user, array $cartData): \Illuminate\Support\Collection
-    {
-        // 1. Ensure the user has a cart, creating it if necessary.
-        $cart = $user->cart()->firstOrCreate([
-            'user_id' => $user->id,
-        ]);
-
-        $productIds = collect($cartData)->pluck('product_id');
-
-        // 2. Fetch all existing items for the relevant products in one query.
-        $existingItems = $cart->cartItems()
-            ->whereIn('product_id', $productIds)
-            ->get()
-            ->keyBy('product_id');
-
-        $toInsert = [];
-        $toUpdate = [];
-
-        // 3. Separate items into update and insert arrays.
-        foreach ($cartData as $item) {
-            $productId = $item['product_id'];
-            $quantity  = $item['quantity'];
-
-            if ($existingItems->has($productId)) {
-                // Item exists: Prepare for update (directly modify the model instance)
-                $existingItem = $existingItems[$productId];
-                
-                // Only update if the quantity has actually changed
-                if ((int)$existingItem->quantity !== (int)$quantity) {
-                     $existingItem->quantity = $quantity;
-                     $toUpdate[] = $existingItem;
-                }
-            } else {
-                // Item does not exist: Prepare for batch insert
-                $toInsert[] = [
-                    'cart_id'    => $cart->id,
-                    'product_id' => $productId,
-                    'quantity'   => $quantity,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-        }
-        
-        // 4. Execute persistence operations within a transaction.
-        DB::transaction(function () use ($toUpdate, $toInsert, $cart) {
-            // Batch update existing items (uses individual saves, better suited for smaller updates)
-            if (!empty($toUpdate)) {
-                foreach ($toUpdate as $item) {
-                    $item->save();
-                }
-            }
-            
-            // Batch create new items (efficient single query)
-            if (!empty($toInsert)) {
-                $cart->cartItems()->insert($toInsert);
-            }
-        });
-
-        // 5. Refresh the cart model to ensure all relations (cartItems) are up-to-date
-        // before returning the collection of items.
-        return collect($cart->cartItems);
-    }
-
     public function emailVerify(Request $request, $id, $hash): JsonResponse
     {
         // Retrieve the user by ID from the verification link
@@ -531,7 +469,7 @@ class AuthController extends Controller
         $token = $user->createToken('api-token')->plainTextToken;
 
         // Send a welcome/registration email
-        
+
         // $this->sendRegistrationEmail($user);
         $template = $user->role == 'distributor' ? "REGISTERED_DISTRIBUTOR" : "REGISTERED_USER";
         notify($template, $user, ["name" => $user->first_name], ['email'], false);
