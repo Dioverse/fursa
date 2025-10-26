@@ -407,16 +407,6 @@ class AuthController extends Controller
             // 5. Credentials are valid, create an API token
             $token = $user->createToken('api-token')->plainTextToken;
 
-            // 6. Prepare data for email notification
-            $ipAddress = $request->ip();
-            $loginTime = Carbon::now()->toDateTimeString();
-
-            // 7. Send email notification (still queued for performance)
-            // Mail::to($user->email)->queue(new UserLoggedInNotification($user, $ipAddress, $loginTime));
-            notify("LOGIN_ALERT", $user, [
-                "name" => $user->first_name, "ipAddress" => $ipAddress, "loginTime" => $loginTime
-            ], ["email"],true);
-
             $cart = [];
             if ($request->cart && !empty($request->cart) && is_array($request->cart)) {
                 $cart = new CartController();
@@ -426,15 +416,6 @@ class AuthController extends Controller
             if ($user->role === 'distributor') {
                 $user->load('distributor');
             }
-            // 8. Return success response with user data and the token
-            return response()->json([
-                'message' => 'Login successful.',
-                'user' => $user,
-                'token' => $token,
-                'token_type' => 'Bearer',
-                'cart' => $cart
-            ], 200);
-
         } catch (ValidationException $e) {
             return response()->json([
                 'message' => 'The given data was invalid.',
@@ -448,6 +429,26 @@ class AuthController extends Controller
                 'error' => 'Please try again later.',
             ], 500);
         }
+
+        
+        // 6. Prepare data for email notification
+        $ipAddress = $request->ip();
+        $loginTime = Carbon::now()->toDateTimeString();
+
+        // 7. Send email notification (still queued for performance)
+        // Mail::to($user->email)->queue(new UserLoggedInNotification($user, $ipAddress, $loginTime));
+        notify("LOGIN_ALERT", $user, [
+            "name" => $user->first_name, "ipAddress" => $ipAddress, "loginTime" => $loginTime
+        ], ["email"],true);
+
+        // 8. Return success response with user data and the token
+        return response()->json([
+            'message' => 'Login successful.',
+            'user' => $user,
+            'token' => $token,
+            'token_type' => 'Bearer',
+            'cart' => $cart
+        ], 200);
     }
 
     public function emailVerify(Request $request, $id, $hash): JsonResponse
