@@ -262,6 +262,7 @@ class AuthController extends Controller
                 ];
                 if ($check) {
                     $toUpdate['email_verified_at'] = null;
+                    $toUpdate['email'] = $request->email;
                     $user->tokens()->delete();
                 }
                 // Update user role and status
