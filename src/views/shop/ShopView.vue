@@ -66,8 +66,8 @@
             <!-- Sidebar -->
             <div class="w-full md:w-56 hidden md:block xl:block bg-white shadow-md flex-shrink-0 rounded">
               <RouterLink :to="`/categories`"
-                class="flex items-center font-bold gap-3 p-2 bg-gray-100 rounded cursor-pointer transition-colors">
-                {{ $t('shop.sidebar.categories') }}
+                class="flex items-center font-bold gap-3 p-2 text-gray-600 hover:text-gold-600 bg-gray-100 rounded cursor-pointer transition-colors">
+                <font-awesome-icon icon="bars" class="font-bolder"/>{{ $t('shop.sidebar.categories') }}
               </RouterLink>
               <hr>
               <div v-for="(category, index) in shopData.categories" :key="index" class="relative group"
@@ -265,8 +265,7 @@
                 <!-- Discount Tag -->
                 <div v-if="product.discount"
                   class="absolute top-3 right-3 bg-gold-100 text-gold-600 text-xs font-semibold px-2 py-1 rounded-full shadow-sm">
-                  -{{ product.discount.value
-                  }}{{ product.discount.type === 'percentage' ? '%' : '' }}
+                  -{{ discountLabel(product) }}
                 </div>
               </RouterLink>
             </SwiperSlide>
@@ -296,7 +295,7 @@ import { Autoplay, Pagination, Navigation, FreeMode } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { formatAmount, getImageUrl, handleImageError } from '@/utils/helpers';
+import { discountLabel, formatAmount, getImageUrl, handleImageError } from '@/utils/helpers';
 
 const shopData = ref({
   featured_products: [],

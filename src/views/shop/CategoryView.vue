@@ -23,7 +23,7 @@
                 <div class="pb-6 border-b">
                   <h3 class="font-bold text-lg mb-3">{{ $t('shop.filters.search') }}</h3>
                   <input type="text" placeholder="Search by keywords..." v-model="filters.name"
-                    class="w-full px-2 py-1 border border-gray-300 rounded text-sm" @keyup="filterManip" />
+                    class="w-full px-2 py-1 border border-gray-300 rounded text-sm" @keypress="filterManip" />
                 </div>
 
                 <!-- Categories -->
@@ -161,12 +161,9 @@
 
             <!-- Products Heading -->
             <div class="mb-4">
-              <h2 id="page-header" class="lg:text-2xl md:text-xl text-lg font-bold text-gray-800 mb-2">{{ pageTitle }}
-                <small v-if="selectedSubcategorySlug">{{ selectedCategorySlug }}</small></h2>
-              <p v-if="!loading && !loadingMore" class="text-sm text-gray-600">Showing ({{ products.length }} of {{
-                state.totalFound }}) products found</p>
+              <h2 id="page-header" class="lg:text-2xl md:text-xl text-lg font-bold text-gray-800 mb-2">{{ pageTitle }}</h2>
+              <p v-if="!loading && !loadingMore" class="text-sm text-gray-600">{{ $t('shop.showing_count', { count: products.length, total: state.totalFound }) }}</p>
             </div>
-
 
             <!-- Active Filters Display -->
             <div v-if="filters.selectedTags.length > 0" class="mb-4">
@@ -179,12 +176,6 @@
                   </button>
                 </span>
               </div>
-            </div>
-
-            <!-- Products Heading -->
-            <div class="mb-4">
-              <h2 id="page-header" class="lg:text-2xl md:text-xl text-lg font-bold text-gray-800 mb-2">{{ pageTitle }}</h2>
-              <p v-if="!loading && !loadingMore" class="text-sm text-gray-600">{{ $t('shop.showing_count', { count: products.length, total: state.totalFound }) }}</p>
             </div>
 
             <!-- Loading State -->
@@ -227,7 +218,7 @@
                       <!-- Discount Badge (Right, Always Aligned) -->
                       <span v-if="product.discount"
                         class="bg-orange-500 text-white px-2 py-1 text-[11px] rounded font-semibold shadow-md ml-auto">
-                        {{ discountLabel(product) }}&nbsp;off
+                        -{{ discountLabel(product) }}
                       </span>
                     </div>
                   </RouterLink>
@@ -601,7 +592,7 @@ const fetchProducts = async (page = 1, isLoadMore = false, debounceMs = 0) => {
     const queryString = buildQueryParams(true);
     const url = `${apiUrl}/products?${queryString}`;
 
-  if (!res.ok) throw new Error(t('shop.failed_to_load_products'));
+  // if (!res.ok) throw new Error(t('shop.failed_to_load_products'));
     // Use debounce for filter changes (debounceMs > 0), immediate for pagination
     const response = debounceMs > 0
       ? await cancelableFetch.debounceAndFetch(url, {}, debounceMs)
