@@ -531,6 +531,7 @@ class AuthController extends Controller
         $token = $user->createToken('api-token')->plainTextToken;
 
         // Send a welcome/registration email
+        
         // $this->sendRegistrationEmail($user);
         $template = $user->role == 'distributor' ? "REGISTERED_DISTRIBUTOR" : "REGISTERED_USER";
         notify($template, $user, ["name" => $user->first_name], ['email'], false);
