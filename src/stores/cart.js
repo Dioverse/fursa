@@ -127,6 +127,7 @@ export const useCartStore = defineStore('cart', () => {
     if (Array.isArray(cartArray)) {
       items.value = cartArray.map(normalizeItem)
       saveCart()
+      console.log("object cart updated ");
     }
   }
 

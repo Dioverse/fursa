@@ -2,7 +2,7 @@
     <!-- Desktop Sidebar -->
     <aside v-if="$props.showDesktop"
         class="hidden sm:block md:block lg:block w-[10rem] md:w-48 lg:w-64 bg-white shadow-md text-sm md:text-sm lg:text-md">
-        <nav class="p-1 md:p-2 lg:p-4 sticky top-[87px]">
+        <nav class="p-1 md:p-2 lg:p-4 sticky top-[130px]">
             <ul class="space-y-2">
                 <li v-for="item in fullLinks" :key="item.to">
                     <RouterLink :to="item.to"
