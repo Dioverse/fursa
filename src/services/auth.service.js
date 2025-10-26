@@ -29,8 +29,12 @@ const authService = {
     return api.post('/forgot-password', { email })
   },
 
-  async resetPassword(token, password) {
-    return api.post('/reset-password', { token, password })
+  async resetPassword(payload) {
+    return api.post('/reset-password', payload, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
   },
 
   async verifyEmail(token) {

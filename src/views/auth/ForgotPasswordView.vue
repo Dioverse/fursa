@@ -38,7 +38,6 @@
                     variant="primary"
                     size="lg"
                     fullWidth
-                    icon="email-plus"
                     :loading="authStore.loading"
                     text="Forgot Password"
                     loadingText="Loading ..."
@@ -100,17 +99,17 @@ const validateForm = () => {
 }
 
 
-const handleSubmit = async (credentials) => {
-    if (!validateForm()) return
-   
-    try {
-        await authStore.forgotPassword(credentials)
-        toast.success('An email has been sent with password reset instructions!')
-        const redirectTo = router.currentRoute.value.query.redirect || '/reset-password'
-        router.push(redirectTo)
-    } catch (error) {
-        toast.error(error.response?.data?.errors?.user[0] || 'An error occured. Please try again.')
-    }
+const handleSubmit = async (e) => {
+  if (!validateForm()) return
+  try {
+    await authStore.forgotPassword(form.email)
+    toast.success('If an account with that email exists, a password reset link is on its way!')
+    router.push('/reset-password')
+  } catch (error) {
+    const msg = error.response?.data?.message || 'An error occurred. Please try again.'
+    toast.error(msg)
+  }
 }
+
 
 </script>

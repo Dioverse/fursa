@@ -11,7 +11,7 @@
         <div class="w-full max-w-md mx-auto">
             <h2 class="text-3xl font-bold text-primary mb-8">Forgot Password</h2>
 
-            <form action="">
+            <form @submit.prevent="handleSubmit" class="space-y-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Password:
@@ -33,7 +33,7 @@
                         Confirm Password:
                     </label>
                     <div class="relative">
-                        <input v-model="form.password" :type="showPassword ? 'text' : 'password'"
+                        <input v-model="form.password_confirmation" :type="showPassword ? 'text' : 'password'"
                             class="w-full px-4 py-3 pl-10 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                             :class="{ 'border-red-500': errors.password }" required>
                         <font-awesome-icon icon="lock" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -42,8 +42,11 @@
                             <font-awesome-icon :icon="showPassword ? 'eye-slash' : 'eye'" />
                         </button>
                     </div>
-                    <span v-if="errors.password" class="text-red-500 text-sm mt-1">{{ errors.password }}</span>
-                </div>       
+                    <span v-if="errors.password" class="text-red-500 text-sm mt-1">{{ errors.password_confirmation
+                        }}</span>
+                </div>
+                <BaseButton type="submit" variant="primary" size="lg" fullWidth :loading="authStore.loading"
+                    text="Forgot Password" loadingText="Loading ..." />
             </form>
 
             <div class="relative my-8">
@@ -66,25 +69,78 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+import { reactive, ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import AuthLayout from '@/layouts/AuthLayout.vue'
-import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm.vue'
 import { useAuthStore } from '@/stores/auth'
+import BaseButton from '@/components/common/BaseButton.vue'
 
 const router = useRouter()
+const route = useRoute()
 const toast = useToast()
 const authStore = useAuthStore()
 
-const handleSubmit = async (credentials) => {
-    try {
-        await authStore.forgotPassword(credentials)
-        toast.success('An email has been sent with password reset instructions!')
-        const redirectTo = router.currentRoute.value.query.redirect || '/login'
-        router.push(redirectTo)
-    } catch (error) {
-        toast.error(error.response?.data?.errors?.user[0] || 'An error occured. Please try again.')
-    }
+const showPassword = ref(false)
+
+const form = reactive({
+  password: '',
+  password_confirmation: ''
+})
+
+const errors = reactive({
+  password: '',
+  password_confirmation: ''
+})
+
+// Store token & email from query
+const token = ref('')
+const email = ref('')
+
+onMounted(() => {
+  token.value = route.query.token || ''
+  email.value = route.query.email || ''
+
+  // Basic validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!token.value || !email.value || !emailRegex.test(email.value)) {
+    toast.error('Invalid password reset link.')
+    router.replace('/forgot-password')
+  }
+})
+
+const validateForm = () => {
+  errors.password = ''
+  errors.password_confirmation = ''
+
+  if (!form.password) {
+    errors.password = 'Password is required'
+  } else if (form.password.length < 6) {
+    errors.password = 'Password must be at least 6 characters'
+  }
+
+  if (form.password !== form.password_confirmation) {
+    errors.password_confirmation = 'Passwords do not match'
+  }
+
+  return !errors.password && !errors.password_confirmation
 }
 
+const handleSubmit = async () => {
+  if (!validateForm()) return
+
+  try {
+    await authStore.resetPassword({
+      token: token.value,
+      email: email.value,
+      password: form.password,
+      password_confirmation: form.password_confirmation
+    })
+    toast.success('Your password has been updated successfully!')
+    router.push('/login')
+  } catch (error) {
+    const msg = error.response?.data?.message || 'An error occurred. Please try again.'
+    toast.error(msg)
+  }
+}
 </script>

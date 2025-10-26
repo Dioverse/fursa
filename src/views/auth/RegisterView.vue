@@ -55,30 +55,35 @@ const handleRegister = async (userData) => {
         router.push('/login')
     } catch (error) {
         if (error.response?.status === 422) {
-        const errors = error.response.data.errors;
+            const errors = error.response.data.errors;
 
-        // Grab first error message
-        const firstError = Object.values(errors)[0][0];
-        toast.error(firstError);
+            // Grab first error message
+            const firstError = Object.values(errors)[0][0];
+            toast.error(firstError);
         } else {
-        toast.error(error.response?.data?.message || t('auth.register.failed_generic'));
+            toast.error(error.response?.data?.message || t('auth.register.failed_generic'));
         }
     }
 }
 </script>
 
 <style>
-    .loader {
-        border: 2px solid #f3f3f3;
-        border-top: 2px solid white;
-        border-radius: 50%;
-        width: 16px;
-        height: 16px;
-        animation: spin 1s linear infinite;
+.loader {
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
     }
 
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+    100% {
+        transform: rotate(360deg);
     }
+}
 </style>
