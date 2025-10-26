@@ -107,7 +107,7 @@ class AuthController extends Controller
             'account_name' => 'required|string|max:255',
             'account_number' => 'required|string|max:20',
             'bvn' => 'required|string|size:11',
-            'partnerships' => 'required|string',
+            'partnerships' => 'nullable|string',
             
             // Declaration
             'declarant_name' => 'required|string|max:255',
