@@ -69,7 +69,7 @@ class AuthController extends Controller
             'rc_number' => 'required|string|max:100',
             'business_address' => 'required|string|max:500',
             'office_phone' => 'required|string|max:20',
-            'website' => 'required|url|max:255',
+            'website' => 'nullable|url|max:255',
             'company_type' => 'required|string|max:100',
             
             // Contact Person
