@@ -432,8 +432,10 @@ class AuthController extends Controller
 
             // 10. Sync user cart if provided
             $cart = [];
-            $cartController = new CartController();
-            $cart = $cartController->syncUserCart($user, $request->cart);
+            if ($user->role != 'admin') {
+                $cartController = new CartController();
+                $cart = $cartController->syncUserCart($user, $request->cart);
+            }
 
             // 11. Return response
             return response()->json([
