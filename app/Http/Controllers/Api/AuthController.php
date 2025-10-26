@@ -434,7 +434,7 @@ class AuthController extends Controller
             $cart = [];
             if (is_array($request->cart) && !empty($request->cart)) {
                 $cartController = new CartController();
-                $cartController->syncUserCart($user, $request->cart);
+                $cart = $cartController->syncUserCart($user, $request->cart);
             }
 
             // 11. Return response
