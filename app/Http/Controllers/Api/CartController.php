@@ -270,7 +270,7 @@ class CartController extends Controller
         // 5. Refresh the cart model to ensure all relations (cartItems) are up-to-date
         // before returning the collection of items.
         print_r($this->cartWithRelations($cart));
-        print_r($cart);
+        // print_r($cart);
         return $this->cartWithRelations($cart)->cartItems;
     }
 
