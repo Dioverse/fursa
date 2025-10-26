@@ -10,7 +10,15 @@ const authService = {
   },
 
   async distributorApplication(userData) {
-    return api.post('/distributor-pplication', userData)
+    if (payload instanceof FormData) {
+    // Don't set Content-Type header - let browser handle it
+    return axios.post('/endpoint', payload)
+    } else {
+        // JSON request
+        return axios.post('/endpoint', payload, {
+            headers: { 'Content-Type': 'application/json' }
+        })
+    }
   },
 
   async logout() {

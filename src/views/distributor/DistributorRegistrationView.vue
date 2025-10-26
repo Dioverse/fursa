@@ -314,50 +314,100 @@ const handleSubmit = async () => {
     submitting.value = true
 
     try {
-        const payload = {
-            // User basic info
-            first_name: authStore.user?.first_name,
-            last_name: authStore.user?.last_name,
-            email: authStore.user?.email,
-            phone: authStore.user?.phone,
-            role: 'distributor',
+        // Use FormData to handle file uploads
+        const formDataObj = new FormData()
+
+        // User basic info
+        formDataObj.append('first_name', authStore.user?.first_name || '')
+        formDataObj.append('last_name', authStore.user?.last_name || '')
+        formDataObj.append('email', authStore.user?.email || '')
+        formDataObj.append('phone', authStore.user?.phone || '')
+        formDataObj.append('role', 'distributor')
+        
+        // Password
+        formDataObj.append('password', reviewSubmitRef.value.password)
+        formDataObj.append('password_confirmation', reviewSubmitRef.value.passwordConfirmation)
+
+        // Business Information
+        Object.keys(formData.businessInfo).forEach(key => {
+            if (formData.businessInfo[key] !== null && formData.businessInfo[key] !== undefined) {
+                formDataObj.append(key, formData.businessInfo[key])
+            }
+        })
+
+        // Contact Person
+        Object.keys(formData.contactPerson).forEach(key => {
+            if (formData.contactPerson[key] !== null && formData.contactPerson[key] !== undefined) {
+                formDataObj.append(key, formData.contactPerson[key])
+            }
+        })
+
+        // Distribution Capacity
+        Object.keys(formData.distributionCapacity).forEach(key => {
+            const value = formData.distributionCapacity[key]
+            if (value !== null && value !== undefined) {
+                if (Array.isArray(value)) {
+                    // For arrays, append with [] suffix for Laravel
+                    value.forEach(v => formDataObj.append(`${key}[]`, v))
+                } else {
+                    formDataObj.append(key, value)
+                }
+            }
+        })
+
+        // Product Focus - including files
+        Object.keys(formData.productFocus).forEach(key => {
+            const value = formData.productFocus[key]
             
-            // Password
-            password: reviewSubmitRef.value.password,
-            password_confirmation: reviewSubmitRef.value.passwordConfirmation,
+            // Skip documents object - handle separately below
+            if (key === 'documents') return
+            
+            if (value !== null && value !== undefined) {
+                if (Array.isArray(value)) {
+                    value.forEach(v => formDataObj.append(`${key}[]`, v))
+                } else {
+                    formDataObj.append(key, value)
+                }
+            }
+        })
 
-            // Business Information
-            ...formData.businessInfo,
-
-            // Contact Person
-            ...formData.contactPerson,
-
-            // Distribution Capacity
-            ...formData.distributionCapacity,
-
-            // Product Focus
-            ...formData.productFocus,
-
-            // Banking & KYC
-            ...formData.bankingKYC,
-
-            // Additional notes
-            notes: reviewSubmitRef.value.additionalNotes || ''
+        // Handle file uploads with proper field name mapping
+        const fileFieldMap = {
+            'cac': 'cac_certificate',
+            'form_c07': 'form_co7',
+            'memart': 'memart',
+            'tin': 'tin_certificate',
+            'referee': 'referee_letter'
         }
 
-        // Convert arrays properly for Laravel
-        if (payload.preferred_states && Array.isArray(payload.preferred_states)) {
-            payload['preferred_states[]'] = payload.preferred_states
-            delete payload.preferred_states
-        }
+        const documents = formData.productFocus.documents || {}
+        Object.entries(fileFieldMap).forEach(([docKey, fieldName]) => {
+            const file = documents[docKey]
+            if (file && file instanceof File) {
+                formDataObj.append(fieldName, file)
+            }
+        })
 
-        if (payload.product_categories && Array.isArray(payload.product_categories)) {
-            payload['product_categories[]'] = payload.product_categories
-            delete payload.product_categories
-        }
+        // Additional notes
+        formDataObj.append('notes', reviewSubmitRef.value.additionalNotes || '')
 
-        if (authStore.token) { await authStore.distributorApplication(payload) }
-        else { await authStore.register(payload) }
+        // Banking & KYC
+        Object.keys(formData.bankingKYC).forEach(key => {
+            if (formData.bankingKYC[key] !== null && formData.bankingKYC[key] !== undefined) {
+                formDataObj.append(key, formData.bankingKYC[key])
+            }
+        })
+
+        // TODO: You may also need to handle signature and utility_bill files
+        // Add them to the fileFieldMap if they exist in ProductFocus component
+
+        // Send request
+        if (authStore.token) {
+            await authStore.distributorApplication(formDataObj)
+        } else {
+            await authStore.register(formDataObj)
+        }
+        
         toast.success(t('distributor.toasts.submit_success'))
         router.push('/dashboard')
     } catch (error) {
