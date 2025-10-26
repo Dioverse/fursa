@@ -405,6 +405,13 @@ export const useCartStore = defineStore('cart', () => {
     }
   }
 
+  function getCartItemsList() {
+    return items.value.map((item) => ({
+      product_id: item.product_id || item.id,
+      quantity: item.quantity,
+    }))
+  }
+
   return {
     items,
     itemCount,
@@ -424,6 +431,7 @@ export const useCartStore = defineStore('cart', () => {
     removeCoupon,
     fetchCartFromServer,
     syncCart,
-    updateCartFromResponse, // Export for use in other parts of the app
+    updateCartFromResponse,
+    getCartItemsList
   }
 })

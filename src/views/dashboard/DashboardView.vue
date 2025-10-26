@@ -111,39 +111,39 @@ const fetchDashboard = async () => {
   }
 }
 
-async function syncCart() {
-  try {
-    if (cartStore.items.length > 0) {
-      const payload = {
-        cart: cartStore.items.map((item) => ({
-          product_id: item.id,
-          quantity: item.quantity,
-        })),
-      }
+// async function syncCart() {
+//   try {
+//     if (cartStore.items.length > 0) {
+//       const payload = {
+//         cart: cartStore.items.map((item) => ({
+//           product_id: item.id,
+//           quantity: item.quantity,
+//         })),
+//       }
 
-      await api.post('/carts', payload)
-      // toast.success('Cart synchronized with server')
-    }
+//       await api.post('/carts', payload)
+//       // toast.success('Cart synchronized with server')
+//     }
 
-    // Fetch fresh cart from server to overwrite local copy
-    const res = await api.get('/carts')
-    if (res.data && res.data.data) {
-      cartStore.items = res.data.data.map((item) => ({
-        id: item.product_id,
-        name: item.product?.name,
-        price: item.product?.discounted_price,
-        sku: item.product?.sku,
-        image: item.product?.image,
-        volume: item.product?.volume || '5 Litres',
-        quantity: item.quantity,
-      }))
-      cartStore.saveCart()
-    }
-  } catch (error) {
-    // console.error('Cart sync failed:', error)
-    // toast.error('Failed to synchronize cart')
-  }
-}
+//     // Fetch fresh cart from server to overwrite local copy
+//     const res = await api.get('/carts')
+//     if (res.data && res.data.data) {
+//       cartStore.items = res.data.data.map((item) => ({
+//         id: item.product_id,
+//         name: item.product?.name,
+//         price: item.product?.discounted_price,
+//         sku: item.product?.sku,
+//         image: item.product?.image,
+//         volume: item.product?.volume || '5 Litres',
+//         quantity: item.quantity,
+//       }))
+//       cartStore.saveCart()
+//     }
+//   } catch (error) {
+//     // console.error('Cart sync failed:', error)
+//     // toast.error('Failed to synchronize cart')
+//   }
+// }
 
 const handleLogout = () => {
   authStore.logout()
@@ -152,7 +152,7 @@ const handleLogout = () => {
 }
 
 onMounted(() => {
-  syncCart()
+  // syncCart()
   fetchDashboard()
 })
 

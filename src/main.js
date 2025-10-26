@@ -82,6 +82,7 @@ import {
   faFileUpload,
   faFilePdf,
   faIdCard,
+  faUserPlus,
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -112,6 +113,7 @@ library.add(
   faHome,
   faShop,
   faInfoCircle,
+  faUserPlus,
   faBlog,
   faCommentAlt,
   faPenFancy,
