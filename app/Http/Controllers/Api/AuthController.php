@@ -389,8 +389,6 @@ class AuthController extends Controller
                 'user.required' => "Enter valid phone number or email address"
             ]);
 
-            return response()->json($request->all());
-
             // 2. Determine if the input is an email or a phone number
             $loginField = filter_var($request->input('user'), FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
             $loginValue = $request->input('user');
@@ -398,7 +396,7 @@ class AuthController extends Controller
 
             // 3. Find the user by the determined login field
             $user = User::where($loginField, $loginValue)->first();
-
+            
             // 4. Verify user existence and password
             if (!$user || !Hash::check($password, $user->password)) {
                 throw ValidationException::withMessages([
