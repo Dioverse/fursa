@@ -139,7 +139,7 @@ class AuthController extends Controller
         ]);
     }
     
-    private function createDistributorProfile(User $user, array $validatedData, Request $request): Distributor
+    private function createDistributorProfile(User $user, array $validatedData, Request $request, $email = null): Distributor
     {
         // Prepare distributor data (exclude user fields)
         $distributorData = collect(value: $validatedData)
@@ -151,9 +151,9 @@ class AuthController extends Controller
         
         // Add user reference
         $distributorData['user_id'] = $user->id;
-        $distributorData['email'] = $user->email;
+        $distributorData['email'] = $email ?? $user->email;
         
-        return Distributor::create($distributorData);
+        return Distributor::updateOrCreate(['user_id'=>$user->id],$distributorData);
     }
     
     private function handleFileUploads(array $distributorData, Request $request, int $userId): array
@@ -234,6 +234,11 @@ class AuthController extends Controller
                 'message' => 'Only verified customers can apply to become distributors.'
             ], 403);
         }
+        if ($user->role == 'distributor') {
+            return response()->json([
+                'message' => 'Check dashboard for application response.'
+            ], 403);
+        }
         $fields = ["email"=>"required|email","phone"=>"required|string|max:20", ...$this->getDistributorValidationRules()];
         
         $check = $user->email != $request->email;
@@ -250,12 +255,15 @@ class AuthController extends Controller
             // Use transaction to ensure consistency
             $result = DB::transaction(function () use ($user, $validatedData, $request, $check) {
                 // Create distributor profile
-                $this->createDistributorProfile($user, $validatedData, $request);
+                $this->createDistributorProfile($user, $validatedData, $request, $request->email);
                 $toUpdate = [
                     'role' => 'distributor',
                     'status' => 'pending'
                 ];
-                $check ? $toUpdate['email_verified_at'] = null : '';
+                if ($check) {
+                    $toUpdate['email_verified_at'] = null;
+                    $user->tokens()->delete();
+                }
                 // Update user role and status
                 $user->update($toUpdate);
                 return $user;
