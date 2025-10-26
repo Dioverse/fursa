@@ -1,6 +1,6 @@
 <template>
     <div class="">
-        <div class="flex items-center gap-4 py-4 border-b">
+        <RouterLink :to="`/product/${item.product.slug}`" class="flex items-center gap-4 py-4 border-b">
             <div class="w-20 h-20 bg-gray-200 rounded flex items-center justify-center">
                 <img v-lazy="getImageUrl(item.product.images[0]?.path)" :alt="item.product.name"
                     class="w-full h-full object-cover rounded" @error="handleImageError">
@@ -18,7 +18,7 @@
                         ||
                         0) }}</small>
             </div>
-        </div>
+        </RouterLink>
         <div class="flex items-center gap-4 py-4 border-b justify-between">
             <button @click="removeItem(item.product.id)" class="p-2 text-red-500 rounded text-sm hover:text-red-700 hover:bg-red-300 transition"
                 :aria-label="$t('cart.remove_item', { name: item.product.name })">
