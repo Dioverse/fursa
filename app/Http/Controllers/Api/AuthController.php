@@ -227,38 +227,46 @@ class AuthController extends Controller
 
     public function upgradeToDistributor(Request $request): JsonResponse
     {
-        $user = auth()->user(); // Ensure customer is logged in
+        $user = auth()->user();
 
         if ($user->role !== 'customer' || empty($user->email_verified_at)) {
             return response()->json([
                 'message' => 'Only verified customers can apply to become distributors.'
             ], 403);
         }
-
+        $fields = ["email"=>"required|email","phone"=>"required|string|max:20", ...$this->getDistributorValidationRules()];
+        
+        $check = $user->email != $request->email;
+        $phonecheck = $user->email != $request->email;
+        $validFields = $check ? ["email"=>"required|email|unique:users,email"] : $fields;
+        $validFields = $phonecheck ? ["phone"=>"required|string|max:20|unique:users,phone", ...$validFields] : $fields;
         try {
             // Validate distributor-specific fields
             $validatedData = Validator::make(
                 $request->all(),
-                $this->getDistributorValidationRules()
+                $validFields
             )->validate();
 
             // Use transaction to ensure consistency
-            $result = DB::transaction(function () use ($user, $validatedData, $request) {
+            $result = DB::transaction(function () use ($user, $validatedData, $request, $check) {
                 // Create distributor profile
                 $this->createDistributorProfile($user, $validatedData, $request);
-
-                // Update user role and status
-                $user->update([
+                $toUpdate = [
                     'role' => 'distributor',
                     'status' => 'pending'
-                ]);
+                ];
+                $check ? $toUpdate['email_verified_at'] = null : '';
+                // Update user role and status
+                $user->update($toUpdate);
                 return $user;
             });
 
-            $link = $this->getVerificationLink($result->id,$result->email);
-            notify('EMAIL_VERIFY', $result, [
+            if ($check) {
+                $link = $this->getVerificationLink($result->id,$result->email);
+                notify('EMAIL_VERIFY', $result, [
                     "name" => $result->first_name, "verification_link" => $link
                 ], ['email'], false);
+            }
             return response()->json([
                 'message' => 'Your application to become a distributor has been submitted. Please wait for approval.'
             ], 200);
