@@ -127,7 +127,6 @@ export const useCartStore = defineStore('cart', () => {
     if (Array.isArray(cartArray)) {
       items.value = cartArray.map(normalizeItem)
       saveCart()
-      console.log("object cart updated ");
     }
   }
 
@@ -406,13 +405,6 @@ export const useCartStore = defineStore('cart', () => {
     }
   }
 
-  function getCartItemsList() {
-    return items.value.map((item) => ({
-      product_id: item.product_id || item.id,
-      quantity: item.quantity,
-    }))
-  }
-
   return {
     items,
     itemCount,
@@ -432,7 +424,6 @@ export const useCartStore = defineStore('cart', () => {
     removeCoupon,
     fetchCartFromServer,
     syncCart,
-    updateCartFromResponse,
-    getCartItemsList
+    updateCartFromResponse, // Export for use in other parts of the app
   }
 })

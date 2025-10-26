@@ -28,15 +28,12 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
-      credentials.cart = cartStore.getCartItemsList() || null
       const response = await authService.login(credentials)
       token.value = response.data.token
       user.value = response.data.user
       localStorage.setItem('token', token.value)
       localStorage.setItem('user', JSON.stringify(user.value))
-      if (data && (data.cart || Array.isArray(data))) {
-        cartStore.updateCartFromResponse(data.cart)
-      }
+      // await cartStore.syncCart()
 
       return response
     } catch (err) {
