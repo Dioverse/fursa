@@ -88,7 +88,7 @@ class AuthController extends Controller
             'has_warehouse' => 'required|boolean',
             'preferred_region' => 'required|string|max:255',
             'has_vehicles' => 'required|boolean',
-            'vehicle_details' => 'required|string|max:500',
+            'vehicle_details' => 'required_if:has_vehicles|string|max:500',
             
             // Distribution Strategy
             'product_categories' => 'required|array',
