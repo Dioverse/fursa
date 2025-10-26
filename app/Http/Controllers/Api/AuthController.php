@@ -257,6 +257,11 @@ class AuthController extends Controller
         try {
             // Validate distributor-specific fields
             $validatedData = Validator::make($request->all(), $fields)->validate();
+            if (!Hash::check($request->password, $user->password)) {
+                return response()->json([
+                    'message' => 'Check password & Try again.'
+                ], 403);
+            }
 
             // Use transaction to ensure consistency
             $result = DB::transaction(function () use ($user, $validatedData, $request, $emailChanged) {
