@@ -387,46 +387,57 @@ class AuthController extends Controller
                 'user' => ['required', 'string'],
                 'password' => ['required', 'string'],
             ], [
-                'user.required' => "Enter valid phone number or email address"
+                'user.required' => 'Enter a valid phone number or email address.'
             ]);
 
-            // 2. Determine if the input is an email or a phone number
+            // 2. Determine if input is email or phone
             $loginField = filter_var($request->input('user'), FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
             $loginValue = $request->input('user');
             $password = $request->input('password');
 
-            // 3. Find the user by the determined login field
-            $user = User::where($loginField, $loginValue)->first();
-            // 4. Verify user existence and password
+            // 3. Retrieve user with related distributor if exists
+            $user = User::with('distributor')->where($loginField, $loginValue)->first();
+
+            // 4. Verify credentials
             if (!$user || !Hash::check($password, $user->password)) {
                 throw ValidationException::withMessages([
                     'user' => [trans('auth.failed')],
                 ]);
             }
-            
-            // 5. Credentials are valid, create an API token
+
+            // 5. Check if user's email is verified (optional, for security)
+            if ($user->email && !$user->email_verified_at) {
+                return response()->json([
+                    'message' => 'Please verify your email before logging in.',
+                ], 403);
+            }
+
+            // 6. Destroy old tokens (optional but good practice)
+            // If you want to allow only one device login at a time:
+            // $user->tokens()->delete();
+
+            // 7. Generate a new API token
             $token = $user->createToken('api-token')->plainTextToken;
 
-            // 6. Prepare data for email notification
+            // 8. Capture meta info
             $ipAddress = $request->ip();
-            $loginTime = Carbon::now()->toDateTimeString();
+            $loginTime = now()->toDateTimeString();
 
-            // 7. Send email notification (still queued for performance)
-            // Mail::to($user->email)->queue(new UserLoggedInNotification($user, $ipAddress, $loginTime));
-            notify("LOGIN_ALERT", $user, [
-                "name" => $user->first_name, "ipAddress" => $ipAddress, "loginTime" => $loginTime
-            ], ["email"],true);
+            // 9. Send login alert (queued for async)
+            notify('LOGIN_ALERT', $user, [
+                'name' => $user->first_name,
+                'ipAddress' => $ipAddress,
+                'loginTime' => $loginTime
+            ], ['email'], true);
 
+            // 10. Sync user cart if provided
             $cart = [];
-            if ($request->cart && !empty($request->cart) && is_array($request->cart)) {
-                $cart = new CartController();
-                $cart->syncUserCart($user, $request->cart);
+            if (is_array($request->cart) && !empty($request->cart)) {
+                $cartController = new CartController();
+                $cartController->syncUserCart($user, $request->cart);
             }
 
-            if ($user->role === 'distributor') {
-                $user->load('distributor');
-            }
-            // 8. Return success response with user data and the token
+            // 11. Return response
             return response()->json([
                 'message' => 'Login successful.',
                 'user' => $user,
@@ -441,14 +452,19 @@ class AuthController extends Controller
                 'errors' => $e->errors(),
             ], 422);
         } catch (Exception $e) {
-            // Catch any other unexpected errors
-            Log::error("API Login error: " . $e->getMessage() . " on line " . $e->getLine() . " in " . $e->getFile());
+            Log::error("API Login error: {$e->getMessage()}", [
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
                 'message' => 'An unexpected error occurred.',
-                'error' => 'Please try again later.',
+                'error' => config('app.debug') ? $e->getMessage() : 'Please try again later.',
             ], 500);
         }
     }
+
 
     public function emailVerify(Request $request, $id, $hash): JsonResponse
     {

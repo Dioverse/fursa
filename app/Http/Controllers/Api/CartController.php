@@ -1,14 +1,12 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\User;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
@@ -21,13 +19,13 @@ class CartController extends Controller
 
         $cart = $user->cart()
             ->with([
-                'cartItems' => function ($q) {
+                'cartItems'         => function ($q) {
                     $q->select(['id', 'cart_id', 'product_id', 'quantity']);
                 },
                 'cartItems.product' => function ($q) {
                     $q->select([
                         'id', 'name', 'category_id', 'slug', 'stock_quantity', 'sku',
-                        'low_stock_threshold', 'is_featured', 'distributor_price', 'base_price'
+                        'low_stock_threshold', 'is_featured', 'distributor_price', 'base_price',
                     ])->with([
                         'category:id,name,slug,parent_id',
                         'discount:id,product_id,value,type',
@@ -42,11 +40,10 @@ class CartController extends Controller
         ]);
     }
 
-
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'cart' => 'required|array',
+            'cart'              => 'required|array',
             'cart.*.product_id' => 'required|exists:products,id',
             'cart.*.quantity'   => 'required|integer|min:1',
         ]);
@@ -75,9 +72,9 @@ class CartController extends Controller
 
             if ($existingItems->has($productId)) {
                 // Prepare for update
-                $existingItem = $existingItems[$productId];
+                $existingItem           = $existingItems[$productId];
                 $existingItem->quantity = $quantity;
-                $toUpdate[] = $existingItem;
+                $toUpdate[]             = $existingItem;
             } else {
                 // Prepare for insert
                 $toInsert[] = [
@@ -91,14 +88,14 @@ class CartController extends Controller
         }
 
         // ✅ Batch update (via collection)
-        if (!empty($toUpdate)) {
+        if (! empty($toUpdate)) {
             foreach ($toUpdate as $item) {
                 $item->save();
             }
         }
 
         // ✅ Batch create
-        if (!empty($toInsert)) {
+        if (! empty($toInsert)) {
             $cart->cartItems()->insert($toInsert);
         }
 
@@ -111,19 +108,18 @@ class CartController extends Controller
         ], 201);
     }
 
-
     public function unSetItem(Request $request)
     {
         $user = Auth::user();
         $cart = $user->cart()->first();
 
-        if (!$cart) {
+        if (! $cart) {
             return response()->json(['message' => 'Cart not found'], 404);
         }
 
         $cartItem = $cart->cartItems()->where('product_id', $request->product_id)->first();
 
-        if (!$cartItem) {
+        if (! $cartItem) {
             return response()->json(['message' => 'Item not found in cart'], 404);
         }
 
@@ -142,7 +138,7 @@ class CartController extends Controller
         $user = Auth::user();
         $cart = $user->cart()->first();
 
-        if (!$cart) {
+        if (! $cart) {
             return response()->json(['message' => 'Cart not found'], 404);
         }
 
@@ -158,20 +154,20 @@ class CartController extends Controller
 
     public function updateItemQuantity(Request $request)
     {
-        if (!is_int((int) $request->quantity)) {
+        if (! is_int((int) $request->quantity)) {
             return response()->json(['message' => "Invalid quantity entered"], 422);
         }
 
         $user = Auth::user();
         $cart = $user->cart()->first();
 
-        if (!$cart) {
+        if (! $cart) {
             return response()->json(['message' => 'Cart not found'], 404);
         }
 
         $cartItem = $cart->cartItems()->where('product_id', $request->product_id)->first();
 
-        if (!$cartItem) {
+        if (! $cartItem) {
             return response()->json(['message' => 'Item not found in cart'], 404);
         }
 
@@ -179,7 +175,7 @@ class CartController extends Controller
         $product = $cartItem->product;
         if ($request->quantity > $product->stock_quantity) {
             return response()->json([
-                'message' => "Only {$product->stock_quantity} units available currently."
+                'message' => "Only {$product->stock_quantity} units available currently.",
             ], 422);
         }
 
@@ -208,14 +204,20 @@ class CartController extends Controller
 
     public function syncUserCart(User $user, array $cartData): \Illuminate\Support\Collection
     {
-        // 1. Ensure the user has a cart, creating it if necessary.
-        $cart = $user->cart()->firstOrCreate([
-            'user_id' => $user->id,
-        ]);
+        // 1. Handle empty input
+        if (empty($cartData)) {
+            return collect();
+        }
 
-        $productIds = collect($cartData)->pluck('product_id');
+        // 2. Ensure the user has a cart
+        $cart = $user->cart()->firstOrCreate(['user_id' => $user->id]);
 
-        // 2. Fetch all existing items for the relevant products in one query.
+        $productIds = collect($cartData)
+            ->pluck('product_id')
+            ->filter()
+            ->unique();
+
+        // 3. Fetch existing items
         $existingItems = $cart->cartItems()
             ->whereIn('product_id', $productIds)
             ->get()
@@ -224,22 +226,24 @@ class CartController extends Controller
         $toInsert = [];
         $toUpdate = [];
 
-        // 3. Separate items into update and insert arrays.
+        // 4. Separate inserts & updates
         foreach ($cartData as $item) {
-            $productId = $item['product_id'];
-            $quantity  = $item['quantity'];
+            if (empty($item['product_id']) || empty($item['quantity'])) {
+                continue;
+            }
+
+            $productId = (int) $item['product_id'];
+            $quantity  = (int) $item['quantity'];
 
             if ($existingItems->has($productId)) {
-                // Item exists: Prepare for update (directly modify the model instance)
                 $existingItem = $existingItems[$productId];
-                
-                // Only update if the quantity has actually changed
-                if ((int)$existingItem->quantity !== (int)$quantity) {
-                     $existingItem->quantity = $quantity;
-                     $toUpdate[] = $existingItem;
+
+                // Only update if quantity differs
+                if ($existingItem->quantity !== $quantity) {
+                    $existingItem->quantity = $quantity;
+                    $toUpdate[]             = $existingItem;
                 }
             } else {
-                // Item does not exist: Prepare for batch insert
                 $toInsert[] = [
                     'cart_id'    => $cart->id,
                     'product_id' => $productId,
@@ -249,41 +253,32 @@ class CartController extends Controller
                 ];
             }
         }
-        
-        // 4. Execute persistence operations within a transaction.
+
+        // 5. Transaction for atomic updates
         DB::transaction(function () use ($toUpdate, $toInsert, $cart) {
-            // Batch update existing items (uses individual saves, better suited for smaller updates)
-            if (!empty($toUpdate)) {
-                foreach ($toUpdate as $item) {
-                    $item->save();
-                }
+            foreach ($toUpdate as $item) {
+                $item->save();
             }
-            
-            // Batch create new items (efficient single query)
-            if (!empty($toInsert)) {
+
+            if (! empty($toInsert)) {
                 $cart->cartItems()->insert($toInsert);
             }
         });
 
-
-
-        // 5. Refresh the cart model to ensure all relations (cartItems) are up-to-date
-        // before returning the collection of items.
-        print_r($this->cartWithRelations($cart));
-        // print_r($cart);
+        // 6. Return refreshed cart items
         return $this->cartWithRelations($cart)->cartItems;
     }
 
-    /**
-     * Helper method: load full relations for a cart.
-     */
+/**
+ * Helper method: load full relations for a cart.
+ */
     private function cartWithRelations($cart)
     {
-        return $cart->load([
-            'cartItems' => fn($q) => $q->select(['id', 'cart_id', 'product_id', 'quantity']),
+        return $cart->refresh()->load([
+            'cartItems'         => fn($q)         => $q->select(['id', 'cart_id', 'product_id', 'quantity']),
             'cartItems.product' => fn($q) => $q->select([
                 'id', 'name', 'category_id', 'slug', 'stock_quantity', 'sku',
-                'low_stock_threshold', 'is_featured', 'distributor_price', 'base_price'
+                'low_stock_threshold', 'is_featured', 'distributor_price', 'base_price',
             ])->with([
                 'category:id,name,slug,parent_id',
                 'discount:id,product_id,value,type',
