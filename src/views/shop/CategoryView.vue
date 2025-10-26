@@ -3,13 +3,8 @@
     <div class="xs:px-[clamp(2rem,4vw,4rem)] xxs:px-0 min-h-screen bg-gray-50">
       <!-- Breadcrumb -->
       <div class="bg-white border-b">
-<<<<<<< Updated upstream
-        <div class="max-w-7xl mx-auto px-4 py-3 text-sm text-gray-600">
-          {{ $t('header.nav.home') }}
-=======
         <div class="sm:container md:container lg:container max-w-7xl mx-auto px-4 py-3 text-sm text-gray-600">
-          Home
->>>>>>> Stashed changes
+          {{ $t('header.nav.home') }}
           <span v-if="categorySlug"> &gt;
             <RouterLink :to="`/c/${categorySlug}`" v-if="subcategorySlug">{{ categoryTitle }}</RouterLink>
             <span v-else>{{ categoryTitle }}</span>
@@ -26,16 +21,9 @@
               <div class="space-y-6">
                 <!-- Name Search -->
                 <div class="pb-6 border-b">
-<<<<<<< Updated upstream
                   <h3 class="font-bold text-lg mb-3">{{ $t('shop.filters.search') }}</h3>
-                  <input type="text" :placeholder="$t('shop.filters.search_by_keywords')"
-                    class="w-full px-2 py-1 border border-gray-300 rounded text-sm" v-model="filters.name"
-                    @keyup.enter="state.currentPage = 1;" />
-=======
-                  <h3 class="font-bold text-lg mb-3">SEARCH</h3>
                   <input type="text" placeholder="Search by keywords..." v-model="filters.name"
                     class="w-full px-2 py-1 border border-gray-300 rounded text-sm" @keyup="filterManip" />
->>>>>>> Stashed changes
                 </div>
 
                 <!-- Categories -->
@@ -49,11 +37,7 @@
                       ]">
                         <div class="flex nowrap items-center">
                           <font-awesome-icon class="w-4 h-4" icon="bars" />&nbsp;
-<<<<<<< Updated upstream
                         <span>{{ $t('shop.all_products') }}</span>
-=======
-                          <span>All Products</span>
->>>>>>> Stashed changes
                         </div>
                       </div>
                     </div>
@@ -197,15 +181,12 @@
               </div>
             </div>
 
-<<<<<<< Updated upstream
             <!-- Products Heading -->
             <div class="mb-4">
               <h2 id="page-header" class="lg:text-2xl md:text-xl text-lg font-bold text-gray-800 mb-2">{{ pageTitle }}</h2>
               <p v-if="!loading && !loadingMore" class="text-sm text-gray-600">{{ $t('shop.showing_count', { count: products.length, total: state.totalFound }) }}</p>
             </div>
 
-=======
->>>>>>> Stashed changes
             <!-- Loading State -->
             <div v-if="loading" class="text-center py-12">
               <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-mprimary-500" />
@@ -272,13 +253,8 @@
 
                     <div v-if="product.stock_quantity" class="text-xs text-gray-600 line-clamp-1">
                       <span v-if="product.low_stock_threshold && product.stock_quantity <= product.low_stock_threshold"
-<<<<<<< Updated upstream
-                        class="text-red-500 font-semibold">
-                        {{ $t('shop.available_low_stock', { qty: product.stock_quantity }) }}
-=======
                         class="text-[11px] text-red-500 font-semibold">
-                        Available: {{ product.stock_quantity }} (Low stock)
->>>>>>> Stashed changes
+                        {{ $t('shop.available_low_stock', { qty: product.stock_quantity }) }}
                       </span>
                       <span v-else class="invisible">{{ $t('shop.available') }}</span>
                     </div>
@@ -401,11 +377,7 @@
                     ]">
                       <div class="flex nowrap items-center">
                         <font-awesome-icon class="w-4 h-4" icon="bars" />&nbsp;
-<<<<<<< Updated upstream
                       <span>{{ $t('shop.all_products') }}</span>
-=======
-                        <span>All Products</span>
->>>>>>> Stashed changes
                       </div>
                     </div>
                   </div>
@@ -491,12 +463,8 @@
 </template>
 
 <script setup>
-<<<<<<< Updated upstream
-import { reactive, ref, computed, onMounted, watch, nextTick } from 'vue';
-import { useI18n } from 'vue-i18n';
-=======
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
->>>>>>> Stashed changes
+import { useI18n } from 'vue-i18n';
 import { useWishlistStore } from '@/stores/wishlist';
 import { useRoute, useRouter } from 'vue-router';
 import { addToCart, getCartQuantity, isInCart, onQuantityBlur, onQuantityEnter, toggleWishlist, updateQuantity, loadingStates } from '@/utils/neut';
@@ -633,14 +601,11 @@ const fetchProducts = async (page = 1, isLoadMore = false, debounceMs = 0) => {
     const queryString = buildQueryParams(true);
     const url = `${apiUrl}/products?${queryString}`;
 
-<<<<<<< Updated upstream
   if (!res.ok) throw new Error(t('shop.failed_to_load_products'));
-=======
     // Use debounce for filter changes (debounceMs > 0), immediate for pagination
     const response = debounceMs > 0
       ? await cancelableFetch.debounceAndFetch(url, {}, debounceMs)
       : await cancelableFetch.fetchWithCancel(url);
->>>>>>> Stashed changes
 
     // If response is null, the request was cancelled - don't update state
     if (response === null) {
@@ -673,15 +638,12 @@ const fetchProducts = async (page = 1, isLoadMore = false, debounceMs = 0) => {
     state.loadingMore = false;
     state.error = null;
   } catch (err) {
-<<<<<<< Updated upstream
-  state.error = t('shop.failed_to_load_products');
-=======
+    state.error = t('shop.failed_to_load_products');
     // Only set error if it wasn't cancelled
     if (err.name !== 'AbortError') {
       state.error = 'Failed to load products';
       console.error('Fetch error:', err);
     }
->>>>>>> Stashed changes
     state.loading = false;
     state.loadingMore = false;
   }
