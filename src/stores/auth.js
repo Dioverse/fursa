@@ -28,15 +28,15 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
-      // credentials.cart = cartStore.getCartItemsList() || null
+      credentials.cart = cartStore.getCartItemsList() || null
       const response = await authService.login(credentials)
       token.value = response.data.token
       user.value = response.data.user
       localStorage.setItem('token', token.value)
       localStorage.setItem('user', JSON.stringify(user.value))
-      // if (data && (data.cart || Array.isArray(data))) {
-      //   cartStore.updateCartFromResponse(data.cart)
-      // }
+      if (response.data && (response.data.cart || Array.isArray(response.data))) {
+        cartStore.updateCartFromResponse(response.data.cart)
+      }
 
       return response
     } catch (err) {
@@ -109,7 +109,8 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     localStorage.removeItem('cart')
-    router.push('/login')
+    // localStorage.removeItem('wishlist')
+    router.push('/')
   }
 
   function checkAuth() {
