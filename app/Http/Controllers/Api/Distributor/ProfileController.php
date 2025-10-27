@@ -46,9 +46,9 @@ class ProfileController extends Controller
             $distributorData = [];
 
             // Only validate user basic fields if all are present
-            if (! in_array("", $request->only(['first_name', 'last_name', 'phone']))) {
-                $userData = $this->validateBasicFields($request, $user);
-            }
+            // if (! in_array("", $request->only(['first_name', 'last_name', 'phone']))) {
+            //     $userData = $this->validateBasicFields($request, $user);
+            // }
 
             // Check user distributor state and validate accordingly
             if ($user->isDistributorApprov()) {
@@ -59,9 +59,9 @@ class ProfileController extends Controller
 
             // Use DB transaction to safely persist updates
             DB::transaction(function () use ($user, $userData, $distributorData) {
-                if (! empty($userData)) {
-                    $user->update($userData);
-                }
+                // if (! empty($userData)) {
+                //     $user->update($userData);
+                // }
 
                 if (! empty($distributorData)) {
                     $user->distributor()->updateOrCreate(
