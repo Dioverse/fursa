@@ -145,14 +145,14 @@
               {{ $t('profile.distributor.documents') }}
             </h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              <DocumentLink label="CAC Certificate" :url="getLink(distributorData.cac_certificate)" />
-              <DocumentLink label="Form CO7" :url="getLink(distributorData.form_co7)" />
-              <DocumentLink label="MEMART" :url="getLink(distributorData.memart)" />
-              <DocumentLink label="Utility Bill" :url="getLink(distributorData.utility_bill)" />
-              <DocumentLink label="TIN Certificate" :url="getLink(distributorData.tin_certificate)" />
-              <DocumentLink label="ID of Contact" :url="getLink(distributorData.id_of_contact)" />
-              <DocumentLink label="Referee Letter" :url="getLink(distributorData.referee_letter)" />
-              <DocumentLink label="Signature" :url="getLink(distributorData.signature)" />
+              <DocumentLink label="CAC Certificate" :url="distributorData.cac_certificate" />
+              <DocumentLink label="Form CO7" :url="distributorData.form_co7" />
+              <DocumentLink label="MEMART" :url="distributorData.memart" />
+              <DocumentLink label="Utility Bill" :url="distributorData.utility_bill" />
+              <DocumentLink label="TIN Certificate" :url="distributorData.tin_certificate" />
+              <DocumentLink label="ID of Contact" :url="distributorData.id_of_contact" />
+              <DocumentLink label="Referee Letter" :url="distributorData.referee_letter" />
+              <DocumentLink label="Signature" :url="distributorData.signature" />
             </div>
           </div>
         </div>
@@ -162,8 +162,7 @@
       <div v-else-if="distributorStatus === 'rejected'" class="bg-white rounded-lg shadow-md p-6">
         <h3 class="text-lg font-semibold mb-4">{{ $t('profile.distributor.update_application') }}</h3>
         
-        <!-- Business Information Form -->
-        <form @submit.prevent="submitUpdatedApplication" class="space-y-6 mb-8">
+        <form @submit.prevent="submitUpdatedApplication" class="space-y-6">
           <div>
             <h4 class="font-medium text-gray-800 mb-4 flex items-center gap-2">
               <font-awesome-icon icon="building" />
@@ -419,12 +418,16 @@
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Willing to Train</label>
-                  <input
+                  <select
                     v-model="editableData.willing_to_train"
                     type="text"
                     placeholder="e.g., Yes, No, Depends"
                     class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  >
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                    <option value="depends">Depends on Arrangement</option>
+                  </select>
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Distribution Start Time</label>
@@ -517,6 +520,55 @@
             </div>
           </div>
 
+          <div class="border-t pt-6">
+            <h4 class="font-medium text-gray-800 mb-4 flex items-center gap-2">
+              <font-awesome-icon icon="file-alt" />
+              Documents
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
+              <DocumentUpload 
+                label="CAC Certificate" 
+                @file-selected="(file) => editableData.cac_certificate = file"
+                :current-file="distributorData.cac_certificate"
+              />
+              <DocumentUpload 
+                label="Form CO7" 
+                @file-selected="(file) => editableData.form_co7 = file"
+                :current-file="distributorData.form_co7"
+              />
+              <DocumentUpload 
+                label="MEMART" 
+                @file-selected="(file) => editableData.memart = file"
+                :current-file="distributorData.memart"
+              />
+              <DocumentUpload 
+                label="Utility Bill" 
+                @file-selected="(file) => editableData.utility_bill = file"
+                :current-file="distributorData.utility_bill"
+              />
+              <DocumentUpload 
+                label="TIN Certificate" 
+                @file-selected="(file) => editableData.tin_certificate = file"
+                :current-file="distributorData.tin_certificate"
+              />
+              <DocumentUpload 
+                label="ID of Contact" 
+                @file-selected="(file) => editableData.id_of_contact = file"
+                :current-file="distributorData.id_of_contact"
+              />
+              <DocumentUpload 
+                label="Referee Letter" 
+                @file-selected="(file) => editableData.referee_letter = file"
+                :current-file="distributorData.referee_letter"
+              />
+              <DocumentUpload 
+                label="Signature" 
+                @file-selected="(file) => editableData.signature = file"
+                :current-file="distributorData.signature"
+              />
+            </div>
+          </div>
+
           <div class="flex justify-end gap-4 pt-4 border-t">
             <button
               type="button"
@@ -533,74 +585,6 @@
               <font-awesome-icon v-if="submittingUpdate" icon="spinner" spin class="mr-2" />
               <font-awesome-icon v-else icon="save" class="mr-2" />
               {{ $t('profile.buttons.save_changes') }}
-            </button>
-          </div>
-        </form>
-
-        <!-- Documents Update Form -->
-        <form @submit.prevent="submitUpdatedDocuments" class="space-y-6 border-t pt-6">
-          <div>
-            <h4 class="font-medium text-gray-800 mb-3">Update Documents</h4>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
-              <DocumentUpload 
-                label="CAC Certificate" 
-                @file-selected="(file) => editableDocuments.cac_certificate = file"
-                :current-file="distributorData.cac_certificate"
-              />
-              <DocumentUpload 
-                label="Form CO7" 
-                @file-selected="(file) => editableDocuments.form_co7 = file"
-                :current-file="distributorData.form_co7"
-              />
-              <DocumentUpload 
-                label="MEMART" 
-                @file-selected="(file) => editableDocuments.memart = file"
-                :current-file="distributorData.memart"
-              />
-              <DocumentUpload 
-                label="Utility Bill" 
-                @file-selected="(file) => editableDocuments.utility_bill = file"
-                :current-file="distributorData.utility_bill"
-              />
-              <DocumentUpload 
-                label="TIN Certificate" 
-                @file-selected="(file) => editableDocuments.tin_certificate = file"
-                :current-file="distributorData.tin_certificate"
-              />
-              <DocumentUpload 
-                label="ID of Contact" 
-                @file-selected="(file) => editableDocuments.id_of_contact = file"
-                :current-file="distributorData.id_of_contact"
-              />
-              <DocumentUpload 
-                label="Referee Letter" 
-                @file-selected="(file) => editableDocuments.referee_letter = file"
-                :current-file="distributorData.referee_letter"
-              />
-              <DocumentUpload 
-                label="Signature" 
-                @file-selected="(file) => editableDocuments.signature = file"
-                :current-file="distributorData.signature"
-              />
-            </div>
-          </div>
-
-          <div class="flex justify-end gap-4 pt-4 border-t">
-            <button
-              type="button"
-              @click="resetEditableDocuments"
-              class="text-xs px-2 md:px-4 lg:px-6 py-2 md:py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-            >
-              {{ $t('profile.buttons.cancel') }}
-            </button>
-            <button
-              type="submit"
-              :disabled="submittingDocuments"
-              class="text-xs px-2 md:px-4 lg:px-6 py-2 md:py-3 bg-primary text-white rounded-lg hover:bg-opacity-90 transition disabled:opacity-50"
-            >
-              <font-awesome-icon v-if="submittingDocuments" icon="spinner" spin class="mr-2" />
-              <font-awesome-icon v-else icon="upload" class="mr-2" />
-              {{ $t('profile.buttons.update_documents') }}
             </button>
           </div>
         </form>
@@ -679,31 +663,31 @@ import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
 import api from '@/services/api'
 import { useRouter } from 'vue-router'
+import { getLink } from '@/utils/helpers'
 
 const toast = useToast()
 const authStore = useAuthStore()
 const { t } = useI18n()
+const router = useRouter()
 const user = computed(() => authStore.user)
 
+// STATE
 const loading = ref(false)
-const submittingPassword = ref(false)
 const submittingUpdate = ref(false)
+const submittingPassword = ref(false)
 const distributorData = ref({})
 const distributorStatus = ref(null)
 const rejectionReason = ref('')
 const editableData = ref({})
 
-
-const router = useRouter()
-
-// Password form
+// PASSWORD FORM
 const passwordForm = reactive({
   current: '',
   new: '',
   confirm: ''
 })
 
-// User info (read-only)
+// COMPUTED
 const userFields = computed(() => ({
   'First Name': user.value?.first_name || '',
   'Last Name': user.value?.last_name || '',
@@ -711,11 +695,10 @@ const userFields = computed(() => ({
   'Phone': user.value?.phone || ''
 }))
 
-// Load distributor details on mount
-onMounted(async () => {
-  await fetchDistributorDetails()
-})
+// HOOKS
+onMounted(() => fetchDistributorDetails())
 
+// METHODS
 const fetchDistributorDetails = async () => {
   loading.value = true
   try {
@@ -727,56 +710,8 @@ const fetchDistributorDetails = async () => {
       distributorStatus.value = userData.status
       rejectionReason.value = userData.distributor.reason || ''
       
-      // Initialize editable data for rejected applications
       if (distributorStatus.value === 'rejected') {
-        editableData.value = {
-          // Business Information
-          company_name: userData.distributor.company_name,
-          registered_name: userData.distributor.registered_name,
-          rc_number: userData.distributor.rc_number,
-          email: userData.distributor.email,
-          business_address: userData.distributor.business_address,
-          office_phone: userData.distributor.office_phone,
-          website: userData.distributor.website,
-          company_type: userData.distributor.company_type,
-          
-          // Contact Person
-          contact_full_name: userData.distributor.contact_full_name,
-          contact_position: userData.distributor.contact_position,
-          contact_mobile: userData.distributor.contact_mobile,
-          id_number: userData.distributor.id_number,
-          means_of_id: userData.distributor.means_of_id,
-          years_in_business: userData.distributor.years_in_business,
-          
-          // Distribution Capacity
-          monthly_capacity: userData.distributor.monthly_capacity,
-          regions_covered: userData.distributor.regions_covered,
-          number_of_sales_staff: userData.distributor.number_of_sales_staff,
-          has_warehouse: userData.distributor.has_warehouse,
-          preferred_region: userData.distributor.preferred_region,
-          has_vehicles: userData.distributor.has_vehicles,
-          vehicle_details: userData.distributor.vehicle_details,
-          preferred_states: userData.distributor.preferred_states,
-          
-          // Product Information
-          product_categories: userData.distributor.product_categories,
-          current_product_lines: userData.distributor.current_product_lines,
-          willing_to_train: userData.distributor.willing_to_train,
-          has_technical_knowledge: userData.distributor.has_technical_knowledge,
-          distribution_start_time: userData.distributor.distribution_start_time,
-          promo_participation: userData.distributor.promo_participation,
-          
-          // Banking & KYC
-          bank_name: userData.distributor.bank_name,
-          account_name: userData.distributor.account_name,
-          account_number: userData.distributor.account_number,
-          bvn: userData.distributor.bvn,
-          
-          // Additional
-          partnerships: userData.distributor.partnerships,
-          declarant_name: userData.distributor.declarant_name,
-          declaration_date: userData.distributor.declaration_date
-        }
+        editableData.value = initializeEditableData(userData.distributor)
       }
     }
   } catch (error) {
@@ -784,6 +719,135 @@ const fetchDistributorDetails = async () => {
     toast.error('Failed to load distributor details')
   } finally {
     loading.value = false
+  }
+}
+
+const initializeEditableData = (distributor) => ({
+  company_name: distributor.company_name || '',
+  registered_name: distributor.registered_name || '',
+  rc_number: distributor.rc_number || '',
+  email: distributor.email || '',
+  business_address: distributor.business_address || '',
+  office_phone: distributor.office_phone || '',
+  website: distributor.website || '',
+  company_type: distributor.company_type || '',
+  contact_full_name: distributor.contact_full_name || '',
+  contact_position: distributor.contact_position || '',
+  contact_mobile: distributor.contact_mobile || '',
+  id_number: distributor.id_number || '',
+  means_of_id: distributor.means_of_id || '',
+  years_in_business: distributor.years_in_business || 0,
+  monthly_capacity: distributor.monthly_capacity || 0,
+  regions_covered: distributor.regions_covered || '',
+  number_of_sales_staff: distributor.number_of_sales_staff || 0,
+  has_warehouse: distributor.has_warehouse ? 1 : 0,
+  preferred_region: distributor.preferred_region || '',
+  has_vehicles: distributor.has_vehicles ? 1 : 0,
+  vehicle_details: distributor.vehicle_details || '',
+  preferred_states: distributor.preferred_states || [],
+  product_categories: distributor.product_categories || [],
+  current_product_lines: distributor.current_product_lines || '',
+  willing_to_train: distributor.willing_to_train || '',
+  has_technical_knowledge: distributor.has_technical_knowledge ? 1 : 0,
+  distribution_start_time: distributor.distribution_start_time || '',
+  promo_participation: distributor.promo_participation || '',
+  bank_name: distributor.bank_name || '',
+  account_name: distributor.account_name || '',
+  account_number: distributor.account_number || '',
+  bvn: distributor.bvn || '',
+  partnerships: distributor.partnerships || '',
+  declarant_name: distributor.declarant_name || '',
+  declaration_date: distributor.declaration_date || '',
+  cac_certificate: null,
+  form_co7: null,
+  memart: null,
+  utility_bill: null,
+  tin_certificate: null,
+  id_of_contact: null,
+  referee_letter: null,
+  signature: null
+})
+
+const submitUpdatedApplication = async () => {
+  submittingUpdate.value = true
+  try {
+    const formData = new FormData()
+    
+    // Add all text fields
+    const textFields = {
+      company_name: editableData.value.company_name,
+      registered_name: editableData.value.registered_name,
+      rc_number: editableData.value.rc_number,
+      email: editableData.value.email,
+      business_address: editableData.value.business_address,
+      office_phone: editableData.value.office_phone,
+      website: editableData.value.website,
+      company_type: editableData.value.company_type,
+      contact_full_name: editableData.value.contact_full_name,
+      contact_position: editableData.value.contact_position,
+      contact_mobile: editableData.value.contact_mobile,
+      id_number: editableData.value.id_number,
+      means_of_id: editableData.value.means_of_id,
+      years_in_business: editableData.value.years_in_business,
+      monthly_capacity: editableData.value.monthly_capacity,
+      regions_covered: editableData.value.regions_covered,
+      number_of_sales_staff: editableData.value.number_of_sales_staff,
+      has_warehouse: Boolean(editableData.value.has_warehouse),
+      preferred_region: editableData.value.preferred_region,
+      has_vehicles: Boolean(editableData.value.has_vehicles),
+      vehicle_details: editableData.value.vehicle_details,
+      current_product_lines: editableData.value.current_product_lines,
+      willing_to_train: editableData.value.willing_to_train,
+      has_technical_knowledge: Boolean(editableData.value.has_technical_knowledge),
+      distribution_start_time: editableData.value.distribution_start_time,
+      promo_participation: editableData.value.promo_participation,
+      bank_name: editableData.value.bank_name,
+      account_name: editableData.value.account_name,
+      account_number: editableData.value.account_number,
+      bvn: editableData.value.bvn,
+      partnerships: editableData.value.partnerships,
+      declarant_name: editableData.value.declarant_name,
+      declaration_date: editableData.value.declaration_date
+    }
+
+    // Add text fields to FormData
+    Object.keys(textFields).forEach(key => {
+      formData.append(key, textFields[key])
+    })
+
+    // Add documents if they exist
+    const documentFields = [
+      'cac_certificate',
+      'form_co7',
+      'memart',
+      'utility_bill',
+      'tin_certificate',
+      'id_of_contact',
+      'referee_letter',
+      'signature'
+    ]
+
+    documentFields.forEach(field => {
+      const file = editableData.value[field]
+      if (file instanceof File) {
+        formData.append(field, file)
+      }
+    })
+
+    console.log(formData);return
+    await api.post('/distributor/update-application', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    toast.success('Profile updated successfully! Please wait for approval.')
+    resetEditableData()
+    await fetchDistributorDetails()
+  } catch (error) {
+    handleError(error)
+  } finally {
+    submittingUpdate.value = false
   }
 }
 
@@ -809,7 +873,7 @@ const submitPassword = async () => {
     toast.success(t('profile.toasts.password_updated'))
     resetPasswordForm()
     authStore.logout(false)
-    router.push("/login")
+    router.push('/login')
   } catch (err) {
     toast.error(err.response?.data?.message || 'Password update failed')
   } finally {
@@ -817,55 +881,9 @@ const submitPassword = async () => {
   }
 }
 
-const submitUpdatedApplication = async () => {
-  submittingUpdate.value = true
-  try {
-    // Use FormData to handle potential file uploads in the future
-    const formDataObj = new FormData()
-    
-    // Append all editable data
-    Object.keys(editableData.value).forEach(key => {
-      const value = editableData.value[key]
-      
-      if (value !== null && value !== undefined && value !== '') {
-        if (value instanceof File) {
-          formDataObj.append(key, value)
-        } else if (Array.isArray(value)) {
-          value.forEach(v => formDataObj.append(`${key}[]`, v))
-        } else {
-          formDataObj.append(key, value)
-        }
-      }
-    })
-    
-    // Log FormData contents for debugging
-    console.log('=== Updating Distributor Details ===')
-    for (let [key, value] of formDataObj.entries()) {
-      if (value instanceof File) {
-        console.log(`✓ ${key}: File - ${value.name} (${(value.size / 1024).toFixed(2)} KB)`)
-      } else {
-        console.log(`✓ ${key}:`, value)
-      }
-    }
-    console.log('====================================')
-    
-    // Call authStore method
-    await authStore.updateDistributorDetails(formDataObj)
-    
-    toast.success('Application updated successfully')
-    await fetchDistributorDetails()
-  } catch (error) {
-    console.error('Update error:', error)
-    if (error.response?.status === 422) {
-      const errors = error.response.data.errors
-      const firstErrorKey = Object.keys(errors)[0]
-      const firstError = errors[firstErrorKey][0]
-      toast.error(`${firstErrorKey}: ${firstError}`)
-    } else {
-      toast.error(error.response?.data?.message || 'Failed to update application')
-    }
-  } finally {
-    submittingUpdate.value = false
+const resetEditableData = () => {
+  if (distributorStatus.value === 'rejected') {
+    editableData.value = initializeEditableData(distributorData.value)
   }
 }
 
@@ -875,87 +893,36 @@ const resetPasswordForm = () => {
   passwordForm.confirm = ''
 }
 
-const resetEditableData = () => {
-  fetchDistributorDetails()
+const handleError = (error) => {
+  console.error('Update error:', error)
+  if (error.response?.status === 422) {
+    const errors = error.response.data.errors
+    const firstErrorKey = Object.keys(errors)[0]
+    const firstError = errors[firstErrorKey][0]
+    toast.error(`${firstErrorKey}: ${firstError}`)
+  } else {
+    toast.error(error.response?.data?.message || 'Failed to update')
+  }
 }
 
-// Helper functions
-const formatArray = (arr) => {
-  if (!arr || !Array.isArray(arr)) return 'N/A'
-  return arr.join(', ')
-}
-
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-  return new Date(dateString).toLocaleDateString()
-}
-
+// UTILITY HELPERS
+const formatArray = (arr) => !arr || !Array.isArray(arr) ? 'N/A' : arr.join(', ')
+const formatDate = (dateString) => !dateString ? 'N/A' : new Date(dateString).toLocaleDateString()
 const maskAccountNumber = (accountNumber) => {
   if (!accountNumber) return 'N/A'
   const str = accountNumber.toString()
   return str.slice(0, 2) + '****' + str.slice(-2)
 }
-
 const maskBVN = (bvn) => {
   if (!bvn) return 'N/A'
   const str = bvn.toString()
   return str.slice(0, 3) + '****' + str.slice(-3)
-}
-
-const submitUpdatedDocuments = async () => {
-  submittingDocuments.value = true
-  try {
-    const formDataObj = new FormData()
-    
-    // Append only files that have been selected
-    Object.keys(editableDocuments.value).forEach(key => {
-      const file = editableDocuments.value[key]
-      if (file instanceof File) {
-        formDataObj.append(key, file)
-      }
-    })
-    
-    // Log FormData contents for debugging
-    console.log('=== Updating Distributor Documents ===')
-    for (let [key, value] of formDataObj.entries()) {
-      if (value instanceof File) {
-        console.log(`✓ ${key}: File - ${value.name} (${(value.size / 1024).toFixed(2)} KB)`)
-      }
-    }
-    console.log('=======================================')
-    
-    // Call authStore method for documents
-    await authStore.updateDistributorDocuments(formDataObj)
-    
-    toast.success('Documents updated successfully')
-    await fetchDistributorDetails()
-    resetEditableDocuments()
-  } catch (error) {
-    console.error('Documents update error:', error)
-    if (error.response?.status === 422) {
-      const errors = error.response.data.errors
-      const firstErrorKey = Object.keys(errors)[0]
-      const firstError = errors[firstErrorKey][0]
-      toast.error(`${firstErrorKey}: ${firstError}`)
-    } else {
-      toast.error(error.response?.data?.message || 'Failed to update documents')
-    }
-  } finally {
-    submittingDocuments.value = false
-  }
-}
-
-const resetEditableDocuments = () => {
-  editableDocuments.value = {}
 }
 </script>
 
 <script>
 // Component for read-only field display
 import { defineComponent, h } from 'vue'
-import router from '@/router'
-import { useRouter } from 'vue-router'
-import { getLink } from '@/utils/helpers'
 
 export const ReadOnlyField = defineComponent({
   props: {
@@ -996,6 +963,42 @@ export const DocumentLink = defineComponent({
         h('font-awesome-icon', { icon: 'download' }),
         "Download"
       ]) : h('span', { class: 'text-gray-400 text-xs' }, "Not Uploaded")
+    ])
+  }
+})
+
+export const DocumentUpload = defineComponent({
+  props: {
+    label: String,
+    currentFile: String
+  },
+  emits: ['file-selected'],
+  data() {
+    return {
+      fileName: null
+    }
+  },
+  methods: {
+    handleFileChange(event) {
+      const file = event.target.files?.[0]
+      if (file) {
+        this.fileName = file.name
+        this.$emit('file-selected', file)
+      }
+    }
+  },
+  render() {
+    return h('div', [
+      h('label', { class: 'block text-xs lg:text-sm font-medium text-gray-700 mb-2' }, this.label),
+      h('div', { class: 'flex items-center gap-2' }, [
+        h('input', {
+          type: 'file',
+          onChange: this.handleFileChange,
+          class: 'flex-1 text-xs px-3 py-2 lg:px-4 lg:py-3 border rounded-lg cursor-pointer'
+        }),
+        this.currentFile && h('span', { class: 'text-green-600 text-xs' }, '✓ Uploaded')
+      ]),
+      this.fileName && h('p', { class: 'text-xs text-gray-500 mt-1' }, this.fileName)
     ])
   }
 })
