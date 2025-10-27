@@ -107,7 +107,6 @@ class ProfileController extends Controller
         }
     }
 
-
     /**
      * Validate basic user fields.
      */
