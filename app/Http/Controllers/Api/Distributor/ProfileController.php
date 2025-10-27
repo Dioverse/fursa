@@ -38,7 +38,7 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
 
         try {
             // Initialize defaults
@@ -51,7 +51,7 @@ class ProfileController extends Controller
             }
 
             // Check user distributor state and validate accordingly
-            if ($user->isDistributorApproved()) {
+            if ($user->isDistributorApprov()) {
                 $distributorData = $this->validateDistributorApprovedFields($request);
             } elseif ($user->isDistributorReject()) {
                 $distributorData = $this->validateDistributorFields($request);
