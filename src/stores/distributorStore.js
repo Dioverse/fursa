@@ -193,7 +193,8 @@ export const useDistributorStore = defineStore('distributor', {
       this.error = null
 
       try {
-        const response = await api.post(`/distributors/${id}/approve`)
+        const body = { status: "approved" }
+        const response = await api.patch(`/distributors/${id}/status`, body)
         const index = this.distributors.findIndex((d) => d.id === id)
         if (index !== -1) {
           this.distributors[index].status = 'approved'
@@ -216,7 +217,8 @@ export const useDistributorStore = defineStore('distributor', {
       this.error = null
 
       try {
-        const response = await api.post(`/distributors/${id}/reject`)
+        const body = { status: "rejected" }
+        const response = await api.patch(`/distributors/${id}/status`, body)
         const index = this.distributors.findIndex((d) => d.id === id)
         if (index !== -1) {
           this.distributors[index].status = 'rejected'
