@@ -104,55 +104,55 @@ class ProfileController extends Controller
     protected function validateDistributorFields(Request $request)
     {
         return $request->validate([
-            // // Company Information
-            'company_name'            => 'required|string|max:255',
-            'registered_name'         => 'nullable|string|max:255',
-            'rc_number'               => 'required|string|max:100',
-            'business_address'        => 'required|string|max:500',
-            'office_phone'            => 'required|string|max:20',
-            'website'                 => 'nullable|url|max:255',
-            'company_type'            => 'required|string|max:100',
-
+            // Company Information
+            'company_name' => 'required|string|max:255',
+            'registered_name' => 'nullable|string|max:255',
+            'rc_number' => 'required|string|max:100',
+            'business_address' => 'required|string|max:500',
+            'office_phone' => 'required|string|max:20',
+            'website' => 'nullable|url|max:255',
+            'company_type' => 'required|string|max:100',
+            
             // Contact Person
-            'contact_full_name'       => 'required|string|max:255',
-            'contact_position'        => 'required|string|max:100',
-            'contact_mobile'          => 'required|string|max:20',
-            'id_number'               => 'required|string|max:100',
-            'means_of_id'             => 'required|string|max:100',
-
+            'contact_full_name' => 'required|string|max:255',
+            'contact_position' => 'required|string|max:100',
+            'contact_mobile' => 'required|string|max:20',
+            'id_number' => 'required|string|max:100',
+            'means_of_id' => 'required|string|max:100',
+            
             // Distribution Capacity
-            'years_in_business'       => 'required|integer|min:0|max:200',
-            'current_product_lines'   => 'required|string|max:500',
-            'monthly_capacity'        => 'required|string|max:255',
-            'regions_covered'         => 'required|string|max:255',
-            'number_of_sales_staff'   => 'required|integer|min:0|max:10000',
-            'has_warehouse'           => 'required|boolean',
-            'preferred_region'        => 'required|string|max:255',
-            'has_vehicles'            => 'required|boolean',
-            'vehicle_details'         => 'required|string|max:500',
-
+            'years_in_business' => 'required|integer|min:0|max:200',
+            'current_product_lines' => 'required|string|max:500',
+            'monthly_capacity' => 'required|string|max:255',
+            'regions_covered' => 'required|string|max:255',
+            'number_of_sales_staff' => 'required|integer|min:0|max:10000',
+            'has_warehouse' => 'required|boolean',
+            'preferred_region' => 'required|string|max:255',
+            'has_vehicles' => 'required|boolean',
+            'vehicle_details' => 'required_if:has_vehicles,1|string|max:500',
+            
             // Distribution Strategy
-            'product_categories'      => 'required|array',
-            'product_categories.*'    => 'required|string|max:150',
-            'willing_to_train'        => 'required|string|max:100',
+            'product_categories' => 'required|array',
+            'product_categories.*' => 'required|string|max:120',
+            'willing_to_train' => 'required|string|max:50',
             'has_technical_knowledge' => 'required|boolean',
             'distribution_start_time' => 'required|string|max:100',
-
+            
             // States of Interest
-            'preferred_states'        => 'required|array',
-            'preferred_states.*'      => 'required|string|max:100',
-            'promo_participation'     => 'required|in:Yes,No,Depends',
-
+            'preferred_states' => 'required|array',
+            'preferred_states.*' => 'required|string|max:100',
+            'promo_participation' => 'required|in:Yes,No,Depends',
+            
             // Banking
-            'bank_name'               => 'required|string|max:255',
-            'account_name'            => 'required|string|max:255',
-            'account_number'          => 'required|string|max:20',
-            'bvn'                     => 'required|string|size:11',
-            'partnerships'            => 'required|string',
-
+            'bank_name' => 'required|string|max:255',
+            'account_name' => 'required|string|max:255',
+            'account_number' => 'required|string|max:20',
+            'bvn' => 'required|string|size:11',
+            'partnerships' => 'nullable|string',
+            
             // Declaration
-            'declarant_name'          => 'required|string|max:255',
-            'declaration_date'        => 'required|date',
+            'declarant_name' => 'required|string|max:255',
+            'declaration_date' => 'required|date',
         ]);
     }
 
