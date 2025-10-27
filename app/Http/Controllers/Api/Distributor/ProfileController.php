@@ -57,6 +57,24 @@ class ProfileController extends Controller
                 $distributorData = $this->validateDistributorFields($request);
             }
 
+            // Handle file uploads if the user is a distributor (and not approved)
+            if ($user->isDistributorReject()) {
+                // Validate file fields (all nullable)
+                return $request->validate([
+                    'cac_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                    'form_co7'        => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                    'memart'          => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                    'utility_bill'    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                    'tin_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                    'id_of_contact'   => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                    'referee_letter'  => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                    'signature'       => 'nullable|file|mimes:jpg,jpeg,png|max:1024',
+                ]);
+
+                // Process only files that exist in request
+                $distributorData = $this->handleFileUploads($distributorData, $request, $user->id);
+            }
+
             // Use DB transaction to safely persist updates
             DB::transaction(function () use ($user, $userData, $distributorData) {
                 // if (! empty($userData)) {
@@ -81,9 +99,14 @@ class ProfileController extends Controller
                 'message' => 'Validation failed',
                 'errors'  => $e->errors(),
             ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Unable to update.',
+                'error'   => $e->getMessage(),
+            ], 400);
         }
-
     }
+
 
     /**
      * Validate basic user fields.
