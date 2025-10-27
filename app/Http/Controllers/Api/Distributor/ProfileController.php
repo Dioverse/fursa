@@ -110,7 +110,7 @@ class ProfileController extends Controller
             'rc_number'               => 'required|string|max:100',
             'business_address'        => 'required|string|max:500',
             'office_phone'            => 'required|string|max:20',
-            'website'                 => 'required|url|max:255',
+            'website'                 => 'nullable|url|max:255',
             'company_type'            => 'required|string|max:100',
 
             // Contact Person
@@ -133,8 +133,8 @@ class ProfileController extends Controller
 
             // Distribution Strategy
             'product_categories'      => 'required|array',
-            'product_categories.*'    => 'required|string|max:100',
-            'willing_to_train'        => 'required|string|max:50',
+            'product_categories.*'    => 'required|string|max:150',
+            'willing_to_train'        => 'required|string|max:100',
             'has_technical_knowledge' => 'required|boolean',
             'distribution_start_time' => 'required|string|max:100',
 
