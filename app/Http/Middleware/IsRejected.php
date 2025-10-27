@@ -16,7 +16,7 @@ class IsRejected
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (User::isDistributorReject() || User::isCustomer()) {
+        if (!$request->user()->isDistributorReject()) {
             return $next($request);
         }
 

@@ -16,7 +16,7 @@ class IsApproved
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (User::isDistributorApprov()) {
+        if ($request->user()->isDistributorApprov()) {
             return $next($request);
         }
 
