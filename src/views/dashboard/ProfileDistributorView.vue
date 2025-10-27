@@ -923,6 +923,7 @@ const maskBVN = (bvn) => {
 <script>
 // Component for read-only field display
 import { defineComponent, h } from 'vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 export const ReadOnlyField = defineComponent({
   props: {
@@ -952,19 +953,85 @@ export const DocumentLink = defineComponent({
     label: String,
     url: String
   },
+  setup(props) {
+    const showModal = ref(false)
+    const openModal = () => (showModal.value = true)
+    const closeModal = () => (showModal.value = false)
+
+    return { showModal, openModal, closeModal }
+  },
   render() {
-    return h('div', [
+    const link = this.url ? getLink(this.url) : null
+
+    return h('div', { class: 'relative' }, [
+      // Label
       h('label', { class: 'block text-xs lg:text-sm font-medium text-gray-700 mb-2' }, this.label),
-      this.url ? h('a', {
-        href: getLink(this.url),
-        target: '_blank',
-        class: 'inline-flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition text-xs'
-      }, [
-        h('font-awesome-icon', { icon: 'download' }),
-        "Download"
-      ]) : h('span', { class: 'text-gray-400 text-xs' }, "Not Uploaded")
+
+      // When file is uploaded
+      this.url
+        ? h('div', { class: 'flex items-center gap-3' }, [
+            // View button
+            h(
+              'button',
+              {
+                onClick: this.openModal,
+                class:
+                  'inline-flex items-center gap-2 px-3 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition text-xs',
+              },
+              [
+                h(FontAwesomeIcon, { icon: 'eye' }),
+                'View',
+              ]
+            ),
+
+            // Download button
+            h(
+              'a',
+              {
+                href: link,
+                target: '_blank',
+                download: true,
+                class:
+                  'inline-flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition text-xs',
+              },
+              [
+                h(FontAwesomeIcon, { icon: 'download' }),
+                'Download',
+              ]
+            ),
+
+            // Modal
+            this.showModal
+              ? h('div', {
+                  class:
+                    'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm',
+                  onClick: this.closeModal,
+                }, [
+                  h('div', {
+                    class:
+                      'bg-white rounded-lg overflow-hidden w-11/12 md:w-3/4 lg:w-1/2 h-[80vh] relative',
+                    onClick: e => e.stopPropagation(),
+                  }, [
+                    // Close button
+                    h('button', {
+                      class:
+                        'absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl',
+                      onClick: this.closeModal,
+                    }, '×'),
+
+                    // File iframe
+                    h('iframe', {
+                      src: link,
+                      class: 'w-full h-full',
+                      frameborder: '0',
+                    }),
+                  ]),
+                ])
+              : null,
+          ])
+        : h('span', { class: 'text-gray-400 text-xs' }, 'Not Uploaded'),
     ])
-  }
+  },
 })
 
 export const DocumentUpload = defineComponent({

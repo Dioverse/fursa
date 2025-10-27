@@ -6,7 +6,7 @@
                 :href="brochureUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                download
+                download="true"
                 class="inline-flex items-center gap-2 bg-primary text-white mt-6 px-5 py-2 rounded hover:bg-primary/90 transition"
                 :aria-label="$t('brochure.download_aria')"
                 @click="onDownloadClick"
