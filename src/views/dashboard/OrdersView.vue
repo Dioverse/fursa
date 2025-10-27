@@ -5,7 +5,7 @@
 
       <!-- Filter Tabs -->
       <div class="bg-white rounded-lg shadow-md p-4">
-        <div class="flex gap-4 overflow-x-auto">
+        <div class="flex wrap gap-4 overflow-x-auto">
           <button
             v-for="tab in tabs"
             :key="tab.value"

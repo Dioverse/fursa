@@ -103,14 +103,31 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  function logout() {
+  
+  async function updateDistributorDetails(userData) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await authService.updateDistributorDetails(userData)
+      return response
+    } catch (err) {
+      error.value = err.response?.data?.message || 'Application failed'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  function logout(go = true) {
     user.value = null
     token.value = null
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     localStorage.removeItem('cart')
     // localStorage.removeItem('wishlist')
-    router.push('/')
+    if (go) {
+      router.push('/')
+    }
   }
 
   function checkAuth() {
@@ -182,6 +199,7 @@ export const useAuthStore = defineStore('auth', () => {
     updateProfile,
     updatePassword,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    updateDistributorDetails
   }
 })

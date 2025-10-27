@@ -12,6 +12,7 @@ const OrdersView = () => import('@/views/dashboard/OrdersView.vue')
 const OrderDetailsView = () => import('@/views/dashboard/OrderDetailsView.vue')
 const TrackOrdersView = () => import('@/views/dashboard/TrackOrdersView.vue')
 const ProfileView = () => import('@/views/dashboard/ProfileView.vue')
+const ProfileDistributorView = () => import('@/views/dashboard/ProfileDistributorView.vue')
 const AddressesView = () => import('@/views/dashboard/AddressesView.vue')
 const WishlistView = () => import('@/views/dashboard/WishlistView.vue')
 const ShopView = () => import('@/views/shop/ShopView.vue')
@@ -160,6 +161,12 @@ const router = createRouter({
       path: '/dashboard/profile',
       name: 'profile',
       component: ProfileView,
+      meta: { title: 'Profile', requiresAuth: true },
+    },
+    {
+      path: '/dashboard/profile-details',
+      name: 'distributor-profile',
+      component: ProfileDistributorView,
       meta: { title: 'Profile', requiresAuth: true },
     },
     {

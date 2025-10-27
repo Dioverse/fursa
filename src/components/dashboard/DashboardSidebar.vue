@@ -118,14 +118,21 @@ defineProps({
 })
 
 // All menu links (reactive to language changes)
-const fullLinks = computed(() => ([
-    { to: '/dashboard', icon: 'dashboard', label: t('dashboard.sidebar.dashboard') },
-    { to: '/dashboard/orders', icon: 'box', label: t('dashboard.sidebar.orders') },
-    { to: '/dashboard/profile', icon: 'user', label: t('dashboard.sidebar.profile') },
-    { to: '/dashboard/addresses', icon: 'map-marker-alt', label: t('dashboard.sidebar.address') },
-    { to: '/dashboard/wishlist', icon: 'heart', label: t('dashboard.sidebar.wishlist') },
-    // { to: '/dashboard/settings', icon: 'cog', label: t('dashboard.sidebar.settings') },
-]))
+const fullLinks = computed(() => {
+    // Determine the profile link based on the user's distributor status
+    const profileLink = (authStore.user && authStore.user.distributor)
+        ? { to: '/dashboard/profile-details', icon: 'user', label: t('dashboard.sidebar.profile') }
+        : { to: '/dashboard/profile', icon: 'user', label: t('dashboard.sidebar.profile') };
+
+    return [
+        { to: '/dashboard', icon: 'dashboard', label: t('dashboard.sidebar.dashboard') },
+        { to: '/dashboard/orders', icon: 'box', label: t('dashboard.sidebar.orders') },
+        // Conditionally added profile link
+        profileLink,
+        { to: '/dashboard/addresses', icon: 'map-marker-alt', label: t('dashboard.sidebar.address') },
+        { to: '/dashboard/wishlist', icon: 'heart', label: t('dashboard.sidebar.wishlist') },
+    ];
+});
 
 const expanded = ref(false)
 const startY = ref(0)

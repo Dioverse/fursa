@@ -83,6 +83,8 @@ import {
   faFilePdf,
   faIdCard,
   faUserPlus,
+  faKey,
+  faBoxes,
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -105,6 +107,8 @@ library.add(
   faShoppingCart,
   faHeart,
   faCog,
+  faKey,
+  faBoxes,
   faTachometerAlt,
   faSignOutAlt,
   faUser,

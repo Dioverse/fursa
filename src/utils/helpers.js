@@ -25,6 +25,11 @@ export function getImageUrl(path) {
   return `${storageUrl}${path.startsWith('/') ? path.slice(1) : path}`
 }
 
+export function getLink (src) {
+  if (!src) return "#"
+  return `${storageUrl}${src.startsWith('/') ? src.slice(1) : src}`
+}
+
 export function handleImageError(e) {
   e.target.src = '/images/oil-droplet.jpg';
 };

@@ -11,13 +11,37 @@ const authService = {
 
   async distributorApplication(payload) {
     if (payload instanceof FormData) {
-    // Don't set Content-Type header - let browser handle it
-    return api.post('/distributor-pplication', payload)
+      // Don't set Content-Type header - let browser handle it
+      return api.post('/distributor-pplication', payload)
     } else {
-        // JSON request
-        return api.post('/distributor-pplication', payload, {
-            headers: { 'Content-Type': 'application/json' }
-        })
+      // JSON request
+      return api.post('/distributor-pplication', payload, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+  },
+
+  async updateDistributorDetails(payload) {
+    if (payload instanceof FormData) {
+      // Don't set Content-Type header - let browser handle it
+      return api.post('/distributor/profile-update', payload)
+    } else {
+      // JSON request
+      return api.post('/distributor/profile-update', payload, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+  },
+
+  async updateDistributorDocuments(payload) {
+    if (payload instanceof FormData) {
+      // Don't set Content-Type header - let browser handle it
+      return api.post('/distributor/profile-document-upload', payload)
+    } else {
+      // JSON request
+      return api.post('/distributor/profile-document-upload', payload, {
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
   },
 
@@ -44,8 +68,8 @@ const authService = {
   async resetPassword(payload) {
     return api.post('/reset-password', payload, {
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     })
   },
 
