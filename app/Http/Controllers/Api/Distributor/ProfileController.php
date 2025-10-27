@@ -60,7 +60,7 @@ class ProfileController extends Controller
             // Handle file uploads if the user is a distributor (and not approved)
             if ($user->isDistributorReject()) {
                 // Validate file fields (all nullable)
-                return $request->validate([
+                $validatedFiles = $request->validate([
                     'cac_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                     'form_co7'        => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                     'memart'          => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
