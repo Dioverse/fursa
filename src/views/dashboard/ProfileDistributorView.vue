@@ -1,6 +1,11 @@
 <template>
   <DashboardLayout>
-    <div class="space-y-6">
+    <div class="space-y-6 relative">
+      <!-- Preloader Overlay -->
+      <div v-if="loading" class="absolute inset-0 bg-white/80 flex flex-col items-center justify-center z-[1]">
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+        <p class="mt-3 text-gray-600 text-sm font-medium">Loading documents...</p>
+      </div>
       <h1 class="lg:text-2xl md:text-xl text-lg font-bold">{{ $t('profile.title') }}</h1>
 
       <!-- REJECTED STATUS ALERT -->
@@ -16,7 +21,8 @@
       </div>
 
       <!-- PENDING STATUS ALERT -->
-      <div v-else-if="distributorStatus === 'pending'" class="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg shadow-md p-6">
+      <div v-else-if="distributorStatus === 'pending'"
+        class="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg shadow-md p-6">
         <div class="flex items-start gap-4">
           <font-awesome-icon icon="hourglass-half" class="text-yellow-600 text-2xl mt-1" />
           <div class="flex-1">
@@ -27,7 +33,8 @@
       </div>
 
       <!-- APPROVED STATUS BANNER -->
-      <div v-else-if="distributorStatus === 'approved'" class="bg-green-50 border-l-4 border-green-500 rounded-lg shadow-md p-6">
+      <div v-else-if="distributorStatus === 'approved'"
+        class="bg-green-50 border-l-4 border-green-500 rounded-lg shadow-md p-6">
         <div class="flex items-start gap-4">
           <font-awesome-icon icon="check-circle" class="text-green-600 text-2xl mt-1" />
           <div class="flex-1">
@@ -45,12 +52,8 @@
             <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-1 capitalize">
               {{ label }}
             </label>
-            <input
-              :value="value"
-              type="text"
-              disabled
-              class="w-full bg-gray-50 px-3 py-2 lg:px-4 lg:py-3 border text-xs lg:text-sm rounded-lg cursor-not-allowed"
-            />
+            <input :value="value" type="text" disabled
+              class="w-full bg-gray-50 px-3 py-2 lg:px-4 lg:py-3 border text-xs lg:text-sm rounded-lg cursor-not-allowed" />
           </div>
         </div>
       </div>
@@ -104,7 +107,8 @@
               <ReadOnlyField label="Has Warehouse" :value="distributorData.has_warehouse ? 'Yes' : 'No'" />
               <ReadOnlyField label="Has Vehicles" :value="distributorData.has_vehicles ? 'Yes' : 'No'" />
               <ReadOnlyField label="Regions Covered" :value="distributorData.regions_covered" col-span="2" />
-              <ReadOnlyField label="Preferred States" :value="formatArray(distributorData.preferred_states)" col-span="2" />
+              <ReadOnlyField label="Preferred States" :value="formatArray(distributorData.preferred_states)"
+                col-span="2" />
             </div>
           </div>
 
@@ -115,11 +119,15 @@
               {{ $t('profile.distributor.product_info') }}
             </h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-3">
-              <ReadOnlyField label="Product Categories" :value="formatArray(distributorData.product_categories)" col-span="2" />
-              <ReadOnlyField label="Current Product Lines" :value="distributorData.current_product_lines" col-span="2" />
-              <ReadOnlyField label="Has Technical Knowledge" :value="distributorData.has_technical_knowledge ? 'Yes' : 'No'" />
+              <ReadOnlyField label="Product Categories" :value="formatArray(distributorData.product_categories)"
+                col-span="2" />
+              <ReadOnlyField label="Current Product Lines" :value="distributorData.current_product_lines"
+                col-span="2" />
+              <ReadOnlyField label="Has Technical Knowledge"
+                :value="distributorData.has_technical_knowledge ? 'Yes' : 'No'" />
               <ReadOnlyField label="Willing to Train" :value="distributorData.willing_to_train" />
-              <ReadOnlyField label="Distribution Start Time" :value="formatDate(distributorData.distribution_start_time)" />
+              <ReadOnlyField label="Distribution Start Time"
+                :value="formatDate(distributorData.distribution_start_time)" />
               <ReadOnlyField label="Promo Participation" :value="distributorData.promo_participation" />
             </div>
           </div>
@@ -161,7 +169,7 @@
       <!-- EDITABLE FORM (REJECTED STATUS ONLY) -->
       <div v-else-if="distributorStatus === 'rejected'" class="bg-white rounded-lg shadow-md p-6">
         <h3 class="text-lg font-semibold mb-4">{{ $t('profile.distributor.update_application') }}</h3>
-        
+
         <form @submit.prevent="submitUpdatedApplication" class="space-y-6">
           <div>
             <h4 class="font-medium text-gray-800 mb-4 flex items-center gap-2">
@@ -172,72 +180,48 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Company Name</label>
-                  <input
-                    v-model="editableData.company_name"
-                    type="text"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.company_name" type="text"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Registered Name</label>
-                  <input
-                    v-model="editableData.registered_name"
-                    type="text"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.registered_name" type="text"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">RC Number</label>
-                  <input
-                    v-model="editableData.rc_number"
-                    type="text"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.rc_number" type="text"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Company Type</label>
-                  <input
-                    v-model="editableData.company_type"
-                    type="text"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.company_type" type="text"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Email</label>
-                  <input
-                    v-model="editableData.email"
-                    type="email"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.email" type="email"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Office Phone</label>
-                  <input
-                    v-model="editableData.office_phone"
-                    type="tel"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.office_phone" type="tel"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Website (Optional)</label>
-                  <input
-                    v-model="editableData.website"
-                    type="url"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.website" type="url"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
               </div>
 
               <div>
                 <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Business Address</label>
-                <textarea
-                  v-model="editableData.business_address"
-                  rows="3"
-                  class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                ></textarea>
+                <textarea v-model="editableData.business_address" rows="3"
+                  class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
               </div>
             </div>
           </div>
@@ -251,51 +235,33 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                  <input
-                    v-model="editableData.contact_full_name"
-                    type="text"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.contact_full_name" type="text"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Position</label>
-                  <input
-                    v-model="editableData.contact_position"
-                    type="text"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.contact_position" type="text"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Mobile</label>
-                  <input
-                    v-model="editableData.contact_mobile"
-                    type="tel"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.contact_mobile" type="tel"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">ID Type</label>
-                  <input
-                    v-model="editableData.means_of_id"
-                    type="text"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.means_of_id" type="text"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">ID Number</label>
-                  <input
-                    v-model="editableData.id_number"
-                    type="text"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.id_number" type="text"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Years in Business</label>
-                  <input
-                    v-model="editableData.years_in_business"
-                    type="number"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.years_in_business" type="number"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
               </div>
             </div>
@@ -310,26 +276,18 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Monthly Capacity</label>
-                  <input
-                    v-model="editableData.monthly_capacity"
-                    type="number"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.monthly_capacity" type="number"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Number of Sales Staff</label>
-                  <input
-                    v-model="editableData.number_of_sales_staff"
-                    type="number"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.number_of_sales_staff" type="number"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Has Warehouse</label>
-                  <select
-                    v-model="editableData.has_warehouse"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  >
+                  <select v-model="editableData.has_warehouse"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
                     <option :value="null">Select</option>
                     <option :value="1">Yes</option>
                     <option :value="0">No</option>
@@ -337,10 +295,8 @@
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Has Vehicles</label>
-                  <select
-                    v-model="editableData.has_vehicles"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  >
+                  <select v-model="editableData.has_vehicles"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
                     <option :value="null">Select</option>
                     <option :value="1">Yes</option>
                     <option :value="0">No</option>
@@ -351,29 +307,21 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Regions Covered</label>
-                  <input
-                    v-model="editableData.regions_covered"
-                    type="text"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.regions_covered" type="text"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Preferred Region</label>
-                  <input
-                    v-model="editableData.preferred_region"
-                    type="text"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.preferred_region" type="text"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
               </div>
 
               <div v-if="editableData.has_vehicles">
-                <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Vehicle Details (Optional)</label>
-                <textarea
-                  v-model="editableData.vehicle_details"
-                  rows="2"
-                  class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                ></textarea>
+                <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Vehicle Details
+                  (Optional)</label>
+                <textarea v-model="editableData.vehicle_details" rows="2"
+                  class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
               </div>
             </div>
           </div>
@@ -387,30 +335,21 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Current Product Lines</label>
-                  <textarea
-                    v-model="editableData.current_product_lines"
-                    rows="2"
-                    placeholder="Comma separated list"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  ></textarea>
+                  <textarea v-model="editableData.current_product_lines" rows="2" placeholder="Comma separated list"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Partnerships (Optional)</label>
-                  <textarea
-                    v-model="editableData.partnerships"
-                    rows="2"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  ></textarea>
+                  <textarea v-model="editableData.partnerships" rows="2"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
                 </div>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Has Technical Knowledge</label>
-                  <select
-                    v-model="editableData.has_technical_knowledge"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  >
+                  <select v-model="editableData.has_technical_knowledge"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
                     <option :value="null">Select</option>
                     <option :value="1">Yes</option>
                     <option :value="0">No</option>
@@ -418,12 +357,8 @@
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Willing to Train</label>
-                  <select
-                    v-model="editableData.willing_to_train"
-                    type="text"
-                    placeholder="e.g., Yes, No, Depends"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  >
+                  <select v-model="editableData.willing_to_train" type="text" placeholder="e.g., Yes, No, Depends"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
                     <option value="yes">Yes</option>
                     <option value="no">No</option>
                     <option value="depends">Depends on Arrangement</option>
@@ -431,20 +366,13 @@
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Distribution Start Time</label>
-                  <input
-                    v-model="editableData.distribution_start_time"
-                    type="date"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.distribution_start_time" type="date"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Promo Participation</label>
-                  <input
-                    v-model="editableData.promo_participation"
-                    type="text"
-                    placeholder="e.g., Yes, No"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.promo_participation" type="text" placeholder="e.g., Yes, No"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
               </div>
             </div>
@@ -459,35 +387,23 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Bank Name</label>
-                  <input
-                    v-model="editableData.bank_name"
-                    type="text"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.bank_name" type="text"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Account Name</label>
-                  <input
-                    v-model="editableData.account_name"
-                    type="text"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.account_name" type="text"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Account Number</label>
-                  <input
-                    v-model="editableData.account_number"
-                    type="text"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.account_number" type="text"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">BVN</label>
-                  <input
-                    v-model="editableData.bvn"
-                    type="text"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.bvn" type="text"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
               </div>
             </div>
@@ -502,19 +418,13 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Declarant Name</label>
-                  <input
-                    v-model="editableData.declarant_name"
-                    type="text"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.declarant_name" type="text"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
                 <div>
                   <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">Declaration Date</label>
-                  <input
-                    v-model="editableData.declaration_date"
-                    type="date"
-                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <input v-model="editableData.declaration_date" type="date"
+                    class="w-full px-3 py-2 lg:px-4 lg:py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
               </div>
             </div>
@@ -526,62 +436,32 @@
               Documents
             </h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
-              <DocumentUpload 
-                label="CAC Certificate" 
-                @file-selected="(file) => editableData.cac_certificate = file"
-                :current-file="distributorData.cac_certificate"
-              />
-              <DocumentUpload 
-                label="Form CO7" 
-                @file-selected="(file) => editableData.form_co7 = file"
-                :current-file="distributorData.form_co7"
-              />
-              <DocumentUpload 
-                label="MEMART" 
-                @file-selected="(file) => editableData.memart = file"
-                :current-file="distributorData.memart"
-              />
-              <DocumentUpload 
-                label="Utility Bill" 
-                @file-selected="(file) => editableData.utility_bill = file"
-                :current-file="distributorData.utility_bill"
-              />
-              <DocumentUpload 
-                label="TIN Certificate" 
-                @file-selected="(file) => editableData.tin_certificate = file"
-                :current-file="distributorData.tin_certificate"
-              />
-              <DocumentUpload 
-                label="ID of Contact" 
-                @file-selected="(file) => editableData.id_of_contact = file"
-                :current-file="distributorData.id_of_contact"
-              />
-              <DocumentUpload 
-                label="Referee Letter" 
-                @file-selected="(file) => editableData.referee_letter = file"
-                :current-file="distributorData.referee_letter"
-              />
-              <DocumentUpload 
-                label="Signature" 
-                @file-selected="(file) => editableData.signature = file"
-                :current-file="distributorData.signature"
-              />
+              <DocumentUpload label="CAC Certificate" @file-selected="(file) => editableData.cac_certificate = file"
+                :current-file="distributorData.cac_certificate" />
+              <DocumentUpload label="Form CO7" @file-selected="(file) => editableData.form_co7 = file"
+                :current-file="distributorData.form_co7" />
+              <DocumentUpload label="MEMART" @file-selected="(file) => editableData.memart = file"
+                :current-file="distributorData.memart" />
+              <DocumentUpload label="Utility Bill" @file-selected="(file) => editableData.utility_bill = file"
+                :current-file="distributorData.utility_bill" />
+              <DocumentUpload label="TIN Certificate" @file-selected="(file) => editableData.tin_certificate = file"
+                :current-file="distributorData.tin_certificate" />
+              <DocumentUpload label="ID of Contact" @file-selected="(file) => editableData.id_of_contact = file"
+                :current-file="distributorData.id_of_contact" />
+              <DocumentUpload label="Referee Letter" @file-selected="(file) => editableData.referee_letter = file"
+                :current-file="distributorData.referee_letter" />
+              <DocumentUpload label="Signature" @file-selected="(file) => editableData.signature = file"
+                :current-file="distributorData.signature" />
             </div>
           </div>
 
           <div class="flex justify-end gap-4 pt-4 border-t">
-            <button
-              type="button"
-              @click="resetEditableData"
-              class="text-xs px-2 md:px-4 lg:px-6 py-2 md:py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-            >
+            <button type="button" @click="resetEditableData"
+              class="text-xs px-2 md:px-4 lg:px-6 py-2 md:py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
               {{ $t('profile.buttons.cancel') }}
             </button>
-            <button
-              type="submit"
-              :disabled="submittingUpdate"
-              class="text-xs px-2 md:px-4 lg:px-6 py-2 md:py-3 bg-primary text-white rounded-lg hover:bg-opacity-90 transition disabled:opacity-50"
-            >
+            <button type="submit" :disabled="submittingUpdate"
+              class="text-xs px-2 md:px-4 lg:px-6 py-2 md:py-3 bg-primary text-white rounded-lg hover:bg-opacity-90 transition disabled:opacity-50">
               <font-awesome-icon v-if="submittingUpdate" icon="spinner" spin class="mr-2" />
               <font-awesome-icon v-else icon="save" class="mr-2" />
               {{ $t('profile.buttons.save_changes') }}
@@ -599,51 +479,33 @@
             <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">
               {{ $t('profile.password.current') }}
             </label>
-            <input
-              v-model="passwordForm.current"
-              type="password"
-              placeholder="Enter current password"
-              class="w-full px-3 py-2 lg:px-4 lg:py-3 border text-xs lg:text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
+            <input v-model="passwordForm.current" type="password" placeholder="Enter current password"
+              class="w-full px-3 py-2 lg:px-4 lg:py-3 border text-xs lg:text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
           </div>
 
           <div>
             <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">
               {{ $t('profile.password.new') }}
             </label>
-            <input
-              v-model="passwordForm.new"
-              type="password"
-              placeholder="Enter new password"
-              class="w-full px-3 py-2 lg:px-4 lg:py-3 border text-xs lg:text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
+            <input v-model="passwordForm.new" type="password" placeholder="Enter new password"
+              class="w-full px-3 py-2 lg:px-4 lg:py-3 border text-xs lg:text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
           </div>
 
           <div>
             <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-2">
               {{ $t('profile.password.confirm') }}
             </label>
-            <input
-              v-model="passwordForm.confirm"
-              type="password"
-              placeholder="Confirm new password"
-              class="w-full px-3 py-2 lg:px-4 lg:py-3 border text-xs lg:text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
+            <input v-model="passwordForm.confirm" type="password" placeholder="Confirm new password"
+              class="w-full px-3 py-2 lg:px-4 lg:py-3 border text-xs lg:text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
           </div>
 
           <div class="flex justify-end gap-4 pt-4 border-t mt-4">
-            <button
-              type="button"
-              @click="resetPasswordForm"
-              class="text-xs px-2 md:px-4 lg:px-6 py-2 md:py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-            >
+            <button type="button" @click="resetPasswordForm"
+              class="text-xs px-2 md:px-4 lg:px-6 py-2 md:py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
               {{ $t('profile.buttons.cancel') }}
             </button>
-            <button
-              type="submit"
-              :disabled="submittingPassword"
-              class="text-xs px-2 md:px-4 lg:px-6 py-2 md:py-3 bg-primary text-white rounded-lg hover:bg-opacity-90 transition disabled:opacity-50"
-            >
+            <button type="submit" :disabled="submittingPassword"
+              class="text-xs px-2 md:px-4 lg:px-6 py-2 md:py-3 bg-primary text-white rounded-lg hover:bg-opacity-90 transition disabled:opacity-50">
               <font-awesome-icon v-if="submittingPassword" icon="spinner" spin class="mr-2" />
               <font-awesome-icon v-else icon="key" class="mr-2" />
               {{ $t('profile.buttons.update_password') }}
@@ -704,12 +566,12 @@ const fetchDistributorDetails = async () => {
   try {
     const response = await api.get('/distributor/profile-details')
     const userData = response.data.user
-    
+
     if (userData.distributor) {
       distributorData.value = userData.distributor
       distributorStatus.value = userData.status
       rejectionReason.value = userData.distributor.reason || ''
-      
+
       if (distributorStatus.value === 'rejected') {
         editableData.value = initializeEditableData(userData.distributor)
       }
@@ -770,9 +632,10 @@ const initializeEditableData = (distributor) => ({
 
 const submitUpdatedApplication = async () => {
   submittingUpdate.value = true
+  loading.value = true
   try {
     const formData = new FormData()
-    
+
     // Add all text fields
     const textFields = {
       company_name: editableData.value.company_name,
@@ -834,7 +697,7 @@ const submitUpdatedApplication = async () => {
       }
     })
 
-    console.log(formData);return
+    console.log(formData); return
     await api.post('/distributor/update-application', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -848,6 +711,7 @@ const submitUpdatedApplication = async () => {
     handleError(error)
   } finally {
     submittingUpdate.value = false
+    loading.value = false
   }
 }
 
@@ -924,6 +788,8 @@ const maskBVN = (bvn) => {
 // Component for read-only field display
 import { defineComponent, h } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faDownload, faEye, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { getLink } from '@/utils/helpers'
 
 export const ReadOnlyField = defineComponent({
   props: {
@@ -970,65 +836,65 @@ export const DocumentLink = defineComponent({
       // When file is uploaded
       this.url
         ? h('div', { class: 'flex items-center gap-3' }, [
-            // View button
-            h(
-              'button',
-              {
-                onClick: this.openModal,
-                class:
-                  'inline-flex items-center gap-2 px-3 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition text-xs',
-              },
-              [
-                h(FontAwesomeIcon, { icon: 'eye' }),
-                'View',
-              ]
-            ),
+          // View button
+          h(
+            'button',
+            {
+              onClick: this.openModal,
+              class:
+                'inline-flex items-center gap-2 px-3 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition text-xs',
+            },
+            [
+              h(FontAwesomeIcon, { icon: 'eye' }),
+              'View',
+            ]
+          ),
 
-            // Download button
-            h(
-              'a',
-              {
-                href: link,
-                target: '_blank',
-                download: true,
-                class:
-                  'inline-flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition text-xs',
-              },
-              [
-                h(FontAwesomeIcon, { icon: 'download' }),
-                'Download',
-              ]
-            ),
+          // Download button
+          h(
+            'a',
+            {
+              href: link,
+              target: '_blank',
+              download: true,
+              class:
+                'inline-flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition text-xs',
+            },
+            [
+              h(FontAwesomeIcon, { icon: 'download' }),
+              'Download',
+            ]
+          ),
 
-            // Modal
-            this.showModal
-              ? h('div', {
+          // Modal
+          this.showModal
+            ? h('div', {
+              class:
+                'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm',
+              onClick: this.closeModal,
+            }, [
+              h('div', {
+                class:
+                  'bg-white rounded-lg overflow-hidden w-11/12 md:w-3/4 lg:w-1/2 h-[80vh] relative',
+                onClick: e => e.stopPropagation(),
+              }, [
+                // Close button
+                h('button', {
                   class:
-                    'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm',
+                    'absolute bottom-3 right-5 text-white hover:bg:black/90 bg-black/50 px-3 py-2 rounded-full',
                   onClick: this.closeModal,
-                }, [
-                  h('div', {
-                    class:
-                      'bg-white rounded-lg overflow-hidden w-11/12 md:w-3/4 lg:w-1/2 h-[80vh] relative',
-                    onClick: e => e.stopPropagation(),
-                  }, [
-                    // Close button
-                    h('button', {
-                      class:
-                        'absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl',
-                      onClick: this.closeModal,
-                    }, '×'),
+                }, '×'),
 
-                    // File iframe
-                    h('iframe', {
-                      src: link,
-                      class: 'w-full h-full',
-                      frameborder: '0',
-                    }),
-                  ]),
-                ])
-              : null,
-          ])
+                // File iframe
+                h('iframe', {
+                  src: link,
+                  class: 'w-full h-full',
+                  frameborder: '0',
+                }),
+              ]),
+            ])
+            : null,
+        ])
         : h('span', { class: 'text-gray-400 text-xs' }, 'Not Uploaded'),
     ])
   },
@@ -1040,32 +906,78 @@ export const DocumentUpload = defineComponent({
     currentFile: String
   },
   emits: ['file-selected'],
-  data() {
-    return {
-      fileName: null
-    }
-  },
-  methods: {
-    handleFileChange(event) {
+  components: { FontAwesomeIcon },
+  setup(props, { emit }) {
+    const fileName = ref(null)
+    const showModal = ref(false)
+
+    const handleFileChange = (event) => {
       const file = event.target.files?.[0]
       if (file) {
-        this.fileName = file.name
-        this.$emit('file-selected', file)
+        fileName.value = file.name
+        emit('file-selected', file)
       }
     }
-  },
-  render() {
-    return h('div', [
-      h('label', { class: 'block text-xs lg:text-sm font-medium text-gray-700 mb-2' }, this.label),
+
+    return () => h('div', [
+      // Label
+      h('label', { class: 'block text-xs lg:text-sm font-medium text-gray-700 mb-2' }, props.label),
+
+      // Upload row
       h('div', { class: 'flex items-center gap-2' }, [
         h('input', {
           type: 'file',
-          onChange: this.handleFileChange,
+          onChange: handleFileChange,
           class: 'flex-1 text-xs px-3 py-2 lg:px-4 lg:py-3 border rounded-lg cursor-pointer'
         }),
-        this.currentFile && h('span', { class: 'text-green-600 text-xs' }, '✓ Uploaded')
+
+        // Status or Actions
+        props.currentFile
+          ? h('div', { class: 'flex items-center gap-2' }, [
+            // View icon
+            h('button', {
+              class: 'text-blue-600 hover:text-blue-800 transition',
+              title: 'View Document',
+              onClick: () => (showModal.value = true)
+            }, [h(FontAwesomeIcon, { icon: faEye })]),
+
+            // Download icon
+            h('a', {
+              href: getLink(props.currentFile),
+              download: true,
+              target: '_blank',
+              class: 'text-green-600 hover:text-green-800 transition',
+              title: 'Download Document'
+            }, [h(FontAwesomeIcon, { icon: faDownload })])
+          ])
+          : h('span', { class: 'text-gray-400 text-xs' }, 'No file uploaded')
       ]),
-      this.fileName && h('p', { class: 'text-xs text-gray-500 mt-1' }, this.fileName)
+
+      // Selected filename
+      fileName.value && h('p', { class: 'text-xs text-gray-500 mt-1' }, fileName.value),
+
+      // Modal
+      showModal.value &&
+      h('div', {
+        class: 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm'
+      }, [
+        h('div', {
+          class: 'bg-white rounded-lg overflow-hidden w-11/12 md:w-3/4 lg:w-1/2 h-[80vh] relative'
+        }, [
+          // Close button
+          h('button', {
+            class: 'absolute bottom-3 right-5 text-white hover:bg:black/90 bg-black/50 px-3 py-2 rounded-full',
+            onClick: () => (showModal.value = false)
+          }, [h(FontAwesomeIcon, { icon: faTimes })]),
+
+          // Iframe
+          h('iframe', {
+            src: getLink(props.currentFile),
+            class: 'w-full h-[80vh] rounded-b-lg',
+            frameborder: '0'
+          })
+        ])
+      ])
     ])
   }
 })
