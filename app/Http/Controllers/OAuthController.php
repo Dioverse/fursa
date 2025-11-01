@@ -56,7 +56,7 @@ class OAuthController extends Controller
                 'email'          => $email,
                 'phone'          => '',
                 'status'         => 'approved',
-                'email_verified' => now(),
+                'email_verified_at' => now(),
                 'password'       => bcrypt(Str::random(24)),
                 'provider'       => 'google',
                 'provider_id'    => $googleId,
