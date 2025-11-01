@@ -47,14 +47,9 @@ Route::post('auth/google', [OAuthController::class, 'loginOrRegister']);
 // Route::get('auth/google/callback', [OAuthController::class, 'handleProviderCallback']);
 Route::middleware('auth:api')->post('/auth/admin/refresh', [AuthController::class, 'refresh']);
 
-// Route::get('reset-password/{token}', function (string $token, Request $request) {
-//     $frontendUrl = config('app.frontend_url').'/reset-password';
-//     return redirect()->away($frontendUrl . '?token=' . $token . '&email=' . $request->email);
-// })->name('password.reset');
-
 Route::middleware(['auth:sanctum','ban'])->group(function () {
     // Resend verification email
-    Route::post('/email/verification-notification', [AuthController::class, 'verificationSend'])->middleware('throttle:2,1')->name('verification.send');
+    Route::post('/email/verification-notification', [AuthController::class, 'verificationSend'])->middleware('throttle:1,1')->name('verification.send');
 });
 
 Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
