@@ -36,6 +36,13 @@ class OrderService
                 'delivery_days'    => $now->add('days', $shipCost->min_day)->format('Y-m-d') . ' - ' . $now->add('days', $shipCost->max_day)->format('Y-m-d'),
             ]);
 
+            OrderStatusHistory::create([
+                'order_id' => $order->lastId(),
+                'status'   => 'pending',
+                'changed_by' => ,
+                'change_role' => ,
+            ]);
+
             $orderItems = [];
 
             foreach ($user->cart->cartItems as $cartItem) {
@@ -149,20 +156,20 @@ class OrderService
 
             if (!empty($statusesToLog)) {
                 $now = now();
-                $userId = auth()->id();
-                $role   = auth()->check() ? 'admin' : 'system';
+                $user = auth()->user();
 
                 $insertData = [];
                 foreach ($statusesToLog as $status) {
                     $insertData[] = [
                         'order_id'    => $order->id,
                         'status'      => $status,
-                        'changed_by'  => $userId,
-                        'change_role' => $role,
+                        'changed_by'  => $user ? $user->id : null, // leave empty if no user
+                        'change_role' => $user ? ($user->role ?? 'admin') : 'system',
                         'created_at'  => $now,
                         'updated_at'  => $now,
                     ];
                 }
+
                 OrderStatusHistory::insert($insertData);
             }
 

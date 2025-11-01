@@ -19,6 +19,7 @@ class OrderStatusHistory extends Model implements AuditableContract
         'status',
         'changed_by',
         'change_role',
+        'note'
     ];
 
     /**
