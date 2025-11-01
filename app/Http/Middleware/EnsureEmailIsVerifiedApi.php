@@ -19,7 +19,8 @@ class EnsureEmailIsVerifiedApi
             !$request->user()->hasVerifiedEmail()) {
             return response()->json([
                 'redirect' => 'unverified',
-                'message' => 'Your email address is not verified.'
+                'message' => 'unverified.'
+                // 'message' => 'Your email address is not verified.'
             ], 403);
         }
 

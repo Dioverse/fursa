@@ -38,7 +38,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('register', [AuthController::class, 'register']);
 Route::get('login', function () {
-    return response()->json(['redirect' => "unauthenticated",'message' => "Unauthenticated"], 401);
+    return response()->json(['redirect' => "unauthenticated",'message' => "Unauthenticated."], 401);
 })->name("login");
 Route::post('login', [AuthController::class, 'login']);
 Route::post('forgot-password', [AuthController::class, 'forgotPassword']);

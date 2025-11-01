@@ -20,7 +20,8 @@ class BanCheck
         if ($request->user()->ban == 1) {
             return response()->json([
                 'redirect'   => 'banned',
-                'message' => 'Your account has been banned. Contact support'
+                'message' => 'banned'
+                // 'message' => 'Your account has been banned. Contact support'
             ], 403);
         }
 
