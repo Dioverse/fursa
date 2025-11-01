@@ -51,16 +51,16 @@ class OAuthController extends Controller
 
         if (! $user) {
             $user = User::create([
-                'first_name'     => $first_name,
-                'last_name'      => $last_name,
-                'email'          => $email,
-                'phone'          => '',
-                'status'         => 'approved',
+                'first_name'        => $first_name,
+                'last_name'         => $last_name,
+                'email'             => $email,
+                'phone'             => '',
+                'status'            => 'approved',
                 'email_verified_at' => now(),
-                'password'       => bcrypt(Str::random(24)),
-                'provider'       => 'google',
-                'provider_id'    => $googleId,
-                'avatar'         => $avatar,
+                'password'          => bcrypt(Str::random(24)),
+                'provider'          => 'google',
+                'provider_id'       => $googleId,
+                'avatar'            => $avatar,
             ]);
         } else {
             $user->update([
