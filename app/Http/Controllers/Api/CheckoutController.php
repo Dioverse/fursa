@@ -332,11 +332,31 @@ class CheckoutController extends Controller
 
             DB::commit();
 
-            dispatch(function () use ($user, $order) {
+            $this->dispatchNotification($user, $order);
+
+            return response()->json([
+                'message' => 'Order placed successfully',
+                'orderId'   => $orderId
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Checkout error: " . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json([
+                'error'   => true,
+                'message' => 'Checkout failed',
+            ], 500);
+        }
+    }
+
+    private function dispatchNotification($user, $order)
+    {
+        dispatch(function () use ($user, $order) {
                 // Build products + history arrays
                 $products = $order->orderItem->map(function ($item, $index) {
                     $imagePath = optional($item->product->images->first())->path;
-                    $image     = config("app.storage_url") . '/' . $imagePath;
+                    $image     = rtrim(config("app.storage_url"), "/") . '/' . ltrim($imagePath, "/");
                     return [
                         'sno'      => $index + 1,
                         'image'    => $image,
@@ -363,21 +383,6 @@ class CheckoutController extends Controller
                     ["email"], false, ["products" => $products, "status_history" => $statushistory]
                 );
             });
-
-            return response()->json([
-                'message' => 'Order placed successfully',
-                'orderId'   => $orderId
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error("Checkout error: " . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-            ]);
-            return response()->json([
-                'error'   => true,
-                'message' => 'Checkout failed',
-            ], 500);
-        }
     }
 
     // public function checkout(Request $request, $gateway, $transRef, PaymentManager $manager)

@@ -14,7 +14,7 @@ class InventoryController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $query = Inventory::with(['product:id,name,sku', 'user:id,first_name,last_name,email']);
+        $query = Inventory::with(['product:id,slug,name,sku', 'user:id,first_name,last_name,email']);
 
         // --- Global Search across user, product, and inventory.reason ---
         if ($request->filled('search')) {

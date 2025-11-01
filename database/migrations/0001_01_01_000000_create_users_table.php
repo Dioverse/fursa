@@ -16,12 +16,17 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('phone')->unique();
-            $table->string('password');
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->enum('role', ['admin', 'distributor', 'customer'])->default('customer');
             $table->boolean('ban')->default(false);
+
+            $table->string('provider')->nullable();
+            $table->string('provider_id')->nullable();
+            $table->string('avatar')->nullable();
+
+            $table->string('password');
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

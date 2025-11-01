@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OAuthController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\GeneralController;
@@ -14,20 +15,20 @@ use App\Http\Controllers\Api\Admin\OrderController;
 use App\Http\Controllers\Api\Admin\ContentController;
 use App\Http\Controllers\Api\Admin\PaymentController;
 use App\Http\Controllers\Api\Admin\ProductController;
-use App\Http\Controllers\Api\Admin\CategoryController;
 // use App\Http\Controllers\Api\Admin\LanguageController;
 // use App\Http\Controllers\Api\Admin\SettingsController;
+use App\Http\Controllers\Api\Admin\CategoryController;
 use App\Http\Controllers\Api\Admin\ShippingController;
-use App\Http\Controllers\Api\Admin\InventoryController;
 
+use App\Http\Controllers\Api\Admin\InventoryController;
 use App\Http\Controllers\Api\ShippingAddressController;
 use App\Http\Controllers\Api\Admin\DistributorController;
 use App\Http\Controllers\Api\Admin\NotificationController;
 use App\Http\Controllers\Api\Admin\PostCategoryController;
 use App\Http\Controllers\Api\Distributor\ProfileController;
 use App\Http\Controllers\Api\PostController as DistCustPostController;
-use App\Http\Controllers\Api\OrderController as DistCustOrderController;
 // use App\Http\Controllers\PaymentController as DistCustPaymentController;
+use App\Http\Controllers\Api\OrderController as DistCustOrderController;
 use App\Http\Controllers\Api\ProductController as GeneralProductController;
 use App\Http\Controllers\Api\LanguageController as DistCustLanguageController;
 
@@ -42,6 +43,8 @@ Route::get('login', function () {
 Route::post('login', [AuthController::class, 'login']);
 Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('reset-password', [AuthController::class, 'resetPassword']);
+Route::get('auth/google', [OAuthController::class, 'loginOrRegister']);
+// Route::get('auth/google/callback', [OAuthController::class, 'handleProviderCallback']);
 Route::middleware('auth:api')->post('/auth/admin/refresh', [AuthController::class, 'refresh']);
 
 // Route::get('reset-password/{token}', function (string $token, Request $request) {
