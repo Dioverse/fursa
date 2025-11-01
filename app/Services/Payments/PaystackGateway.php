@@ -17,6 +17,11 @@ class PaystackGateway implements PaymentGateway
         $this->secretKey = $config['secret_key'];
     }
 
+    public function getName(): string
+    {
+        return 'paystack';
+    }
+
     public function verifyPayment(string $reference): array
     {
         try {

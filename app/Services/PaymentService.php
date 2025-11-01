@@ -29,7 +29,7 @@ class PaymentService
                 'amount'          => $amount,
                 'reason'          => $message,
                 'payment_method'  => $isSuccess ? ($payment['method'] ?? null) : null,
-                'payment_gateway' => $gateway->getName() ?? 'unknown',
+                'payment_gateway' => $gateway ?? 'unknown',
                 'raw'             => $isSuccess ? json_encode($payment['raw'] ?? []) : null,
             ]
         );

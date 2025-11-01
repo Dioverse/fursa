@@ -17,6 +17,11 @@ class FlutterwaveGateway implements PaymentGateway
         $this->secretKey = $config['secret_key'];
     }
 
+    public function getName(): string
+    {
+        return 'flutterwave';
+    }
+
     public function verifyPayment(string $reference): array
     {
         try {
