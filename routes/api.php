@@ -43,7 +43,7 @@ Route::get('login', function () {
 Route::post('login', [AuthController::class, 'login']);
 Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('reset-password', [AuthController::class, 'resetPassword']);
-Route::get('auth/google', [OAuthController::class, 'loginOrRegister']);
+Route::post('auth/google', [OAuthController::class, 'loginOrRegister']);
 // Route::get('auth/google/callback', [OAuthController::class, 'handleProviderCallback']);
 Route::middleware('auth:api')->post('/auth/admin/refresh', [AuthController::class, 'refresh']);
 
