@@ -346,7 +346,7 @@
     "login": {
       "title": "Iniciar sesión en Fursa",
       "email_label": "Correo electrónico:",
-      "email_placeholder": "johndoe@gmail.com",
+      "email_placeholder": "{'johndoe@gmail.com'}",
       "password_label": "Contraseña:",
       "remember": "Recordarme",
       "forgot_password": "¿Olvidaste tu contraseña?",
@@ -368,7 +368,7 @@
       "last_name_label": "Apellido:",
       "last_name_placeholder": "Pérez",
       "email_label": "Correo electrónico:",
-      "email_placeholder": "johndoe@gmail.com",
+      "email_placeholder": "{'johndoe@gmail.com'}",
       "phone_label": "Número de teléfono:",
       "phone_placeholder": "08111111111",
       "password_label": "Contraseña:",

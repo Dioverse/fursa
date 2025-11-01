@@ -347,7 +347,7 @@
     "login": {
       "title": "登录 Fursa",
       "email_label": "邮箱：",
-      "email_placeholder": "johndoe@gmail.com",
+      "email_placeholder": "{'johndoe@gmail.com'}",
       "password_label": "密码：",
       "remember": "记住我",
       "forgot_password": "忘记密码？",
@@ -369,7 +369,7 @@
       "last_name_label": "姓：",
       "last_name_placeholder": "三",
       "email_label": "邮箱：",
-      "email_placeholder": "johndoe@gmail.com",
+      "email_placeholder": "{'johndoe@gmail.com'}",
       "phone_label": "手机号：",
       "phone_placeholder": "08111111111",
       "password_label": "密码：",

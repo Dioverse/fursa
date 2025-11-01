@@ -61,6 +61,40 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function googleSSO(idToken, type = 'login') {
+    loading.value = true
+    error.value = null
+
+    try {
+      // Include cart items like in regular login
+      const credentials = {
+        id_token: idToken,
+        cart: cartStore.getCartItemsList() || null,
+      }
+
+      const response = await authService.googleSSO(credentials)
+
+      // Handle token and user info
+      token.value = response.data.token
+      user.value = response.data.user
+
+      localStorage.setItem('token', token.value)
+      localStorage.setItem('user', JSON.stringify(user.value))
+
+      // Update cart if backend returns it
+      if (response.data && (response.data.cart || Array.isArray(response.data))) {
+        cartStore.updateCartFromResponse(response.data.cart)
+      }
+
+      return response
+    } catch (err) {
+      error.value = err.response?.data?.message || `Failed to ${type} with Google`
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function distributorApplication(userData) {
     loading.value = true
     error.value = null
@@ -103,7 +137,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  
   async function updateDistributorDetails(userData) {
     loading.value = true
     error.value = null
@@ -193,6 +226,7 @@ export const useAuthStore = defineStore('auth', () => {
     userFullName,
     login,
     register,
+    googleSSO,
     distributorApplication,
     logout,
     checkAuth,
@@ -200,6 +234,6 @@ export const useAuthStore = defineStore('auth', () => {
     updatePassword,
     forgotPassword,
     resetPassword,
-    updateDistributorDetails
+    updateDistributorDetails,
   }
 })

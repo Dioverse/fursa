@@ -216,11 +216,4 @@ app.use(VueLazyLoad, {
   error: '/images/oil-droplet.jpg'
 })
 
-window.onload = () => {
-  google.accounts.id.initialize({
-    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-    callback: handleCredentialResponse,
-  })
-}
-
 app.mount('#app')

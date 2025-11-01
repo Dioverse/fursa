@@ -347,7 +347,7 @@
     "login": {
       "title": "Se connecter à Fursa",
       "email_label": "Adresse e‑mail :",
-      "email_placeholder": "johndoe@gmail.com",
+      "email_placeholder": "{'johndoe@gmail.com'}",
       "password_label": "Mot de passe :",
       "remember": "Se souvenir de moi",
       "forgot_password": "Mot de passe oublié ?",
@@ -369,7 +369,7 @@
       "last_name_label": "Nom :",
       "last_name_placeholder": "Dupont",
       "email_label": "Adresse e‑mail :",
-      "email_placeholder": "johndoe@gmail.com",
+      "email_placeholder": "{'johndoe@gmail.com'}",
       "phone_label": "Numéro de téléphone :",
       "phone_placeholder": "08111111111",
       "password_label": "Mot de passe :",

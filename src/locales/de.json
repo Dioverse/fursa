@@ -347,7 +347,7 @@
     "login": {
       "title": "Bei Fursa anmelden",
       "email_label": "E-Mail-Adresse:",
-      "email_placeholder": "johndoe@gmail.com",
+      "email_placeholder": "{'johndoe@gmail.com'}",
       "password_label": "Passwort:",
       "remember": "Angemeldet bleiben",
       "forgot_password": "Passwort vergessen?",
@@ -369,7 +369,7 @@
       "last_name_label": "Nachname:",
       "last_name_placeholder": "Mustermann",
       "email_label": "E-Mail-Adresse:",
-      "email_placeholder": "johndoe@gmail.com",
+      "email_placeholder": "{'johndoe@gmail.com'}",
       "phone_label": "Telefonnummer:",
       "phone_placeholder": "08111111111",
       "password_label": "Passwort:",

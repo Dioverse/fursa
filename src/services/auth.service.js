@@ -9,6 +9,10 @@ const authService = {
     return api.post('/register', userData)
   },
 
+  async googleSSO(token) {
+    return api.post('/auth/google', {id_token: token})
+  },
+
   async distributorApplication(payload) {
     if (payload instanceof FormData) {
       // Don't set Content-Type header - let browser handle it
