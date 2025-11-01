@@ -45,6 +45,9 @@ class OrderController extends Controller
             'orderItem.product.category' => function ($query) {
                 $query->select('id', 'name', 'slug'); 
             },
+            'orderItem.product.images' => function ($query) {
+                $query->select('id', 'product_id', 'url')->limit(1);
+            },
             'payment:id,order_id,status,payment_gateway,payment_method,transaction_reference,amount,paid_at',
             'statusHstry:id,order_id,status,changed_by,created_at'
         ])
