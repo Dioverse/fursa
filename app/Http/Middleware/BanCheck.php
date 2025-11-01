@@ -22,7 +22,7 @@ class BanCheck
                 'redirect'   => 'banned',
                 'message' => 'banned'
                 // 'message' => 'Your account has been banned. Contact support'
-            ], 403);
+            ], 401);
         }
 
         return $next($request);

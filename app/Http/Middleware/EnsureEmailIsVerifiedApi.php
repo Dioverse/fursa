@@ -21,7 +21,7 @@ class EnsureEmailIsVerifiedApi
                 'redirect' => 'unverified',
                 'message' => 'unverified.'
                 // 'message' => 'Your email address is not verified.'
-            ], 403);
+            ], 401);
         }
 
         return $next($request);
