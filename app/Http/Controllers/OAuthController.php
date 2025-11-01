@@ -55,6 +55,8 @@ class OAuthController extends Controller
                 'first_name'  => $first_name,
                 'last_name'   => $last_name,
                 'email'       => $email,
+                'phone'       => '',
+                'status'      => 'approved',
                 // you can generate a random password
                 'password'    => bcrypt(Str::random(24)),
                 'provider'    => 'google',
