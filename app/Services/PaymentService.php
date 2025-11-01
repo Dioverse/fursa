@@ -12,7 +12,7 @@ class PaymentService
 
         // Default values in case verification fails
         $isSuccess = $payment['success'] ?? false;
-        $status    = $isSuccess ? ($payment['status'] ?? 'success') : 'pending';
+        $status    = $isSuccess ? ($payment['status'] ?? 'successful') : 'pending';
         $message   = $isSuccess ? ($payment['message'] ?? 'Payment verified successfully') : 'Gateway is currently busy. Try again';
 
         // Set amount — fallback to cartTotal if gateway didn’t return valid amount
