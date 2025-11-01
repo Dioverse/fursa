@@ -1,10 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Google_Client;
-use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Api\CartController;
 
 class OAuthController extends Controller
 {
@@ -82,7 +83,7 @@ class OAuthController extends Controller
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
-            'message'    => 'Login successful via Google.',
+            'message'    => 'Login successful.',
             'user'       => $user,
             'token'      => $token,
             'token_type' => 'Bearer',
