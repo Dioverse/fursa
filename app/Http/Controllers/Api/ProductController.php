@@ -192,7 +192,7 @@ class ProductController extends Controller
 
         // --- PRICE FILTERS ---
         $user       = auth('sanctum')->user();
-        $priceField = ($user && $user->isDistributorApproved()) ? 'distributor_price' : 'base_price';
+        $priceField = ($user && $user->isDistributorApprov()) ? 'distributor_price' : 'base_price';
 
         if ($request->filled('min_price') && is_numeric($request->min_price)) {
             $query->where($priceField, '>=', $request->min_price);
