@@ -1,11 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Api\CartController;
-use App\Models\User;
 use Google_Client;
-use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use App\Http\Controllers\Api\CartController;
 
 class OAuthController extends Controller
 {
