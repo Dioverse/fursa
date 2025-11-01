@@ -32,9 +32,13 @@ class OAuthController extends Controller
         }
 
         // payload contains 'sub' (Google user id), email, name, picture, etc.
+        $name           = $payload['name'] ?? null;
+        $name_sort      = explode(" ", $name);
+        $first_name     = $name_sort[0] ?? "User";
+        $last_name     = $name_sort[1] ?? "Google";
+
         $googleId       = $payload['sub'];
         $email          = $payload['email'] ?? null;
-        $name           = $payload['name'] ?? null;
         $avatar         = $payload['picture'] ?? null;
         $email_verified = $payload['email_verified'] ?? false;
 
@@ -48,7 +52,8 @@ class OAuthController extends Controller
 
         if (! $user) {
             $user = User::create([
-                'name'        => $name ?? 'Google User',
+                'first_name'  => $first_name,
+                'last_name'   => $last_name,
                 'email'       => $email,
                 // you can generate a random password
                 'password'    => bcrypt(Str::random(24)),
