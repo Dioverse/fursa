@@ -16,9 +16,8 @@ class OAuthController extends Controller
 
         $idToken = $request->input('id_token');
 
-        // VERIFY ID TOKEN - recommended using Google_Client (production)
-        $client  = new Google_Client(['client_id' => config('services.google.client_id')]);
-        $payload = null;
+        $client = new Google_Client(['client_id' => config('services.google.client_id')]);
+
         try {
             $payload = $client->verifyIdToken($idToken);
         } catch (\Exception $e) {
@@ -26,27 +25,23 @@ class OAuthController extends Controller
         }
 
         if (! $payload) {
-            // Fallback: tokeninfo endpoint (not recommended for production)
-            // return response()->json(['message'=>'Invalid ID token'], 401);
             return response()->json(['message' => 'Invalid ID token'], 401);
         }
 
-        // payload contains 'sub' (Google user id), email, name, picture, etc.
+        // Extract user data
         $name       = $payload['name'] ?? null;
-        $name_sort  = explode(" ", $name);
-        $first_name = $name_sort[0] ?? "User";
-        $last_name  = $name_sort[1] ?? "Google";
+        $nameParts  = explode(' ', $name);
+        $first_name = $nameParts[0] ?? 'User';
+        $last_name  = $nameParts[1] ?? 'Google';
+        $googleId   = $payload['sub'];
+        $email      = $payload['email'] ?? null;
+        $avatar     = $payload['picture'] ?? null;
 
-        $googleId       = $payload['sub'];
-        $email          = $payload['email'] ?? null;
-        $avatar         = $payload['picture'] ?? null;
-        $email_verified = $payload['email_verified'] ?? false;
-
-        // Find or create user
-        $user = User::where('provider', 'google')->where('provider_id', $googleId)->first();
+        $user = User::where('provider', 'google')
+            ->where('provider_id', $googleId)
+            ->first();
 
         if (! $user && $email) {
-            // Try find by email
             $user = User::where('email', $email)->first();
         }
 
@@ -58,14 +53,12 @@ class OAuthController extends Controller
                 'phone'          => '',
                 'status'         => 'approved',
                 'email_verified' => now(),
-                // you can generate a random password
                 'password'       => bcrypt(Str::random(24)),
                 'provider'       => 'google',
                 'provider_id'    => $googleId,
                 'avatar'         => $avatar,
             ]);
         } else {
-            // Update provider fields if needed
             $user->update([
                 'provider'    => 'google',
                 'provider_id' => $googleId,
@@ -73,13 +66,28 @@ class OAuthController extends Controller
             ]);
         }
 
-        // Create Sanctum token
+        // ❌ Prevent admins from using Google login
+        if ($user->role === 'admin') {
+            return response()->json(['message' => 'Admins cannot log in using Google.'], 403);
+        }
+
+        // ✅ Sync user cart (just like in `login()`)
+        $cart = [];
+        if ($user->role !== 'admin') {
+            $cartController = new CartController();
+            $cart           = $cartController->syncUserCart($user, $request->cart);
+        }
+
+        // ✅ Create token
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
+            'message'    => 'Login successful via Google.',
             'user'       => $user,
             'token'      => $token,
             'token_type' => 'Bearer',
+            'cart'       => $cart,
         ], 200);
     }
+
 }
