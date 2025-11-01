@@ -1,16 +1,17 @@
 <?php
 namespace App\Http\Controllers;
 
-use Google_Client;
-use App\Models\User;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Api\CartController;
+use App\Models\User;
+use Google_Client;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class OAuthController extends Controller
 {
     public function loginOrRegister(Request $request)
     {
+        // ... (All existing validation and ID token verification logic remains correct)
         $request->validate([
             'id_token' => 'required|string',
         ]);
@@ -20,6 +21,8 @@ class OAuthController extends Controller
         $client = new Google_Client(['client_id' => config('services.google.client_id')]);
 
         try {
+            // This is the standard server-side verification for a Google ID token,
+            // which is independent of how the client obtained it (GSI or FedCM).
             $payload = $client->verifyIdToken($idToken);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Invalid ID token', 'error' => $e->getMessage()], 401);
