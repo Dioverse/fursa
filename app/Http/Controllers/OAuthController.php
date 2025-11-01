@@ -5,7 +5,6 @@ use Google_Client;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Api\CartController;
 
 class OAuthController extends Controller
@@ -13,51 +12,24 @@ class OAuthController extends Controller
     public function loginOrRegister(Request $request)
     {
         $request->validate([
-            'code' => 'required|string', // ✅ Expect authorization code, not ID token
+            'id_token' => 'required|string',
         ]);
 
-        $code = $request->input('code');
+        $idToken = $request->input('id_token');
 
-        // Step 1: Exchange authorization code for tokens
-        $response = Http::asForm()->post('https://oauth2.googleapis.com/token', [
-            'code'          => $code,
-            'client_id'     => config('services.google.client_id'),
-            'client_secret' => config('services.google.client_secret'),
-            'redirect_uri'  => 'postmessage', // ✅ required for popup-based apps
-            'grant_type'    => 'authorization_code',
-        ]);
-
-        if ($response->failed()) {
-            return response()->json([
-                'message' => 'Failed to exchange authorization code',
-                'error'   => $response->json(),
-            ], 401);
-        }
-
-        $tokens  = $response->json();
-        $idToken = $tokens['id_token'] ?? null;
-
-        if (! $idToken) {
-            return response()->json(['message' => 'Missing ID token'], 401);
-        }
-
-        // Step 2: Verify ID token
         $client = new Google_Client(['client_id' => config('services.google.client_id')]);
 
         try {
             $payload = $client->verifyIdToken($idToken);
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Invalid ID token',
-                'error'   => $e->getMessage(),
-            ], 401);
+            return response()->json(['message' => 'Invalid ID token', 'error' => $e->getMessage()], 401);
         }
 
         if (! $payload) {
             return response()->json(['message' => 'Invalid ID token'], 401);
         }
 
-        // Step 3: Extract user info
+        // Extract user data
         $name       = $payload['name'] ?? null;
         $nameParts  = explode(' ', $name);
         $first_name = $nameParts[0] ?? 'User';
@@ -66,7 +38,6 @@ class OAuthController extends Controller
         $email      = $payload['email'] ?? null;
         $avatar     = $payload['picture'] ?? null;
 
-        // Step 4: Find or create user
         $user = User::where('provider', 'google')
             ->where('provider_id', $googleId)
             ->first();
@@ -101,7 +72,7 @@ class OAuthController extends Controller
             return response()->json(['message' => 'Admins cannot log in using Google.'], 403);
         }
 
-        // ✅ Sync user cart
+        // ✅ Sync user cart (just like in `login()`)
         $cart = [];
         if ($user->role !== 'admin') {
             $cartController = new CartController();
