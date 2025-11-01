@@ -57,7 +57,10 @@ class Order extends Model implements AuditableContract
         static::addGlobalScope('pending', function (Builder $builder) {
             $user = auth('sanctum')->user();
             if (!$user || $user->role !== 'admin') {
-                $builder->whereNotIn('status', ['pending']);
+                $builder->where(function ($query) {
+                    $query->whereNotIn('status', ['pending'])
+                        ->orWhereHas('payment'); // show pending if it has a payment
+                });
             }
         });
     }
