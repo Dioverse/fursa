@@ -31,6 +31,7 @@ class User extends Authenticatable implements MustVerifyEmail, AuditableContract
         'provider',
         'provider_id',
         'avatar',
+        'email_verified_at',
         'password',
         'phone',
         'status',
