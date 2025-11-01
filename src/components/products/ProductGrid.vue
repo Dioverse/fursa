@@ -1,8 +1,8 @@
 <template>
     <div>
-        <div v-if="loading" class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
-            <div v-for="i in makeSwiper ? 1 : 4" :key="i" class="animate-pulse">
-                <div class="bg-gray-300 h-48 rounded-t-lg"></div>
+        <div v-if="loading" class="flex flex-wrap justify-center gap-6">
+            <div v-for="i in makeSwiper ? 1 : 4" :key="i" class=" w-3/4 xs:w-2/3 sm:w-1/2 md:w-1/3 lg:w-1/4 animate-pulse">
+                <div class="bg-gray-300 w-full h-48 rounded-t-lg"></div>
                 <div class="bg-white p-4 rounded-b-lg">
                     <div class="h-4 bg-gray-300 rounded mb-2"></div>
                     <div class="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>

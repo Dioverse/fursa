@@ -43,8 +43,7 @@
                 </h2>
                 <!-- Loading Skeleton -->
                 <template v-if="loading">
-                    <div class="flex justify-center gap-10 place-items-center items-center" :style="{ placeItems: center }">
-
+                    <div class="flex flex-wrap justify-center gap-10 place-items-center items-center" :style="{ placeItems: center }">
                         <div v-for="n in 4" :key="n" class="text-center animate-pulse">
                             <div class="w-20 h-20 mx-auto mb-3 bg-gray-200 rounded-full shadow-md"></div>
                             <p class="h-4 bg-gray-200 rounded w-3/4 mx-auto"></p>
@@ -52,30 +51,27 @@
                     </div>
                 </template>
                 <!-- Flex-based categories wrapper (centers leftover items) -->
-<div
-  v-else
-  class="flex flex-wrap justify-center gap-6"
->
-  <!-- No categories -->
-  <div v-if="categories.length === 0" class="w-full text-center group py-12">
-    <font-awesome-icon icon="box" size="3x" class="text-gray-400 mb-4" />
-    <p class="text-gray-600">No categories found</p>
-  </div>
+                <div v-else class="flex flex-wrap justify-center gap-6">
+                <!-- No categories -->
+                <div v-if="categories.length === 0" class="w-full text-center group py-12">
+                    <font-awesome-icon icon="box" size="3x" class="text-gray-400 mb-4" />
+                    <p class="text-gray-600">No categories found</p>
+                </div>
 
-  <!-- Categories (responsive widths) -->
-  <div
-    v-else
-    v-for="category in categories"
-    :key="category.id"
-    @click="goToCategory(category.slug)"
-    class="flex flex-col items-center cursor-pointer transform transition hover:-translate-y-1"
-    :class="['gap-2','w-1/2','xs:w-1/3','sm:w-1/3','md:w-1/3','lg:w-1/6']">
-    <div class="w-20 h-20 mb-3 bg-white rounded-full shadow-md group-hover:shadow-lg flex items-center justify-center">
-      <font-awesome-icon :icon="category.icon" size="2x" class="text-primary" />
-    </div>
-    <p class="text-sm font-medium text-center">{{ category.name }}</p>
-  </div>
-</div>
+                <!-- Categories (responsive widths) -->
+                <div
+                    v-else
+                    v-for="category in categories"
+                    :key="category.id"
+                    @click="goToCategory(category.slug)"
+                    class="flex flex-col items-center cursor-pointer transform transition hover:-translate-y-1 xs:max-w-[100px]"
+                    :class="['gap-2','w-3/3','xs:w-1/3','sm:w-1/3','md:w-1/3','lg:w-1/6']">
+                    <div class="w-20 h-20 mb-3 bg-white rounded-full shadow-md group-hover:shadow-lg flex items-center justify-center">
+                    <font-awesome-icon :icon="category.icon" size="2x" class="text-primary" />
+                    </div>
+                    <p class="text-sm font-medium text-center break-word">{{ category.name }}</p>
+                </div>
+                </div>
 
             </div>
         </section>
