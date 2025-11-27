@@ -16,4 +16,10 @@ class Status{
     const O_DELIVERED = 'delivered';
     const O_CANCELLED = 'cancelled';
     const O_FAILED = 'failed';
+
+    const P_PENDING = 'pending';
+    const P_SUCCESSFUL = 'successful';
+    const P_FAILED = 'failed';
+    const P_CANCELLED = 'cancelled';
+    const P_REFUNDED = 'refunded';
 }
