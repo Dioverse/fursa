@@ -10,32 +10,30 @@
                 <!-- Desktop Search Bar -->
                 <div class="hidden md:flex flex-1 max-w-md mx-6">
                     <div class="relative w-full" ref="searchRef">
-                        <input
-                            v-model="searchQuery"
-                            type="text"
+                        <input v-model="searchQuery" type="text"
                             :placeholder="$t('header.search_placeholder') || 'Search Products...'"
                             class="w-full px-4 py-2 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                            @keyup.enter="handleSearch"
-                            @input="onSearchInput"
-                            @keydown.esc.prevent="hideSuggestions"
-                        />
+                            @keyup.enter="handleSearch" @input="onSearchInput" @keydown.esc.prevent="hideSuggestions" />
                         <button @click="handleSearch"
                             class="absolute right-1 top-1/2 -translate-y-1/2 bg-primary text-white px-3 py-1 rounded">
                             <font-awesome-icon icon="search" />
                         </button>
 
                         <!-- Suggestions Dropdown -->
-                        <div v-if="showSuggestions && suggestions.length" class="absolute left-0 right-0 mt-2 bg-white border rounded-lg shadow-lg z-50">
+                        <div v-if="showSuggestions && suggestions.length"
+                            class="absolute left-0 right-0 mt-2 bg-white border rounded-lg shadow-lg z-50">
                             <ul class="max-h-72 overflow-y-auto py-2">
                                 <li v-for="item in suggestions" :key="item.id"
                                     class="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-3"
                                     @click="goToProduct(item)">
-                                    <img :src="getThumb(item)" alt="thumb" class="w-8 h-8 rounded object-cover bg-gray-100" @error="onImgError" />
+                                    <img :src="getThumb(item)" alt="thumb"
+                                        class="w-8 h-8 rounded object-cover bg-gray-100" @error="onImgError" />
                                     <span class="text-sm text-gray-800 line-clamp-1">{{ item.name }}</span>
                                 </li>
                             </ul>
                             <div class="px-3 py-2 border-t bg-gray-50 text-right">
-                                <button class="text-sm text-primary hover:underline" @click="handleSearch">See all results</button>
+                                <button class="text-sm text-primary hover:underline" @click="handleSearch">See all
+                                    results</button>
                             </div>
                         </div>
                     </div>
@@ -60,7 +58,8 @@
                         <button @click="toggleAccountMenu"
                             class="bg-primary text-white px-3 py-[9px] sm:py-[6px] rounded-md hover:bg-opacity-90 transition flex items-center gap-1.5 text-sm md:text-base">
                             <font-awesome-icon icon="circle-user" class="text-sm md:text-base" />
-                            <span class="hidden sm:inline text-xs md:text-sm">{{ $t('header.account') || 'Account' }}</span>
+                            <span class="hidden sm:inline text-xs md:text-sm">{{ $t('header.account') || 'Account'
+                                }}</span>
                             <font-awesome-icon :icon="showAccountMenu ? 'chevron-up' : 'chevron-down'"
                                 class="text-xs md:text-sm" />
                         </button>
@@ -146,75 +145,65 @@
                 class="bg-white border-t md:border-t-0 md:border-b md:relative absolute w-full md:w-auto ">
                 <div class="container mx-auto px-2 sm:px-0 md:px-4">
                     <div
-                    class="flex flex-col md:flex-row md:items-center md:justify-between bg-white/80 backdrop-blur-md border-b border-gray-100 rounded-lg md:rounded-none py-2 shadow-sm"
-                    >
-                    <!-- Mobile Search -->
-        <transition name="fade">
-            <div v-if="mobileMenuOpen" class="md:hidden gap-1.5 px-2.5 md:py-1.5 py-3">
-                <div class="relative w-full" ref="mobileSearchRef">
-                    <input
-                        v-model="searchQuery"
-                        type="text"
-                        :placeholder="$t('header.search_placeholder') || 'Search Products...'"
-                        class="w-full px-4 py-2 pr-10 rounded-lg bg-black/50 focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-white/80 text-white"
-                        @keyup.enter="handleSearch"
-                        @input="onSearchInput"
-                        @keydown.esc.prevent="hideSuggestions"
-                    />
-                    <button @click="handleSearch"
-                        class="absolute right-1 top-1/2 -translate-y-1/2 bg-primary text-white px-3 py-1 rounded">
-                        <font-awesome-icon icon="search" />
-                    </button>
+                        class="flex flex-col md:flex-row md:items-center md:justify-between bg-white/80 backdrop-blur-md border-b border-gray-100 rounded-lg md:rounded-none py-2 shadow-sm">
+                        <!-- Mobile Search -->
+                        <transition name="fade">
+                            <div v-if="mobileMenuOpen" class="md:hidden gap-1.5 px-2.5 md:py-1.5 py-3">
+                                <div class="relative w-full" ref="mobileSearchRef">
+                                    <input v-model="searchQuery" type="text"
+                                        :placeholder="$t('header.search_placeholder') || 'Search Products...'"
+                                        class="w-full px-4 py-2 pr-10 rounded-lg bg-black/50 focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-white/80 text-white"
+                                        @keyup.enter="handleSearch" @input="onSearchInput"
+                                        @keydown.esc.prevent="hideSuggestions" />
+                                    <button @click="handleSearch"
+                                        class="absolute right-1 top-1/2 -translate-y-1/2 bg-primary text-white px-3 py-1 rounded">
+                                        <font-awesome-icon icon="search" />
+                                    </button>
 
-                    <!-- Suggestions (Mobile) -->
-                    <div v-if="showSuggestions && suggestions.length" class="absolute left-0 right-0 mt-2 bg-white border rounded-lg shadow-lg z-50">
-                        <ul class="max-h-72 overflow-y-auto py-2">
-                            <li v-for="item in suggestions" :key="item.id"
-                                class="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-3"
-                                @click="goToProduct(item)">
-                                <img :src="getThumb(item)" alt="thumb" class="w-8 h-8 rounded object-cover bg-gray-100" @error="onImgError" />
-                                <span class="text-sm text-gray-800 line-clamp-1">{{ item.name }}</span>
+                                    <!-- Suggestions (Mobile) -->
+                                    <div v-if="showSuggestions && suggestions.length"
+                                        class="absolute left-0 right-0 mt-2 bg-white border rounded-lg shadow-lg z-50">
+                                        <ul class="max-h-72 overflow-y-auto py-2">
+                                            <li v-for="item in suggestions" :key="item.id"
+                                                class="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-3"
+                                                @click="goToProduct(item)">
+                                                <img :src="getThumb(item)" alt="thumb"
+                                                    class="w-8 h-8 rounded object-cover bg-gray-100"
+                                                    @error="onImgError" />
+                                                <span class="text-sm text-gray-800 line-clamp-1">{{ item.name }}</span>
+                                            </li>
+                                        </ul>
+                                        <div class="px-3 py-2 border-t bg-gray-50 text-right">
+                                            <button class="text-sm text-primary hover:underline"
+                                                @click="handleSearch">See all results</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </transition>
+                        <!-- Navigation Links -->
+                        <ul
+                            class="flex flex-col md:flex-row md:items-center gap-[2px] md:gap-0.1 xl:gap-5 text-gray-700 text-[14px] font-medium">
+                            <li v-for="link in computedLinks" :key="link.to" class="group">
+                                <RouterLink :to="link.to"
+                                    class="flex items-center gap-1.5 px-2.5 md:py-1.5 py-3 rounded-md hover:bg-primary/10 hover:text-primary transition-all duration-200"
+                                    @click="mobileMenuOpen = false">
+                                    <font-awesome-icon :icon="link.icon"
+                                        class="text-gray-500 text-sm group-hover:text-primary transition-colors" />
+                                    <span class="truncate">{{ link.label }}</span>
+                                </RouterLink>
                             </li>
                         </ul>
-                        <div class="px-3 py-2 border-t bg-gray-50 text-right">
-                            <button class="text-sm text-primary hover:underline" @click="handleSearch">See all results</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
-  <!-- Navigation Links -->
-  <ul
-    class="flex flex-col md:flex-row md:items-center gap-[2px] md:gap-0.1 xl:gap-5 text-gray-700 text-[14px] font-medium"
-  >
-        <li
-            v-for="link in computedLinks"
-      :key="link.to"
-      class="group"
-    >
-      <RouterLink
-        :to="link.to"
-        class="flex items-center gap-1.5 px-2.5 md:py-1.5 py-3 rounded-md hover:bg-primary/10 hover:text-primary transition-all duration-200"
-        @click="mobileMenuOpen = false"
-      >
-        <font-awesome-icon
-          :icon="link.icon"
-          class="text-gray-500 text-sm group-hover:text-primary transition-colors"
-        />
-                <span class="truncate">{{ link.label }}</span>
-      </RouterLink>
-    </li>
-  </ul>
 
-  <!-- Distributor Button -->
-  <RouterLink
-    to="/distributor-registration"
-    class="bg-primary text-white px-4 py-1.5 rounded-md hover:bg-primary/90 active:scale-[0.97] transition-all duration-200 flex items-center gap-1.5 text-sm md:text-[14px] w-full md:w-auto justify-center mt-2 md:mt-0"
-  >
-    <font-awesome-icon icon="truck" class="text-xs" />
-        <span class="flex nowrap">{{ $t('header.distributor') || 'Distributor' }}<span class="hidden sm:block">&nbsp;{{ $t('header.registration') || 'Registration' }}</span></span>
-  </RouterLink>
-</div>
+                        <!-- Distributor Button -->
+                        <RouterLink v-if="authStore?.user?.role!='distributor'" to="/distributor-registration"
+                            class="bg-primary text-white px-4 py-1.5 rounded-md hover:bg-primary/90 active:scale-[0.97] transition-all duration-200 flex items-center gap-1.5 text-sm md:text-[14px] w-full md:w-auto justify-center mt-2 md:mt-0">
+                            <font-awesome-icon icon="truck" class="text-xs" />
+                            <span class="flex nowrap">{{ $t('header.distributor') || 'Distributor' }}<span
+                                    class="hidden sm:block">&nbsp;{{ $t('header.registration') || 'Registration'
+                                    }}</span></span>
+                        </RouterLink>
+                    </div>
 
                 </div>
             </nav>

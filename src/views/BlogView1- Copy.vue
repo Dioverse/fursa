@@ -251,7 +251,6 @@ const resetFilters = () => {
 
 const goToPage = (link) => {
   if (!link.url) return
-  console.log(link);
 
   // extract the page number from the URL
   const page = new URL(link.url).searchParams.get("page")

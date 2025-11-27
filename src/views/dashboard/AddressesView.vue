@@ -311,6 +311,7 @@ import { useToast } from 'vue-toastification'
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
+import apiClient from '@/services/api'
 
 const authStore = useAuthStore()
 const toast = useToast()
@@ -456,12 +457,14 @@ const customFilter = (option, search, label) => {
 }
 
 // Methods
+
+/* ----------------------------------------
+   FETCH ADDRESSES
+---------------------------------------- */
 const fetchAddresses = async () => {
   try {
     loadingAddresses.value = true
-    const { data } = await axios.get(`${apiBaseUrl}/shipping-address`, {
-      headers: { Authorization: `Bearer ${authStore.token}` }
-    })
+    const { data } = await apiClient.get('/shipping-address')
     addresses.value = data.data || data || []
   } catch (err) {
     console.error(err)
@@ -471,6 +474,9 @@ const fetchAddresses = async () => {
   }
 }
 
+/* ----------------------------------------
+   LOAD COUNTRIES
+---------------------------------------- */
 const loadCountries = async () => {
   try {
     if (locationCache.hasCountries()) {
@@ -478,9 +484,7 @@ const loadCountries = async () => {
       return
     }
 
-    const { data } = await axios.get(`${apiBaseUrl}/countries`, {
-      headers: { Authorization: `Bearer ${authStore.token}` }
-    })
+    const { data } = await apiClient.get('/countries')
     countries.value = data.countries || []
     locationCache.setCountries(countries.value)
   } catch (err) {
@@ -489,6 +493,9 @@ const loadCountries = async () => {
   }
 }
 
+/* ----------------------------------------
+   LOAD STATES / PROVINCES
+---------------------------------------- */
 const loadStatesProvinces = async () => {
   if (!form.value.country) return
 
@@ -500,9 +507,7 @@ const loadStatesProvinces = async () => {
       return
     }
 
-    const { data } = await axios.get(`${apiBaseUrl}/states-provinces/${form.value.country}`, {
-      headers: { Authorization: `Bearer ${authStore.token}` }
-    })
+    const { data } = await apiClient.get(`/states-provinces/${form.value.country}`)
     statesList.value = data.data || []
     locationCache.setStatesProvinces(form.value.country, statesList.value)
     form.value.selectedStateProvince = null
@@ -515,24 +520,21 @@ const loadStatesProvinces = async () => {
   }
 }
 
+/* ----------------------------------------
+   ADD ADDRESS
+---------------------------------------- */
 const addAddress = async () => {
   if (!validateAddressForm()) return
-
   loading.value = true
+
   try {
     const payload = {
       ...form.value,
       is_default: form.value.is_default ? 1 : 0,
-      selectedStateProvince: undefined
+      selectedStateProvince: undefined,
     }
 
-    const { data } = await axios.post(`${apiBaseUrl}/shipping-address`, payload, {
-      headers: { 
-        Authorization: `Bearer ${authStore.token}`, 
-        'Content-Type': 'application/json' 
-      }
-    })
-
+    const { data } = await apiClient.post('/shipping-address', payload)
     addresses.value.push(data.data || data)
     toast.success(t('checkout.toasts.address_added'))
     showForm.value = false
@@ -552,26 +554,23 @@ const addAddress = async () => {
   }
 }
 
+/* ----------------------------------------
+   UPDATE ADDRESS
+---------------------------------------- */
 const updateAddress = async () => {
   if (!validateAddressForm()) return
-
   loading.value = true
+
   try {
     const payload = {
       ...form.value,
       is_default: form.value.is_default ? 1 : 0,
-      selectedStateProvince: undefined
+      selectedStateProvince: undefined,
     }
 
-    const { data } = await axios.put(`${apiBaseUrl}/shipping-address/${editingId.value}`, payload, {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-        'Content-Type': 'application/json'
-      }
-    })
-
+    const { data } = await apiClient.put(`/shipping-address/${editingId.value}`, payload)
     const updated = data.data || data
-    addresses.value = addresses.value.map(a => (a.id === editingId.value ? { ...a, ...updated } : a))
+    addresses.value = addresses.value.map((a) => (a.id === editingId.value ? { ...a, ...updated } : a))
     toast.success(t('checkout.toasts.address_updated'))
     showForm.value = false
     resetForm()
@@ -590,11 +589,12 @@ const updateAddress = async () => {
   }
 }
 
+/* ----------------------------------------
+   DELETE ADDRESS
+---------------------------------------- */
 const deleteAddress = async (id) => {
   try {
-    await axios.delete(`${apiBaseUrl}/shipping-address/${id}`, {
-      headers: { Authorization: `Bearer ${authStore.token}` }
-    })
+    await apiClient.delete(`/shipping-address/${id}`)
     addresses.value = addresses.value.filter((a) => a.id !== id)
     toast.success(t('addresses.toasts.delete_success'))
     showDeleteConfirm.value = false
@@ -604,15 +604,15 @@ const deleteAddress = async (id) => {
   }
 }
 
+/* ----------------------------------------
+   SET DEFAULT ADDRESS
+---------------------------------------- */
 const setDefaultAddress = async (id) => {
   try {
-    await axios.post(`${apiBaseUrl}/set-default-address/${id}`, {}, {
-      headers: { Authorization: `Bearer ${authStore.token}` }
-    })
-
+    await apiClient.post(`/set-default-address/${id}`)
     addresses.value = addresses.value.map((a) => ({
       ...a,
-      is_default: a.id === id ? 1 : 0
+      is_default: a.id === id ? 1 : 0,
     }))
     toast.success(t('checkout.toasts.default_address_updated'))
   } catch (err) {

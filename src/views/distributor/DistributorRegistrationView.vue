@@ -2,7 +2,7 @@
     <DefaultLayout>
         <div class="container mx-auto px-4 py-8">
             <div class="max-w-4xl mx-auto">
-                <div class="bg-white rounded-lg shadow-md p-8">
+                <div class="bg-white rounded-lg shadow-md p-4 md:p-8">
                     <h1 class="text-3xl font-bold text-center mb-8">{{ $t('distributor.title') }}</h1>
 
                     <!-- Step Indicator -->
@@ -67,13 +67,6 @@
                                 <font-awesome-icon icon="arrow-right" class="ml-2" />
                             </button>
 
-                            <button type="button" @click="debugFormData"
-                                class="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50">
-                                <font-awesome-icon v-if="submitting" icon="spinner" spin class="mr-2" />
-                                <font-awesome-icon v-else icon="check" class="mr-2" />
-                                debug
-                            </button>
-
                             <button v-if="currentStep === 6" type="submit" :disabled="submitting"
                                 class="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50">
                                 <font-awesome-icon v-if="submitting" icon="spinner" spin class="mr-2" />
@@ -134,46 +127,6 @@ const step5Ref = ref(null)
 
 // Use the store's formData
 const formData = distributorStore.formData
-
-// Debug function
-const debugFormData = () => {
-    console.log('=== DEBUGGING FORM DATA ===')
-    
-    console.log('\n1. Business Info:')
-    console.log(formData.businessInfo)
-    if (formData.businessInfo.documents?.utility_bill) {
-        console.log(`   ✓ Utility Bill: ${formData.businessInfo.documents.utility_bill.name} (${formData.businessInfo.documents.utility_bill.size} bytes)`)
-    } else {
-        console.log('   ✗ Utility Bill: NOT FOUND')
-    }
-    
-    console.log('\n2. Contact Person:')
-    console.log(formData.contactPerson)
-    if (formData.contactPerson.id_of_contact) {
-        console.log(`   ✓ ID Document: ${formData.contactPerson.id_of_contact.name} (${formData.contactPerson.id_of_contact.size} bytes)`)
-    } else {
-        console.log('   ✗ ID Document: NOT FOUND')
-    }
-    
-    console.log('\n3. Distribution Capacity:')
-    console.log(formData.distributionCapacity)
-    
-    console.log('\n4. Product Focus:')
-    const docs = formData.productFocus.documents || {}
-    console.log('   Documents:', {
-        cac: docs.cac ? `${docs.cac.name} (${docs.cac.size} bytes)` : 'NOT FOUND',
-        form_c07: docs.form_c07 ? `${docs.form_c07.name} (${docs.form_c07.size} bytes)` : 'NOT FOUND',
-        memart: docs.memart ? `${docs.memart.name} (${docs.memart.size} bytes)` : 'NOT FOUND',
-        tin: docs.tin ? `${docs.tin.name} (${docs.tin.size} bytes)` : 'NOT FOUND',
-        referee: docs.referee ? `${docs.referee.name} (${docs.referee.size} bytes)` : 'NOT FOUND',
-        signature: docs.signature ? `${docs.signature.name} (${docs.signature.size} bytes)` : 'NOT FOUND'
-    })
-    
-    console.log('\n5. Banking KYC:')
-    console.log(formData.bankingKYC)
-    
-    console.log('\n=== END DEBUG ===')
-}
 
 const validateCurrentStep = () => {
     validationError.value = ''
@@ -352,7 +305,6 @@ const previousStep = () => {
 }
 
 const handleSubmit = async () => {
-    debugFormData()
     
     if (!validateCurrentStep()) {
         return
@@ -466,16 +418,16 @@ const handleSubmit = async () => {
             }
         })
 
-        // Log FormData contents for debugging
-        console.log('=== FormData Contents ===')
-        for (let [key, value] of formDataObj.entries()) {
-            if (value instanceof File) {
-                console.log(`✓ ${key}: File - ${value.name} (${(value.size / 1024).toFixed(2)} KB)`)
-            } else {
-                console.log(`✓ ${key}:`, value)
-            }
-        }
-        console.log('========================')
+        // // Log FormData contents for debugging
+        // console.log('=== FormData Contents ===')
+        // for (let [key, value] of formDataObj.entries()) {
+        //     if (value instanceof File) {
+        //         console.log(`✓ ${key}: File - ${value.name} (${(value.size / 1024).toFixed(2)} KB)`)
+        //     } else {
+        //         console.log(`✓ ${key}:`, value)
+        //     }
+        // }
+        // console.log('========================')
 
         // Send request
         if (authStore.token) {

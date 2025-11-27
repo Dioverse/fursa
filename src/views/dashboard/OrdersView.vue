@@ -5,13 +5,14 @@
 
       <!-- Filter Tabs -->
       <div class="bg-white rounded-lg shadow-md p-4">
-        <div class="flex wrap gap-4 overflow-x-auto">
+        <div class="flex flex-wrap gap-4 overflow-x-auto">
           <button
             v-for="tab in tabs"
             :key="tab.value"
             @click="setActiveTab(tab.value)"
             class="px-4 py-2 rounded-lg whitespace-nowrap transition flex items-center gap-2"
             :class="activeTab === tab.value ? 'bg-primary text-white' : 'bg-gray-100 hover:bg-gray-200'"
+            :disabled="loading"
           >
             {{ tab.label }}
             <span class="ml-1 bg-white text-gray-700 text-xs px-2 py-0.5 rounded-full">
@@ -23,7 +24,31 @@
 
       <!-- Orders List -->
       <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <div class="overflow-x-auto">
+        <!-- Loading State -->
+        <div v-if="loading" class="flex justify-center items-center p-12 min-h-[300px]">
+          <div class="flex flex-col items-center gap-4">
+            <div class="animate-spin">
+              <font-awesome-icon icon="spinner" class="text-primary text-3xl" />
+            </div>
+            <!-- <p class="text-gray-600">{{ $t('orders.loading') || 'Loading orders...' }}</p> -->
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div v-else-if="error" class="flex justify-center items-center p-12 min-h-[300px]">
+          <div class="text-center">
+            <p class="text-red-600 mb-4">{{ error }}</p>
+            <button
+              @click="fetchOrders"
+              class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-opacity-90"
+            >
+              {{ $t('orders.retry') || 'Retry' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div v-else class="overflow-x-auto">
           <table v-if="filteredOrders.length > 0" class="w-full">
             <thead class="bg-gray-50">
               <tr>
@@ -45,7 +70,7 @@
                   {{ (currentPage - 1) * perPage + index + 1 }}
                 </td>
                 <td class="px-6 py-4 text-sm font-medium text-gray-900">
-                  {{ order.id }}
+                  {{ order.order_id }}
                 </td>
                 <td class="px-6 py-4 text-sm text-gray-500">
                   {{ formatDate(order.created_at) }}
@@ -60,10 +85,10 @@
                 </td>
                 <td class="px-6 py-4">
                   <span class="text-sm text-gray-900">
-                    ₦{{ Number(order.total_amount).toFixed(2) }}
+                    ₦{{ formatAmount(order.total_amount, 2) }}
                   </span>
                   <span class="text-xs text-gray-500 block">
-                    {{ $t('orders.for_items', { count: order.order_items_count || 0 }) }}
+                    {{ $t('orders.for_items', { count: order.order_item_count || 0 }) }}
                   </span>
                 </td>
                 <td class="px-6 py-4 text-sm font-medium space-x-3">
@@ -75,7 +100,7 @@
                   </button>
                   <button
                     v-if="order.status.toLowerCase() === 'completed'"
-                    @click="reorder(order.id)"
+                    @click="reorder(order.order_id)"
                     class="text-green-600 hover:text-green-800"
                     :title="$t('orders.actions.reorder')"
                   >
@@ -93,7 +118,7 @@
         </div>
 
         <!-- Pagination -->
-        <div v-if="totalOrders > 0" class="px-6 py-4 border-t flex items-center justify-between">
+        <div v-if="!loading && totalOrders > 0" class="px-6 py-4 border-t flex items-center justify-between">
           <div class="text-sm text-gray-600">
             {{ $t('orders.pagination.summary', { from: (currentPage - 1) * perPage + 1, to: Math.min(currentPage * perPage, totalOrders), total: totalOrders }) }}
           </div>
@@ -133,6 +158,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import { useI18n } from 'vue-i18n'
+import { formatAmount } from '@/utils/helpers'
 
 const router = useRouter()
 const { t, locale } = useI18n()
@@ -253,9 +279,9 @@ const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++
 }
 
-const viewOrder = (id) => router.push(`/dashboard/orders/${id}`)
-const trackOrder = (id) => router.push(`/dashboard/track-order/${id}`)
-const reorder = (id) => console.log('Reorder:', id)
+const viewOrder = (order_id) => router.push(`/dashboard/orders/${order_id}`)
+const trackOrder = (order_id) => router.push(`/dashboard/track-order/${order_id}`)
+// const reorder = (order_id) => console.log('Reorder:', order_id)
 
 // Lifecycle
 onMounted(fetchOrders)

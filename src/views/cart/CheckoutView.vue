@@ -415,8 +415,10 @@ import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
 import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
-
+import apiClient from '@/services/api'
+import { useRouter } from 'vue-router'
 const { t } = useI18n()
+const router = useRouter()
 
 // Constants
 const PAYMENT_METHODS = {
@@ -431,51 +433,6 @@ const GATEWAY_URLS = {
 
 const PHONE_REGEX = /^[+]?[\d\s\-()]+$/
 const MIN_PHONE_LENGTH = 10
-
-// API Client Service
-class ApiClient {
-  constructor(baseUrl, getToken) {
-    this.baseUrl = baseUrl
-    this.getToken = getToken
-  }
-
-  async request(endpoint, options = {}) {
-    const url = `${this.baseUrl}${endpoint}`
-    const headers = {
-      'Content-Type': 'application/json',
-      ...options.headers
-    }
-
-    const token = this.getToken()
-    if (token) {
-      headers.Authorization = `Bearer ${token}`
-    }
-
-    const response = await fetch(url, { ...options, headers })
-    const data = await response.json()
-
-    if (!response.ok) {
-      const error = new Error(data.message || 'Request failed')
-      error.status = response.status
-      error.data = data
-      throw error
-    }
-
-    return data
-  }
-
-  post(endpoint, body, options = {}) {
-    return this.request(endpoint, { ...options, method: 'POST', body: JSON.stringify(body) })
-  }
-
-  put(endpoint, body, options = {}) {
-    return this.request(endpoint, { ...options, method: 'PUT', body: JSON.stringify(body) })
-  }
-
-  get(endpoint, options = {}) {
-    return this.request(endpoint, { ...options, method: 'GET' })
-  }
-}
 
 // Location Cache
 class LocationCache {
@@ -509,11 +466,6 @@ class LocationCache {
   }
 }
 
-// Get token from secure context
-const getToken = () => localStorage.getItem('token')
-
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
-const apiClient = new ApiClient(apiBaseUrl, getToken)
 const locationCache = new LocationCache()
 const toast = useToast()
 
@@ -667,7 +619,8 @@ const initCheckout = async () => {
   unavailable.value = false
 
   try {
-    const data = await apiClient.post('/checkout/init', {})
+    const response = await apiClient.post('/checkout/init', {})
+    const data = response.data
 
     cartData.value = data.data.user_cart
     shippingAddresses.value = data.data.shippingAddresses || []
@@ -687,12 +640,15 @@ const initCheckout = async () => {
     await loadCountries()
   } catch (err) {
     console.error('Checkout init error:', err)
-    if (err.status === 422 && err.data?.response === 'unavailable') {
+    const status = err.response?.status
+    const errorData = err.response?.data
+    
+    if (status === 422 && errorData?.response === 'unavailable') {
       unavailable.value = true
-      unavailableProducts.value = err.data?.errors || null
-      toast.error(err.message)
+      unavailableProducts.value = errorData?.errors || null
+      toast.error(errorData?.message || t('checkout.toasts.init_failed'))
     } else {
-      error.value = err.message || t('checkout.toasts.init_failed')
+      error.value = errorData?.message || t('checkout.toasts.init_failed')
       toast.error(error.value)
     }
   } finally {
@@ -707,8 +663,8 @@ const loadCountries = async () => {
       return
     }
 
-    const data = await apiClient.get('/countries')
-    countries.value = data.countries || []
+    const response = await apiClient.get('/countries')
+    countries.value = response.data.countries || []
     locationCache.setCountries(countries.value)
   } catch (err) {
     console.error('Failed to load countries:', err)
@@ -727,8 +683,8 @@ const loadStatesProvinces = async () => {
       return
     }
 
-    const data = await apiClient.get(`/states-provinces/${addressForm.value.country}`)
-    statesList.value = data.data || []
+    const response = await apiClient.get(`/states-provinces/${addressForm.value.country}`)
+    statesList.value = response.data.data || []
     locationCache.setStatesProvinces(addressForm.value.country, statesList.value)
     addressForm.value.selectedStateProvince = null
   } catch (err) {
@@ -756,43 +712,40 @@ const placeOrder = async () => {
     toast.error(t('checkout.toasts.select_payment_required'))
     return
   }
+
   try {
-    let gatewayName = selectedGateway.value
+    const gatewayName = selectedGateway.value
     gatewayLoading.value = true
+
     const response = await apiClient.post(`/place-order/${gatewayName}`, {})
 
+    // Response handling (backend should return `error` flag)
+    const resData = response.data?.data || response.data
+
+    if (resData.error) {
+      toast.error(resData.message || 'Payment verification failed')
+      router.push('/dashboard/orders')
+      return
+    }
+
+    // Continue based on payment method
     if (paymentMethod.value === PAYMENT_METHODS.PAYSTACK) {
-      await processPaystackPayment(response.data)
+      await processPaystackPayment(resData)
     } else if (paymentMethod.value === PAYMENT_METHODS.FLUTTERWAVE) {
-      await processFlutterwavePayment(response.data)
+      await processFlutterwavePayment(resData)
     }
 
   } catch (err) {
     console.error('Failed to fetch gateway details:', err)
-    toast.error(err.message)
+    toast.error(err.response?.data?.message || err.message)
     paymentMethod.value = null
+    // Optional redirect in case of hard failure
+    router.push('/dashboard/orders')
   } finally {
     gatewayLoading.value = false
   }
 }
 
-// const handlePayment = async () => {
-
-//   isProcessingPayment.value = true
-
-//   try {
-//     const paymentData = {
-//       address_id: selectedAddressId.value,
-//       gateway: paymentMethod.value
-//     }
-
-//     const response = await apiClient.post('/process-payment', paymentData)
-//   } catch (err) {
-//     console.error('Payment error:', err)
-//     toast.error(err.message || 'Payment processing failed')
-//     isProcessingPayment.value = false
-//   }
-// }
 
 const selectAddress = (addressId) => {
   selectedAddressId.value = addressId
@@ -846,36 +799,34 @@ const handleAddAddress = async () => {
 
   isSubmittingForm.value = true
   try {
-    const method = editingAddress.value ? 'PUT' : 'POST'
+    const method = editingAddress.value ? 'put' : 'post'
     const url = editingAddress.value
       ? `/shipping-address/${editingAddress.value.id}`
       : '/shipping-address'
 
-    const data = await apiClient[method === 'PUT' ? 'put' : 'post'](url, addressForm.value)
+    const response = await apiClient[method](url, addressForm.value)
+    const data = response.data.data
 
     if (editingAddress.value) {
-      const index = shippingAddresses.value.findIndex(a => a.id === editingAddress.value.id)
-      if (index > -1) {
-        shippingAddresses.value[index] = data.data
-      }
       toast.success(t('checkout.toasts.address_updated'))
     } else {
-      shippingAddresses.value.push(data.data)
-      selectedAddressId.value = data.data.id
       toast.success(t('checkout.toasts.address_added'))
     }
 
     closeAddressModal()
+    
+    // Refresh checkout to update cart and shipping data
+    await initCheckout()
   } catch (err) {
     console.error('Failed to save address:', err)
 
-    if (err.status === 422 && err.data?.errors) {
-      Object.entries(err.data.errors).forEach(([field, messages]) => {
+    if (err.response?.status === 422 && err.response?.data?.errors) {
+      Object.entries(err.response.data.errors).forEach(([field, messages]) => {
         formErrors.value[field] = Array.isArray(messages) ? messages[0] : messages
       })
       toast.error(t('checkout.toasts.fix_errors_below'))
     } else {
-      toast.error(err.message || t('checkout.toasts.save_address_failed'))
+      toast.error(err.response?.data?.message || t('checkout.toasts.save_address_failed'))
     }
   } finally {
     isSubmittingForm.value = false
@@ -897,12 +848,11 @@ const processPaystackPayment = async (paymentData) => {
       amount: paymentData.total_amount * 100,
       ref: paymentData.trans_ref,
       onClose: () => {
-        toast.info(t('checkout.toasts.payment_cancelled'))
+        // toast.info(t('checkout.toasts.payment_cancelled'))
         isProcessingPayment.value = false
         reject(new Error('Payment cancelled'))
       },
-      callback: function (response) { // <- regular function
-        // wrap async in here
+      callback: function (response) {
         (async () => {
           try {
             await verifyPayment(PAYMENT_METHODS.PAYSTACK, response.reference, paymentData.orderId)
@@ -954,7 +904,7 @@ const processFlutterwavePayment = async (paymentData) => {
         }
       },
       onClose: () => {
-        toast.info(t('checkout.toasts.payment_cancelled'))
+        // toast.info(t('checkout.toasts.payment_cancelled'))
         isProcessingPayment.value = false
         reject(new Error('Payment cancelled'))
       }
@@ -964,14 +914,14 @@ const processFlutterwavePayment = async (paymentData) => {
 
 const verifyPayment = async (gateway, reference, order) => {
   try {
-    const data = await apiClient.post(`/checkout/${gateway}/${reference}/${order}`, {})
+    const response = await apiClient.post(`/checkout/${gateway}/${reference}/${order}`, {})
 
     isProcessingPayment.value = true
     isFinalStep.value = true
 
     // Redirect to order confirmation or success page
     clearCart()
-    window.location.href = `/order/${data.orderId}`
+    window.location.href = `/order/${response.data.orderId}`
   } catch (err) {
     console.error('Payment verification failed:', err)
     throw err

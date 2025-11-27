@@ -17,9 +17,6 @@ const authStore = useAuthStore()
 onMounted(() => {
     // Check for saved auth token on app load
     authStore.checkAuth()
-
-    // Set up any global configurations
-    console.log('Fursa Energy App Initialized')
 })
 </script>
 

@@ -545,7 +545,6 @@ const priceRanges = [
 const wishlistStore = useWishlistStore();
 
 const removeTag = (tag) => {
-  console.log(tag);
   filters.selectedTags = filters.selectedTags.filter(t => t !== tag);
   state.currentPage = 1;
 };
@@ -556,7 +555,7 @@ const buildQueryParams = (n) => {
   if (filters.name) {
     params.append('name', filters.name);
   }
-  if (filters.minPrice != null) {
+  if (filters.minPrice != null)  {
     params.append('min_price', filters.minPrice);
   }
   if (filters.maxPrice != null) {

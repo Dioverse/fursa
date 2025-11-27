@@ -386,6 +386,7 @@ import {
     faCertificate,
 } from '@fortawesome/free-solid-svg-icons'
 import { toNumber } from '@/utils/helpers'
+import apiClient from '@/services/api'
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL
 const router = useRouter()
@@ -445,11 +446,13 @@ const goToCategory = (slug) => {
 }
 
 onMounted(async () => {
-    fetchCategories()
+    await fetchCategories()
     loading.value = true
     try {
         // Mock data - replace with actual API call
-        const response = await axios.get(`${baseUrl}/products?per_page=4`)
+        const response = await apiClient.get('/products', {
+            params: { per_page: 4 },
+        })
         const products = response.data.data.products.data
         popularProducts.value = products.map(p => ({
             id: p.id,

@@ -64,6 +64,7 @@ import { useCartStore } from '@/stores/cart'
 import api from '@/services/api'
 import axios from 'axios'
 import { useI18n } from 'vue-i18n'
+import apiClient from '@/services/api'
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL
 const token = localStorage.getItem('token')
@@ -88,24 +89,23 @@ const stats = ref({
 
 const fetchDashboard = async () => {
   loading.value = true
+  error.value = null
+
   try {
-    const { data } = await axios.get(`${baseUrl}/dashboard`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+    const { data } = await apiClient.get('/dashboard')
 
     stats.value = {
-      ongoingOrders: Number(data.data.orders_summary.pending ?? 0),
+      ongoingOrders: Number(data.data.orders_summary?.pending ?? 0),
       cartItems: Number(cartStore.itemCount),
       wishlistItems: Number(data.data.wishlistItems ?? 0),
-      totalOrders: Number(data.data.orders_summary.total ?? 0)
+      totalOrders: Number(data.data.orders_summary?.total ?? 0)
     }
 
     recentOrders.value = data.data.recent_orders || []
   } catch (err) {
     console.error('Failed to fetch dashboard:', err)
     error.value = 'Could not load dashboard stats'
+    toast.error('Failed to load dashboard data. Please try again.')
   } finally {
     loading.value = false
   }

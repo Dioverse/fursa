@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
+import apiClient from '@/services/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -16,17 +17,21 @@ onMounted(async () => {
   try {
     const { id, hash, expires, signature } = route.query
 
-    await axios.get(`${import.meta.env.VITE_API_BASE_URL}/email/verify/${id}/${hash}`, {
+    // Use apiClient instead of axios
+    await apiClient.get(`/email/verify/${id}/${hash}`, {
       params: { expires, signature },
-      headers: { Authorization: `Bearer ${authStore.token}`, 'Accept': 'application/json', 'Content-Type': 'application/json' }
     })
- 
+
     success.value = true
     setTimeout(() => {
       router.push('/dashboard')
     }, 2000)
   } catch (err) {
-    error.value = "Verification link invalid or expired."
+    console.error('Verification failed:', err)
+
+    // Fallback in case global interceptor doesn’t handle it
+    error.value =
+      err.response?.data?.message || 'Verification link invalid or expired.'
   } finally {
     loading.value = false
   }

@@ -44,8 +44,8 @@
 
         <!-- Quantity Control -->
         <div v-else class="flex items-center rounded overflow-hidden w-max">
-          <button :disabled="getCartQuantity(product.id) <= 1 || loadingStates[product.id]"
-            @click="updateQuantity(product, getCartQuantity(product.id) - 1)"
+          <button :disabled="getCartQuantity(product.id).value <= 1 || loadingStates[product.id]"
+            @click="updateQuantity(product, getCartQuantity(product.id).value - 1)"
             class="px-[14px] py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
             -
           </button>
@@ -62,12 +62,12 @@
             <div v-else contenteditable="true" class="w-full text-center outline-none overflow-hidden"
               :data-product-id="product.id" @blur="onQuantityBlur($event, product)"
               @keydown.enter.prevent="onQuantityEnter($event, product)">
-              {{ getCartQuantity(product.id) }}
+              {{ getCartQuantity(product.id).value }}
             </div>
           </div>
 
           <button :disabled="loadingStates[product.id]"
-            @click="updateQuantity(product, getCartQuantity(product.id) + 1)"
+            @click="updateQuantity(product, getCartQuantity(product.id).value + 1)"
             class="px-3 py-2 bg-gold-500 text-white hover:bg-gold-100 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed">
             +
           </button>

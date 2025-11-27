@@ -347,7 +347,7 @@
     "login": {
       "title": "تسجيل الدخول إلى Fursa",
       "email_label": "البريد الإلكتروني:",
-      "email_placeholder": "{'{'johndoe@gmail.com'}'}",
+      "email_placeholder": "{'johndoe@gmail.com'}",
       "password_label": "كلمة المرور:",
       "remember": "تذكرني",
       "forgot_password": "هل نسيت كلمة المرور؟",

@@ -697,7 +697,6 @@ const submitUpdatedApplication = async () => {
       }
     })
 
-    console.log(formData); return
     await api.post('/distributor/update-application', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'

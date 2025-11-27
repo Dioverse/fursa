@@ -9,8 +9,8 @@ const authService = {
     return api.post('/register', userData)
   },
 
-  async googleSSO(token) {
-    return api.post('/auth/google', {id_token: token})
+  async googleSSO(data) {
+    return api.post('/auth/google', data)
   },
 
   async distributorApplication(payload) {

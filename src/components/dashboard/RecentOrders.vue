@@ -55,8 +55,8 @@
 
             <!-- Total -->
             <td class="px-6 py-4 whitespace-nowrap">
-              <span class="text-sm text-gray-900">₦{{ order.total_amount.toFixed(2) }}</span>
-              <span class="text-xs text-gray-500 block">{{ $t('dashboard.recent_orders.for_items', { count: order.order_id }) }}</span>
+              <span class="text-sm text-gray-900">₦{{ formatAmount(order.total_amount, 2) }}</span>
+              <span class="text-xs text-gray-500 block">{{ $t('dashboard.recent_orders.for_items', { count: order.order_item_count }) }}</span>
             </td>
 
             <!-- Action -->
@@ -91,6 +91,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { formatAmount } from '@/utils/helpers'
 
 const props = defineProps({
   orders: {

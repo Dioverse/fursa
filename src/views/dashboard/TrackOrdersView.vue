@@ -33,7 +33,7 @@
             </div>
           </div>
           <div class="mt-4 text-sm text-gray-700">
-            <p><strong>Total:</strong> ₦{{ Number(order.total_amount).toFixed(2) }}</p>
+            <p><strong>Total:</strong> ₦{{ formatAmount(order.total_amount, 2) }}</p>
             <p><strong>Items:</strong> {{ order.order_items_count || 0 }}</p>
           </div>
         </div>
@@ -77,6 +77,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
+import { formatAmount } from '@/utils/helpers'
 
 const route = useRoute()
 const orderId = route.params.id

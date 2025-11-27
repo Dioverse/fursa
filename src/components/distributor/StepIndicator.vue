@@ -5,40 +5,26 @@
         <!-- Base track -->
         <div class="absolute left-0 right-0 top-5 h-1 bg-gray-300"></div>
         <!-- Progress track -->
-        <div
-            class="absolute top-5 h-1 bg-green-500 transition-all duration-300"
-            :style="{ width: progressWidth, left: '0' }"
-        ></div>
+        <div class="absolute top-5 h-1 bg-green-500 transition-all duration-300"
+            :style="{ width: progressWidth, left: '0' }"></div>
 
         <!-- Steps grid -->
-        <div
-            class="relative grid gap-0"
-            :style="{ gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` }"
-        >
-            <div
-                v-for="step in steps"
-                :key="step.number"
-                class="flex flex-col items-center text-center"
-            >
-                <div
-                    class="w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 shadow-sm"
-                    :class="getStepClass(step.number)"
-                    :aria-current="step.number === currentStep ? 'step' : undefined"
-                >
+        <div class="relative grid gap-0" :style="{ gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` }">
+            <div v-for="step in steps" :key="step.number" class="flex flex-col items-center text-center">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 shadow-sm"
+                    :class="getStepClass(step.number)" :aria-current="step.number === currentStep ? 'step' : undefined">
                     <font-awesome-icon v-if="step.number < currentStep" icon="check" class="text-white" />
                     <span v-else>{{ step.number }}</span>
                 </div>
-                <p
-                    class="text-xs mt-2 truncate max-w-[8rem]"
-                    :class="step.number <= currentStep ? 'text-gray-800' : 'text-gray-400'"
-                    :title="step.label"
-                >
+
+                <p class="text-xs mt-2 truncate max-w-[8rem]":class="[step.number === currentStep ? 'block' : 'hidden md:block text-gray-400']" :title="step.label">
                     {{ step.label }}
                 </p>
             </div>
+
         </div>
     </div>
-  
+
 </template>
 
 <script setup>

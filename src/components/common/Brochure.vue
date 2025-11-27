@@ -36,7 +36,7 @@ const onDownloadClick = () => {
     // Lightweight tracking hook; replace with analytics if available
     try {
         // eslint-disable-next-line no-console
-        console.log('brochure_download_clicked', { url: brochureUrl.value })
+        // console.log('brochure_download_clicked', { url: brochureUrl.value })
     } catch (e) {}
 }
 </script>

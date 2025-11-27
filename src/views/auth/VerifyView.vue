@@ -3,18 +3,11 @@
     <div class="w-full max-w-md mx-auto text-center py-12">
       <h2 class="text-3xl font-bold text-primary mb-4">Verify Your Account</h2>
       <p class="mb-6 text-gray-600">
-        A fresh verification link has been sent to your email address.  
+        A fresh verification link has been sent to your email address.
         Please check your inbox and click the link to continue.
       </p>
 
-      <BaseButton
-        :loading="loading"
-        @click="resendVerification"
-        variant="primary"
-        size="lg"
-        fullWidth
-        icon="envelope"
-      >
+      <BaseButton :loading="loading" @click="resendVerification" variant="primary" size="lg" fullWidth icon="envelope">
         Resend Verification Email
       </BaseButton>
     </div>
@@ -29,6 +22,7 @@ import AuthLayout from '@/layouts/AuthLayout.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import apiClient from '@/services/api'
 
 const toast = useToast()
 const authStore = useAuthStore()
@@ -36,31 +30,31 @@ const loading = ref(false)
 const router = useRouter();
 
 const resendVerification = async () => {
-  loading.value = true;
+  loading.value = true
   try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL}/email/verification-notification`,
-      {},
-      { headers: { Authorization: `Bearer ${authStore.token}` } }
-    );
+    await apiClient.post('/email/verification-notification')
 
-    toast.success('Verification link has been resent to your email!');
+    toast.success('Verification link has been resent to your email!')
   } catch (err) {
-    const message = err.response?.data?.message || err.message || 'Failed to resend verification';
-    toast.error(message);
-    if (err.response?.status === 400) {
-      // Update user if returned from the error response
-      if (err.response.data?.user) {
-        authStore.user = err.response.data.user;
-      }
+    const message =
+      err.response?.data?.message ||
+      err.message ||
+      'Failed to resend verification email.'
+    toast.error(message)
 
-      // Redirect to dashboard
-      router.push({ name: 'dashboard' });
-    }
-      } finally {
-        loading.value = false;
+    // Handle specific cases
+    if (err.response?.status === 400) {
+      // Update user if present in response
+      if (err.response.data?.user) {
+        authStore.user = err.response.data.user
       }
-    };
+      // Redirect to dashboard
+      router.push({ name: 'dashboard' })
+    }
+  } finally {
+    loading.value = false
+  }
+}
 
 onMounted(() => {
   resendVerification()
