@@ -187,195 +187,195 @@ class CheckoutController extends Controller
         ];
     }
 
-    public function checkout(Request $request, $gateway, $transRef, $orderId, PaymentManager $manager)
-    {
-        $user = $request->user();
+    // public function checkout(Request $request, $gateway, $transRef, $orderId, PaymentManager $manager)
+    // {
+    //     $user = $request->user();
 
-        $gateCheck = $manager->gateway($gateway);
-        if ($gateCheck['error']) {
-            return response()->json($gateCheck, 422);
-        }
+    //     $gateCheck = $manager->gateway($gateway);
+    //     if ($gateCheck['error']) {
+    //         return response()->json($gateCheck, 422);
+    //     }
 
-        $order = $user->order()->withoutGlobalScope('pending')->where("order_id", $orderId)->where("trans_ref", $transRef)
-            ->whereDoesntHave('payment', function ($q) {
-                $q->where("status", "!=", "pending");
-            })->first();
+    //     $order = $user->order()->withoutGlobalScope('pending')->where("order_id", $orderId)->where("trans_ref", $transRef)
+    //         ->whereDoesntHave('payment', function ($q) {
+    //             $q->where("status", "!=", "pending");
+    //         })->first();
 
-        if (! $order) {
-            return response()->json(["message" => "Order not found/has been resolved."], 404);
-        }
+    //     if (! $order) {
+    //         return response()->json(["message" => "Order not found/has been resolved."], 404);
+    //     }
 
-        try {
-            DB::beginTransaction();
+    //     try {
+    //         DB::beginTransaction();
 
-            // Payment verification
-            $paymentResult = $this->payments->verifyAndSave($gateCheck['gate'], $transRef, $order->id, $order->user_id, $order->total_amount);
-            if ($paymentResult['error']) {
-                DB::rollBack();
-                return response()->json($paymentResult, 422);
-            }
+    //         // Payment verification
+    //         $paymentResult = $this->payments->verifyAndSave($gateCheck['gate'], $transRef, $order->id, $order->user_id, $order->total_amount);
+    //         if ($paymentResult['error']) {
+    //             DB::rollBack();
+    //             return response()->json($paymentResult, 422);
+    //         }
 
-            // For online payments, check for failed/cancelled status
-            if ($gateway !== 'pod' && in_array($paymentResult['status'], ['failed', 'cancelled'])) {
-                $order->update(['status' => 'failed']);
-                $msg = 'Order cancelled. Payment failed';
-                $msg .= ! empty($paymentResult['reason']) ? " - " . $paymentResult['reason'] : '';
-                $msg .= '.';
-                DB::commit();
-                return response()->json(['error' => true, 'message' => $msg], 422);
-            }
+    //         // For online payments, check for failed/cancelled status
+    //         if ($gateway !== 'pod' && in_array($paymentResult['status'], ['failed', 'cancelled'])) {
+    //             $order->update(['status' => 'failed']);
+    //             $msg = 'Order cancelled. Payment failed';
+    //             $msg .= ! empty($paymentResult['reason']) ? " - " . $paymentResult['reason'] : '';
+    //             $msg .= '.';
+    //             DB::commit();
+    //             return response()->json(['error' => true, 'message' => $msg], 422);
+    //         }
 
-            // Eager load items + products before use
-            $order->loadMissing(['orderItem.product']);
+    //         // Eager load items + products before use
+    //         $order->loadMissing(['orderItem.product']);
 
-            // Stock deduction (bulk + safe update)
-            $productUpdates = [];
-            foreach ($order->orderItem as $item) {
-                $product = $item->product;
-                if ($product->stock_quantity < $item->quantity) {
-                    DB::rollBack();
-                    return response()->json([
-                        'error'   => true,
-                        'message' => "Insufficient stock for {$product->name}",
-                    ], 422);
-                }
-                $productUpdates[$product->id] = $item->quantity;
-            }
+    //         // Stock deduction (bulk + safe update)
+    //         $productUpdates = [];
+    //         foreach ($order->orderItem as $item) {
+    //             $product = $item->product;
+    //             if ($product->stock_quantity < $item->quantity) {
+    //                 DB::rollBack();
+    //                 return response()->json([
+    //                     'error'   => true,
+    //                     'message' => "Insufficient stock for {$product->name}",
+    //                 ], 422);
+    //             }
+    //             $productUpdates[$product->id] = $item->quantity;
+    //         }
 
-            if (! empty($productUpdates)) {
-                $ids = implode(',', array_keys($productUpdates));
+    //         if (! empty($productUpdates)) {
+    //             $ids = implode(',', array_keys($productUpdates));
 
-                $cases = '';
-                foreach ($productUpdates as $id => $qty) {
-                    $cases .= " WHEN id = {$id} AND stock_quantity >= {$qty} THEN stock_quantity - {$qty}";
-                }
+    //             $cases = '';
+    //             foreach ($productUpdates as $id => $qty) {
+    //                 $cases .= " WHEN id = {$id} AND stock_quantity >= {$qty} THEN stock_quantity - {$qty}";
+    //             }
 
-                $query = "UPDATE products SET stock_quantity = CASE{$cases} ELSE stock_quantity END
-                WHERE id IN ({$ids})";
+    //             $query = "UPDATE products SET stock_quantity = CASE{$cases} ELSE stock_quantity END
+    //             WHERE id IN ({$ids})";
 
-                DB::statement($query);
-                $failed = DB::table('products')->whereIn('id', array_keys($productUpdates))
-                    ->whereRaw("stock_quantity < 0")->exists();
+    //             DB::statement($query);
+    //             $failed = DB::table('products')->whereIn('id', array_keys($productUpdates))
+    //                 ->whereRaw("stock_quantity < 0")->exists();
 
-                if ($failed) {
-                    DB::rollBack();
-                    return response()->json(['error' => true, 'message' => 'Stock update failed — some products ran out of stock.'], 422);
-                }
-            }
+    //             if ($failed) {
+    //                 DB::rollBack();
+    //                 return response()->json(['error' => true, 'message' => 'Stock update failed — some products ran out of stock.'], 422);
+    //             }
+    //         }
 
-            // Confirm order + clear cart
-            CartItem::where('cart_id', $user->cart->id)->delete();
+    //         // Confirm order + clear cart
+    //         CartItem::where('cart_id', $user->cart->id)->delete();
 
-            // Set order status based on payment method
-            $orderStatus = ($gateway === 'pod') ? Status::O_PENDING : Status::O_CONFIRM;
-            $this->orders->updateStatus($order, $orderStatus, false);
+    //         // Set order status based on payment method
+    //         $orderStatus = ($gateway === 'pod') ? Status::O_PENDING : Status::O_CONFIRM;
+    //         $this->orders->updateStatus($order, $orderStatus, false);
 
-            DB::commit();
+    //         DB::commit();
 
-            $this->dispatchNotification($user, $order);
+    //         $this->dispatchNotification($user, $order);
 
-            $message = $gateway === 'pod'
-                ? 'Order placed successfully. Payment will be collected on delivery'
-                : 'Order placed successfully';
+    //         $message = $gateway === 'pod'
+    //             ? 'Order placed successfully. Payment will be collected on delivery'
+    //             : 'Order placed successfully';
 
-            return response()->json([
-                'message'       => $message,
-                'orderId'       => $orderId,
-                'paymentMethod' => $gateway,
-            ]);
+    //         return response()->json([
+    //             'message'       => $message,
+    //             'orderId'       => $orderId,
+    //             'paymentMethod' => $gateway,
+    //         ]);
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error("Checkout error: " . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-            ]);
-            return response()->json([
-                'error'   => true,
-                'message' => 'Checkout failed',
-            ], 500);
-        }
-    }
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         Log::error("Checkout error: " . $e->getMessage(), [
+    //             'trace' => $e->getTraceAsString(),
+    //         ]);
+    //         return response()->json([
+    //             'error'   => true,
+    //             'message' => 'Checkout failed',
+    //         ], 500);
+    //     }
+    // }
 
-    public function makeOrder(Request $request, $gateway, PaymentManager $manager)
-    {
-        $user = $request->user();
+    // public function makeOrder(Request $request, $gateway, PaymentManager $manager)
+    // {
+    //     $user = $request->user();
 
-        $gateCheck = $manager->gateway($gateway);
-        if ($gateCheck['error']) {
-            return response()->json($gateCheck, 422);
-        }
+    //     $gateCheck = $manager->gateway($gateway);
+    //     if ($gateCheck['error']) {
+    //         return response()->json($gateCheck, 422);
+    //     }
 
-        // Validate cart & stock
-        $cartSummary = $this->getCartSummary($user, true);
-        if ($cartSummary['error']) {
-            return response()->json($cartSummary, 422);
-        }
+    //     // Validate cart & stock
+    //     $cartSummary = $this->getCartSummary($user, true);
+    //     if ($cartSummary['error']) {
+    //         return response()->json($cartSummary, 422);
+    //     }
 
-        try {
-            DB::beginTransaction();
+    //     try {
+    //         DB::beginTransaction();
 
-            // Clean up abandoned pending orders with no payment
-            $user->order()->where('status', 'pending')
-                ->whereDoesntHave('payment')->delete();
+    //         // Clean up abandoned pending orders with no payment
+    //         $user->order()->where('status', 'pending')
+    //             ->whereDoesntHave('payment')->delete();
 
-            // Create fresh order
-            $orderCreate = $this->orders->createOrder(
-                $user,
-                $cartSummary['payable'],
-                $cartSummary['shippingCost'],
-                $cartSummary['tax']
-            );
+    //         // Create fresh order
+    //         $orderCreate = $this->orders->createOrder(
+    //             $user,
+    //             $cartSummary['payable'],
+    //             $cartSummary['shippingCost'],
+    //             $cartSummary['tax']
+    //         );
 
-            if ($orderCreate['error']) {
-                DB::rollBack();
-                return response()->json($orderCreate, 422);
-            }
+    //         if ($orderCreate['error']) {
+    //             DB::rollBack();
+    //             return response()->json($orderCreate, 422);
+    //         }
 
-            // For POD, no need to fetch gateway config
-            if ($gateway === 'pod') {
-                DB::commit();
-                return response()->json([
-                    "message" => "Order Created Successfully",
-                    "data"    => [
-                        "orderId"       => $orderCreate['orderId'],
-                        "trans_ref"     => $orderCreate['trans_ref'],
-                        "total_amount"  => $cartSummary['payable'],
-                        "paymentMethod" => "pay_on_delivery",
-                        "email"         => $user->email,
-                        "name"          => $user->name,
-                    ],
-                ], 200);
-            }
+    //         // For POD, no need to fetch gateway config
+    //         if ($gateway === 'pod') {
+    //             DB::commit();
+    //             return response()->json([
+    //                 "message" => "Order Created Successfully",
+    //                 "data"    => [
+    //                     "orderId"       => $orderCreate['orderId'],
+    //                     "trans_ref"     => $orderCreate['trans_ref'],
+    //                     "total_amount"  => $cartSummary['payable'],
+    //                     "paymentMethod" => "pay_on_delivery",
+    //                     "email"         => $user->email,
+    //                     "name"          => $user->name,
+    //                 ],
+    //             ], 200);
+    //         }
 
-            // Get gateway config for online payments (excluding secret_key)
-            $gatewayConfig = GeneralSetting::getNested("gateways.$gateway");
-            $pubKey        = Arr::except($gatewayConfig, ['secret_key']);
+    //         // Get gateway config for online payments (excluding secret_key)
+    //         $gatewayConfig = GeneralSetting::getNested("gateways.$gateway");
+    //         $pubKey        = Arr::except($gatewayConfig, ['secret_key']);
 
-            DB::commit();
+    //         DB::commit();
 
-            return response()->json([
-                "message" => "Order Created Successfully",
-                "data"    => [
-                    "orderId"      => $orderCreate['orderId'],
-                    "trans_ref"    => $orderCreate['trans_ref'],
-                    "total_amount" => $cartSummary['payable'],
-                    "gws"          => $pubKey,
-                    "email"        => $user->email,
-                    "name"         => $user->name,
-                ],
-            ], 200);
+    //         return response()->json([
+    //             "message" => "Order Created Successfully",
+    //             "data"    => [
+    //                 "orderId"      => $orderCreate['orderId'],
+    //                 "trans_ref"    => $orderCreate['trans_ref'],
+    //                 "total_amount" => $cartSummary['payable'],
+    //                 "gws"          => $pubKey,
+    //                 "email"        => $user->email,
+    //                 "name"         => $user->name,
+    //             ],
+    //         ], 200);
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error("Checkout error: " . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-            ]);
-            return response()->json([
-                'error'   => true,
-                'message' => 'Failed to place order',
-            ], 500);
-        }
-    }
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         Log::error("Checkout error: " . $e->getMessage(), [
+    //             'trace' => $e->getTraceAsString(),
+    //         ]);
+    //         return response()->json([
+    //             'error'   => true,
+    //             'message' => 'Failed to place order',
+    //         ], 500);
+    //     }
+    // }
 
     private function dispatchNotification($user, $order)
     {
@@ -413,168 +413,168 @@ class CheckoutController extends Controller
     }
 
     
-    // public function makeOrder(Request $request, $gateway, PaymentManager $manager)
-    // {
-    //     $user = $request->user();
+    public function makeOrder(Request $request, $gateway, PaymentManager $manager)
+    {
+        $user = $request->user();
 
-    //     $gateCheck = $manager->gateway($gateway);
-    //     if ($gateCheck['error']) {
-    //         return response()->json($gateCheck, 422);
-    //     }
+        $gateCheck = $manager->gateway($gateway);
+        if ($gateCheck['error']) {
+            return response()->json($gateCheck, 422);
+        }
 
-    //     // 1. Validate cart & stock
-    //     $cartSummary = $this->getCartSummary($user, true);
-    //     if ($cartSummary['error']) {
-    //         return response()->json($cartSummary, 422);
-    //     }
+        // 1. Validate cart & stock
+        $cartSummary = $this->getCartSummary($user, true);
+        if ($cartSummary['error']) {
+            return response()->json($cartSummary, 422);
+        }
 
-    //     try {
-    //         DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
-    //         // Clean up abandoned pending orders with no payment
-    //         $user->order()->where('status', 'pending')
-    //             ->whereDoesntHave('payment')->delete();
+            // Clean up abandoned pending orders with no payment
+            $user->order()->where('status', 'pending')
+                ->whereDoesntHave('payment')->delete();
 
-    //         // 2. Create fresh order
-    //         $orderCreate = $this->orders->createOrder(
-    //             $user,
-    //             $cartSummary['payable'],
-    //             $cartSummary['shippingCost'],
-    //             $cartSummary['tax']
-    //         );
+            // 2. Create fresh order
+            $orderCreate = $this->orders->createOrder(
+                $user,
+                $cartSummary['payable'],
+                $cartSummary['shippingCost'],
+                $cartSummary['tax']
+            );
 
-    //         if ($orderCreate['error']) {
-    //             DB::rollBack();
-    //             return response()->json($orderCreate, 422);
-    //         }
+            if ($orderCreate['error']) {
+                DB::rollBack();
+                return response()->json($orderCreate, 422);
+            }
 
-    //         // 3. Get gateway config without secret_key
-    //         $gatewayConfig = GeneralSetting::getNested("gateways.$gateway");
-    //         $pubKey        = Arr::except($gatewayConfig, ['secret_key']);
+            // 3. Get gateway config without secret_key
+            $gatewayConfig = GeneralSetting::getNested("gateways.$gateway");
+            $pubKey        = Arr::except($gatewayConfig, ['secret_key']);
 
-    //         DB::commit();
+            DB::commit();
 
-    //         return response()->json([
-    //             "message" => "Order Created Successfully",
-    //             "data"    => [
-    //                 "orderId"      => $orderCreate['orderId'],
-    //                 "trans_ref"    => $orderCreate['trans_ref'],
-    //                 "total_amount" => $cartSummary['payable'],
-    //                 "gws"          => $pubKey,
-    //                 "email"        => $user->email,
-    //                 "name"         => $user->name
-    //             ],
-    //         ], 200);
+            return response()->json([
+                "message" => "Order Created Successfully",
+                "data"    => [
+                    "orderId"      => $orderCreate['orderId'],
+                    "trans_ref"    => $orderCreate['trans_ref'],
+                    "total_amount" => $cartSummary['payable'],
+                    "gws"          => $pubKey,
+                    "email"        => $user->email,
+                    "name"         => $user->name
+                ],
+            ], 200);
 
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         Log::error("Checkout error: " . $e->getMessage(), [
-    //             'trace' => $e->getTraceAsString(),
-    //         ]);
-    //         return response()->json([
-    //             'error'   => true,
-    //             'message' => 'Failed to place order',
-    //         ], 500);
-    //     }
-    // }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Checkout error: " . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json([
+                'error'   => true,
+                'message' => 'Failed to place order',
+            ], 500);
+        }
+    }
 
-    // public function checkout(Request $request, $gateway, $transRef, $orderId, PaymentManager $manager)
-    // {
-    //     $user = $request->user();
+    public function checkout(Request $request, $gateway, $transRef, $orderId, PaymentManager $manager)
+    {
+        $user = $request->user();
 
-    //     $gateCheck = $manager->gateway($gateway);
-    //     if ($gateCheck['error']) {
-    //         return response()->json($gateCheck, 422);
-    //     }
+        $gateCheck = $manager->gateway($gateway);
+        if ($gateCheck['error']) {
+            return response()->json($gateCheck, 422);
+        }
 
-    //     $order = $user->order()->withoutGlobalScope('pending')->where("order_id", $orderId)->where("trans_ref", $transRef)
-    //         ->whereDoesntHave('payment', function ($q) {
-    //             $q->where("status", "!=", "pending");
-    //         })->first();
-    //     if (! $order) {
-    //         return response()->json(["message" => "Order not found/has been resolved."], 404);
-    //     }
+        $order = $user->order()->withoutGlobalScope('pending')->where("order_id", $orderId)->where("trans_ref", $transRef)
+            ->whereDoesntHave('payment', function ($q) {
+                $q->where("status", "!=", "pending");
+            })->first();
+        if (! $order) {
+            return response()->json(["message" => "Order not found/has been resolved."], 404);
+        }
 
-    //     try {
-    //         DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
-    //         $paymentResult = $this->payments->verifyAndSave($gateCheck['gate'], $transRef, $order->id, $order->user_id, $order->total_amount);
-    //         if ($paymentResult['error']) {
-    //             DB::rollBack();
-    //             return response()->json($paymentResult, 422);
-    //         }
+            $paymentResult = $this->payments->verifyAndSave($gateCheck['gate'], $transRef, $order->id, $order->user_id, $order->total_amount);
+            if ($paymentResult['error']) {
+                DB::rollBack();
+                return response()->json($paymentResult, 422);
+            }
 
-    //         if (in_array($paymentResult['status'], ['failed', 'cancelled'])) {
-    //             $order->update(['status' => 'failed']);
-    //             $msg = 'Order cancelled. Payment failed';
-    //             $msg .= ! empty($paymentResult['reason']) ? " - " . $paymentResult['reason'] : '';
-    //             $msg .= '.';
-    //             DB::commit();
-    //             return response()->json(['error' => true, 'message' => $msg], 422);
-    //         }
+            if (in_array($paymentResult['status'], ['failed', 'cancelled'])) {
+                $order->update(['status' => 'failed']);
+                $msg = 'Order cancelled. Payment failed';
+                $msg .= ! empty($paymentResult['reason']) ? " - " . $paymentResult['reason'] : '';
+                $msg .= '.';
+                DB::commit();
+                return response()->json(['error' => true, 'message' => $msg], 422);
+            }
 
-    //         // Eager load items + products before use
-    //         $order->loadMissing(['orderItem.product']);
+            // Eager load items + products before use
+            $order->loadMissing(['orderItem.product']);
 
-    //         // 4. Deduct stock (bulk + safe update)
-    //         $productUpdates = [];
-    //         foreach ($order->orderItem as $item) {
-    //             $product = $item->product;
-    //             if ($product->stock_quantity < $item->quantity) {
-    //                 DB::rollBack();
-    //                 return response()->json([
-    //                     'error'   => true,
-    //                     'message' => "Insufficient stock for {$product->name}",
-    //                 ], 422);
-    //             }
-    //             $productUpdates[$product->id] = $item->quantity;
-    //         }
+            // 4. Deduct stock (bulk + safe update)
+            $productUpdates = [];
+            foreach ($order->orderItem as $item) {
+                $product = $item->product;
+                if ($product->stock_quantity < $item->quantity) {
+                    DB::rollBack();
+                    return response()->json([
+                        'error'   => true,
+                        'message' => "Insufficient stock for {$product->name}",
+                    ], 422);
+                }
+                $productUpdates[$product->id] = $item->quantity;
+            }
 
-    //         if (! empty($productUpdates)) {
-    //             $ids = implode(',', array_keys($productUpdates));
+            if (! empty($productUpdates)) {
+                $ids = implode(',', array_keys($productUpdates));
 
-    //             $cases = '';
-    //             foreach ($productUpdates as $id => $qty) {
-    //                 $cases .= " WHEN id = {$id} AND stock_quantity >= {$qty} THEN stock_quantity - {$qty}";
-    //             }
+                $cases = '';
+                foreach ($productUpdates as $id => $qty) {
+                    $cases .= " WHEN id = {$id} AND stock_quantity >= {$qty} THEN stock_quantity - {$qty}";
+                }
 
-    //             $query = "UPDATE products SET stock_quantity = CASE{$cases} ELSE stock_quantity END
-    //                 WHERE id IN ({$ids})";
+                $query = "UPDATE products SET stock_quantity = CASE{$cases} ELSE stock_quantity END
+                    WHERE id IN ({$ids})";
 
-    //             DB::statement($query);
-    //             $failed = DB::table('products')->whereIn('id', array_keys($productUpdates))
-    //                 ->whereRaw("stock_quantity < 0")->exists();
+                DB::statement($query);
+                $failed = DB::table('products')->whereIn('id', array_keys($productUpdates))
+                    ->whereRaw("stock_quantity < 0")->exists();
 
-    //             if ($failed) {
-    //                 DB::rollBack();
-    //                 //refund account
-    //                 return response()->json(['error' => true, 'message' => 'Stock update failed — some products ran out of stock.'], 422);
-    //             }
-    //         }
+                if ($failed) {
+                    DB::rollBack();
+                    //refund account
+                    return response()->json(['error' => true, 'message' => 'Stock update failed — some products ran out of stock.'], 422);
+                }
+            }
 
-    //         // 5. Confirm order + clear cart (single query delete)
-    //         CartItem::where('cart_id', $user->cart->id)->delete();
-    //         $this->orders->updateStatus($order, Status::O_CONFIRM, false);
+            // 5. Confirm order + clear cart (single query delete)
+            CartItem::where('cart_id', $user->cart->id)->delete();
+            $this->orders->updateStatus($order, Status::O_CONFIRM, false);
 
-    //         DB::commit();
+            DB::commit();
 
-    //         $this->dispatchNotification($user, $order);
+            $this->dispatchNotification($user, $order);
 
-    //         return response()->json([
-    //             'message' => 'Order placed successfully',
-    //             'orderId'   => $orderId
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         Log::error("Checkout error: " . $e->getMessage(), [
-    //             'trace' => $e->getTraceAsString(),
-    //         ]);
-    //         return response()->json([
-    //             'error'   => true,
-    //             'message' => 'Checkout failed',
-    //         ], 500);
-    //     }
-    // }
+            return response()->json([
+                'message' => 'Order placed successfully',
+                'orderId'   => $orderId
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Checkout error: " . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json([
+                'error'   => true,
+                'message' => 'Checkout failed',
+            ], 500);
+        }
+    }
 
     
 

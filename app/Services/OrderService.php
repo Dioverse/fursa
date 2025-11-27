@@ -39,7 +39,7 @@ class OrderService
             OrderStatusHistory::create([
                 'order_id' => $order->id,
                 'status'   => 'pending',
-                'changed_by' => null,
+                'changed_by' => 'system',
                 'change_role' => null,
             ]);
 
