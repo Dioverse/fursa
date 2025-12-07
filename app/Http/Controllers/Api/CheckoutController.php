@@ -288,7 +288,7 @@ class CheckoutController extends Controller
         return ['error' => false];
     }
 
-    public function placeOrder(Request $request)
+    public function placeOrder(Request $request, PaymentManager $manager)
     {
         $user = $request->user();
 
@@ -308,7 +308,7 @@ class CheckoutController extends Controller
                 'postal_code'       => 'nullable|string',
                 'country'           => 'required|string',
 
-                // cart items from frontend
+                // cart items from frontend (guest only)
                 'cart'              => 'required|array|min:1',
                 'cart.*.product_id' => 'required|integer|exists:products,id',
                 'cart.*.quantity'   => 'required|integer|min:1',
@@ -393,16 +393,46 @@ class CheckoutController extends Controller
                 return response()->json($orderCreate, 422);
             }
 
-            // We know createOrder returns at least orderId; get the actual model
-            $orderId = $orderCreate['orderId'];
-            $order   = $user->order()->where('order_id', $orderId)->firstOrFail();
+            $orderId  = $orderCreate['orderId'];
+            $transRef = $orderCreate['trans_ref'] ?? null;
 
-            // Mark as Pay on Delivery (adapt field name if different)
+            /** @var \App\Models\Order $order */
+            $order = $user->order()
+                ->where('order_id', $orderId)
+                ->firstOrFail();
+
+            // ---------- Payment record (Pay on Delivery) ----------
+
+            // Get POD gateway
+            $gateCheck = $manager->gateway('pay_on_delivery');
+            if ($gateCheck['error'] ?? false) {
+                DB::rollBack();
+                return response()->json($gateCheck, 422);
+            }
+
+            // Use existing trans_ref or generate one
+            $transRef = $transRef ?: ('POD-' . Str::upper(Str::random(10)));
+
+            // Create / update payment via PaymentService
+            $paymentResult = $this->payments->verifyAndSave(
+                $gateCheck['gate'],
+                $transRef,
+                $order->id,
+                $user->id,
+                $cartSummary['payable']
+            );
+
+            if ($paymentResult['error']) {
+                DB::rollBack();
+                return response()->json($paymentResult, 422);
+            }
+
+            // Mark order method explicitly as Pay on Delivery
             $order->update([
                 'payment_method' => 'pay_on_delivery',
             ]);
 
-            // Reuse shared stock + confirm logic
+            // ---------- Stock, cart clear, and confirm (shared helper) ----------
             $result = $this->applyStockAndConfirmOrder($user, $order);
             if ($result['error']) {
                 DB::rollBack();
@@ -414,7 +444,7 @@ class CheckoutController extends Controller
 
             DB::commit();
 
-            // Async notification (reuse your existing helper)
+            // Async notification (reuse existing helper)
             $this->dispatchNotification($user, $order);
 
             return response()->json([

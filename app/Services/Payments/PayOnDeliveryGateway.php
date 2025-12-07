@@ -16,14 +16,16 @@ class PayOnDeliveryGateway implements PaymentGateway
 
     public function verifyPayment($transRef): array
     {
-        // POD doesn't require external verification
-        // Payment is collected at delivery
+        // For POD, "verification" just means "create a pending payment entry"
         return [
-            'success' => false,
-            'status' => 'pending',
+            'success' => true,                // ⬅️ important
+            'status'  => 'pending',          // payment not collected yet
             'message' => 'Payment will be collected on delivery',
-            'method' => 'pay_on_delivery',
-            'raw' => ['transaction_ref' => $transRef, 'verified_at' => now()->toDateTimeString()],
+            'method'  => 'pay_on_delivery',
+            'raw'     => [
+                'transaction_ref' => $transRef,
+                'verified_at'     => now()->toDateTimeString(),
+            ],
         ];
     }
     

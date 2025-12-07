@@ -10,7 +10,6 @@ class PaymentService
         // Attempt verification
         $payment = $gateway->verifyPayment($transRef);
 
-        // Default values in case verification fails
         $isSuccess = $payment['success'] ?? false;
         $status    = $isSuccess ? ($payment['status'] ?? 'successful') : 'pending';
         $message   = $isSuccess ? ($payment['message'] ?? 'Payment verified successfully') : 'Gateway is currently busy. Try again';
@@ -25,7 +24,8 @@ class PaymentService
                 'user_id'         => $userId,
                 'order_id'        => $orderId,
                 'status'          => $status,
-                'paid_at'         => $isSuccess && $gateway->getName() !== 'pod' ? now() : null,
+                // ⬇️ skip paid_at for pay_on_delivery
+                'paid_at'         => $isSuccess && $gateway->getName() !== 'pay_on_delivery' ? now() : null,
                 'amount'          => $amount,
                 'reason'          => $message,
                 'payment_method'  => $isSuccess ? ($payment['method'] ?? null) : null,
@@ -34,7 +34,7 @@ class PaymentService
             ]
         );
 
-        // If verification failed, return early (but record is still saved)
+        // If verification failed, return early
         if (! $isSuccess) {
             return [
                 'error'      => true,
@@ -44,8 +44,8 @@ class PaymentService
             ];
         }
 
-        // Skip amount validation for POD (no amount verification needed)
-        if ($gateway->getName() === 'pod') {
+        // ⬇️ For pay_on_delivery: treat as success but skip amount validation
+        if ($gateway->getName() === 'pay_on_delivery') {
             return [
                 'error'      => false,
                 'status'     => $status,
@@ -54,7 +54,7 @@ class PaymentService
             ];
         }
 
-        // Validate amount consistency (only for online payments)
+        // Validate amount consistency (online payments only)
         if (bccomp((string) $amount, (string) $cartTotal, 2) !== 0) {
             return [
                 'error'      => true,
@@ -64,7 +64,6 @@ class PaymentService
             ];
         }
 
-        // Return success
         return [
             'error'      => false,
             'status'     => $status,
@@ -73,6 +72,7 @@ class PaymentService
         ];
     }
 }
+
 
 
 
