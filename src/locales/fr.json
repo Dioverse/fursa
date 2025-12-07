@@ -211,6 +211,7 @@
   "checkout": {
     "initializing": "Initialisation du paiement",
     "please_wait": "Veuillez patienter...",
+    "place_order": "Passer la commande (₦{amount})",
     "unavailable_some": "Certains articles de votre panier sont en rupture de stock.",
     "unavailable_failed": "L'initialisation de la commande a échoué",
   "remove_to_proceed": "Veuillez retirer ces articles pour continuer :",
@@ -236,6 +237,7 @@
     "payment_options_legend": "Options de mode de paiement",
     "loading_gateway": "Chargement du service...",
     "pay_with": "Payer avec {gateway}",
+    "pay_on_delivery": "Payer à la livraison",
     "gateway_logo_alt": "Logo {name}",
     "pay_now": "Payer ₦{amount}",
     "processing": "Traitement...",

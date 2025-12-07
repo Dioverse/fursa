@@ -223,6 +223,7 @@
   "checkout": {
     "initializing": "Initializing checkout",
     "please_wait": "Please wait...",
+    "place_order": "Place order (₦{amount})",
     "unavailable_some": "Some items in your cart are out of stock.",
     "unavailable_failed": "Checkout initialization failed",
   "remove_to_proceed": "Please remove these items to proceed:",
@@ -249,6 +250,7 @@
     "loading_gateway": "Loading gateway...",
     "pay_with": "Pay with {gateway}",
     "gateway_logo_alt": "{name} logo",
+    "pay_on_delivery": "Pay on delivery",
     "pay_now": "Pay ₦{amount}",
     "processing": "Processing...",
     "select_address_alert": "Please select a shipping address to proceed",

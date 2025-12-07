@@ -211,6 +211,7 @@
   "checkout": {
     "initializing": "Инициализация оформления заказа",
     "please_wait": "Пожалуйста, подождите...",
+    "place_order": "Оформить заказ (₦{amount})",
     "unavailable_some": "Некоторые товары в вашей корзине отсутствуют на складе.",
     "unavailable_failed": "Не удалось инициализировать оформление заказа",
   "remove_to_proceed": "Удалите эти товары, чтобы продолжить:",
@@ -236,6 +237,7 @@
     "payment_options_legend": "Варианты способов оплаты",
     "loading_gateway": "Загрузка сервиса...",
     "pay_with": "Оплатить через {gateway}",
+    "pay_on_delivery": "Оплата при доставке",
     "gateway_logo_alt": "Логотип {name}",
     "pay_now": "Оплатить ₦{amount}",
     "processing": "Обработка...",

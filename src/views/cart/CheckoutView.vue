@@ -154,17 +154,41 @@
                   <h2 class="lg:text-xl md:text-lg text-sm font-semibold mb-4">{{ $t('checkout.select_payment') }}</h2>
 
                   <!-- Dynamic Payment Options -->
+                  <!-- Pay on Delivery Only -->
                   <div class="space-y-3 relative">
-                    <!-- Loader Overlay when fetching gateway -->
+                    <!-- We don't need gatewayLoading for POD, but we keep it if you later re-enable online gateways -->
+                    <!--
                     <div v-if="gatewayLoading"
                       class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 rounded-lg z-10">
-                      <div class="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent">
-                      </div>
+                      <div class="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
                       <span class="ml-2 text-gray-600">{{ $t('checkout.loading_gateway') }}</span>
                     </div>
+                    -->
 
                     <fieldset class="space-y-3 text-xs md:text-sm lg:text-sm">
                       <legend class="sr-only">{{ $t('checkout.payment_options_legend') }}</legend>
+
+                      <!-- Pay on Delivery -->
+                      <label
+                        class="flex items-center gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition"
+                        :class="{ 'border-primary bg-mprimary-50': paymentMethod === 'pay_on_delivery' }"
+                      >
+                        <input
+                          v-model="paymentMethod"
+                          type="radio"
+                          value="pay_on_delivery"
+                          class="text-primary focus:ring-primary"
+                          :aria-label="$t('checkout.pay_on_delivery')"
+                        />
+                        <div class="flex-1 flex items-center gap-3">
+                          <span class="font-medium">
+                            {{ $t('checkout.pay_on_delivery') }}
+                          </span>
+                        </div>
+                      </label>
+
+                      <!-- Other gateways kept for later -->
+                      <!--
                       <label v-for="gateway in gateways" :key="gateway.name"
                         class="flex items-center gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition"
                         :class="{ 'border-primary bg-mprimary-50': paymentMethod === gateway.name }">
@@ -172,27 +196,42 @@
                           :value="gateway.name" class="text-primary focus:ring-primary"
                           :aria-label="$t('checkout.pay_with', { gateway: gateway.display })" />
                         <div class="flex-1 flex items-center gap-3">
-                          <span class="font-medium">{{ $t('checkout.pay_with', { gateway: gateway.display }) }}</span>
-                          <img v-if="gateway.logo" :src="gateway.logo" :alt="$t('checkout.gateway_logo_alt', { name: gateway.name })"
-                            class="h-6 object-contain" />
+                          <span class="font-medium">
+                            {{ $t('checkout.pay_with', { gateway: gateway.display }) }}
+                          </span>
+                          <img
+                            v-if="gateway.logo"
+                            :src="gateway.logo"
+                            :alt="$t('checkout.gateway_logo_alt', { name: gateway.name })"
+                            class="h-6 object-contain"
+                          />
                         </div>
                       </label>
+                      -->
                     </fieldset>
                   </div>
 
+
                   <!-- Pay Now -->
-                  <button @click="placeOrder" :disabled="!selectedAddressId || !paymentMethod || isProcessingPayment"
+                  <button @click="placeOrder" :disabled="!selectedAddressId || isProcessingPayment"
                     class="mt-6 w-full bg-primary text-white text-sm py-3 rounded font-semibold hover:bg-mprimary-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                     <span v-if="isProcessingPayment"
-                      class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
-                    {{ isProcessingPayment ? $t('checkout.processing') : $t('checkout.pay_now', { amount: formatAmount(cartData?.payable) }) }}
+                      class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent">
+                    </span>
+                    {{ isProcessingPayment ? $t('checkout.processing') : $t('checkout.place_order', { amount: formatAmount(cartData?.payable) }) }}
                   </button>
+
                   <p v-if="!selectedAddressId" class="text-center text-red-600 text-sm mt-2" role="alert">
                     <span class="inline-block mr-1">⚠️</span> {{ $t('checkout.select_address_alert') }}
                   </p>
+
+                  <!-- Keep this for later, but not used now -->
+                  <!--
                   <p v-if="!paymentMethod" class="text-center text-red-600 text-sm mt-2" role="alert">
                     <span class="inline-block mr-1">⚠️</span> {{ $t('checkout.select_method_alert') }}
                   </p>
+                  -->
+
                 </div>
               </div>
 
@@ -275,6 +314,18 @@
                   aria-describedby="fullName-error" />
                 <p v-if="formErrors.full_name" id="fullName-error" class="text-red-600 text-xs mt-1">{{
                   formErrors.full_name }}</p>
+              </div>
+
+              <div v-if="isGuest" class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  {{ $t('checkout.email') }} <span class="text-red-500">*</span>
+                </label>
+                <input
+                  v-model="guestEmail"
+                  type="email"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                  :placeholder="$t('checkout.email')"
+                />
               </div>
 
               <!-- Phone Number -->
@@ -417,19 +468,22 @@ import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
 import apiClient from '@/services/api'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
+
 const { t } = useI18n()
 const router = useRouter()
 
-// Constants
-const PAYMENT_METHODS = {
-  PAYSTACK: 'paystack',
-  FLUTTERWAVE: 'flutterwave'
-}
+// // Constants
+// const PAYMENT_METHODS = {
+//   PAYSTACK: 'paystack',
+//   FLUTTERWAVE: 'flutterwave'
+// }
 
-const GATEWAY_URLS = {
-  paystack: 'https://js.paystack.co/v1/inline.js',
-  flutterwave: 'https://checkout.flutterwave.com/v3.js'
-}
+// const GATEWAY_URLS = {
+//   paystack: 'https://js.paystack.co/v1/inline.js',
+//   flutterwave: 'https://checkout.flutterwave.com/v3.js'
+// }
 
 const PHONE_REGEX = /^[+]?[\d\s\-()]+$/
 const MIN_PHONE_LENGTH = 10
@@ -480,8 +534,9 @@ const loadingStates = ref(false)
 const isSubmittingForm = ref(false)
 const isProcessingPayment = ref(false)
 const isFinalStep = ref(false)
-const paymentMethod = ref(null)
-const selectedGateway = ref(null)
+const paymentMethod = ref('pay_on_delivery')
+// const paymentMethod = ref(null)
+// const selectedGateway = ref(null)
 const selectedAddressId = ref(null)
 const gateways = ref([])
 const cartData = ref(null)
@@ -490,6 +545,23 @@ const countries = ref([])
 const statesList = ref([])
 const editingAddress = ref(null)
 const formErrors = ref({})
+const isGuest = computed(() => !authStore.isAuthenticated)
+const guestEmail = ref('')
+
+const splitFullName = (fullName) => {
+  if (!fullName) return { first_name: '', last_name: '' }
+  const parts = fullName.trim().split(/\s+/)
+  if (parts.length === 1) return { first_name: parts[0], last_name: parts[0] }
+  return { first_name: parts[0], last_name: parts.slice(1).join(' ') }
+}
+
+const buildGuestCartPayload = () => {
+  const items = (typeof getCart === 'function' ? getCart() : []) || []
+  return items.map(item => ({
+    product_id: item.id,
+    quantity: item.quantity ?? 1
+  }))
+}
 
 const createEmptyAddressForm = () => ({
   full_name: '',
@@ -619,20 +691,19 @@ const initCheckout = async () => {
   unavailable.value = false
 
   try {
+    if (isGuest.value) {
+      // GUEST: skip init and only load countries for address form
+      await loadCountries()
+      loading.value = false
+      return
+    }
+
+    // AUTHENTICATED USERS ONLY
     const response = await apiClient.post('/checkout/init', {})
     const data = response.data
 
     cartData.value = data.data.user_cart
     shippingAddresses.value = data.data.shippingAddresses || []
-
-    gateways.value = Object.entries(data.data.gateways || {})
-      .filter(([_, g]) => g.status === 'active')
-      .map(([name, g]) => ({
-        name,
-        display: name.charAt(0).toUpperCase() + name.slice(1),
-        public_key: g.public_key,
-        logo: g.image || null
-      }))
 
     const defaultAddr = shippingAddresses.value.find(a => a.is_default)
     selectedAddressId.value = defaultAddr?.id || shippingAddresses.value[0]?.id || null
@@ -640,21 +711,12 @@ const initCheckout = async () => {
     await loadCountries()
   } catch (err) {
     console.error('Checkout init error:', err)
-    const status = err.response?.status
-    const errorData = err.response?.data
-    
-    if (status === 422 && errorData?.response === 'unavailable') {
-      unavailable.value = true
-      unavailableProducts.value = errorData?.errors || null
-      toast.error(errorData?.message || t('checkout.toasts.init_failed'))
-    } else {
-      error.value = errorData?.message || t('checkout.toasts.init_failed')
-      toast.error(error.value)
-    }
+    toast.error(err.response?.data?.message || t('checkout.toasts.init_failed'))
   } finally {
     loading.value = false
   }
 }
+
 
 const loadCountries = async () => {
   try {
@@ -704,47 +766,128 @@ const customFilter = (option, search, label) => {
 }
 
 const setGateway = (gatewayName) => {
-  selectedGateway.value = gatewayName
+  // For now we only support Pay on Delivery.
+  // This is kept for when online gateways are re-enabled.
+  // selectedGateway.value = gatewayName
+  paymentMethod.value = 'pay_on_delivery'
 }
 
 const placeOrder = async () => {
-  if (!paymentMethod.value) {
-    toast.error(t('checkout.toasts.select_payment_required'))
+  if (!isGuest.value && !selectedAddressId.value) {
+    toast.error(t('checkout.select_address_alert'))
     return
   }
 
   try {
-    const gatewayName = selectedGateway.value
+    isProcessingPayment.value = true
     gatewayLoading.value = true
 
-    const response = await apiClient.post(`/place-order/${gatewayName}`, {})
+    let response
 
-    // Response handling (backend should return `error` flag)
-    const resData = response.data?.data || response.data
+    if (!isGuest.value) {
+      // AUTHENTICATED USER
+      response = await apiClient.post('/place-order', {})
+    } else {
+      // GUEST USER → Validate local address + cart
+      if (!validateAddressForm()) {
+        toast.error(t('checkout.toasts.fix_errors_below'))
+        return
+      }
 
-    if (resData.error) {
-      toast.error(resData.message || 'Payment verification failed')
-      router.push('/dashboard/orders')
+      if (!guestEmail.value.trim()) {
+        toast.error(t('checkout.toasts.email_required'))
+        return
+      }
+
+      const { first_name, last_name } = splitFullName(addressForm.value.full_name)
+      const cart = buildGuestCartPayload()
+
+      if (!cart.length) {
+        toast.error(t('checkout.toasts.empty_cart'))
+        return
+      }
+
+      const payload = {
+        email: guestEmail.value.trim(),
+        first_name,
+        last_name,
+        phone: addressForm.value.phone,
+        address_line_one: addressForm.value.address_line_one,
+        address_line_two: addressForm.value.address_line_two || '',
+        province: addressForm.value.province,
+        city: addressForm.value.city,
+        state: addressForm.value.state,
+        postal_code: addressForm.value.postal_code || '',
+        country: addressForm.value.country,
+        cart
+      }
+
+      response = await apiClient.post('/place-order', payload)
+    }
+
+    const data = response.data
+
+    if (data.error) {
+      toast.error(data.message || t('checkout.toasts.order_failed'))
       return
     }
 
-    // Continue based on payment method
-    if (paymentMethod.value === PAYMENT_METHODS.PAYSTACK) {
-      await processPaystackPayment(resData)
-    } else if (paymentMethod.value === PAYMENT_METHODS.FLUTTERWAVE) {
-      await processFlutterwavePayment(resData)
-    }
+    toast.success(data.message || t('checkout.toasts.order_placed'))
 
+    clearCart()
+
+    if (data.orderId) {
+      router.push(`/order/${data.orderId}`)
+    } else {
+      router.push('/dashboard/orders')
+    }
   } catch (err) {
-    console.error('Failed to fetch gateway details:', err)
-    toast.error(err.response?.data?.message || err.message)
-    paymentMethod.value = null
-    // Optional redirect in case of hard failure
-    router.push('/dashboard/orders')
+    console.error('Place order failed:', err)
+    toast.error(err.response?.data?.message || t('checkout.toasts.order_failed'))
   } finally {
+    isProcessingPayment.value = false
     gatewayLoading.value = false
   }
 }
+
+// const placeOrder = async () => {
+//   if (!paymentMethod.value) {
+//     toast.error(t('checkout.toasts.select_payment_required'))
+//     return
+//   }
+
+//   try {
+//     const gatewayName = selectedGateway.value
+//     gatewayLoading.value = true
+
+//     const response = await apiClient.post(`/place-order/${gatewayName}`, {})
+
+//     // Response handling (backend should return `error` flag)
+//     const resData = response.data?.data || response.data
+
+//     if (resData.error) {
+//       toast.error(resData.message || 'Payment verification failed')
+//       router.push('/dashboard/orders')
+//       return
+//     }
+
+//     // Continue based on payment method
+//     if (paymentMethod.value === PAYMENT_METHODS.PAYSTACK) {
+//       await processPaystackPayment(resData)
+//     } else if (paymentMethod.value === PAYMENT_METHODS.FLUTTERWAVE) {
+//       await processFlutterwavePayment(resData)
+//     }
+
+//   } catch (err) {
+//     console.error('Failed to fetch gateway details:', err)
+//     toast.error(err.response?.data?.message || err.message)
+//     paymentMethod.value = null
+//     // Optional redirect in case of hard failure
+//     router.push('/dashboard/orders')
+//   } finally {
+//     gatewayLoading.value = false
+//   }
+// }
 
 
 const selectAddress = (addressId) => {
@@ -833,135 +976,142 @@ const handleAddAddress = async () => {
   }
 }
 
-const processPaystackPayment = async (paymentData) => {
-  console.log(paymentData);
-  return new Promise((resolve, reject) => {
-    if (!window.PaystackPop) {
-      toast.error(t('checkout.toasts.gateway_not_loaded'))
-      reject(new Error('Paystack not loaded'))
-      return
-    }
+// const processPaystackPayment = async (paymentData) => {
+//   console.log(paymentData);
+//   return new Promise((resolve, reject) => {
+//     if (!window.PaystackPop) {
+//       toast.error(t('checkout.toasts.gateway_not_loaded'))
+//       reject(new Error('Paystack not loaded'))
+//       return
+//     }
 
-    window.PaystackPop.setup({
-      key: paymentData.gws.public_key,
-      email: paymentData.email,
-      amount: paymentData.total_amount * 100,
-      ref: paymentData.trans_ref,
-      onClose: () => {
-        // toast.info(t('checkout.toasts.payment_cancelled'))
-        isProcessingPayment.value = false
-        reject(new Error('Payment cancelled'))
-      },
-      callback: function (response) {
-        (async () => {
-          try {
-            await verifyPayment(PAYMENT_METHODS.PAYSTACK, response.reference, paymentData.orderId)
-            toast.success(t('checkout.toasts.payment_success'))
-            resolve()
-          } catch (err) {
-            reject(err)
-          }
-        })()
-      },
-    }).openIframe()
-  })
-}
+//     window.PaystackPop.setup({
+//       key: paymentData.gws.public_key,
+//       email: paymentData.email,
+//       amount: paymentData.total_amount * 100,
+//       ref: paymentData.trans_ref,
+//       onClose: () => {
+//         // toast.info(t('checkout.toasts.payment_cancelled'))
+//         isProcessingPayment.value = false
+//         reject(new Error('Payment cancelled'))
+//       },
+//       callback: function (response) {
+//         (async () => {
+//           try {
+//             await verifyPayment(PAYMENT_METHODS.PAYSTACK, response.reference, paymentData.orderId)
+//             toast.success(t('checkout.toasts.payment_success'))
+//             resolve()
+//           } catch (err) {
+//             reject(err)
+//           }
+//         })()
+//       },
+//     }).openIframe()
+//   })
+// }
 
-const processFlutterwavePayment = async (paymentData) => {
-  return new Promise((resolve, reject) => {
-    if (!window.FlutterwaveCheckout) {
-      toast.error(t('checkout.toasts.gateway_not_loaded'))
-      reject(new Error('Flutterwave not loaded'))
-      return
-    }
+// const processFlutterwavePayment = async (paymentData) => {
+//   return new Promise((resolve, reject) => {
+//     if (!window.FlutterwaveCheckout) {
+//       toast.error(t('checkout.toasts.gateway_not_loaded'))
+//       reject(new Error('Flutterwave not loaded'))
+//       return
+//     }
 
-    window.FlutterwaveCheckout({
-      public_key: paymentData.gws.public_key,
-      tx_ref: paymentData.trans_ref,
-      amount: paymentData.total_amount,
-      currency: 'NGN',
-      customer: {
-        email: paymentData.email,
-        name: paymentData.name
-      },
-      customizations: {
-        title: t('checkout.payment_title'),
-        description: t('checkout.payment_description')
-      },
-      callback: async (response) => {
-        if (response.status === 'completed') {
-          try {
-            await verifyPayment(PAYMENT_METHODS.FLUTTERWAVE, paymentData.trans_ref, paymentData.orderId)
-            toast.success(t('checkout.toasts.payment_success'))
-            resolve()
-          } catch (err) {
-            reject(err)
-          }
-        } else {
-          toast.error(t('checkout.toasts.payment_failed_or_cancelled'))
-          isProcessingPayment.value = false
-          reject(new Error('Payment failed'))
-        }
-      },
-      onClose: () => {
-        // toast.info(t('checkout.toasts.payment_cancelled'))
-        isProcessingPayment.value = false
-        reject(new Error('Payment cancelled'))
-      }
-    })
-  })
-}
+//     window.FlutterwaveCheckout({
+//       public_key: paymentData.gws.public_key,
+//       tx_ref: paymentData.trans_ref,
+//       amount: paymentData.total_amount,
+//       currency: 'NGN',
+//       customer: {
+//         email: paymentData.email,
+//         name: paymentData.name
+//       },
+//       customizations: {
+//         title: t('checkout.payment_title'),
+//         description: t('checkout.payment_description')
+//       },
+//       callback: async (response) => {
+//         if (response.status === 'completed') {
+//           try {
+//             await verifyPayment(PAYMENT_METHODS.FLUTTERWAVE, paymentData.trans_ref, paymentData.orderId)
+//             toast.success(t('checkout.toasts.payment_success'))
+//             resolve()
+//           } catch (err) {
+//             reject(err)
+//           }
+//         } else {
+//           toast.error(t('checkout.toasts.payment_failed_or_cancelled'))
+//           isProcessingPayment.value = false
+//           reject(new Error('Payment failed'))
+//         }
+//       },
+//       onClose: () => {
+//         // toast.info(t('checkout.toasts.payment_cancelled'))
+//         isProcessingPayment.value = false
+//         reject(new Error('Payment cancelled'))
+//       }
+//     })
+//   })
+// }
 
-const verifyPayment = async (gateway, reference, order) => {
-  try {
-    const response = await apiClient.post(`/checkout/${gateway}/${reference}/${order}`, {})
+// const verifyPayment = async (gateway, reference, order) => {
+//   try {
+//     const response = await apiClient.post(`/checkout/${gateway}/${reference}/${order}`, {})
 
-    isProcessingPayment.value = true
-    isFinalStep.value = true
+//     isProcessingPayment.value = true
+//     isFinalStep.value = true
 
-    // Redirect to order confirmation or success page
-    clearCart()
-    window.location.href = `/order/${response.data.orderId}`
-  } catch (err) {
-    console.error('Payment verification failed:', err)
-    throw err
-  } finally {
-    isProcessingPayment.value = false
-    isFinalStep.value = false
-  }
-}
+//     // Redirect to order confirmation or success page
+//     clearCart()
+//     window.location.href = `/order/${response.data.orderId}`
+//   } catch (err) {
+//     console.error('Payment verification failed:', err)
+//     throw err
+//   } finally {
+//     isProcessingPayment.value = false
+//     isFinalStep.value = false
+//   }
+// }
 
-const loadScript = (src) => {
-  return new Promise((resolve, reject) => {
-    if (document.querySelector(`script[src="${src}"]`)) {
-      resolve()
-      return
-    }
-    const script = document.createElement('script')
-    script.src = src
-    script.onload = resolve
-    script.onerror = () => {
-      console.error(`Failed to load script: ${src}`)
-      reject(new Error(`Failed to load ${src}`))
-    }
-    document.body.appendChild(script)
-  })
-}
-
-// Lifecycle
 onMounted(async () => {
-  try {
-    await Promise.all([
-      loadScript(GATEWAY_URLS.paystack),
-      loadScript(GATEWAY_URLS.flutterwave)
-    ])
-  } catch (err) {
-    console.warn('Some payment gateways failed to load:', err)
-    try { toast.warning(t('checkout.toasts.gateways_partial_load_warning')) } catch (_) {}
-  }
-
   await initCheckout()
 })
+
+
+
+
+// const loadScript = (src) => {
+//   return new Promise((resolve, reject) => {
+//     if (document.querySelector(`script[src="${src}"]`)) {
+//       resolve()
+//       return
+//     }
+//     const script = document.createElement('script')
+//     script.src = src
+//     script.onload = resolve
+//     script.onerror = () => {
+//       console.error(`Failed to load script: ${src}`)
+//       reject(new Error(`Failed to load ${src}`))
+//     }
+//     document.body.appendChild(script)
+//   })
+// }
+
+// // Lifecycle
+// onMounted(async () => {
+//   try {
+//     await Promise.all([
+//       loadScript(GATEWAY_URLS.paystack),
+//       loadScript(GATEWAY_URLS.flutterwave)
+//     ])
+//   } catch (err) {
+//     console.warn('Some payment gateways failed to load:', err)
+//     try { toast.warning(t('checkout.toasts.gateways_partial_load_warning')) } catch (_) {}
+//   }
+
+//   await initCheckout()
+// })
 </script>
 
 <style scoped>

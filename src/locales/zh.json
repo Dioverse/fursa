@@ -211,6 +211,7 @@
   "checkout": {
     "initializing": "正在初始化结算",
     "please_wait": "请稍候...",
+    "place_order": "下订单 (₦{amount})",
     "unavailable_some": "购物车中的部分商品缺货。",
     "unavailable_failed": "结算初始化失败",
   "remove_to_proceed": "请移除以下商品以继续：",
@@ -236,6 +237,7 @@
   "payment_options_legend": "支付方式选项",
     "loading_gateway": "正在加载支付服务...",
   "pay_with": "使用 {gateway} 支付",
+  "pay_on_delivery": "货到付款",
   "gateway_logo_alt": "{name} 标志",
     "pay_now": "支付 ₦{amount}",
     "processing": "处理中...",

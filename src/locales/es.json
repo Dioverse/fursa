@@ -210,6 +210,7 @@
   "checkout": {
     "initializing": "Inicializando el pago",
     "please_wait": "Por favor, espera...",
+    "place_order": "Realizar pedido (₦{amount})",
     "unavailable_some": "Algunos artículos de tu carrito no tienen stock.",
     "unavailable_failed": "Fallo al iniciar el pago",
   "remove_to_proceed": "Por favor, elimina estos artículos para continuar:",
@@ -235,6 +236,7 @@
     "payment_options_legend": "Opciones de método de pago",
     "loading_gateway": "Cargando pasarela...",
     "pay_with": "Pagar con {gateway}",
+    "pay_on_delivery": "Pagar contra entrega",
     "gateway_logo_alt": "Logo de {name}",
     "pay_now": "Pagar ₦{amount}",
     "processing": "Procesando...",

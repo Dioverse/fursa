@@ -211,6 +211,7 @@
   "checkout": {
     "initializing": "Kasse wird initialisiert",
     "please_wait": "Bitte warten...",
+    "place_order": "Bestellung aufgeben (₦{amount})",
     "unavailable_some": "Einige Artikel in Ihrem Warenkorb sind nicht verfügbar.",
     "unavailable_failed": "Kasseninitialisierung fehlgeschlagen",
   "remove_to_proceed": "Bitte entfernen Sie diese Artikel, um fortzufahren:",
@@ -236,6 +237,7 @@
     "payment_options_legend": "Optionen für Zahlungsmethoden",
     "loading_gateway": "Dienst wird geladen...",
     "pay_with": "Bezahlen mit {gateway}",
+    "pay_on_delivery": "Bezahlung bei Lieferung",
     "gateway_logo_alt": "{name} Logo",
     "pay_now": "Bezahle ₦{amount}",
     "processing": "Wird verarbeitet...",

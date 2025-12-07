@@ -211,6 +211,7 @@
   "checkout": {
     "initializing": "جاري تهيئة الدفع",
     "please_wait": "يرجى الانتظار...",
+    "place_order": "إتمام الطلب (₦{amount})",
     "unavailable_some": "بعض العناصر في سلة التسوق غير متوفرة.",
     "unavailable_failed": "فشل تهيئة عملية الدفع",
   "remove_to_proceed": "يرجى إزالة هذه العناصر للمتابعة:",
@@ -237,6 +238,7 @@
     "loading_gateway": "جارٍ تحميل بوابة الدفع...",
     "pay_with": "ادفع عبر {gateway}",
     "gateway_logo_alt": "شعار {name}",
+    "pay_on_delivery": "الدفع عند التسليم",
     "pay_now": "ادفع ₦{amount}",
     "processing": "جارٍ المعالجة...",
     "select_address_alert": "يرجى اختيار عنوان الشحن للمتابعة",
