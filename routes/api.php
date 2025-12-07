@@ -179,6 +179,7 @@ Route::middleware(['auth:sanctum','ban', 'verifiedcustom'])->group(function () {
     Route::patch('carts/update', [CartController::class, 'updateItemQuantity']);
     Route::post('checkout/init', [CheckoutController::class, 'initialize']);
     Route::post('place-order/{gateway}', [CheckoutController::class, 'makeOrder']);
+    Route::post('place-order', [CheckoutController::class, 'placeOrder']);
     Route::post('checkout/{gateway}/{transId}/{orderId}', [CheckoutController::class, 'checkout']);
 
     Route::apiResource('wishlists', WishlistController::class)->only(['index','store']);
@@ -201,6 +202,9 @@ Route::get('/lang/fetch/{lang}/{qry}', [DistCustLanguageController::class, 'fetc
 
 // Email verification
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])->middleware('signed')->name('verification.verify');
+
+// routes/api.php
+Route::post('/guest-summary', [CheckoutController::class, 'guestR']);
 
 Route::get('states-provinces/{country}', [ShippingAddressController::class, 'getStatesWithProvinces']);
 Route::get('countries', [ShippingAddressController::class, 'getCountries']);

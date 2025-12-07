@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Cart;
 use App\Models\User;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\CartItem;
 use App\Models\Shipping;
 use App\Constants\Status;
@@ -13,7 +14,6 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\GeneralSetting;
 use App\Services\OrderService;
-use Illuminate\Validation\Rule;
 use App\Services\PaymentService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -33,99 +33,27 @@ class CheckoutController extends Controller
 
     public function initialize(Request $request)
     {
-        $user = $request->user();
+        $user            = $request->user();
+        $cartSummary     = $this->getCartSummary($user);
+        $shippingAddress = $user->shippingAddress()->orderByDesc("is_default")->get();
 
-        // ---------- Guest flow: no authenticated user ----------
-        if (! $user) {
-            $data = $request->validate([
-                'email'             => 'required|email',
-                'first_name'        => 'required|string',
-                'last_name'         => 'required|string',
-                'phone'             => 'required|string',
-                'address_line_one'  => 'required|string',
-                'address_line_two'  => 'nullable|string',
-                'city'              => 'required|string',
-                'province'         => ['required', Rule::exists('shippings', 'province')->where('is_active', true)],
-                'state'       => ['required', Rule::exists('shippings', 'state')->where('is_active', true)],
-                'postal_code' => 'nullable|string|max:20',
-                'country'     => ['required', Rule::exists('shippings', 'country')->where('is_active', true)],
-
-                'cart'              => 'required|array|min:1',
-                'cart.*.product_id' => 'required|integer|exists:products,id',
-                'cart.*.quantity'   => 'required|integer|min:1',
-            ]);
-
-            $cartPayload = $data['cart'];
-            unset($data['cart']);
-
-            // Create or reuse guest user
-            $user = User::firstOrCreate(
-                ['email' => $data['email']],
-                [
-                    'first_name' => $data['first_name'],
-                    'last_name'  => $data['last_name'],
-                    'name'       => $data['first_name'] . ' ' . $data['last_name'],
-                    'phone'      => $data['phone'] ?? null,
-                    'password'   => bcrypt(Str::random(16)),
-                ]
-            );
-
-            // Ensure default shipping address exists/updated
-            $user->shippingAddress()->updateOrCreate(
-                ['is_default' => true],
-                [
-                    'full_name'        => $data['first_name'] . ' ' . $data['last_name'],
-                    'phone'            => $data['phone'],
-                    'address_line_one' => $data['address_line_one'],
-                    'address_line_two' => $data['address_line_two'] ?? null,
-                    'province'         => $data['province'] ?? null,
-                    'city'             => $data['city'],
-                    'state'            => $data['state'],
-                    'postal_code'      => $data['postal_code'] ?? null,
-                    'country'          => $data['country'],
-                ]
-            );
-
-            // Build/overwrite cart from payload
-            $cart = $user->cart ?: Cart::create([
-                'user_id' => $user->id,
-            ]);
-
-            CartItem::where('cart_id', $cart->id)->delete();
-
-            foreach ($cartPayload as $item) {
-                CartItem::create([
-                    'cart_id'    => $cart->id,
-                    'product_id' => $item['product_id'],
-                    'quantity'   => $item['quantity'],
-                ]);
-            }
-        }
-
-        // ---------- Shared flow (logged-in or guest user now exists) ----------
-
-        $cartSummary = $this->getCartSummary($user);
-
+        // if error, return immediately
         if ($cartSummary['error'] === true) {
             return response()->json($cartSummary, 422);
         }
 
-        $shippingAddress = $user->shippingAddress()
-            ->orderByDesc('is_default')
-            ->get();
-
         // get gateways (hide secret_key)
-        $gateways = GeneralSetting::get('gateways');
+        $gateways = GeneralSetting::get("gateways");
         $gateways = collect($gateways)->map(function ($gateway) {
             return Arr::only($gateway, ['status', 'currency', 'image']);
         })->toArray();
 
         return response()->json([
-            'message' => 'Checkout',
-            'data'    => [
-                'gateways'          => $gateways,
-                'user_cart'         => $cartSummary,
-                'shippingAddresses' => $shippingAddress,
+            "message" => "Checkout",
+            "data"    => [
+                "gateways"          => $gateways,
+                "user_cart"         => $cartSummary,
+                "shippingAddresses" => $shippingAddress,
             ],
         ]);
     }
@@ -263,6 +191,124 @@ class CheckoutController extends Controller
         ];
     }
 
+    protected function guestCartSummary(array $cart, string $country, string $state, ?string $province)
+    {
+        // 1. Initialize Tax Rate
+        $taxVal  = (float) gs("tax");
+        $taxRate = $taxVal > 0 ? (float) ($taxVal / 100) : 0.0;
+
+        // 2. Validate cart existence
+        if (empty($cart)) {
+            return [
+                'error'   => true,
+                'message' => 'Cart is empty, add some items',
+            ];
+        }
+
+        // Normalize cart structure
+        $cartItemsInput = collect($cart)->map(function ($item) {
+            return [
+                'product_id' => $item['product_id'],
+                'quantity'   => $item['quantity'],
+            ];
+        });
+
+        // 3. Load all products in one query
+        $productIds = $cartItemsInput->pluck('product_id')->all();
+
+        $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+
+        // 4. Stock check
+        $unavailable = [];
+
+        foreach ($cartItemsInput as $item) {
+            $product = $products->get($item['product_id']);
+
+            if (! $product || $product->stock_quantity < $item['quantity']) {
+                $unavailable[] = [
+                    'product_id' => $product->id ?? $item['product_id'],
+                    'name'       => $product->name ?? 'Unknown Product',
+                    'requested'  => $item['quantity'],
+                    'available'  => $product->stock_quantity ?? 0,
+                ];
+            }
+        }
+
+        if (! empty($unavailable)) {
+            return [
+                'error'    => true,
+                'response' => 'unavailable',
+                'message'  => 'Unavailable stock quantity in cart',
+                'errors'   => $unavailable,
+            ];
+        }
+
+        // 5. Build cart items same shape as getCartSummary()
+        $cartItems = $cartItemsInput->map(function ($item) use ($products) {
+            $product         = $products->get($item['product_id']);
+            $originalPrice   = (float) $product->price;
+            $discountedPrice = (float) $product->discounted_price;
+            $quantity        = (int) $item['quantity'];
+
+            return [
+                'quantity'         => $quantity,
+                'price'            => $originalPrice,
+                'discounted_price' => $discountedPrice,
+                'subtotal'         => (float) bcmul($discountedPrice, $quantity, 2),
+                'originalSubtotal' => (float) bcmul($originalPrice, $quantity, 2),
+                'stock_quantity'   => $product->stock_quantity,
+            ];
+        });
+
+        // 6. Shipping cost by raw country/state/province
+        $shipping = $this->getShippingCost($country, $state, $province);
+
+        $defaultShipObj = (object) ['cost' => 0.0, 'min_days' => 0, 'max_days' => 0];
+
+        $shipCost = (is_object($shipping) && $shipping->cost >= 0)
+            ? $shipping
+            : $defaultShipObj;
+
+        // guest "shippingAddress" structure compatible with frontend
+        $guestShippingAddress = [
+            'full_name'        => null,
+            'phone'            => null,
+            'address_line_one' => null,
+            'address_line_two' => null,
+            'city'             => null,
+            'province'         => $province,
+            'state'            => $state,
+            'postal_code'      => null,
+            'country'          => $country,
+        ];
+
+        // 7. Totals
+        $amount         = (float) round($cartItems->sum('subtotal'), 2);
+        $originalAmount = (float) round($cartItems->sum('originalSubtotal'), 2);
+
+        $totalBeforeTax = bcadd($amount, (float) $shipCost->cost, 2);
+        $tax            = bcmul($totalBeforeTax, $taxRate, 2);
+        $payable        = (float) bcadd($totalBeforeTax, $tax, 2);
+
+        // 8. Final payload – same keys as getCartSummary()
+        return [
+            'error'           => false,
+            'id'              => null,
+            'first_name'      => null,
+            'last_name'       => null,
+            'email'           => null,
+            'payable'         => $payable,
+            'amount'          => $amount,
+            'originalAmount'  => $originalAmount,
+            'cart_items'      => $cartItems,
+            'shippingAddress' => $guestShippingAddress,
+            'shippingCost'    => $shipCost,
+            'tax'             => (float) $tax,
+            'tax_value'       => $taxRate,
+        ];
+    }
+
+
     private function dispatchNotification($user, $order)
     {
         dispatch(function () use ($user, $order) {
@@ -358,6 +404,39 @@ class CheckoutController extends Controller
         return ['error' => false];
     }
 
+    public function guestR(Request $r)
+    {
+        $data = $r->validate([
+            'cart'              => 'required|array|min:1',
+            'cart.*.product_id' => 'required|integer|exists:products,id',
+            'cart.*.quantity'   => 'required|integer|min:1',
+
+            'country'           => 'required|string',
+            'state'             => 'required|string',
+            'province'          => 'nullable|string',
+        ]);
+
+        $summary = $this->guestCartSummary(
+            $data['cart'],
+            $data['country'],
+            $data['state'],
+            $data['province'] ?? null
+        );
+
+        if ($summary['error'] ?? false) {
+            // preserve same behaviour as getCartSummary usage
+            return response()->json($summary, 422);
+        }
+
+        return response()->json([
+            'message' => 'Guest cart summary',
+            'data'    => [
+                'user_cart' => $summary,
+            ],
+        ], 200);
+    }
+
+
     public function placeOrder(Request $request, PaymentManager $manager)
     {
         $user = $request->user();
@@ -372,11 +451,11 @@ class CheckoutController extends Controller
                 'phone'             => 'required|string',
                 'address_line_one'  => 'required|string',
                 'address_line_two'  => 'nullable|string',
+                'province'          => 'nullable|string',
                 'city'              => 'required|string',
-                'province'         => ['required', Rule::exists('shippings', 'province')->where('is_active', true)],
-                'state'       => ['required', Rule::exists('shippings', 'state')->where('is_active', true)],
-                'postal_code' => 'nullable|string|max:20',
-                'country'     => ['required', Rule::exists('shippings', 'country')->where('is_active', true)],
+                'state'             => 'required|string',
+                'postal_code'       => 'nullable|string',
+                'country'           => 'required|string',
 
                 // cart items from frontend (guest only)
                 'cart'              => 'required|array|min:1',
