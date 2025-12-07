@@ -1,23 +1,24 @@
 <?php
 namespace App\Http\Controllers\Api;
 
-use App\Constants\Status;
-use App\Http\Controllers\Controller;
 use App\Models\Cart;
-use App\Models\CartItem;
-use App\Models\GeneralSetting;
-use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Shipping;
 use App\Models\User;
-use App\Services\OrderService;
-use App\Services\PaymentService;
-use App\Services\Payments\PaymentManager;
-use Illuminate\Http\Request;
+use App\Models\Order;
+use App\Models\CartItem;
+use App\Models\Shipping;
+use App\Constants\Status;
+use App\Models\OrderItem;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Models\GeneralSetting;
+use App\Services\OrderService;
+use Illuminate\Validation\Rule;
+use App\Services\PaymentService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
+use App\Services\Payments\PaymentManager;
 
 class CheckoutController extends Controller
 {
@@ -32,27 +33,99 @@ class CheckoutController extends Controller
 
     public function initialize(Request $request)
     {
-        $user            = $request->user();
-        $cartSummary     = $this->getCartSummary($user);
-        $shippingAddress = $user->shippingAddress()->orderByDesc("is_default")->get();
+        $user = $request->user();
 
-        // if error, return immediately
+        // ---------- Guest flow: no authenticated user ----------
+        if (! $user) {
+            $data = $request->validate([
+                'email'             => 'required|email',
+                'first_name'        => 'required|string',
+                'last_name'         => 'required|string',
+                'phone'             => 'required|string',
+                'address_line_one'  => 'required|string',
+                'address_line_two'  => 'nullable|string',
+                'city'              => 'required|string',
+                'province'         => ['required', Rule::exists('shippings', 'province')->where('is_active', true)],
+                'state'       => ['required', Rule::exists('shippings', 'state')->where('is_active', true)],
+                'postal_code' => 'nullable|string|max:20',
+                'country'     => ['required', Rule::exists('shippings', 'country')->where('is_active', true)],
+
+                'cart'              => 'required|array|min:1',
+                'cart.*.product_id' => 'required|integer|exists:products,id',
+                'cart.*.quantity'   => 'required|integer|min:1',
+            ]);
+
+            $cartPayload = $data['cart'];
+            unset($data['cart']);
+
+            // Create or reuse guest user
+            $user = User::firstOrCreate(
+                ['email' => $data['email']],
+                [
+                    'first_name' => $data['first_name'],
+                    'last_name'  => $data['last_name'],
+                    'name'       => $data['first_name'] . ' ' . $data['last_name'],
+                    'phone'      => $data['phone'] ?? null,
+                    'password'   => bcrypt(Str::random(16)),
+                ]
+            );
+
+            // Ensure default shipping address exists/updated
+            $user->shippingAddress()->updateOrCreate(
+                ['is_default' => true],
+                [
+                    'full_name'        => $data['first_name'] . ' ' . $data['last_name'],
+                    'phone'            => $data['phone'],
+                    'address_line_one' => $data['address_line_one'],
+                    'address_line_two' => $data['address_line_two'] ?? null,
+                    'province'         => $data['province'] ?? null,
+                    'city'             => $data['city'],
+                    'state'            => $data['state'],
+                    'postal_code'      => $data['postal_code'] ?? null,
+                    'country'          => $data['country'],
+                ]
+            );
+
+            // Build/overwrite cart from payload
+            $cart = $user->cart ?: Cart::create([
+                'user_id' => $user->id,
+            ]);
+
+            CartItem::where('cart_id', $cart->id)->delete();
+
+            foreach ($cartPayload as $item) {
+                CartItem::create([
+                    'cart_id'    => $cart->id,
+                    'product_id' => $item['product_id'],
+                    'quantity'   => $item['quantity'],
+                ]);
+            }
+        }
+
+        // ---------- Shared flow (logged-in or guest user now exists) ----------
+
+        $cartSummary = $this->getCartSummary($user);
+
         if ($cartSummary['error'] === true) {
             return response()->json($cartSummary, 422);
         }
 
+        $shippingAddress = $user->shippingAddress()
+            ->orderByDesc('is_default')
+            ->get();
+
         // get gateways (hide secret_key)
-        $gateways = GeneralSetting::get("gateways");
+        $gateways = GeneralSetting::get('gateways');
         $gateways = collect($gateways)->map(function ($gateway) {
             return Arr::only($gateway, ['status', 'currency', 'image']);
         })->toArray();
 
         return response()->json([
-            "message" => "Checkout",
-            "data"    => [
-                "gateways"          => $gateways,
-                "user_cart"         => $cartSummary,
-                "shippingAddresses" => $shippingAddress,
+            'message' => 'Checkout',
+            'data'    => [
+                'gateways'          => $gateways,
+                'user_cart'         => $cartSummary,
+                'shippingAddresses' => $shippingAddress,
             ],
         ]);
     }
@@ -225,9 +298,6 @@ class CheckoutController extends Controller
         });
     }
 
-    use App\Models\CartItem;
-    use Illuminate\Support\Facades\DB;
-
     private function applyStockAndConfirmOrder($user, $order): array
     {
         // Ensure products are loaded
@@ -302,11 +372,11 @@ class CheckoutController extends Controller
                 'phone'             => 'required|string',
                 'address_line_one'  => 'required|string',
                 'address_line_two'  => 'nullable|string',
-                'province'          => 'nullable|string',
                 'city'              => 'required|string',
-                'state'             => 'required|string',
-                'postal_code'       => 'nullable|string',
-                'country'           => 'required|string',
+                'province'         => ['required', Rule::exists('shippings', 'province')->where('is_active', true)],
+                'state'       => ['required', Rule::exists('shippings', 'state')->where('is_active', true)],
+                'postal_code' => 'nullable|string|max:20',
+                'country'     => ['required', Rule::exists('shippings', 'country')->where('is_active', true)],
 
                 // cart items from frontend (guest only)
                 'cart'              => 'required|array|min:1',
