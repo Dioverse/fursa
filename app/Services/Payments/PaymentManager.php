@@ -17,10 +17,6 @@ class PaymentManager
 
     public function gateway(string $name)
     {
-        // Allow POD to bypass gateway checks
-        if ($name === 'pod') {
-            return ['error' => false, 'gate' => new PayOnDeliveryGateway()];
-        }
 
         // Check if the gateway exists and is active
         if (!isset($this->gateways[$name]) || $this->gateways[$name]['status'] !== 'active') {
@@ -31,6 +27,7 @@ class PaymentManager
         $config = GeneralSetting::getNested("gateways.$name");
 
         return match ($name) {
+            'pay_on_delivery' => ['error' => false, 'gate' => new PayOnDeliveryGateway()],
             'paystack' => ['error' => false, 'gate' => new PaystackGateway($config)],
             'flutterwave' => ['error' => false, 'gate' => new FlutterwaveGateway($config)],
             default => ['error' => true, "message" => "Unsupported gateway: {$name}"]
