@@ -205,6 +205,7 @@ Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])-
 
 // routes/api.php
 Route::post('checkout/guest-summary', [CheckoutController::class, 'guestR']);
+Route::post('checkout/guest-order', [CheckoutController::class, 'placeOrder']);
 
 Route::get('states-provinces/{country}', [ShippingAddressController::class, 'getStatesWithProvinces']);
 Route::get('countries', [ShippingAddressController::class, 'getCountries']);
