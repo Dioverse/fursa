@@ -193,11 +193,7 @@ class CheckoutController extends Controller
 
     protected function guestCartSummary(array $cart, string $country, string $state, ?string $province)
     {
-        // 1. Initialize Tax Rate
-        $taxVal  = (float) gs("tax");
-        $taxRate = $taxVal > 0 ? (float) ($taxVal / 100) : 0.0;
-
-        // 2. Validate cart existence
+        // 1. Validate cart existence
         if (empty($cart)) {
             return [
                 'error'   => true,
@@ -205,13 +201,20 @@ class CheckoutController extends Controller
             ];
         }
 
+        // 2. Initialize Tax Rate
+        $taxVal  = (float) gs("tax");
+        $taxRate = $taxVal > 0 ? (float) ($taxVal / 100) : 0.0;
+
         // Normalize cart structure
+        print_r($cart);
+        print_r("\n");
         $cartItemsInput = collect($cart)->map(function ($item) {
             return [
                 'product_id' => $item['product_id'],
                 'quantity'   => $item['quantity'],
             ];
         });
+        print_r($cartItemsInput);
 
         // 3. Load all products in one query
         $productIds = $cartItemsInput->pluck('product_id')->all();
@@ -416,9 +419,6 @@ class CheckoutController extends Controller
             'province'          => 'nullable|string',
         ]);
 
-        return response()->json([
-            $data
-        ]);
         $summary = $this->guestCartSummary(
             $data['cart'],
             $data['country'],
