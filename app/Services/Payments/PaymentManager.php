@@ -17,6 +17,7 @@ class PaymentManager
 
     public function gateway(string $name)
     {
+        print_r($name, $this->gateways);
 
         // Check if the gateway exists and is active
         if (!isset($this->gateways[$name]) || $this->gateways[$name]['status'] !== 'active') {
