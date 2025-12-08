@@ -536,6 +536,7 @@ class CheckoutController extends Controller
                 $cartSummary['shippingCost'],
                 $cartSummary['tax']
             );
+            return response()->json([$orderCreate]);
 
             if ($orderCreate['error'] ?? false) {
                 DB::rollBack();
