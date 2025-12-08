@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
+import { isRouteLoading } from '@/appLoading'
 
 
 // Lazy load views
@@ -256,6 +257,8 @@ router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   const toast = useToast()
 
+  isRouteLoading.value = true
+
   document.title = to.meta.title
     ? `${to.meta.title} - Fursa Energy`
     : 'Fursa Energy'
@@ -293,6 +296,12 @@ router.beforeEach((to, from, next) => {
 
   // All checks passed
   next()
+})
+
+router.afterEach(() => {
+  setTimeout(() => {
+    isRouteLoading.value = false
+  }, 150)
 })
 
 // router.beforeEach((to, from, next) => {

@@ -128,6 +128,7 @@ export function toggleWishlist(product) {
 
 export function clearCart() {
   localStorage.removeItem('cart')
+  localStorage.removeItem('guestShipping')
   cartStore.items.values = []
 }
 

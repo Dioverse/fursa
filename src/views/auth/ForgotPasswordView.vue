@@ -104,7 +104,6 @@ const handleSubmit = async (e) => {
   try {
     await authStore.forgotPassword(form.email)
     toast.success('If an account with that email exists, a password reset link is on its way!')
-    router.push('/reset-password')
   } catch (error) {
     const msg = error.response?.data?.message || 'An error occurred. Please try again.'
     toast.error(msg)

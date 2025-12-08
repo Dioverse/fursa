@@ -2,7 +2,7 @@
     <div class="">
         <RouterLink :to="`/product/${item.product.slug}`" class="flex items-center gap-4 py-4 border-b">
             <div class="w-20 h-20 bg-gray-200 rounded flex items-center justify-center">
-                <img v-lazy="getImageUrl(item.product.image)" :alt="item.product.name"
+                <img v-lazy="getImageUrl(item.product.images[0]['path'])" :alt="item.product.name"
                     class="w-full h-full object-cover rounded" @error="handleImageError">
             </div>
 

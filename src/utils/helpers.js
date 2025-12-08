@@ -152,6 +152,10 @@ export function getStatusColor(status) {
   return colors[status.toLowerCase()] || 'gray'
 }
 
+export function formatDeliveryLabel(s) {
+  return s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
 export function splitFullName(name = '') {
   const trimmed = name.trim()
 

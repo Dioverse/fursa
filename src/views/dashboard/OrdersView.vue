@@ -49,7 +49,7 @@
 
         <!-- Content -->
         <div v-else class="overflow-x-auto">
-          <table v-if="filteredOrders.length > 0" class="w-full">
+          <table v-if="filteredOrders.length > 0" class="overflow-x-auto min-w-full border-collapse block md:table">
             <thead class="bg-gray-50">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>

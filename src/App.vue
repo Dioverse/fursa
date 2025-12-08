@@ -1,5 +1,15 @@
 <template>
     <div id="app">
+
+        <!-- 🌐 GLOBAL PAGE LOADER -->
+        <div
+            v-if="isRouteLoading"
+            class="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-xs z-[59]"
+        >
+            <div class="loader-circle"></div>
+        </div>
+
+        <!-- PAGE TRANSITION + ROUTER VIEW -->
         <RouterView v-slot="{ Component }">
             <transition name="fade" mode="out-in">
                 <component :is="Component" />
@@ -11,17 +21,36 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { isRouteLoading } from '@/appLoading'   // <-- existing global loader state
 
 const authStore = useAuthStore()
 
 onMounted(() => {
-    // Check for saved auth token on app load
     authStore.checkAuth()
 })
 </script>
 
 <style>
-/* Global transitions */
+/* ----------------------------- */
+/* Premium Loader - Option A */
+/* ----------------------------- */
+.loader-circle {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #e5e7eb;          /* light gray */
+    border-top-color: #b8974f;          /* your gold brand color */
+    border-radius: 50%;
+    animation: spin 0.9s ease infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ----------------------------- */
+/* Page Fade Transition */
+/* ----------------------------- */
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.3s ease;
@@ -32,7 +61,9 @@ onMounted(() => {
     opacity: 0;
 }
 
-/* Custom scrollbar */
+/* ----------------------------- */
+/* Custom Scrollbar */
+/* ----------------------------- */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;

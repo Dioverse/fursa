@@ -102,7 +102,7 @@
               <div v-else class="space-y-3">
                 <div class="flex items-center justify-between mb-4">
                   <h3 class="text-sm lg:text-lg md:text-lg font-semibold">{{ $t('checkout.shipping_address') }}</h3>
-                  <button @click="openAddressModal"
+                  <button @click="openGuestAddressModal"
                     class="px-3 py-1 text-sm bg-primary text-white rounded hover:bg-mprimary-600 transition">
                     {{ $t('checkout.add_new') }}
                   </button>
@@ -275,12 +275,16 @@
         @click.self="closeGuestModal">
           <div class="bg-white rounded-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto" role="dialog"
             aria-modal="true" aria-labelledby="guest-address-title">
+            <p v-if="isGuest" @click="goBack()" class="w-[85px] font-bold mb-2 text-sm p-2 bg-[rgba(0,0,0,.3)] cursor-[pointer] hover:bg-[rgba(0,0,0,.1)] rounded-md">
+              <font-awesome-icon icon="fa-chevron-left" class="text-xs"></font-awesome-icon>
+              Go Back
+            </p>
             <h3 id="guest-address-title" class="text-xl font-bold mb-2">
               Shipping Information Required
             </h3>
             <p class="text-sm text-gray-600 mb-4">Please provide your shipping details to continue with checkout.</p>
 
-            <form @submit.prevent="handleGuestAddressSubmit" class="space-y-3" novalidate>
+            <form @submit.prevent="handleAddressSubmit" class="space-y-3" novalidate>
               <!-- Full Name -->
               <div>
                 <label for="guestFullName" class="block text-sm font-medium text-gray-700 mb-1">
@@ -298,7 +302,7 @@
                   <label for="guestEmail" class="block text-sm font-medium text-gray-700 mb-1">
                     {{ $t('checkout.email') }} <span class="text-red-500" aria-label="required">*</span>
                   </label>
-                  <input v-model="addressForm.email" id="guestEmail" type="tel" required
+                  <input v-model="addressForm.email" id="guestEmail" type="email" required
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 text-sm focus:ring-primary focus:border-transparent outline-none"
                     :class="{ 'border-red-500': formErrors.email }" :placeholder="$t('checkout.email_address')" />
                   <p v-if="formErrors.email" class="text-red-600 text-xs mt-1">{{ formErrors.email }}</p>
@@ -322,7 +326,6 @@
                   :class="{ 'border-red-500': formErrors.phone }" :placeholder="$t('checkout.phone_number')" />
                 <p v-if="formErrors.phone" class="text-red-600 text-xs mt-1">{{ formErrors.phone }}</p>
               </div>
-
 
               <!-- Country & State -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -424,7 +427,7 @@
               <div class="flex gap-3 mt-6 pt-4 border-t">
                 <!-- Cancel only visible when guest already has a saved address (editing mode) -->
                 <button
-                  v-if="hasGuestAddress"
+                  v-if="!isGuest || hasGuestAddress"
                   type="button"
                   @click="closeGuestModal"
                   class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium text-secondary"
@@ -620,7 +623,6 @@ const fetchGuestSummary = async (addressPayload) => {
   cartData.value = data?.data?.user_cart || data?.data || null
 }
 
-
 const createEmptyAddressForm = () => ({
   full_name: '',
   phone: '',
@@ -797,27 +799,55 @@ const customFilter = (option, search, label) => {
   return false
 }
 
-const handleGuestAddressSubmit = async () => {
+const handleAddressSubmit = async () => {
   if (!validateAddressForm()) return
 
   isSubmittingForm.value = true
 
   try {
-    const payload = { ...addressForm.value }
+    if (isGuest.value) {
+      // === GUEST FLOW ===
+      const payload = { ...addressForm.value }
 
-    // Persist address locally
-    localStorage.setItem(GUEST_ADDRESS_KEY, JSON.stringify(payload))
-    guestShippingAddress.value = payload
-    hasGuestAddress.value = true
+      // Save locally
+      localStorage.setItem(GUEST_ADDRESS_KEY, JSON.stringify(payload))
+      guestShippingAddress.value = payload
+      hasGuestAddress.value = true
 
-    // Fetch cart summary for this address
-    await fetchGuestSummary(payload)
+      // Refresh cart summary for this address
+      await fetchGuestSummary({
+        country: payload.country,
+        state: payload.state,
+        province: payload.province,
+      })
 
-    showGuestModal.value = false
-    toast.success('Shipping information saved!')
+      showGuestModal.value = false
+      toast.success('Shipping information saved!')
+    } else {
+      // === LOGGED-IN FLOW (CREATE / EDIT) ===
+      const method = editingAddress.value ? 'put' : 'post'
+      const url = editingAddress.value
+        ? `/shipping-address/${editingAddress.value.id}`
+        : `/shipping-address`
+
+      const response = await apiClient[method](url, addressForm.value)
+      const data = response.data.data
+
+      toast.success(
+        editingAddress.value
+          ? t('checkout.toasts.address_updated')
+          : t('checkout.toasts.address_added')
+      )
+
+      // Refresh checkout data (addresses, default, totals, etc.)
+      await initCheckout()
+
+      editingAddress.value = null
+      showGuestModal.value = false
+    }
   } catch (err) {
-    console.error('Failed to save guest address:', err)
-    
+    console.error('Failed to save address:', err)
+
     if (err.response?.status === 422 && err.response?.data?.errors) {
       Object.entries(err.response.data.errors).forEach(([field, messages]) => {
         formErrors.value[field] = Array.isArray(messages) ? messages[0] : messages
@@ -830,6 +860,7 @@ const handleGuestAddressSubmit = async () => {
     isSubmittingForm.value = false
   }
 }
+
 
 const openGuestAddressModal = () => {
   if (guestShippingAddress.value) {
@@ -850,14 +881,15 @@ const openGuestAddressModal = () => {
 }
 
 const closeGuestModal = () => {
-  // Guests cannot close until they have at least one saved address
+  // Guests cannot close if they have no address yet
   if (isGuest.value && !hasGuestAddress.value) return
 
   showGuestModal.value = false
   formErrors.value = {}
+  editingAddress.value = null
 
-  // Reset form back to stored address (if any) when cancelling edit
-  if (guestShippingAddress.value) {
+  // Reset form
+  if (isGuest.value && guestShippingAddress.value) {
     addressForm.value = {
       ...guestShippingAddress.value,
       selectedStateProvince: {
@@ -869,6 +901,7 @@ const closeGuestModal = () => {
     addressForm.value = createEmptyAddressForm()
   }
 }
+
 
 const placeOrder = async () => {
   if (isGuest.value && !guestShippingAddress.value) {
@@ -921,7 +954,7 @@ const placeOrder = async () => {
       clearCart()
 
       if (resData.orderId) {
-        router.push(`/order/${resData.orderId}`)
+        router.push(`dashboard/orders/${resData.orderId}`)
       } else {
         router.push('/dashboard/orders')
       }
@@ -984,12 +1017,12 @@ const editAddress = (address) => {
   addressForm.value = {
     ...address,
     selectedStateProvince: {
-      name: address.province,
-      code: `${address.state}|${address.province}`
-    }
+      name: address.province || address.state,
+      code: `${address.state}|${address.province || ''}`,
+    },
   }
   formErrors.value = {}
-  showAddressModal.value = true
+  showGuestModal.value = true   // <— reuse same modal
   loadStatesProvinces()
 }
 
@@ -1035,6 +1068,14 @@ const handleAddAddress = async () => {
     }
   } finally {
     isSubmittingForm.value = false
+  }
+}
+
+const goBack = () => {
+  if (window.history.length > 1) {
+    router.back()
+  } else {
+    router.push('/cart')
   }
 }
 
@@ -1097,72 +1138,6 @@ input[type="checkbox"] {
 :deep(.multiselect__option--selected) {
   background-color: #ffedbf; /* gold-100 */
   color: #b67a1f; /* gold-600 */
-}
-
-:deep(.multiselect__input::placeholder),
-:deep(.multiselect__single) {
-  font-size: 14px;
-}
-
-:deep(.multiselect__single) {
-  padding: 4px 0;
-}
-</style>
-
-<style scoped>
-input[type="radio"],
-input[type="checkbox"] {
-  cursor: pointer;
-}
-
-:deep(.multiselect__tags) {
-  min-height: 42px;
-  border-radius: 0.5rem;
-  border: 1px solid #d1d5db;
-  padding: 8px 40px 0 8px;
-}
-
-:deep(.multiselect--active .multiselect__tags) {
-  border-color: transparent !important;
-  box-shadow: 0 0 0 2px #b8974f;
-}
-
-:deep(.multiselect-error .multiselect__tags) {
-  border-color: #ef4444 !important;
-}
-
-:deep(.multiselect__content-wrapper) {
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  margin-top: 4px;
-}
-
-:deep(.multiselect__option--highlight) {
-  background: #fff9e6;
-  color: #b67a1f;
-}
-
-:deep(.multiselect__option--highlight:after) {
-  content: none !important;
-}
-
-:deep(.multiselect__option--group) {
-  color: #6b7280;
-  padding: 3px 10px;
-  font-size: 14px;
-  font-weight: 600;
-  background: #f3f4f6;
-}
-
-:deep(.multiselect__option--item) {
-  padding: 3px 10px;
-  font-size: 14px;
-}
-
-:deep(.multiselect__option--selected) {
-  background-color: #ffedbf;
-  color: #b67a1f;
 }
 
 :deep(.multiselect__input::placeholder),
