@@ -241,7 +241,7 @@
   "gateway_logo_alt": "{name} 标志",
     "pay_now": "支付 ₦{amount}",
     "processing": "处理中...",
-    "select_address_alert": "请选择收货地址以继续",
+    "select_address_alert": "请选择或输入收货地址以继续",
     "select_method_alert": "请选择支付方式以继续",
     "order_summary": "订单摘要",
     "subtotal": "小计",
@@ -253,6 +253,8 @@
     "modal_add_title": "添加新地址",
     "modal_edit_title": "编辑地址",
     "full_name": "姓名",
+    "email": "电子邮件",
+    "email_address": "电子邮件地址",
     "phone_number": "电话号码",
     "country": "国家/地区",
     "select_country": "选择国家/地区",
@@ -300,7 +302,9 @@
       "country_required": "国家为必选项",
       "state_required": "州/省为必选项",
       "city_required": "城市为必填项",
-      "address_line1_required": "地址第一行为必填项"
+      "address_line1_required": "地址第一行为必填项",
+      "email_required": "电子邮件是必需的",
+      "email_invalid": "无效的电子邮件地址"
     }
   },
   "blog": {

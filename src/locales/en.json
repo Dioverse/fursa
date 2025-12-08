@@ -226,8 +226,8 @@
     "place_order": "Place order (₦{amount})",
     "unavailable_some": "Some items in your cart are out of stock.",
     "unavailable_failed": "Checkout initialization failed",
-  "remove_to_proceed": "Please remove these items to proceed:",
-  "items_unavailable_line": "{name}: Requested {requested}, Available {available}",
+    "remove_to_proceed": "Please remove these items to proceed:",
+    "items_unavailable_line": "{name}: Requested {requested}, Available {available}",
     "retry": "Retry",
     "error_title": "An error occurred",
     "title": "Checkout",
@@ -253,7 +253,7 @@
     "pay_on_delivery": "Pay on delivery",
     "pay_now": "Pay ₦{amount}",
     "processing": "Processing...",
-    "select_address_alert": "Please select a shipping address to proceed",
+    "select_address_alert": "Please select/enter a shipping address to proceed",
     "select_method_alert": "Please select a payment method to proceed",
     "order_summary": "Order Summary",
     "subtotal": "Subtotal",
@@ -265,6 +265,8 @@
     "modal_add_title": "Add New Address",
     "modal_edit_title": "Edit Address",
     "full_name": "Full Name",
+    "email": "Email",
+    "email_address": "Email Address",
     "phone_number": "Phone Number",
     "country": "Country",
     "select_country": "Select Country",
@@ -312,7 +314,9 @@
       "country_required": "Country is required",
       "state_required": "State/Province is required",
       "city_required": "City is required",
-      "address_line1_required": "Address line 1 is required"
+      "address_line1_required": "Address line 1 is required",
+      "email_required": "Email is required",
+      "email_invalid": "Invalid email address"
     }
   },
   "blog": {

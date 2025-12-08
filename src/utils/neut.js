@@ -130,3 +130,7 @@ export function clearCart() {
   localStorage.removeItem('cart')
   cartStore.items.values = []
 }
+
+export function getCartItemsList() {
+  return cartStore.getCartItemsList()
+}

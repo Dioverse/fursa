@@ -125,7 +125,8 @@ const router = createRouter({
       path: '/checkout',
       name: 'checkout',
       component: CheckoutView,
-      meta: { title: 'Checkout', requiresAuth: true },
+      // meta: { title: 'Checkout', requiresAuth: true },
+      meta: { title: 'Checkout' },
     },
     {
       path: '/distributor-registration',

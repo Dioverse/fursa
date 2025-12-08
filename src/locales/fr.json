@@ -241,7 +241,7 @@
     "gateway_logo_alt": "Logo {name}",
     "pay_now": "Payer ₦{amount}",
     "processing": "Traitement...",
-    "select_address_alert": "Veuillez sélectionner une adresse de livraison",
+    "select_address_alert": "Veuillez sélectionner/saisir une adresse de livraison pour continuer",
     "select_method_alert": "Veuillez sélectionner un mode de paiement",
     "order_summary": "Récapitulatif de la commande",
     "subtotal": "Sous-total",
@@ -253,6 +253,8 @@
     "modal_add_title": "Ajouter une adresse",
     "modal_edit_title": "Modifier l'adresse",
     "full_name": "Nom complet",
+    "email": "E-mail",
+    "email_address": "Adresse e-mail",
     "phone_number": "Numéro de téléphone",
     "country": "Pays",
     "select_country": "Sélectionner un pays",
@@ -300,7 +302,9 @@
       "country_required": "Le pays est requis",
       "state_required": "L'État/Province est requis",
       "city_required": "La ville est requise",
-      "address_line1_required": "La première ligne d'adresse est requise"
+      "address_line1_required": "La première ligne d'adresse est requise",
+      "email_required": "L'e-mail est requis",
+      "email_invalid": "Adresse e-mail invalide"
     }
   },
   "blog": {

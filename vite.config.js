@@ -3,6 +3,9 @@ import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 
 export default defineConfig({
+  build: {
+    chunkSizeWarningLimit: 600, // in kB – default is 500
+  },
   plugins: [vue()],
   base: '/',
   resolve: {

@@ -152,6 +152,29 @@ export function getStatusColor(status) {
   return colors[status.toLowerCase()] || 'gray'
 }
 
+export function splitFullName(name = '') {
+  const trimmed = name.trim()
+
+  if (!trimmed) {
+    return { first_name: '', last_name: '' }
+  }
+
+  const parts = trimmed.split(/\s+/)
+
+  if (parts.length === 1) {
+    return {
+      first_name: parts[0],
+      last_name: parts[0],   // or '' if you want empty
+    }
+  }
+
+  return {
+    first_name: parts[0],
+    last_name: parts.slice(1).join(' '),
+  }
+}
+
+
 /**
  * Debounce function
  */

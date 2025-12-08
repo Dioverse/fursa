@@ -44,11 +44,43 @@
           <div v-else>
             <h1 class="lg:text-2xl md:text-xl text-lg font-bold mb-8">{{ $t('checkout.title') }}</h1>
 
-            <!-- Address Section -->
-            <div class="mb-6">
+            <!-- Guest Shipping Address Display -->
+            <div v-if="isGuest && guestShippingAddress" class="mb-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm lg:text-lg md:text-lg font-semibold">{{ $t('checkout.shipping_address') }}</h3>
+                <button @click="openGuestAddressModal"
+                  class="px-3 py-1 text-sm bg-primary text-white rounded hover:bg-mprimary-600 transition">
+                  {{ $t('checkout.edit') }}
+                </button>
+              </div>
+              
+              <div class="bg-white rounded-lg border border-primary bg-mprimary-50 p-4">
+                <div class="flex items-start gap-3">
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                      <label class="font-semibold text-xs md:text-sm lg:text-sm text-gray-800">
+                        {{ guestShippingAddress.full_name }}
+                      </label>
+                    </div>
+                    <p class="text-gray-600 text-xs md:text-sm lg:text-sm">{{ guestShippingAddress.address_line_one }}</p>
+                    <p v-if="guestShippingAddress.address_line_two" class="text-gray-600 text-xs md:text-sm lg:text-sm">
+                      {{ guestShippingAddress.address_line_two }}
+                    </p>
+                    <p class="text-gray-600 text-xs md:text-sm lg:text-sm">
+                      {{ guestShippingAddress.city }}, {{ guestShippingAddress.state }} {{ guestShippingAddress.postal_code }}
+                    </p>
+                    <p class="text-gray-500 text-xs md:text-sm lg:text-sm">{{ guestShippingAddress.country }}</p>
+                    <p class="text-gray-600 text-xs md:text-sm lg:text-sm font-medium mt-1">{{ guestShippingAddress.phone }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Logged-in User Address Section -->
+            <div v-if="!isGuest" class="mb-6">
               <!-- No Address Warning -->
               <div v-if="shippingAddresses.length === 0" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <div class="flex items-start gap-3">
+                <div class="flex items-start gap-3">
                   <svg class="w-5 h-5 text-yellow-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"
                     aria-hidden="true">
                     <path fill-rule="evenodd"
@@ -77,7 +109,7 @@
                 </div>
 
                 <div v-for="addr in shippingAddresses" :key="addr.id"
-                  class="bg-white  rounded-lg border p-4 cursor-pointer transition hover:shadow-md"
+                  class="bg-white rounded-lg border p-4 cursor-pointer transition hover:shadow-md"
                   :class="{ 'border-primary bg-mprimary-50': selectedAddressId === addr.id }"
                   @click="selectAddress(addr.id)">
                   <div class="flex items-start justify-between gap-4">
@@ -88,20 +120,22 @@
                       <div class="flex-1">
                         <div class="flex items-center gap-2 mb-1">
                           <label :for="`addr-${addr.id}`"
-                            class="font-semibold text-xs md:text-sm lg:text-sm text-gray-800 cursor-pointer">{{
-                              addr.full_name }}</label>
+                            class="font-semibold text-xs md:text-sm lg:text-sm text-gray-800 cursor-pointer">
+                            {{ addr.full_name }}
+                          </label>
                           <span v-if="addr.is_default == 1"
                             class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded"
-                            :aria-label="$t('checkout.aria.default_address_badge')"
-                          >
+                            :aria-label="$t('checkout.aria.default_address_badge')">
                             {{ $t('checkout.default') }}
                           </span>
                         </div>
                         <p class="text-gray-600 text-xs md:text-sm lg:text-sm">{{ addr.address_line_one }}</p>
-                        <p v-if="addr.address_line_two" class="text-gray-600 text-xs md:text-sm lg:text-sm">{{
-                          addr.address_line_two }}</p>
-                        <p class="text-gray-600 text-xs md:text-sm lg:text-sm">{{ addr.city }}, {{ addr.state }} {{
-                          addr.postal_code }}</p>
+                        <p v-if="addr.address_line_two" class="text-gray-600 text-xs md:text-sm lg:text-sm">
+                          {{ addr.address_line_two }}
+                        </p>
+                        <p class="text-gray-600 text-xs md:text-sm lg:text-sm">
+                          {{ addr.city }}, {{ addr.state }} {{ addr.postal_code }}
+                        </p>
                         <p class="text-gray-500 text-xs md:text-sm lg:text-sm">{{ addr.country }}</p>
                         <p class="text-gray-600 text-xs md:text-sm lg:text-sm font-medium mt-1">{{ addr.phone }}</p>
                       </div>
@@ -127,8 +161,7 @@
                   </svg>
                   <div>
                     <p class="font-semibold text-secondary">{{ $t('checkout.confirm_items') }}</p>
-                    <p class="text-secondary text-sm mt-1">{{ $t('checkout.ensure_correct') }}
-                    </p>
+                    <p class="text-secondary text-sm mt-1">{{ $t('checkout.ensure_correct') }}</p>
                   </div>
                 </div>
               </div>
@@ -138,8 +171,7 @@
                   <div>
                     <p class="font-semibold text-secondary">{{ $t('checkout.estimated_delivery') }}</p>
                     <p v-if="shippingDateRange.text" class="text-secondary mt-1">
-                      <span><strong>{{ shippingDateRange.text }}</strong>&nbsp;</span><br
-                        class="hidden xs:block sm:block" />
+                      <span><strong>{{ shippingDateRange.text }}</strong>&nbsp;</span><br class="hidden xs:block sm:block" />
                       <span class="font-medium"><strong>{{ shippingDateRange.range }}</strong></span>
                     </p>
                   </div>
@@ -153,85 +185,38 @@
                 <div class="bg-white rounded-lg shadow-md p-6">
                   <h2 class="lg:text-xl md:text-lg text-sm font-semibold mb-4">{{ $t('checkout.select_payment') }}</h2>
 
-                  <!-- Dynamic Payment Options -->
-                  <!-- Pay on Delivery Only -->
                   <div class="space-y-3 relative">
-                    <!-- We don't need gatewayLoading for POD, but we keep it if you later re-enable online gateways -->
-                    <!--
-                    <div v-if="gatewayLoading"
-                      class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 rounded-lg z-10">
-                      <div class="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
-                      <span class="ml-2 text-gray-600">{{ $t('checkout.loading_gateway') }}</span>
-                    </div>
-                    -->
-
                     <fieldset class="space-y-3 text-xs md:text-sm lg:text-sm">
                       <legend class="sr-only">{{ $t('checkout.payment_options_legend') }}</legend>
 
-                      <!-- Pay on Delivery -->
                       <label
                         class="flex items-center gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition"
-                        :class="{ 'border-primary bg-mprimary-50': paymentMethod === 'pay_on_delivery' }"
-                      >
-                        <input
-                          v-model="paymentMethod"
-                          type="radio"
-                          value="pay_on_delivery"
+                        :class="{ 'border-primary bg-mprimary-50': paymentMethod === 'pay_on_delivery' }">
+                        <input v-model="paymentMethod" type="radio" value="pay_on_delivery"
                           class="text-primary focus:ring-primary"
-                          :aria-label="$t('checkout.pay_on_delivery')"
-                        />
+                          :aria-label="$t('checkout.pay_on_delivery')" />
                         <div class="flex-1 flex items-center gap-3">
-                          <span class="font-medium">
-                            {{ $t('checkout.pay_on_delivery') }}
-                          </span>
+                          <span class="font-medium">{{ $t('checkout.pay_on_delivery') }}</span>
                         </div>
                       </label>
-
-                      <!-- Other gateways kept for later -->
-                      <!--
-                      <label v-for="gateway in gateways" :key="gateway.name"
-                        class="flex items-center gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition"
-                        :class="{ 'border-primary bg-mprimary-50': paymentMethod === gateway.name }">
-                        <input v-model="paymentMethod" type="radio" @change="setGateway(gateway.name)"
-                          :value="gateway.name" class="text-primary focus:ring-primary"
-                          :aria-label="$t('checkout.pay_with', { gateway: gateway.display })" />
-                        <div class="flex-1 flex items-center gap-3">
-                          <span class="font-medium">
-                            {{ $t('checkout.pay_with', { gateway: gateway.display }) }}
-                          </span>
-                          <img
-                            v-if="gateway.logo"
-                            :src="gateway.logo"
-                            :alt="$t('checkout.gateway_logo_alt', { name: gateway.name })"
-                            class="h-6 object-contain"
-                          />
-                        </div>
-                      </label>
-                      -->
                     </fieldset>
                   </div>
 
-
-                  <!-- Pay Now -->
-                  <button @click="placeOrder" :disabled="!selectedAddressId || isProcessingPayment"
+                  <button @click="placeOrder" 
+                    :disabled="(!selectedAddressId && !isGuest) || (isGuest && !guestShippingAddress) || isProcessingPayment"
                     class="mt-6 w-full bg-primary text-white text-sm py-3 rounded font-semibold hover:bg-mprimary-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                     <span v-if="isProcessingPayment"
-                      class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent">
-                    </span>
+                      class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
                     {{ isProcessingPayment ? $t('checkout.processing') : $t('checkout.place_order', { amount: formatAmount(cartData?.payable) }) }}
                   </button>
 
-                  <p v-if="!selectedAddressId" class="text-center text-red-600 text-sm mt-2" role="alert">
+                  <p v-if="!selectedAddressId && !isGuest" class="text-center text-red-600 text-sm mt-2" role="alert">
                     <span class="inline-block mr-1">⚠️</span> {{ $t('checkout.select_address_alert') }}
                   </p>
-
-                  <!-- Keep this for later, but not used now -->
-                  <!--
-                  <p v-if="!paymentMethod" class="text-center text-red-600 text-sm mt-2" role="alert">
-                    <span class="inline-block mr-1">⚠️</span> {{ $t('checkout.select_method_alert') }}
+                  
+                  <p v-if="isGuest && !guestShippingAddress" class="text-center text-red-600 text-sm mt-2" role="alert">
+                    <span class="inline-block mr-1">⚠️</span> Please provide shipping address
                   </p>
-                  -->
-
                 </div>
               </div>
 
@@ -241,44 +226,36 @@
                   <h3 class="text-sm lg:text-lg md:text-lg font-semibold mb-6">{{ $t('checkout.order_summary') }}</h3>
 
                   <div class="border-t pt-4 space-y-3 text-xs sm:text-sm md:text-sm lg:text-sm">
-                    <!-- Subtotal -->
                     <div class="flex justify-between font-bold">
                       <span class="text-gray-600">{{ $t('checkout.subtotal') }}</span>
                       <span>₦{{ formatAmount(cartData?.amount) }}</span>
                     </div>
 
-                    <!-- Original Price (if discounted) -->
-                    <div
-                      v-if="cartData?.originalAmount && parseFloat(cartData.originalAmount) > parseFloat(cartData.amount)"
+                    <div v-if="cartData?.originalAmount && parseFloat(cartData.originalAmount) > parseFloat(cartData.amount)"
                       class="flex justify-between font-bold text-gray-500 line-through">
                       <span>{{ $t('checkout.original_price') }}</span>
                       <span>₦{{ formatAmount(cartData.originalAmount) }}</span>
                     </div>
 
-                    <!-- Saved -->
-                    <div
-                      v-if="cartData?.originalAmount && parseFloat(cartData.originalAmount) > parseFloat(cartData.amount)"
+                    <div v-if="cartData?.originalAmount && parseFloat(cartData.originalAmount) > parseFloat(cartData.amount)"
                       class="flex justify-between font-bold text-green-600">
                       <span>{{ $t('checkout.saved') }}</span>
-                      <span>₦{{ formatAmount(parseFloat(cartData.originalAmount) - parseFloat(cartData.amount))
-                        }}</span>
+                      <span>₦{{ formatAmount(parseFloat(cartData.originalAmount) - parseFloat(cartData.amount)) }}</span>
                     </div>
 
-                    <!-- Shipping -->
                     <div class="flex justify-between font-bold">
                       <span class="text-gray-600">{{ $t('checkout.shipping') }}</span>
                       <span>₦{{ formatAmount(cartData?.shippingCost?.cost) }}</span>
                     </div>
-                    <!-- Tax -->
+
                     <div class="flex justify-between font-bold">
                       <span class="text-gray-600">{{ $t('checkout.tax') }}</span>
                       <span>
-                        <span class="text-red-600">({{ (cartData?.tax_value * 100).toFixed(2) }}%)</span>
+                        <span class="text-red-600">({{ ((isNaN(cartData?.tax_value) ? 0 : cartData?.tax_value) * 100).toFixed(2) }}%)</span>
                         ₦{{ formatAmount(cartData?.tax) }}
                       </span>
                     </div>
 
-                    <!-- Total -->
                     <div class="flex justify-between font-bold text-lg border-t pt-3">
                       <span>{{ $t('checkout.total') }}</span>
                       <span class="text-primary">₦{{ formatAmount(cartData?.payable) }}</span>
@@ -291,54 +268,61 @@
         </div>
       </div>
 
-      <!-- Address Modal -->
+      <!-- Guest Shipping Address Modal (Non-closeable) -->
       <Teleport to="body">
-        <div v-if="showAddressModal"
-          class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-          @click.self="closeAddressModal" @keydown.escape="closeAddressModal">
+        <div v-if="showGuestModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+        @click.self="closeGuestModal">
           <div class="bg-white rounded-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto" role="dialog"
-            aria-modal="true" :aria-labelledby="editingAddress ? 'edit-address-title' : 'add-address-title'">
-            <h3 :id="editingAddress ? 'edit-address-title' : 'add-address-title'" class="text-xl font-bold mb-4">
-              {{ editingAddress ? $t('checkout.modal_edit_title') : $t('checkout.modal_add_title') }}
+            aria-modal="true" aria-labelledby="guest-address-title">
+            <h3 id="guest-address-title" class="text-xl font-bold mb-2">
+              Shipping Information Required
             </h3>
+            <p class="text-sm text-gray-600 mb-4">Please provide your shipping details to continue with checkout.</p>
 
-            <form @submit.prevent="handleAddAddress" class="space-y-3" novalidate>
+            <form @submit.prevent="handleGuestAddressSubmit" class="space-y-3" novalidate>
               <!-- Full Name -->
               <div>
-                <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="guestFullName" class="block text-sm font-medium text-gray-700 mb-1">
                   {{ $t('checkout.full_name') }} <span class="text-red-500" aria-label="required">*</span>
                 </label>
-                <input v-model="addressForm.full_name" id="fullName" type="text" required
+                <input v-model="addressForm.full_name" id="guestFullName" type="text" required
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 text-sm focus:ring-primary focus:border-transparent outline-none"
-                  :class="{ 'border-red-500': formErrors.full_name }" :placeholder="$t('checkout.full_name')"
-                  aria-describedby="fullName-error" />
-                <p v-if="formErrors.full_name" id="fullName-error" class="text-red-600 text-xs mt-1">{{
-                  formErrors.full_name }}</p>
-              </div>
-
-              <div v-if="isGuest" class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  {{ $t('checkout.email') }} <span class="text-red-500">*</span>
-                </label>
-                <input
-                  v-model="guestEmail"
-                  type="email"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
-                  :placeholder="$t('checkout.email')"
-                />
+                  :class="{ 'border-red-500': formErrors.full_name }" :placeholder="$t('checkout.full_name')" />
+                <p v-if="formErrors.full_name" class="text-red-600 text-xs mt-1">{{ formErrors.full_name }}</p>
               </div>
 
               <!-- Phone Number -->
-              <div>
-                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">
+              <div v-if="isGuest" class="flex row gap-x-3">
+                <div class="w-1/2">
+                  <label for="guestEmail" class="block text-sm font-medium text-gray-700 mb-1">
+                    {{ $t('checkout.email') }} <span class="text-red-500" aria-label="required">*</span>
+                  </label>
+                  <input v-model="addressForm.email" id="guestEmail" type="tel" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 text-sm focus:ring-primary focus:border-transparent outline-none"
+                    :class="{ 'border-red-500': formErrors.email }" :placeholder="$t('checkout.email_address')" />
+                  <p v-if="formErrors.email" class="text-red-600 text-xs mt-1">{{ formErrors.email }}</p>
+                </div>
+                <div class="w-1/2">
+                  <label for="guestPhone" class="block text-sm font-medium text-gray-700 mb-1">
+                    {{ $t('checkout.phone_number') }} <span class="text-red-500" aria-label="required">*</span>
+                  </label>
+                  <input v-model="addressForm.phone" id="guestPhone" type="tel" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 text-sm focus:ring-primary focus:border-transparent outline-none"
+                    :class="{ 'border-red-500': formErrors.phone }" :placeholder="$t('checkout.phone_number')" />
+                  <p v-if="formErrors.phone" class="text-red-600 text-xs mt-1">{{ formErrors.phone }}</p>
+                </div>
+              </div>
+              <div v-else>
+                <label for="guestPhone" class="block text-sm font-medium text-gray-700 mb-1">
                   {{ $t('checkout.phone_number') }} <span class="text-red-500" aria-label="required">*</span>
                 </label>
-                <input v-model="addressForm.phone" id="phone" type="tel" required
+                <input v-model="addressForm.phone" id="guestPhone" type="tel" required
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 text-sm focus:ring-primary focus:border-transparent outline-none"
-                  :class="{ 'border-red-500': formErrors.phone }" :placeholder="$t('checkout.phone_number')"
-                  aria-describedby="phone-error" />
-                <p v-if="formErrors.phone" id="phone-error" class="text-red-600 text-xs mt-1">{{ formErrors.phone }}</p>
+                  :class="{ 'border-red-500': formErrors.phone }" :placeholder="$t('checkout.phone_number')" />
+                <p v-if="formErrors.phone" class="text-red-600 text-xs mt-1">{{ formErrors.phone }}</p>
               </div>
+
 
               <!-- Country & State -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -438,17 +422,29 @@
 
               <!-- Form Actions -->
               <div class="flex gap-3 mt-6 pt-4 border-t">
-                <button type="button" @click="closeAddressModal"
-                  class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium text-secondary">
+                <!-- Cancel only visible when guest already has a saved address (editing mode) -->
+                <button
+                  v-if="hasGuestAddress"
+                  type="button"
+                  @click="closeGuestModal"
+                  class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium text-secondary"
+                >
                   {{ $t('checkout.cancel') }}
                 </button>
-                <button type="submit" :disabled="isSubmittingForm"
-                  class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-mprimary-600 transition font-medium disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                  <span v-if="isSubmittingForm"
-                    class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
-                  {{ editingAddress ? $t('checkout.update_address') : $t('checkout.add_address_submit') }}
+
+                <button
+                  type="submit"
+                  :disabled="isSubmittingForm"
+                  class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-mprimary-600 transition font-medium disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  <span
+                    v-if="isSubmittingForm"
+                    class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"
+                  ></span>
+                  {{ $t('checkout.add_address_submit') }}
                 </button>
               </div>
+
             </form>
           </div>
         </div>
@@ -459,7 +455,7 @@
 
 <script setup>
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
-import { formatAmount } from '@/utils/helpers'
+import { formatAmount, splitFullName } from '@/utils/helpers'
 import { clearCart } from '@/utils/neut'
 import { ref, computed, onMounted, watch } from 'vue'
 import VueMultiselect from 'vue-multiselect'
@@ -469,24 +465,18 @@ import { useI18n } from 'vue-i18n'
 import apiClient from '@/services/api'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-const authStore = useAuthStore()
+import { useCartStore } from '@/stores/cart'
 
+const authStore = useAuthStore()
+const cartStore = useCartStore()
 const { t } = useI18n()
 const router = useRouter()
+const toast = useToast()
 
-// // Constants
-// const PAYMENT_METHODS = {
-//   PAYSTACK: 'paystack',
-//   FLUTTERWAVE: 'flutterwave'
-// }
-
-// const GATEWAY_URLS = {
-//   paystack: 'https://js.paystack.co/v1/inline.js',
-//   flutterwave: 'https://checkout.flutterwave.com/v3.js'
-// }
-
+// Constants
 const PHONE_REGEX = /^[+]?[\d\s\-()]+$/
 const MIN_PHONE_LENGTH = 10
+const GUEST_ADDRESS_KEY = 'guestShipping'
 
 // Location Cache
 class LocationCache {
@@ -521,22 +511,18 @@ class LocationCache {
 }
 
 const locationCache = new LocationCache()
-const toast = useToast()
 
 // State
 const loading = ref(true)
 const error = ref(null)
 const unavailable = ref(false)
 const unavailableProducts = ref(null)
-const gatewayLoading = ref(false)
 const showAddressModal = ref(false)
+const showGuestModal = ref(false)
 const loadingStates = ref(false)
 const isSubmittingForm = ref(false)
 const isProcessingPayment = ref(false)
-const isFinalStep = ref(false)
 const paymentMethod = ref('pay_on_delivery')
-// const paymentMethod = ref(null)
-// const selectedGateway = ref(null)
 const selectedAddressId = ref(null)
 const gateways = ref([])
 const cartData = ref(null)
@@ -545,41 +531,12 @@ const countries = ref([])
 const statesList = ref([])
 const editingAddress = ref(null)
 const formErrors = ref({})
-const isGuest = computed(() => !authStore.isAuthenticated)
-const guestEmail = ref('')
-
-const splitFullName = (fullName) => {
-  if (!fullName) return { first_name: '', last_name: '' }
-  const parts = fullName.trim().split(/\s+/)
-  if (parts.length === 1) return { first_name: parts[0], last_name: parts[0] }
-  return { first_name: parts[0], last_name: parts.slice(1).join(' ') }
-}
-
-const buildGuestCartPayload = () => {
-  const items = (typeof getCart === 'function' ? getCart() : []) || []
-  return items.map(item => ({
-    product_id: item.id,
-    quantity: item.quantity ?? 1
-  }))
-}
-
-const createEmptyAddressForm = () => ({
-  full_name: '',
-  phone: '',
-  address_line_one: '',
-  address_line_two: '',
-  province: '',
-  city: '',
-  state: '',
-  postal_code: '',
-  country: '',
-  is_default: true,
-  selectedStateProvince: null
-})
-
-const addressForm = ref(createEmptyAddressForm())
+const guestShippingAddress = ref(null)
+const hasGuestAddress = ref(false)
 
 // Computed
+const isGuest = computed(() => !authStore.isAuthenticated)
+
 const shippingDateRange = computed(() => {
   const shippingCost = cartData.value?.shippingCost;
   if (!shippingCost || !shippingCost.min_days || !shippingCost.max_days) {
@@ -588,7 +545,6 @@ const shippingDateRange = computed(() => {
 
   const { min_days: minDays, max_days: maxDays } = shippingCost;
 
-  // Helper to safely add days in UTC
   const addDaysUTC = (days) => {
     const now = new Date()
     const futureDate = new Date(now.getTime() + days * 24 * 60 * 60 * 1000)
@@ -598,7 +554,7 @@ const shippingDateRange = computed(() => {
   const dateFormatter = new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
-    timeZone: 'UTC', // 💡 force consistent output
+    timeZone: 'UTC',
   });
 
   if (maxDays <= 1) {
@@ -616,7 +572,6 @@ const shippingDateRange = computed(() => {
     };
   }
 });
-
 
 const formattedOptions = computed(() => {
   if (!Array.isArray(statesList.value) || statesList.value.length === 0) return []
@@ -637,6 +592,51 @@ const formattedOptions = computed(() => {
   })
 })
 
+// Helper Functions
+const buildGuestCartPayload = () => {
+  return cartStore.getCartItemsList()
+}
+
+const fetchGuestSummary = async (addressPayload) => {
+  const cart = buildGuestCartPayload()
+
+  if (!cart.length) {
+    cartData.value = null
+    toast.error(t('checkout.toasts.empty_cart'))
+    return
+  }
+
+  const payload = {
+    cart,
+    country: addressPayload.country,
+    state: addressPayload.state,
+    province: addressPayload.province,
+  }
+
+  const response = await apiClient.post('/checkout/guest-summary', payload)
+
+  // assuming same structure as /checkout/init: data.data.user_cart
+  const data = response.data
+  cartData.value = data?.data?.user_cart || data?.data || null
+}
+
+
+const createEmptyAddressForm = () => ({
+  full_name: '',
+  phone: '',
+  address_line_one: '',
+  address_line_two: '',
+  province: '',
+  city: '',
+  state: '',
+  postal_code: '',
+  country: '',
+  is_default: true,
+  selectedStateProvince: null
+})
+
+const addressForm = ref(createEmptyAddressForm())
+
 // Watchers
 watch(() => addressForm.value.selectedStateProvince, (val) => {
   if (val?.code) {
@@ -655,6 +655,17 @@ const validateAddressForm = () => {
 
   if (!addressForm.value.full_name?.trim()) {
     formErrors.value.full_name = t('checkout.errors.full_name_required')
+  }
+
+  if (isGuest.value) {
+    // Email required
+    if (!addressForm.value.email?.trim()) {
+      formErrors.value.email = t('checkout.errors.email_required')
+    } 
+    // Email format check
+    else if (!/^\S+@\S+\.\S+$/.test(addressForm.value.email)) {
+      formErrors.value.email = t('checkout.errors.email_invalid')
+    }
   }
 
   if (!addressForm.value.phone?.trim()) {
@@ -691,14 +702,28 @@ const initCheckout = async () => {
   unavailable.value = false
 
   try {
+    await loadCountries()
+
     if (isGuest.value) {
-      // GUEST: skip init and only load countries for address form
-      await loadCountries()
-      loading.value = false
+      const savedGuestAddress = localStorage.getItem(GUEST_ADDRESS_KEY)
+      
+      if (savedGuestAddress) {
+        try {
+          guestShippingAddress.value = JSON.parse(savedGuestAddress)
+          hasGuestAddress.value = true
+          await fetchGuestSummary(guestShippingAddress.value)
+        } catch (parseError) {
+          console.error('Failed to parse saved guest address:', parseError)
+          localStorage.removeItem(GUEST_ADDRESS_KEY)
+          showGuestModal.value = true
+        }
+      } else {
+        showGuestModal.value = true
+      }
       return
     }
 
-    // AUTHENTICATED USERS ONLY
+
     const response = await apiClient.post('/checkout/init', {})
     const data = response.data
 
@@ -707,16 +732,23 @@ const initCheckout = async () => {
 
     const defaultAddr = shippingAddresses.value.find(a => a.is_default)
     selectedAddressId.value = defaultAddr?.id || shippingAddresses.value[0]?.id || null
-
-    await loadCountries()
   } catch (err) {
     console.error('Checkout init error:', err)
-    toast.error(err.response?.data?.message || t('checkout.toasts.init_failed'))
+    const status = err.response?.status
+    const errorData = err.response?.data
+
+    if (status === 422 && errorData?.response === 'unavailable') {
+      unavailable.value = true
+      unavailableProducts.value = errorData?.errors || null
+      toast.error(errorData?.message || t('checkout.toasts.init_failed'))
+    } else {
+      error.value = errorData?.message || t('checkout.toasts.init_failed')
+      toast.error(error.value)
+    }
   } finally {
     loading.value = false
   }
 }
-
 
 const loadCountries = async () => {
   try {
@@ -765,14 +797,85 @@ const customFilter = (option, search, label) => {
   return false
 }
 
-const setGateway = (gatewayName) => {
-  // For now we only support Pay on Delivery.
-  // This is kept for when online gateways are re-enabled.
-  // selectedGateway.value = gatewayName
-  paymentMethod.value = 'pay_on_delivery'
+const handleGuestAddressSubmit = async () => {
+  if (!validateAddressForm()) return
+
+  isSubmittingForm.value = true
+
+  try {
+    const payload = { ...addressForm.value }
+
+    // Persist address locally
+    localStorage.setItem(GUEST_ADDRESS_KEY, JSON.stringify(payload))
+    guestShippingAddress.value = payload
+    hasGuestAddress.value = true
+
+    // Fetch cart summary for this address
+    await fetchGuestSummary(payload)
+
+    showGuestModal.value = false
+    toast.success('Shipping information saved!')
+  } catch (err) {
+    console.error('Failed to save guest address:', err)
+    
+    if (err.response?.status === 422 && err.response?.data?.errors) {
+      Object.entries(err.response.data.errors).forEach(([field, messages]) => {
+        formErrors.value[field] = Array.isArray(messages) ? messages[0] : messages
+      })
+      toast.error(t('checkout.toasts.fix_errors_below'))
+    } else {
+      toast.error(err.response?.data?.message || 'Failed to save shipping information')
+    }
+  } finally {
+    isSubmittingForm.value = false
+  }
+}
+
+const openGuestAddressModal = () => {
+  if (guestShippingAddress.value) {
+    addressForm.value = {
+      ...guestShippingAddress.value,
+      selectedStateProvince: {
+        name: guestShippingAddress.value.province || guestShippingAddress.value.state,
+        code: `${guestShippingAddress.value.state}|${guestShippingAddress.value.province || ''}`,
+      },
+    }
+    loadStatesProvinces()
+  } else {
+    addressForm.value = createEmptyAddressForm()
+  }
+
+  formErrors.value = {}
+  showGuestModal.value = true
+}
+
+const closeGuestModal = () => {
+  // Guests cannot close until they have at least one saved address
+  if (isGuest.value && !hasGuestAddress.value) return
+
+  showGuestModal.value = false
+  formErrors.value = {}
+
+  // Reset form back to stored address (if any) when cancelling edit
+  if (guestShippingAddress.value) {
+    addressForm.value = {
+      ...guestShippingAddress.value,
+      selectedStateProvince: {
+        name: guestShippingAddress.value.province || guestShippingAddress.value.state,
+        code: `${guestShippingAddress.value.state}|${guestShippingAddress.value.province || ''}`,
+      },
+    }
+  } else {
+    addressForm.value = createEmptyAddressForm()
+  }
 }
 
 const placeOrder = async () => {
+  if (isGuest.value && !guestShippingAddress.value) {
+    toast.error('Please provide shipping address')
+    return
+  }
+  
   if (!isGuest.value && !selectedAddressId.value) {
     toast.error(t('checkout.select_address_alert'))
     return
@@ -780,115 +883,56 @@ const placeOrder = async () => {
 
   try {
     isProcessingPayment.value = true
-    gatewayLoading.value = true
 
-    let response
-
-    if (!isGuest.value) {
-      // AUTHENTICATED USER
-      response = await apiClient.post('/place-order', {})
-    } else {
-      // GUEST USER → Validate local address + cart
-      if (!validateAddressForm()) {
-        toast.error(t('checkout.toasts.fix_errors_below'))
-        return
-      }
-
-      if (!guestEmail.value.trim()) {
-        toast.error(t('checkout.toasts.email_required'))
-        return
-      }
-
-      const { first_name, last_name } = splitFullName(addressForm.value.full_name)
+    if (isGuest.value) {
       const cart = buildGuestCartPayload()
+      const nameParts = splitFullName(guestShippingAddress.value.full_name)
+      const response = await apiClient.post('/checkout/guest-order', {
+        ...guestShippingAddress.value,
+        ...nameParts, cart,
+        payment_method: 'pay_on_delivery'
+      })
 
-      if (!cart.length) {
-        toast.error(t('checkout.toasts.empty_cart'))
+      const resData = response.data
+
+      if (resData.error) {
+        toast.error(resData.message || t('checkout.toasts.order_failed'))
         return
       }
 
-      const payload = {
-        email: guestEmail.value.trim(),
-        first_name,
-        last_name,
-        phone: addressForm.value.phone,
-        address_line_one: addressForm.value.address_line_one,
-        address_line_two: addressForm.value.address_line_two || '',
-        province: addressForm.value.province,
-        city: addressForm.value.city,
-        state: addressForm.value.state,
-        postal_code: addressForm.value.postal_code || '',
-        country: addressForm.value.country,
-        cart
+      toast.success(resData.message || t('checkout.toasts.order_placed'))
+      clearCart()
+
+      if (resData.orderId) {
+        router.push(`/login?email=${guestShippingAddress.value.email}`)
+      } else {
+        router.push('/dashboard/orders')
+      }
+    } else {
+      const response = await apiClient.post('/place-order', {})
+      const resData = response.data
+
+      if (resData.error) {
+        toast.error(resData.message || t('checkout.toasts.order_failed'))
+        return
       }
 
-      response = await apiClient.post('/place-order', payload)
-    }
+      toast.success(resData.message || t('checkout.toasts.order_placed'))
+      clearCart()
 
-    const data = response.data
-
-    if (data.error) {
-      toast.error(data.message || t('checkout.toasts.order_failed'))
-      return
-    }
-
-    toast.success(data.message || t('checkout.toasts.order_placed'))
-
-    clearCart()
-
-    if (data.orderId) {
-      router.push(`/order/${data.orderId}`)
-    } else {
-      router.push('/dashboard/orders')
+      if (resData.orderId) {
+        router.push(`/order/${resData.orderId}`)
+      } else {
+        router.push('/dashboard/orders')
+      }
     }
   } catch (err) {
     console.error('Place order failed:', err)
     toast.error(err.response?.data?.message || t('checkout.toasts.order_failed'))
   } finally {
     isProcessingPayment.value = false
-    gatewayLoading.value = false
   }
 }
-
-// const placeOrder = async () => {
-//   if (!paymentMethod.value) {
-//     toast.error(t('checkout.toasts.select_payment_required'))
-//     return
-//   }
-
-//   try {
-//     const gatewayName = selectedGateway.value
-//     gatewayLoading.value = true
-
-//     const response = await apiClient.post(`/place-order/${gatewayName}`, {})
-
-//     // Response handling (backend should return `error` flag)
-//     const resData = response.data?.data || response.data
-
-//     if (resData.error) {
-//       toast.error(resData.message || 'Payment verification failed')
-//       router.push('/dashboard/orders')
-//       return
-//     }
-
-//     // Continue based on payment method
-//     if (paymentMethod.value === PAYMENT_METHODS.PAYSTACK) {
-//       await processPaystackPayment(resData)
-//     } else if (paymentMethod.value === PAYMENT_METHODS.FLUTTERWAVE) {
-//       await processFlutterwavePayment(resData)
-//     }
-
-//   } catch (err) {
-//     console.error('Failed to fetch gateway details:', err)
-//     toast.error(err.response?.data?.message || err.message)
-//     paymentMethod.value = null
-//     // Optional redirect in case of hard failure
-//     router.push('/dashboard/orders')
-//   } finally {
-//     gatewayLoading.value = false
-//   }
-// }
-
 
 const selectAddress = (addressId) => {
   selectedAddressId.value = addressId
@@ -916,6 +960,25 @@ const openAddressModal = () => {
   showAddressModal.value = true
 }
 
+const canCloseAddressModal = computed(() => {
+  // Guests can't close until they've saved at least one address
+  if (isGuest.value && !hasGuestAddress.value) return false
+  return true
+})
+
+const handleBackdropClose = () => {
+  if (canCloseAddressModal.value) {
+    closeAddressModal()
+  }
+}
+
+const handleEscapeClose = () => {
+  if (canCloseAddressModal.value) {
+    closeAddressModal()
+  }
+}
+
+
 const editAddress = (address) => {
   editingAddress.value = address
   addressForm.value = {
@@ -941,6 +1004,7 @@ const handleAddAddress = async () => {
   if (!validateAddressForm()) return
 
   isSubmittingForm.value = true
+
   try {
     const method = editingAddress.value ? 'put' : 'post'
     const url = editingAddress.value
@@ -957,8 +1021,6 @@ const handleAddAddress = async () => {
     }
 
     closeAddressModal()
-    
-    // Refresh checkout to update cart and shipping data
     await initCheckout()
   } catch (err) {
     console.error('Failed to save address:', err)
@@ -976,142 +1038,9 @@ const handleAddAddress = async () => {
   }
 }
 
-// const processPaystackPayment = async (paymentData) => {
-//   console.log(paymentData);
-//   return new Promise((resolve, reject) => {
-//     if (!window.PaystackPop) {
-//       toast.error(t('checkout.toasts.gateway_not_loaded'))
-//       reject(new Error('Paystack not loaded'))
-//       return
-//     }
-
-//     window.PaystackPop.setup({
-//       key: paymentData.gws.public_key,
-//       email: paymentData.email,
-//       amount: paymentData.total_amount * 100,
-//       ref: paymentData.trans_ref,
-//       onClose: () => {
-//         // toast.info(t('checkout.toasts.payment_cancelled'))
-//         isProcessingPayment.value = false
-//         reject(new Error('Payment cancelled'))
-//       },
-//       callback: function (response) {
-//         (async () => {
-//           try {
-//             await verifyPayment(PAYMENT_METHODS.PAYSTACK, response.reference, paymentData.orderId)
-//             toast.success(t('checkout.toasts.payment_success'))
-//             resolve()
-//           } catch (err) {
-//             reject(err)
-//           }
-//         })()
-//       },
-//     }).openIframe()
-//   })
-// }
-
-// const processFlutterwavePayment = async (paymentData) => {
-//   return new Promise((resolve, reject) => {
-//     if (!window.FlutterwaveCheckout) {
-//       toast.error(t('checkout.toasts.gateway_not_loaded'))
-//       reject(new Error('Flutterwave not loaded'))
-//       return
-//     }
-
-//     window.FlutterwaveCheckout({
-//       public_key: paymentData.gws.public_key,
-//       tx_ref: paymentData.trans_ref,
-//       amount: paymentData.total_amount,
-//       currency: 'NGN',
-//       customer: {
-//         email: paymentData.email,
-//         name: paymentData.name
-//       },
-//       customizations: {
-//         title: t('checkout.payment_title'),
-//         description: t('checkout.payment_description')
-//       },
-//       callback: async (response) => {
-//         if (response.status === 'completed') {
-//           try {
-//             await verifyPayment(PAYMENT_METHODS.FLUTTERWAVE, paymentData.trans_ref, paymentData.orderId)
-//             toast.success(t('checkout.toasts.payment_success'))
-//             resolve()
-//           } catch (err) {
-//             reject(err)
-//           }
-//         } else {
-//           toast.error(t('checkout.toasts.payment_failed_or_cancelled'))
-//           isProcessingPayment.value = false
-//           reject(new Error('Payment failed'))
-//         }
-//       },
-//       onClose: () => {
-//         // toast.info(t('checkout.toasts.payment_cancelled'))
-//         isProcessingPayment.value = false
-//         reject(new Error('Payment cancelled'))
-//       }
-//     })
-//   })
-// }
-
-// const verifyPayment = async (gateway, reference, order) => {
-//   try {
-//     const response = await apiClient.post(`/checkout/${gateway}/${reference}/${order}`, {})
-
-//     isProcessingPayment.value = true
-//     isFinalStep.value = true
-
-//     // Redirect to order confirmation or success page
-//     clearCart()
-//     window.location.href = `/order/${response.data.orderId}`
-//   } catch (err) {
-//     console.error('Payment verification failed:', err)
-//     throw err
-//   } finally {
-//     isProcessingPayment.value = false
-//     isFinalStep.value = false
-//   }
-// }
-
 onMounted(async () => {
   await initCheckout()
 })
-
-
-
-
-// const loadScript = (src) => {
-//   return new Promise((resolve, reject) => {
-//     if (document.querySelector(`script[src="${src}"]`)) {
-//       resolve()
-//       return
-//     }
-//     const script = document.createElement('script')
-//     script.src = src
-//     script.onload = resolve
-//     script.onerror = () => {
-//       console.error(`Failed to load script: ${src}`)
-//       reject(new Error(`Failed to load ${src}`))
-//     }
-//     document.body.appendChild(script)
-//   })
-// }
-
-// // Lifecycle
-// onMounted(async () => {
-//   try {
-//     await Promise.all([
-//       loadScript(GATEWAY_URLS.paystack),
-//       loadScript(GATEWAY_URLS.flutterwave)
-//     ])
-//   } catch (err) {
-//     console.warn('Some payment gateways failed to load:', err)
-//     try { toast.warning(t('checkout.toasts.gateways_partial_load_warning')) } catch (_) {}
-//   }
-
-//   await initCheckout()
-// })
 </script>
 
 <style scoped>
@@ -1168,6 +1097,72 @@ input[type="checkbox"] {
 :deep(.multiselect__option--selected) {
   background-color: #ffedbf; /* gold-100 */
   color: #b67a1f; /* gold-600 */
+}
+
+:deep(.multiselect__input::placeholder),
+:deep(.multiselect__single) {
+  font-size: 14px;
+}
+
+:deep(.multiselect__single) {
+  padding: 4px 0;
+}
+</style>
+
+<style scoped>
+input[type="radio"],
+input[type="checkbox"] {
+  cursor: pointer;
+}
+
+:deep(.multiselect__tags) {
+  min-height: 42px;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  padding: 8px 40px 0 8px;
+}
+
+:deep(.multiselect--active .multiselect__tags) {
+  border-color: transparent !important;
+  box-shadow: 0 0 0 2px #b8974f;
+}
+
+:deep(.multiselect-error .multiselect__tags) {
+  border-color: #ef4444 !important;
+}
+
+:deep(.multiselect__content-wrapper) {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  margin-top: 4px;
+}
+
+:deep(.multiselect__option--highlight) {
+  background: #fff9e6;
+  color: #b67a1f;
+}
+
+:deep(.multiselect__option--highlight:after) {
+  content: none !important;
+}
+
+:deep(.multiselect__option--group) {
+  color: #6b7280;
+  padding: 3px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  background: #f3f4f6;
+}
+
+:deep(.multiselect__option--item) {
+  padding: 3px 10px;
+  font-size: 14px;
+}
+
+:deep(.multiselect__option--selected) {
+  background-color: #ffedbf;
+  color: #b67a1f;
 }
 
 :deep(.multiselect__input::placeholder),

@@ -241,7 +241,7 @@
     "pay_on_delivery": "الدفع عند التسليم",
     "pay_now": "ادفع ₦{amount}",
     "processing": "جارٍ المعالجة...",
-    "select_address_alert": "يرجى اختيار عنوان الشحن للمتابعة",
+    "select_address_alert": "يرجى اختيار/إدخال عنوان الشحن للمتابعة",
     "select_method_alert": "يرجى اختيار طريقة الدفع للمتابعة",
     "order_summary": "ملخص الطلب",
     "subtotal": "المجموع الفرعي",
@@ -253,6 +253,8 @@
     "modal_add_title": "إضافة عنوان جديد",
     "modal_edit_title": "تعديل العنوان",
     "full_name": "الاسم الكامل",
+    "email": "البريد الإلكتروني",
+    "email_address": "عنوان البريد الإلكتروني",
     "phone_number": "رقم الهاتف",
     "country": "الدولة",
     "select_country": "اختر الدولة",
@@ -300,7 +302,9 @@
       "country_required": "الدولة مطلوبة",
       "state_required": "الولاية/المقاطعة مطلوبة",
       "city_required": "المدينة مطلوبة",
-      "address_line1_required": "العنوان سطر 1 مطلوب"
+      "address_line1_required": "العنوان سطر 1 مطلوب",
+      "email_required": "البريد الإلكتروني مطلوب",
+      "email_invalid": "عنوان بريد إلكتروني غير صالح"
     }
   },
   "blog": {
