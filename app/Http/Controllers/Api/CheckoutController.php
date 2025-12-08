@@ -206,15 +206,12 @@ class CheckoutController extends Controller
         $taxRate = $taxVal > 0 ? (float) ($taxVal / 100) : 0.0;
 
         // Normalize cart structure
-        print_r($cart);
-        print_r("\n");
         $cartItemsInput = collect($cart)->map(function ($item) {
             return [
                 'product_id' => $item['product_id'],
                 'quantity'   => $item['quantity'],
             ];
         });
-        print_r($cartItemsInput);
 
         // 3. Load all products in one query
         $productIds = $cartItemsInput->pluck('product_id')->all();
