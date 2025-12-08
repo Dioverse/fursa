@@ -545,7 +545,6 @@ class CheckoutController extends Controller
             $orderId  = $orderCreate['orderId'];
             $transRef = $orderCreate['trans_ref'] ?? null;
 
-            /** @var \App\Models\Order $order */
             $order = $user->order()
                 ->where('order_id', $orderId)
                 ->firstOrFail();
