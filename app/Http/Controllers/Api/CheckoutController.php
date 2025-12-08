@@ -551,7 +551,7 @@ class CheckoutController extends Controller
                 DB::rollBack();
                 return response()->json([
                     'error'   => true,
-                    'message' => 'Order not found after creation',
+                    'message' => 'Order not found',
                 ], 500);
             }
             // ---------- Payment record (Pay on Delivery) ----------
