@@ -542,16 +542,18 @@ class CheckoutController extends Controller
                 return response()->json($orderCreate, 422);
             }
 
-            $orderId  = $orderCreate['orderId'];
+            /** @var \App\Models\Order|null $order */
+            $order    = $orderCreate['order'] ?? null;
+            $orderId  = $orderCreate['orderId'] ?? null;
             $transRef = $orderCreate['trans_ref'] ?? null;
 
-            $order = $user->order()
-                ->where('order_id', $orderId)
-                ->first();
-
-            
-            return response()->json(['dfd'=>$order, 'qwerty'=>Order::where("order_id", $orderId)->first(),"ff"=>$orderId]);
-
+            if (! $order) {
+                DB::rollBack();
+                return response()->json([
+                    'error'   => true,
+                    'message' => 'Order not found after creation',
+                ], 500);
+            }
             // ---------- Payment record (Pay on Delivery) ----------
 
             // Get POD gateway
