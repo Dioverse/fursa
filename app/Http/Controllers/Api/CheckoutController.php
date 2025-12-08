@@ -547,7 +547,10 @@ class CheckoutController extends Controller
 
             $order = $user->order()
                 ->where('order_id', $orderId)
-                ->firstOrFail();
+                ->first();
+
+            
+            return response()->json(['dfd'=>$order, 'qwerty'=>Order::where("order_id", $orderId)->first()]);
 
             // ---------- Payment record (Pay on Delivery) ----------
 

@@ -62,10 +62,11 @@ class OrderService
             if (!empty($orderItems)) { OrderItem::insert($orderItems); }
 
             return [
-                'error'     => false,
-                'orderId'   => $orderId,
-                'trans_ref' => $transRef,
-                'amount'    => $total
+                'error'       => false,
+                'orderId'     => $orderId,    // business code: "ORD-1XXXXXXXXX"
+                'order_db_id' => $order->id,  // <- primary key
+                'trans_ref'   => $transRef,
+                'amount'      => $total,
             ];
         } catch (\Exception $e) {
             return [
