@@ -416,6 +416,9 @@ class CheckoutController extends Controller
             'province'          => 'nullable|string',
         ]);
 
+        return response()->json([
+            $data
+        ]);
         $summary = $this->guestCartSummary(
             $data['cart'],
             $data['country'],
