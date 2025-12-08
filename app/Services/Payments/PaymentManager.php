@@ -20,7 +20,7 @@ class PaymentManager
 
         // Check if the gateway exists and is active
         if (!isset($this->gateways[$name]) || $this->gateways[$name]['status'] !== 'active') {
-            return ['error' => true, "message" => ucfirst($name) . " is unavailable."];
+            return ['error' => true, "message" => str_replace("_", " ",ucfirst($name)) . " is unavailable."];
         }
 
         // Configuration details for the active gateway would be fetched here
