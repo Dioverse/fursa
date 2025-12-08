@@ -192,121 +192,121 @@ class CheckoutController extends Controller
     }
 
     protected function guestCartSummary(array $cart, string $country, string $state, ?string $province)
-    {
-        // 1. Initialize Tax Rate
-        $taxVal  = (float) gs("tax");
-        $taxRate = $taxVal > 0 ? (float) ($taxVal / 100) : 0.0;
+{
+    // 1. Initialize Tax Rate
+    $taxVal  = (float) gs("tax");
+    $taxRate = $taxVal > 0 ? (float) ($taxVal / 100) : 0.0;
 
-        // 2. Validate cart existence
-        if (empty($cart)) {
-            return [
-                'error'   => true,
-                'message' => 'Cart is empty, add some items',
-            ];
-        }
-
-        // Normalize cart structure
-        $cartItemsInput = collect($cart)->map(function ($item) {
-            return [
-                'product_id' => $item['product_id'],
-                'quantity'   => $item['quantity'],
-            ];
-        });
-
-        // 3. Load all products in one query
-        $productIds = $cartItemsInput->pluck('product_id')->all();
-
-        $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
-
-        // 4. Stock check
-        $unavailable = [];
-
-        foreach ($cartItemsInput as $item) {
-            $product = $products->get($item['product_id']);
-
-            if (! $product || $product->stock_quantity < $item['quantity']) {
-                $unavailable[] = [
-                    'product_id' => $product->id ?? $item['product_id'],
-                    'name'       => $product->name ?? 'Unknown Product',
-                    'requested'  => $item['quantity'],
-                    'available'  => $product->stock_quantity ?? 0,
-                ];
-            }
-        }
-
-        if (! empty($unavailable)) {
-            return [
-                'error'    => true,
-                'response' => 'unavailable',
-                'message'  => 'Unavailable stock quantity in cart',
-                'errors'   => $unavailable,
-            ];
-        }
-
-        // 5. Build cart items same shape as getCartSummary()
-        $cartItems = $cartItemsInput->map(function ($item) use ($products) {
-            $product         = $products->get($item['product_id']);
-            $originalPrice   = (float) $product->price;
-            $discountedPrice = (float) $product->discounted_price;
-            $quantity        = (int) $item['quantity'];
-
-            return [
-                'quantity'         => $quantity,
-                'price'            => $originalPrice,
-                'discounted_price' => $discountedPrice,
-                'subtotal'         => (float) bcmul($discountedPrice, $quantity, 2),
-                'originalSubtotal' => (float) bcmul($originalPrice, $quantity, 2),
-                'stock_quantity'   => $product->stock_quantity,
-            ];
-        });
-
-        // 6. Shipping cost by raw country/state/province
-        $shipping = $this->getShippingCost($country, $state, $province);
-
-        $defaultShipObj = (object) ['cost' => 0.0, 'min_days' => 0, 'max_days' => 0];
-
-        $shipCost = (is_object($shipping) && $shipping->cost >= 0)
-            ? $shipping
-            : $defaultShipObj;
-
-        // guest "shippingAddress" structure compatible with frontend
-        $guestShippingAddress = [
-            'full_name'        => null,
-            'phone'            => null,
-            'address_line_one' => null,
-            'address_line_two' => null,
-            'city'             => null,
-            'province'         => $province,
-            'state'            => $state,
-            'postal_code'      => null,
-            'country'          => $country,
-        ];
-
-        // 7. Totals
-        $amount         = (float) round($cartItems->sum('subtotal'), 2);
-        $originalAmount = (float) round($cartItems->sum('originalSubtotal'), 2);
-
-        $totalBeforeTax = bcadd($amount, (float) $shipCost->cost, 2);
-        $tax            = bcmul($totalBeforeTax, $taxRate, 2);
-        $payable        = (float) bcadd($totalBeforeTax, $tax, 2);
-
-        // 8. Final payload – same keys as getCartSummary()
+    // 2. Validate cart existence
+    if (empty($cart)) {
         return [
-            'error'           => false,
-            'id'              => null,
-            'first_name'      => null,
-            'last_name'       => null,
-            'email'           => null,
-            'payable'         => $payable,
-            'amount'          => $amount,
-            'originalAmount'  => $originalAmount,
-            'cart_items'      => $cartItems,
-            'shippingAddress' => $guestShippingAddress,
-            'shippingCost'    => $shipCost,
-            'tax'             => (float) $tax,
-            'tax_value'       => $taxRate,
+            'error'   => true,
+            'message' => 'Cart is empty, add some items',
         ];
     }
+
+    // Normalize cart structure
+    $cartItemsInput = collect($cart)->map(function ($item) {
+        return [
+            'product_id' => $item['product_id'],
+            'quantity'   => $item['quantity'],
+        ];
+    });
+
+    // 3. Load all products in one query
+    $productIds = $cartItemsInput->pluck('product_id')->all();
+
+    $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+
+    // 4. Stock check
+    $unavailable = [];
+
+    foreach ($cartItemsInput as $item) {
+        $product = $products->get($item['product_id']);
+
+        if (! $product || $product->stock_quantity < $item['quantity']) {
+            $unavailable[] = [
+                'product_id' => $product->id ?? $item['product_id'],
+                'name'       => $product->name ?? 'Unknown Product',
+                'requested'  => $item['quantity'],
+                'available'  => $product->stock_quantity ?? 0,
+            ];
+        }
+    }
+
+    if (! empty($unavailable)) {
+        return [
+            'error'    => true,
+            'response' => 'unavailable',
+            'message'  => 'Unavailable stock quantity in cart',
+            'errors'   => $unavailable,
+        ];
+    }
+
+    // 5. Build cart items same shape as getCartSummary()
+    $cartItems = $cartItemsInput->map(function ($item) use ($products) {
+        $product         = $products->get($item['product_id']);
+        $originalPrice   = (float) $product->price;
+        $discountedPrice = (float) $product->discounted_price;
+        $quantity        = (int) $item['quantity'];
+
+        return [
+            'quantity'         => $quantity,
+            'price'            => $originalPrice,
+            'discounted_price' => $discountedPrice,
+            'subtotal'         => (float) bcmul($discountedPrice, $quantity, 2),
+            'originalSubtotal' => (float) bcmul($originalPrice, $quantity, 2),
+            'stock_quantity'   => $product->stock_quantity,
+        ];
+    });
+
+    // 6. Shipping cost by raw country/state/province
+    $shipping = $this->getShippingCost($country, $state, $province);
+
+    $defaultShipObj = (object) ['cost' => 0.0, 'min_days' => 0, 'max_days' => 0];
+
+    $shipCost = (is_object($shipping) && $shipping->cost >= 0)
+        ? $shipping
+        : $defaultShipObj;
+
+    // guest "shippingAddress" structure compatible with frontend
+    $guestShippingAddress = [
+        'full_name'        => null,
+        'phone'            => null,
+        'address_line_one' => null,
+        'address_line_two' => null,
+        'city'             => null,
+        'province'         => $province,
+        'state'            => $state,
+        'postal_code'      => null,
+        'country'          => $country,
+    ];
+
+    // 7. Totals
+    $amount         = (float) round($cartItems->sum('subtotal'), 2);
+    $originalAmount = (float) round($cartItems->sum('originalSubtotal'), 2);
+
+    $totalBeforeTax = bcadd($amount, (float) $shipCost->cost, 2);
+    $tax            = bcmul($totalBeforeTax, $taxRate, 2);
+    $payable        = (float) bcadd($totalBeforeTax, $tax, 2);
+
+    // 8. Final payload – same keys as getCartSummary()
+    return [
+        'error'           => false,
+        'id'              => null,
+        'first_name'      => null,
+        'last_name'       => null,
+        'email'           => null,
+        'payable'         => $payable,
+        'amount'          => $amount,
+        'originalAmount'  => $originalAmount,
+        'cart_items'      => $cartItems,
+        'shippingAddress' => $guestShippingAddress,
+        'shippingCost'    => $shipCost,
+        'tax'             => (float) $tax,
+        'tax_value'       => $taxRate,
+    ];
+}
 
 
     private function dispatchNotification($user, $order)

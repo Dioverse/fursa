@@ -204,7 +204,7 @@ Route::get('/lang/fetch/{lang}/{qry}', [DistCustLanguageController::class, 'fetc
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])->middleware('signed')->name('verification.verify');
 
 // routes/api.php
-Route::post('/guest-summary', [CheckoutController::class, 'guestR']);
+Route::post('checkout/guest-summary', [CheckoutController::class, 'guestR']);
 
 Route::get('states-provinces/{country}', [ShippingAddressController::class, 'getStatesWithProvinces']);
 Route::get('countries', [ShippingAddressController::class, 'getCountries']);
