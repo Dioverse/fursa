@@ -271,7 +271,7 @@
       <!-- Guest Shipping Address Modal (Non-closeable) -->
       <Teleport to="body">
         <div v-if="showGuestModal"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[70]"
         @click.self="closeGuestModal">
           <div class="bg-white rounded-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto" role="dialog"
             aria-modal="true" aria-labelledby="guest-address-title">
